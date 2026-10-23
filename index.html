@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v218</title>
+<title>Gribouillis EPS v219</title>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
 /* ── THÈME SOMBRE UNIQUEMENT ── */
@@ -18242,24 +18242,28 @@ function bpProfileDef(){
   p.name=BP_PROFILE_NAME;p.generic=false;p.gameMode='1eq';
   p.meta={oeId:'volley-c',oeLabel:'OE C — Adapter l\'attaque',btnsHint:'Nos points / points adverses / occasions',macroHint:'BP / points marqués ≥ 50 %'};
   p.dialogBtns=[
-    {label:'🎯 Beau point placé',color:'#0891b2',isShot:true,isGoal:true,switchTeam:false,secondary:null,pts:1,newPoss:false},
-    {label:'💥 Beau point smashé',color:'#c2410c',isShot:true,isGoal:true,switchTeam:false,secondary:null,pts:1,newPoss:false},
+    {label:'🌟 Beau point',color:'#16a34a',isShot:true,isGoal:true,switchTeam:false,secondary:null,pts:1,newPoss:false},
     {label:'🎁 Autre point (faute adverse, exploit)',color:'#7c3aed',isShot:true,isGoal:true,switchTeam:false,secondary:null,pts:1,newPoss:false},
-    {label:'⬆️ Occasion de BP non convertie (ballon haut en zone avant)',color:'#475569',isShot:false,isGoal:false,switchTeam:false,secondary:null,pts:0,newPoss:false,who:false},
+    {label:'🏐 Balle reçue renvoyée ou perdue (R/P)',color:'#475569',isShot:false,isGoal:false,switchTeam:false,secondary:null,pts:0,newPoss:false,who:false},
+    {label:'⬆️ Occasion de BP ratée (ballon haut en zone avant)',color:'#0e7490',isShot:false,isGoal:false,switchTeam:false,secondary:null,pts:0,newPoss:false,who:false},
     {label:'Beau point adverse',color:'#dc2626',isShot:false,isGoal:false,switchTeam:false,secondary:null,pts:1,newPoss:false,adv:true,who:false},
     {label:'Autre point adverse (notre faute)',color:'#ea580c',isShot:false,isGoal:false,switchTeam:false,secondary:null,pts:1,newPoss:false,adv:true,who:true},
     {label:'Réception ratée',color:'#be185d',isShot:false,isGoal:false,switchTeam:false,secondary:null,pts:1,newPoss:false,adv:true,who:true}];
+  // Ratios du chapitre « Approfondir son expérience en volley-ball » (BP placés / accélérés pas encore séparés)
   p.customRatios=[
-    {label:'Beaux points / points marqués',show:true,numCriteria:['btn_0','btn_1'],denCriteria:['pts'],target:'50',minVolume:''},
-    {label:'BP placés / beaux points',show:true,numCriteria:['btn_0'],denCriteria:['btn_0','btn_1'],target:'',minVolume:''},
-    {label:'Occasions converties en BP',show:true,numCriteria:['btn_0','btn_1'],denCriteria:['btn_0','btn_1','btn_3'],target:'',minVolume:''}];
+    {label:'BP / balles reçues',show:true,numCriteria:['btn_0'],denCriteria:['btn_0','btn_2','btn_3'],target:'50',minVolume:''},
+    {label:'BP / points marqués (BP + AP)',show:true,numCriteria:['btn_0'],denCriteria:['btn_0','btn_1'],target:'50',minVolume:''},
+    {label:'Occasions converties en BP',show:true,numCriteria:['btn_0'],denCriteria:['btn_0','btn_3'],target:'',minVolume:''}];
   p.rkSetCfg={p:15,n:2,l:15};
   return p;
 }
 function seedBeauxPoints(){
   if(!Array.isArray(CFG.savedPresets))return;
-  if(CFG.bpSeeded)return;CFG.bpSeeded=true;
-  if(!CFG.savedPresets.some(x=>x&&x.name===BP_PROFILE_NAME))CFG.savedPresets.push(bpProfileDef());
+  if(CFG.bpSeeded2)return;CFG.bpSeeded=true;CFG.bpSeeded2=true;
+  const i=CFG.savedPresets.findIndex(x=>x&&x.name===BP_PROFILE_NAME);
+  // v219 : remplace la 1re version du profil (BP placé / smashé) si elle n'a pas été modifiée à la main
+  if(i<0)CFG.savedPresets.push(bpProfileDef());
+  else{const old=CFG.savedPresets[i];if((old.dialogBtns||[]).length===7&&/Beau point placé/.test((old.dialogBtns[0]||{}).label||''))CFG.savedPresets[i]=bpProfileDef();}
   try{localStorage.setItem('grib_cfg_v10',JSON.stringify(CFG));}catch(e){}
 }
 function obsRacketCols(L){
