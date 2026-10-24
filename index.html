@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v245</title>
+<title>Gribouillis EPS v246</title>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
 /* ── THÈME SOMBRE UNIQUEMENT ── */
@@ -984,6 +984,24 @@ body:has(#t-seance.active) .btn-start{padding:7px;font-size:.9rem;}
 .lib-card-ov{position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;padding:14px;}
 .lib-card-ov .box{background:#1e293b;border-radius:14px;padding:10px 12px;max-width:560px;width:100%;max-height:86vh;overflow:auto;}
 .asp-g .gx{border:none;background:rgba(0,0,0,.35);color:#fff;border-radius:999px;width:18px;height:18px;line-height:18px;padding:0;font-size:.65rem;cursor:pointer;margin-left:3px;}
+.wc-ov{position:fixed;inset:0;z-index:9400;background:rgba(0,0,0,.7);display:flex;align-items:flex-start;justify-content:center;padding:12px;overflow:auto;}
+.wc-box{background:#1e293b;border-radius:14px;padding:12px;max-width:820px;width:100%;}
+.wc-sec{border-left:5px solid #f97316;border-radius:10px;background:#0f172a;padding:8px;margin:8px 0;}
+.wc-sec h4{margin:0 0 4px;font-size:.92rem;display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
+.wc-sec textarea{width:100%;font-size:.8rem;padding:5px 7px;min-height:34px;}
+.wc-exs{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0;}
+.wc-ex{width:120px;border:2px solid #f97316;border-radius:9px;overflow:hidden;background:#111827;font-size:.72rem;position:relative;}
+.wc-ex .th{height:64px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;background:#3b1d0a;overflow:hidden;}
+.wc-ex .th img,.wc-ex .th video{width:100%;height:100%;object-fit:cover;pointer-events:none;}
+.wc-ex .nm{padding:3px 5px;font-weight:700;line-height:1.15;}
+.wc-ex .ac{display:flex;justify-content:space-between;padding:0 3px 3px;}
+.wc-ex .ac button{border:none;background:#334155;color:#fff;border-radius:5px;font-size:.66rem;padding:1px 6px;cursor:pointer;}
+.wc-ex .ac button.x{background:#7f1d1d;}
+.wc-pick{border:1px dashed #f97316;border-radius:10px;padding:6px;margin-top:4px;}
+.wc-pick .wc-ex{cursor:pointer;}
+.wc-ap{display:flex;gap:5px;flex-wrap:wrap;margin:4px 0 6px;}
+.wc-ap button{border:1px solid var(--border);border-radius:999px;padding:5px 10px;background:#0f172a;color:var(--text);font-size:.74rem;font-weight:700;cursor:pointer;}
+.wc-ap button.on{background:#b45309;border-color:#b45309;color:#fff;}
 .fit-vid{display:block;max-width:100%;max-height:calc(100vh - 170px);margin:8px auto;border-radius:10px;background:#000;}
 .pres-vids h5{margin:12px 0 2px;font-size:.9rem;color:#93c5fd;}
 .ok-list{margin:0;padding:0;list-style:none;}
@@ -13596,7 +13614,7 @@ function renderLibTab(){
   const list=all.filter(x=>(!LIB_UI.kind||x.kind===LIB_UI.kind)&&(!LIB_UI.niv||x.niveau===LIB_UI.niv)&&(!LIB_UI.apsa||x.apsa===LIB_UI.apsa)&&(!LIB_UI.oe||x.oe===LIB_UI.oe||(x.oeAlso||[]).indexOf(LIB_UI.oe)>=0)&&(!LIB_UI.cp||x.cp===LIB_UI.cp)&&(!LIB_UI.tag||(x.tags||[]).indexOf(LIB_UI.tag)>=0)&&(!LIB_UI.wt||x.wtype===LIB_UI.wt)&&(!LIB_UI.q||((x.titre||'')+' '+(x.desc||'')).toLowerCase().indexOf(LIB_UI.q.toLowerCase())>=0)&&(!LIB_UI.note||(x.stars||0)>=+LIB_UI.note));
   const counts={};all.forEach(x=>{counts[x.kind]=(counts[x.kind]||0)+1;});
   let h='<div class="card"><div class="card-title"><span class="ico">📚</span>Bibliothèque ('+all.length+')</div>'
-    +'<div style="display:flex;gap:6px;flex-wrap:wrap;margin:0 0 10px;"><button type="button" class="btn-xs" style="background:#15803d;color:#fff;padding:7px 12px;" onclick="libcOpen(\'remed\')">➕ Situation</button><button type="button" class="btn-xs" style="background:#b45309;color:#fff;padding:7px 12px;" onclick="libcOpen(\'warm\')">➕ Échauffement</button><button type="button" class="btn-xs" style="background:#15803d;color:#fff;padding:7px 12px;" onclick="libcOpen(\'match\')">➕ Match</button><button type="button" class="btn-xs" style="background:#15803d;color:#fff;padding:7px 12px;" onclick="libcOpen(\'oe\')">➕ Objet d\'enseignement</button><button type="button" class="btn-xs" style="background:#1e3a8a;color:#fff;padding:7px 12px;" onclick="libVideoNew()">🎬 Mes vidéos</button></div>'
+    +'<div style="display:flex;gap:6px;flex-wrap:wrap;margin:0 0 10px;"><button type="button" class="btn-xs" style="background:#15803d;color:#fff;padding:7px 12px;" onclick="libcOpen(\'remed\')">➕ Situation</button><button type="button" class="btn-xs" style="background:#b45309;color:#fff;padding:7px 12px;" onclick="wcOpen()">🔥 Composer un échauffement</button><button type="button" class="btn-xs" style="background:#c2410c;color:#fff;padding:7px 12px;" onclick="libcOpen(\'warm\')">➕ Exercice d\'échauffement</button><button type="button" class="btn-xs" style="background:#15803d;color:#fff;padding:7px 12px;" onclick="libcOpen(\'match\')">➕ Match</button><button type="button" class="btn-xs" style="background:#15803d;color:#fff;padding:7px 12px;" onclick="libcOpen(\'oe\')">➕ Objet d\'enseignement</button><button type="button" class="btn-xs" style="background:#1e3a8a;color:#fff;padding:7px 12px;" onclick="libVideoNew()">🎬 Mes vidéos</button></div>'
     +'<div class="remed-chip-row" style="margin-bottom:8px;">'
     +[['','Tout']].concat(Object.keys(LIB_KINDS).map(k=>[k,LIB_KINDS[k]])).map(o=>'<div class="remed-chip'+(LIB_UI.kind===o[0]?' selected':'')+'" style="flex:0 1 auto;padding:6px 10px;font-size:.74rem;" onclick="libSet(\'kind\',\''+o[0]+'\')">'+(o[0]?(LIB_ICO[o[0]]+' '):'')+esc(o[1])+' <b style="color:#86efac;">'+(o[0]?(counts[o[0]]||0):all.length)+'</b></div>').join('')
     +'</div>'+(libAllTags().length?'<div class="remed-chip-row" style="margin-bottom:8px;"><div class="remed-chip'+(!LIB_UI.tag?' selected':'')+'" style="flex:0 1 auto;padding:5px 10px;font-size:.72rem;" onclick="libSet(\'tag\',\'\')">🏷 Tous tags</div>'+libAllTags().map(t=>'<div class="remed-chip'+(LIB_UI.tag===t?' selected':'')+'" style="flex:0 1 auto;padding:5px 10px;font-size:.72rem;" onclick="libSet(\'tag\',\''+esc(t).replace(/'/g,"\\'")+'\')">#'+esc(t)+'</div>').join('')+'</div>':'')
@@ -13622,7 +13640,7 @@ function renderLibTab(){
       +'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;">'+animLibBtns(x)
       +(x.kind==='seance'?'<button type="button" class="btn-xs" style="background:#15803d;color:#fff;" onclick="libStartFromModel(\''+x.id+'\')">▶ Nouvelle séance avec ce modèle</button>'
         :(s&&s.status!=='done'?'<button type="button" class="btn-xs" style="background:#1d4ed8;color:#fff;" onclick="libInsertFromTab(\''+x.id+'\')">➕ Insérer dans la séance en cours</button>':'<span style="font-size:.66rem;color:var(--dim2);align-self:center;">Ouvre une séance pour l\'insérer.</span>'))
-      +'<button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="'+((x.kind==='remed'||x.kind==='match'||x.kind==='phase')?'libEdit':'libRename')+'(\''+x.id+'\')">✎ '+((x.kind==='remed'||x.kind==='match'||x.kind==='phase')?'Modifier':'Renommer')+'</button><button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="libDup(\''+x.id+'\')">⧉</button><button type="button" class="btn-xs red" onclick="libDelete(\''+x.id+'\')">🗑</button></div></div>';
+      +'<button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="'+(x.kind==='warm'?'wcOpen':(x.kind==='remed'||x.kind==='match'||x.kind==='phase')?'libEdit':'libRename')+'(\''+x.id+'\')">✎ '+(x.kind==='warm'?'Ouvrir / composer':(x.kind==='remed'||x.kind==='match'||x.kind==='phase')?'Modifier':'Renommer')+'</button><button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="libDup(\''+x.id+'\')">⧉</button><button type="button" class="btn-xs red" onclick="libDelete(\''+x.id+'\')">🗑</button></div></div>';
     LIB_CARDS[x.id]=card;h+=libTileHtml(x);
   });
   h+='</'+'div></div>';
@@ -13782,6 +13800,7 @@ function libcRender(){
   let h='<div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;"><b style="flex:1;">'+title2+'</b><button type="button" class="btn-xs red" onclick="libcClose()">✕</button></div>';
   if(k==='remed'||k==='warm')h+='<div class="remed-chip-row" style="margin-bottom:6px;">'+[['remed','🛠 Situation de remédiation'],['warm','🔥 Échauffement']].map(x=>'<div class="remed-chip'+(k===x[0]?' selected':'')+'" style="flex:0 1 auto;padding:5px 10px;font-size:.74rem;" onclick="libcKind(\''+x[0]+'\')">'+x[1]+'</div>').join('')+'</div>';
   if(k==='warm'){
+    h+=warmApsaChips(f.apsas,'LIBC.f.apsas','libcRender()');
     h+=inp('titre','Titre de l\'exercice','Ex : Gainage planche + tape-épaule')+area('desc','Description / consignes','Dispositif, consignes…',3);
     h+=libcPhotoHtml();
     h+=animField(f.anim,'LIBC.f.anim=J?{name:animName(J),json:J}:null;libcRender()');
@@ -20912,6 +20931,74 @@ function libTileOpen(id){libTileClose();const c=LIB_CARDS[id];if(!c)return;const
   o.onclick=e=>{if(e.target===o){libTileClose();return;}const b=e.target.closest&&e.target.closest('button');if(b&&!/libSetStars/.test(b.getAttribute('onclick')||''))setTimeout(libTileClose,0);};
   o.innerHTML='<'+'div class="box"><'+'div style="text-align:right;"><button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="libTileClose()">✕ Fermer</button></'+'div>'+c+'</'+'div>';document.body.appendChild(o);}
 (function(){try{const o=libSetStars;libSetStars=function(){const r=o.apply(this,arguments);try{const ov=document.querySelector('.lib-card-ov');const id=arguments[0];if(ov&&LIB_CARDS[id]){libTileOpen(id);}}catch(e){}return r;};}catch(e){}})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v246 — ÉCHAUFFEMENTS : APSA « Général » (toutes APSA) ou une/plusieurs APSA
+// par exercice ; COMPOSER un échauffement complet dans la Biblio (phases →
+// exercices), l'enregistrer, le remettre tel quel dans une séance.
+// ══════════════════════════════════════════════════════════════════════
+const WC_SPORTS=Object.keys(APSA_ICONS);
+function wapsLab(k){return k==='general'?'🌐 Général (toutes APSA)':(APSA_ICONS[k]||'')+' '+k.charAt(0).toUpperCase()+k.slice(1);}
+function wapsOf(x){if(x&&Array.isArray(x.apsas)&&x.apsas.length)return x.apsas.slice();const k=libSportKeyOf(x||{});return k?[k]:['general'];}
+function warmApsaChips(cur,path,after){cur=(Array.isArray(cur)&&cur.length)?cur:['general'];
+  return '<label class="remed-edit-label">🏅 APSA <small style="font-weight:400;">(« Général » = proposé dans toutes les APSA ; sinon une ou plusieurs)</small></label><div class="wc-ap">'
+    +['general'].concat(WC_SPORTS).map(k=>'<button type="button" class="'+(cur.indexOf(k)>=0?'on':'')+'" onclick="'+path+'=wapsToggle('+path+',\''+k+'\');'+after+'">'+wapsLab(k)+'</button>').join('')+'</div>';}
+function wapsToggle(cur,k){cur=(Array.isArray(cur)?cur:['general']).slice();if(k==='general')return ['general'];cur=cur.filter(x=>x!=='general');const i=cur.indexOf(k);if(i>=0)cur.splice(i,1);else cur.push(k);return cur.length?cur:['general'];}
+function wapsFits(x,sport){const A=wapsOf(x);return A.indexOf('general')>=0||A.indexOf(sport)>=0;}
+(function(){
+  // un exercice / échauffement « Général » ou de la bonne APSA est proposé dans la séance
+  try{const of=libFitsSeance;libFitsSeance=function(x,s){if(x&&(x.kind==='phase'||x.kind==='warm')&&(Array.isArray(x.apsas)&&x.apsas.length)){if(typeof SB_UI!=='undefined'&&SB_UI.allSport)return true;if(!s)return true;return wapsFits(x,s.sport||CFG.apsa);}return of.apply(this,arguments);};}catch(e){}
+  try{const oo=libcOpen;libcOpen=function(kind){const r=oo.apply(this,arguments);try{if(kind==='warm'&&LIBC){LIBC.f.apsas=['general'];libcRender();}}catch(e){}return r;};}catch(e){}
+  try{const oe=libEdit;libEdit=function(id){const r=oe.apply(this,arguments);try{const it=libLoad().find(x=>x.id===id);if(it&&it.kind==='phase'&&LIBC){LIBC.f.apsas=wapsOf(it);libcRender();}}catch(e){}return r;};}catch(e){}
+  try{const os=libcSave;libcSave=function(){const L=LIBC;const isW=L&&L.kind==='warm';const aps=isW?(L.f.apsas||['general']).slice():null;const before={};libLoad().forEach(x=>{before[x.id]=1;});const wt=isW?L.f.wtype:null;
+      const r=os.apply(this,arguments);
+      try{if(isW){const a=libLoad();const it=L.editId?a.find(x=>x.id===L.editId):a.filter(x=>!before[x.id]&&x.kind==='phase').pop();
+        if(it){it.apsas=aps;it.apsa=aps.indexOf('general')>=0?'':aps.map(k=>k.charAt(0).toUpperCase()+k.slice(1)).join(' / ');libSave(a);try{libRefresh();}catch(e){}
+          if(WC&&WC.waitNew&&!L.editId){const t=WC.waitNew;WC.waitNew=null;(WC.secs[t]=WC.secs[t]||[]).push(wcCopy(it,t));wcRender();}}}}catch(e){console.warn('waps',e);}
+      return r;};}catch(e){}
+  // échauffement complet remis dans la séance : consignes des phases aussi
+  try{const oi=libInsert;libInsert=function(id){const it=libLoad().find(x=>x.id===id);const r=oi.apply(this,arguments);
+      try{if(it&&it.kind==='warm'&&it.notes){const s=getActiveSeance();if(s){const e=warmEnsure(s);Object.keys(it.notes).forEach(t=>{const v=String(it.notes[t]||'').trim();if(!v)return;const sc=e.secs.find(x=>x.type===t);if(sc){if(!sc.notes||typeof sc.notes!=='object')sc.notes={};if(!String(sc.notes.all||'').trim())sc.notes.all=v;}});saveSeances();renderSeanceTab();}}}catch(e){}
+      return r;};}catch(e){}
+})();
+// ── compositeur d'échauffement (Biblio) ──
+let WC=null;
+function wcCopy(x,t){const c=JSON.parse(JSON.stringify({titre:x.titre||'Exercice',desc:x.desc||'',image:x.image||null,video:x.video||null,anim:x.anim||null,criteres:x.criteres||[],sub:x.sub||''}));c.wtype=t;c.src=x.id||'';return c;}
+function wcOpen(id){const it=id?libLoad().find(x=>x.id===id&&x.kind==='warm'):null;
+  WC={id:it?it.id:null,titre:it?it.titre:'Mon échauffement',desc:it?(it.desc||''):'',apsas:it?wapsOf(it):['general'],secs:{},notes:Object.assign({},(it&&it.notes)||{}),pick:null,q:''};
+  if(it){(it.phases||[]).forEach(p=>{const t=WARM_TYPES.some(w=>w.id===p.wtype)?p.wtype:'p3';(WC.secs[t]=WC.secs[t]||[]).push(JSON.parse(JSON.stringify(p)));});
+    (it.secs||[]).forEach(sc=>{const v=sc&&sc.notes&&sc.notes.all;if(v&&!WC.notes[sc.type])WC.notes[sc.type]=v;});}
+  wcRender();}
+function wcClose(){const o=E(['wc','ov'].join('-'));if(o)o.remove();WC=null;}
+function wcThumb(x){const img=x.image,an=x.anim,vd=x.video;return img?'<img src="'+img+'" alt="">':(an?thumbImgHtml(an,'🔥'):(vd?vidThumbHtml(vd):'<span>🔥</span>'));}
+function wcRender(){if(!WC)return;let o=E(['wc','ov'].join('-'));if(!o){o=document.createElement('div');o.id=['wc','ov'].join('-');o.className='wc-ov';document.body.appendChild(o);}
+  const keep=o.scrollTop;const D='<'+'div',C='</'+'div>';
+  let h=D+' class="wc-box">'+D+' style="display:flex;gap:8px;align-items:center;margin-bottom:6px;"><b style="flex:1;font-size:1.05rem;">🔥 '+(WC.id?'Échauffement enregistré':'Composer un échauffement')+'</b><button type="button" class="btn-xs" style="background:#15803d;color:#fff;padding:8px 14px;" onclick="wcSave()">💾 Enregistrer dans la Biblio</button><button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="wcClose()">✕</button>'+C
+    +'<label class="remed-edit-label">Nom</label><input class="remed-edit-field" value="'+esc(WC.titre)+'" oninput="WC.titre=this.value">'
+    +warmApsaChips(WC.apsas,'WC.apsas','wcRender()')
+    +'<label class="remed-edit-label">Description (facultatif)</label><textarea class="remed-edit-field" rows="2" oninput="WC.desc=this.value">'+esc(WC.desc)+'</textarea>';
+  WARM_TYPES.forEach(t=>{const L=WC.secs[t.id]||[];
+    h+=D+' class="wc-sec"'+(/^(av|ex|x2|x3)$/.test(t.id)?' style="border-left-color:#a855f7"':'')+'><h4>'+t.ico+' '+esc(t.t)+' <small style="font-weight:400;color:var(--dim2);">('+L.length+')</small></h4>'
+      +'<textarea placeholder="Consigne de la phase (ex : circuit 5 × 30 s, 15 s de récupération)" oninput="WC.notes[\''+t.id+'\']=this.value">'+esc(WC.notes[t.id]||'')+'</textarea>'
+      +D+' class="wc-exs">'+L.map((x,i)=>D+' class="wc-ex">'+D+' class="th">'+wcThumb(x)+C+D+' class="nm">'+esc(String(x.titre||''))+C+D+' class="ac"><button type="button" onclick="wcMove(\''+t.id+'\','+i+',-1)">◀</button><button type="button" onclick="wcMove(\''+t.id+'\','+i+',1)">▶</button><button type="button" class="x" onclick="wcDel(\''+t.id+'\','+i+')">✕</button>'+C+C).join('')+C
+      +'<button type="button" class="btn-xs" style="background:#b45309;color:#fff;" onclick="WC.pick=WC.pick===\''+t.id+'\'?null:\''+t.id+'\';wcRender()">'+(WC.pick===t.id?'▲ Fermer':'＋ Ajouter un exercice')+'</button> <button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="wcNew(\''+t.id+'\')">✎ Créer un nouvel exercice</button>';
+    if(WC.pick===t.id){const q=stripAccents(String(WC.q||'')).toLowerCase();
+      const P=libLoad().filter(x=>x.kind==='phase').filter(x=>{const A=wapsOf(x);return WC.apsas.indexOf('general')>=0||A.indexOf('general')>=0||A.some(k=>WC.apsas.indexOf(k)>=0);}).filter(x=>!q||stripAccents(String(x.titre||'')+' '+(x.desc||'')).toLowerCase().indexOf(q)>=0);
+      P.sort((a,b)=>((a.wtype===t.id)?0:1)-((b.wtype===t.id)?0:1)||(b.stars||0)-(a.stars||0));
+      h+=D+' class="wc-pick"><input type="search" class="remed-edit-field" style="margin:0 0 6px;" placeholder="🔍 rechercher un exercice" value="'+esc(WC.q||'')+'" onchange="WC.q=this.value;wcRender()">'
+        +D+' class="wc-exs">'+(P.map(x=>D+' class="wc-ex" data-id="'+esc(x.id)+'" onclick="wcAdd(\''+t.id+'\',this.dataset.id)" title="Ajouter">'+D+' class="th">'+wcThumb(x)+C+D+' class="nm">'+esc(String(x.titre||''))+(x.wtype&&x.wtype!==t.id?' <small style="opacity:.6;font-weight:400;">('+esc(warmTypeDef(x.wtype).e||'')+')</small>':'')+C+C).join('')||'<span class="cc-dim">Aucun exercice dans la Biblio : « ✎ Créer un nouvel exercice ».</span>')+C+C;}
+    h+=C;});
+  o.innerHTML=h+C;o.scrollTop=keep;}
+function wcAdd(t,id){const x=libLoad().find(y=>y.id===id);if(!x||!WC)return;(WC.secs[t]=WC.secs[t]||[]).push(wcCopy(x,t));wcRender();}
+function wcDel(t,i){if(!WC||!WC.secs[t])return;WC.secs[t].splice(i,1);wcRender();}
+function wcMove(t,i,d){const L=WC&&WC.secs[t];if(!L)return;const j=i+d;if(j<0||j>=L.length)return;const x=L[i];L[i]=L[j];L[j]=x;wcRender();}
+function wcNew(t){if(!WC)return;WC.waitNew=t;libcOpen('warm');if(LIBC){LIBC.f.wtype=t;LIBC.f.apsas=WC.apsas.slice();libcRender();}}
+function wcSave(){if(!WC)return;const tit=String(WC.titre||'').trim()||'Mon échauffement';const ph=[];WARM_TYPES.forEach(t=>(WC.secs[t.id]||[]).forEach(x=>{const c=JSON.parse(JSON.stringify(x));c.wtype=t.id;ph.push(c);}));
+  if(!ph.length){alert('Ajoute au moins un exercice.');return;}
+  const aps=WC.apsas.slice();const a=libLoad();const old=WC.id?a.find(x=>x.id===WC.id):null;
+  const item=Object.assign(old||{id:'lib-'+Date.now()+'-'+Math.floor(Math.random()*1000),kind:'warm',date:Date.now(),oe:'',oeLab:'',cp:''},{titre:tit,desc:WC.desc||'',phases:ph,notes:Object.assign({},WC.notes),apsas:aps,apsa:aps.indexOf('general')>=0?'':aps.map(k=>k.charAt(0).toUpperCase()+k.slice(1)).join(' / ')});
+  delete item.secs;if(!old)a.push(item);libSave(a);WC.id=item.id;try{libRefresh();}catch(e){}try{renderLibTab();}catch(e){}
+  toast2('💾 « '+tit+' » enregistré ('+ph.length+' exercices)');wcClose();}
 </script>
 </body>
 </html>
