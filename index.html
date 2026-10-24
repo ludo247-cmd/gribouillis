@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v250</title>
+<title>Gribouillis EPS v251</title>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
 /* ── THÈME SOMBRE UNIQUEMENT ── */
@@ -13865,7 +13865,7 @@ function libcRender(){
     h+='<label class="remed-edit-label">🎯 Critères de réussite</label>';
     f.crits.forEach((c,i)=>{h+='<div style="display:flex;gap:6px;align-items:center;margin-bottom:4px;"><input class="remed-edit-field" style="flex:2;margin-top:0;" placeholder="Ex : ballons conservés" value="'+esc(c.label)+'" oninput="libcCrit('+i+',\'label\',this.value)"><input class="remed-edit-field" type="number" style="flex:0 0 60px;margin-top:0;" value="'+esc(String(c.cible))+'" oninput="libcCrit('+i+',\'cible\',parseFloat(this.value)||0)"><label style="font-size:.66rem;white-space:nowrap;"><input type="checkbox"'+(c.collectif?' checked':'')+' onchange="libcCrit('+i+',\'collectif\',this.checked)"> 👥 équipe</label><button type="button" class="btn-xs red" onclick="libcCritDel('+i+')">✕</button></div>';});
     h+='<div style="display:flex;gap:6px;flex-wrap:wrap;"><button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="libcCritAdd(false)">+ Critère individuel</button><button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="libcCritAdd(true)">+ Critère collectif</button></div>';
-    h+='<label class="remed-edit-label">👥 Nombre de joueurs nécessaires (minimum)</label><input class="remed-edit-field" type="number" min="0" max="40" style="max-width:120px;" placeholder="Ex : 6" value="'+esc(f.minJ||'')+'" oninput="libcSet(\'minJ\',this.value)">';
+    h+='<label class="remed-edit-label">👥 Nombre de joueurs nécessaires (minimum)</label><input class="remed-edit-field" type="number" min="0" max="40" style="max-width:120px;" placeholder="Ex : 6" value="'+esc(String(f.minJ||''))+'" oninput="libcSet(\'minJ\',this.value)">';
     h+='<label class="remed-edit-label">🎭 Rôles</label><div class="remed-chip-row">'+EXO_ROLE_SUGG.concat(f.roles.filter(x=>EXO_ROLE_SUGG.indexOf(x)<0)).map(l=>'<div class="remed-chip'+(f.roles.indexOf(l)>=0?' selected':'')+'" style="flex:0 1 auto;padding:4px 9px;font-size:.72rem;" data-l="'+esc(l)+'" onclick="libcRoleToggle(this.dataset.l)">'+esc(l)+'</div>').join('')+'<div class="remed-chip" style="flex:0 1 auto;padding:4px 9px;font-size:.72rem;" onclick="libcRoleAdd()">+ Autre</div></div>';
     h+=terrainSelectHtml(f.terrain||'','libcSet(\'terrain\',this.value);libcRender();'); // v185
   }
@@ -13946,7 +13946,7 @@ function libEdit(id){
   }
   const r=libcRefs().find(x=>(x.label||'')===it.apsa);
   const cfg=it.cfg||{};
-  LIBC={kind:it.kind==='match'?'match':'remed',editId:id,openK:{},f:{objectif:it.objectif||'',minJ:it.minJ||'',oes:[it.oe].concat(it.oeAlso||[]).filter(Boolean),tags:(it.tags||[]).slice(),mode:(r&&r.custom)?'ref':'apsa',titre:it.titre||'',desc:it.desc||'',video:it.video||'',anim:it.anim||null,image:it.image||null,ref:r?r.id:'',oe:it.oe||'',cps:[it.cp].concat(it.cpAlso||[]).filter(Boolean),regles:[],crits:(it.criteres||[]).map(c=>({label:c.label||'',cible:c.cible||1,collectif:!!c.collectif})),roles:(it.roles||[]).slice(),profile:it.profile||cfg.profile||'',terrain:it.terrain||cfg.terrain||'',aslinks:(it.principes||[]).slice(),format:it.desc||cfg.format||'',points:(cfg.points||[]).join('\n'),regs:(cfg.emblematiques||[]).join('\n'),aide:(cfg.etayage||[]).join('\n'),phase:'',short:'',label:'',principes:'',newLabel:''}};
+  LIBC={kind:it.kind==='match'?'match':'remed',editId:id,openK:{},f:{objectif:String(it.objectif||''),minJ:it.minJ?String(it.minJ):'',oes:[it.oe].concat(it.oeAlso||[]).filter(Boolean),tags:(it.tags||[]).slice(),mode:(r&&r.custom)?'ref':'apsa',titre:it.titre||'',desc:it.desc||'',video:it.video||'',anim:it.anim||null,image:it.image||null,ref:r?r.id:'',oe:it.oe||'',cps:[it.cp].concat(it.cpAlso||[]).filter(Boolean),regles:[],crits:(it.criteres||[]).map(c=>({label:c.label||'',cible:c.cible||1,collectif:!!c.collectif})),roles:(it.roles||[]).slice(),profile:it.profile||cfg.profile||'',terrain:it.terrain||cfg.terrain||'',aslinks:(it.principes||[]).slice(),format:it.desc||cfg.format||'',points:(cfg.points||[]).join('\n'),regs:(cfg.emblematiques||[]).join('\n'),aide:(cfg.etayage||[]).join('\n'),phase:'',short:'',label:'',principes:'',newLabel:''}};
   libcRender();
 }
 function libSaveMatchFromSeance(key){
