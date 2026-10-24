@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v233</title>
+<title>Gribouillis EPS v234</title>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
 /* ── THÈME SOMBRE UNIQUEMENT ── */
@@ -827,6 +827,23 @@ body.sb-dragging{user-select:none;cursor:grabbing;}
 .pl-fs .pl-it{font-size:1rem;}
 .pl-fs .pl-ex{font-size:1rem;}
 .sf-cat{display:flex;gap:6px;flex-wrap:wrap;}
+.sb-grp{display:inline-flex;align-items:center;gap:6px;border:2px solid var(--gc,#64748b);border-left-width:8px;border-radius:10px;padding:7px 11px;margin:4px;background:#0f172a;color:var(--text);font-weight:700;font-size:.82rem;cursor:grab;user-select:none;}
+.sb-grp small{font-weight:400;color:var(--dim2);}
+.sb-grp.used{opacity:.75;}
+.sb-conf{background:rgba(251,191,36,.14);border:1px solid #f59e0b;color:#fde68a;border-radius:8px;padding:5px 7px;font-size:.68rem;margin-bottom:5px;}
+.org{margin-top:12px;border:1px solid var(--border);border-radius:14px;padding:10px;background:rgba(15,23,42,.5);}
+.org-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;margin-top:8px;}
+.org-col{border:2px solid var(--gc,#64748b);border-radius:12px;padding:8px;background:#0f172a;}
+.org-col h4{margin:0 0 4px;color:var(--gc);display:flex;align-items:center;gap:6px;font-size:.92rem;}
+.org-row{display:flex;gap:8px;padding:5px 0;border-top:1px solid rgba(148,163,184,.15);font-size:.78rem;}
+.org-row .t{min-width:44px;font-weight:800;color:#93c5fd;}
+.org-row.off{opacity:.45;}
+.org-row .x{color:#e2e8f0;}
+.org-fs{position:fixed;inset:0;z-index:9600;background:#0b1220;color:#fff;overflow:auto;padding:20px;}
+.org-fs .org-row{font-size:1.15rem;padding:10px 0;}
+.org-fs .org-row .t{min-width:80px;}
+.sb-cats{font-size:.76rem;color:var(--dim2);margin:0 0 6px;display:flex;gap:4px;align-items:center;flex-wrap:wrap;}
+.sb-cats input{width:auto;padding:2px 4px;font-size:.76rem;}
 .fit-vid{display:block;max-width:100%;max-height:calc(100vh - 170px);margin:8px auto;border-radius:10px;background:#000;}
 .pres-vids h5{margin:12px 0 2px;font-size:.9rem;color:#93c5fd;}
 .ok-list{margin:0;padding:0;list-style:none;}
@@ -17270,7 +17287,7 @@ function sbPaletteHtml(s){
   const rows=sbFilterRows((SB_UI.all||!prio.length)?all:prio);
   const tab=SB_UI.pal||'exo';
   let h='<div class="sb-pal"><div class="sb-pal-head"><span class="sb-tile" data-drag="new:match" onclick="sbTile(\'match\')">⚽ Match</span><span class="sb-tile" data-drag="new:remediation" onclick="sbTile(\'remediation\')">🧭 Étape d\'entraînement</span>'
-    +'<span class="sb-pal-tabs">'+[['exo','🏃 Situations'],['warm','🔥 Échauffements'],['fps','⚽ FPS']].map(t=>'<button type="button" class="'+(tab===t[0]?'on':'')+'" onclick="SB_UI.pal=\''+t[0]+'\';renderSeanceTab()">'+t[1]+'</button>').join('')+'</span>'
+    +'<span class="sb-pal-tabs">'+[['grp','👥 Groupes'],['exo','🏃 Situations'],['warm','🔥 Échauffements'],['fps','⚽ FPS']].map(t=>'<button type="button" class="'+(tab===t[0]?'on':'')+'" onclick="SB_UI.pal=\''+t[0]+'\';renderSeanceTab()">'+t[1]+'</button>').join('')+'</span>'
     +''
     +'<label class="sf-allap" title="Montrer aussi les situations, échauffements et FPS des autres APSA"><input type="checkbox"'+(SB_UI.allSport?' checked':'')+' onchange="SB_UI.allSport=this.checked;renderSeanceTab()"> autres APSA</label>'
     +'<span style="flex:1;"></span>';
@@ -20045,15 +20062,108 @@ function planEnable(){const s=getActiveSeance();if(!s)return;planInit(s);saveSea
   try{const o=createSeance;createSeance=function(){
     const cats=[...document.querySelectorAll('.seance-cat-cb:checked')].map(x=>x.value);const allCats=document.querySelectorAll('.seance-cat-cb').length;const before=(SEANCES||[]).length;
     const r=o.apply(this,arguments);
-    try{const s=getActiveSeance();if(s&&(SEANCES||[]).length>before&&allCats){s.categories=cats;s.categorie=cats.join(' + ');if(cats.length>1||planShouldShow(s))planInit(s,cats);saveSeances();renderSeanceTab();}}catch(e){console.warn('plan create',e);}
+    try{const s=getActiveSeance();if(s&&(SEANCES||[]).length>before&&allCats){s.categories=cats;s.categorie=cats.join(' + ');saveSeances();renderSeanceTab();}}catch(e){console.warn('plan create',e);}
     return r;};}catch(e){}
   try{const o2=renderSeanceTab;renderSeanceTab=function(){const r=o2.apply(this,arguments);
     try{const s=getActiveSeance();const host=E('seance-tab-content');if(s&&host&&SEANCE_STATE.mode!=='eleve'){
       let ph=host.querySelector('.pl-host');
-      if(s.plan||planShouldShow(s)){if(!ph){ph=document.createElement('div');ph.className='pl-host';const first=host.firstElementChild;if(first&&first.nextSibling)host.insertBefore(ph,first.nextSibling);else host.appendChild(ph);}
+      if(ph)ph.remove();if(false){if(!ph){ph=document.createElement('div');ph.className='pl-host';const first=host.firstElementChild;if(first&&first.nextSibling)host.insertBefore(ph,first.nextSibling);else host.appendChild(ph);}
         ph.innerHTML=s.plan?planHtml(s):'<div class="pl-card"><b>🗂 Plan en couloirs</b> <span class="cc-dim">— garçons / filles en parallèle, horaires décalés, groupes placés bloc par bloc.</span> <button type="button" class="btn-xs green" onclick="planEnable()">Organiser cette séance en couloirs</button></div>';}
     }}catch(e){console.warn('plan render',e);}
     return r;};}catch(e){}
+})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v234 — GROUPES EN GLISSER-DÉPOSER DANS LE DÉROULÉ
+// 👥 Groupes (palette) → glisser sur une étape : le groupe y entre ; un 2e groupe
+// = un atelier en parallèle. Les situations / FPS se glissent sous chaque groupe.
+// Conflit signalé si un élève est dans 2 ateliers en même temps.
+// En dessous : l'organisation par groupe (colonnes) se construit toute seule.
+// ══════════════════════════════════════════════════════════════════════
+function sbChip(s,id){return seanceGroupChips(s).find(g=>g.id===id)||null;}
+function sbAtMembers(s,key,akey){const base=seanceStepBase(key);const chips=seanceGroupChips(s);const set={};
+  atelierGroups(s,akey,base).forEach(id=>{const g=chips.find(x=>x.id===id);(g&&g.members||[]).forEach(n=>{set[n]=1;});});
+  atelierEleves(s,akey,base).forEach(n=>{set[n]=1;});return Object.keys(set);}
+function sbConflicts(s,key){const ats=parAteliers(s,key);if(ats.length<2)return [];const cnt={};
+  ats.forEach(a=>sbAtMembers(s,key,a.key).forEach(n=>{cnt[n]=(cnt[n]||0)+1;}));return Object.keys(cnt).filter(n=>cnt[n]>1);}
+function sbUsedGroupIds(s){const u={};(s.steps||[]).forEach(st=>{const b=seanceStepBase(st.key);if(b!=='match'&&b!=='remediation')return;parAteliers(s,st.key).forEach(a=>atelierGroups(s,a.key,b).forEach(id=>{u[id]=1;}));});return u;}
+function sbGroupsPalHtml(s){
+  const C=seanceGroupChips(s);const used=sbUsedGroupIds(s);
+  let h='<div class="sb-meta" style="margin:4px 0;">Glissez un groupe sur une étape (Match ou Entraînement). Un 2<sup>e</sup> groupe sur la même étape = atelier en parallèle. Puis glissez les situations / FPS sous chaque groupe.</div><div>';
+  h+=C.length?C.map(g=>'<span class="sb-grp'+(used[g.id]?' used':'')+'" style="--gc:'+esc(g.color||'#64748b')+'" data-drag="grp:'+esc(g.id)+'" onclick="sbGrpTap(this)" title="Glisser sur une étape (ou toucher pour choisir l\'étape)">'+esc(String(g.label))+' <small>'+(g.members||[]).length+(g.auto?' · '+esc(g.facet||''):'')+'</small>'+(used[g.id]?' ✓':'')+'</span>').join(''):'<span class="sb-meta">Aucun groupe : générez-les dans le bloc Groupes.</span>';
+  return h+'</div><div style="margin-top:6px;"><button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="planGoGroups()">🎲 Générer / ✎ modifier les groupes</button></div>';
+}
+function sbAtAdd(s,key){if(!s.par||typeof s.par!=='object')s.par={};const L=s.par[key]||(s.par[key]=[]);const id=String(L.reduce((m,x)=>Math.max(m,+x||0),1)+1);L.push(id);const ak=key+'~'+id;
+  if(seanceStepBase(key)==='match'){if(!s.matchCfg||typeof s.matchCfg!=='object')s.matchCfg={};const base=JSON.parse(JSON.stringify(matchCfgOf(s,key)));base.groupes=[];base.scoreOnly=true;s.matchCfg[ak]=base;}return ak;}
+function sbAtGroupAdd(s,key,ak,gid){const base=seanceStepBase(key);let arr;if(base==='match'){const c=matchCfgEdit(ak);arr=c.groupes||(c.groupes=[]);}else{if(!s.parGroups||typeof s.parGroups!=='object')s.parGroups={};arr=s.parGroups[ak]||(s.parGroups[ak]=[]);}if(arr.indexOf(gid)<0)arr.push(gid);}
+// dépose le groupe gid sur l'atelier ak (ou sur l'étape key)
+function sbGroupDrop(gid,key,ak,forceSame){const s=getActiveSeance();if(!s)return;const base=seanceStepBase(key);if(base!=='match'&&base!=='remediation')return;
+  const ats=parAteliers(s,key);ak=ak||key;
+  const full=x=>atelierGroups(s,x,base).length||atelierEleves(s,x,base).length;
+  if(ats.some(a=>atelierGroups(s,a.key,base).indexOf(gid)>=0)){toast2('Ce groupe est déjà dans cette étape.');return;}
+  if(!full(ak))sbAtGroupAdd(s,key,ak,gid);
+  else if(forceSame)sbAtGroupAdd(s,key,ak,gid);
+  else{const empty=ats.find(a=>!full(a.key));if(empty)sbAtGroupAdd(s,key,empty.key,gid);else if(ats.length<6){const nk=sbAtAdd(s,key);sbAtGroupAdd(s,key,nk,gid);}else{toast2('6 ateliers maximum par étape.');return;}}
+  saveSeances();renderSeanceTab();
+  const cf=sbConflicts(s,key);if(cf.length)toast2('⚠ '+cf.length+' élève'+(cf.length>1?'s':'')+' dans 2 ateliers en même temps : '+cf.slice(0,5).join(', ')+(cf.length>5?'…':''));
+}
+function toast2(m){let t=document.getElementById('grib'+'-toast2');if(!t){t=document.createElement('div');t.id=['grib','toast2'].join('-');t.style.cssText='position:fixed;left:50%;bottom:90px;transform:translateX(-50%);z-index:9999;background:#0f172a;color:#fff;border:1px solid #f59e0b;border-radius:10px;padding:9px 13px;font-size:.85rem;max-width:min(560px,calc(100vw - 32px));box-shadow:0 8px 24px rgba(0,0,0,.4);';document.body.appendChild(t);}t.textContent=m;t.style.display='block';clearTimeout(t._t);t._t=setTimeout(()=>{t.style.display='none';},4200);}
+function sbGrpTap(el){if(Date.now()-SB_JUST<350)return;const s=getActiveSeance();if(!s)return;const gid=el.dataset.drag.slice(4);const g=sbChip(s,gid);
+  const L=(s.steps||[]).filter(st=>{const b=seanceStepBase(st.key);return b==='match'||b==='remediation';});
+  const o=document.createElement('div');o.className='lib-pick-ov';o.id=['sbg','ov'].join('-');o.onclick=e=>{if(e.target===o)o.remove();};
+  o.innerHTML='<'+'div class="lib-pick-box" style="max-width:420px;"><b>👥 '+esc(g?g.label:'Groupe')+' → quelle étape ?</b>'+L.map(st=>{const tm=seanceStepTimes(s)[st.key];const d=seanceStepDef(st.key);return '<button type="button" class="qj-team" data-k="'+esc(st.key)+'" onclick="document.getElementById(\'sbg-ov\').remove();sbGroupDrop(\''+esc(gid)+'\',this.dataset.k)"><span>'+d.ico+'</span><span class="qj-n">'+esc(d.label)+seanceStepNum(s,st.key)+'</span>'+(tm?'<span class="cc-dim">'+tm.start+'</span>':'')+'</button>';}).join('')
+    +'<button type="button" class="qj-team" onclick="document.getElementById(\'sbg-ov\').remove();sbGroupNewStep(\''+esc(gid)+'\')"><span>＋</span><span class="qj-n">Nouvelle étape d\'entraînement</span></button><button type="button" class="btn-xs" style="background:#334155;color:#fff;margin-top:8px;" onclick="document.getElementById(\'sbg-ov\').remove()">Annuler</button>'+calEndHtml();
+  document.body.appendChild(o);}
+function sbGroupNewStep(gid,idx){const s=getActiveSeance();if(!s)return;const fi=s.steps.findIndex(x=>x.key==='fin');const k=sbInsertStep('remediation',idx!=null?idx:(fi<0?s.steps.length:fi));if(!k)return;sbAtGroupAdd(s,k,k,gid);saveSeances();renderSeanceTab();}
+// ── organisation par groupe (colonnes automatiques) ──
+function orgGroups(s){const used=sbUsedGroupIds(s);return seanceGroupChips(s).filter(g=>used[g.id]);}
+function orgRows(s,g){const tms=seanceStepTimes(s);const mem=g.members||[];const rows=[];
+  (s.steps||[]).forEach(st=>{const b=seanceStepBase(st.key),d=seanceStepDef(st.key),tm=tms[st.key];const t=tm?tm.start:'';
+    if(b!=='match'&&b!=='remediation'){rows.push({t,lab:d.ico+' '+d.label,x:'tous ensemble',from:tm&&tm.from});return;}
+    const ats=parAteliers(s,st.key);const any=ats.some(a=>sbAtMembers(s,st.key,a.key).length);
+    if(!any){rows.push({t,lab:d.ico+' '+d.label+seanceStepNum(s,st.key),x:'tous ensemble'+orgContent(s,st.key,st.key,b),from:tm&&tm.from});return;}
+    const mine=ats.map((a,i)=>({a,i,m:sbAtMembers(s,st.key,a.key)})).filter(o=>atelierGroups(s,o.a.key,b).indexOf(g.id)>=0||(mem.length&&mem.filter(n=>o.m.indexOf(n)>=0).length>=mem.length/2));
+    if(!mine.length){rows.push({t,lab:d.ico+' '+d.label+seanceStepNum(s,st.key),x:'— pas dans cette étape',off:true,from:tm&&tm.from});return;}
+    mine.forEach(o=>rows.push({t,lab:d.ico+' '+d.label+seanceStepNum(s,st.key)+(ats.length>1?' · atelier '+String.fromCharCode(65+o.i):''),x:orgContent(s,st.key,o.a.key,b).replace(/^ · /,''),from:tm&&tm.from}));});
+  return rows;}
+function orgContent(s,key,ak,b){if(b==='remediation'){const ex=seanceStepExos(s,ak);return ex.length?' · '+ex.map(r=>'🏃 '+esc(String(r.exo.titre||'Situation'))).join(' / '):' · situation à choisir';}
+  let nm='';try{nm=matchCfgOf(s,ak).nom||'';}catch(e){}return ' · ⚽ '+(nm?esc(String(nm)):'FPS à choisir');}
+function orgLate(s,g,from){if(from==null)return [];return (g.members||[]).filter(n=>{const a=(typeof planArrive==='function')?planArrive(s,n):null;return a===-1||(a!=null&&a>from);});}
+function orgColHtml(s,g,fs){const rows=orgRows(s,g);
+  return '<div class="org-col" style="--gc:'+esc(g.color||'#64748b')+'"><h4>'+esc(String(g.label))+' <small class="cc-dim">'+(g.members||[]).length+'</small><span style="flex:1"></span>'+(fs?'':'<button type="button" class="btn-xs" style="background:#0f766e;color:#fff;" data-g="'+esc(g.id)+'" onclick="orgFull(this.dataset.g)">⛶</button>')+'</h4>'
+    +(fs?'<div style="margin-bottom:8px;font-size:1rem;">'+(g.members||[]).map(n=>esc(n)+(g.leader===n?' 👑':'')).join(' · ')+'</div>':'')
+    +rows.map(r=>{const late=r.off?[]:orgLate(s,g,r.from);return '<div class="org-row'+(r.off?' off':'')+'"><span class="t">'+esc(r.t||'')+'</span><span class="x"><b>'+r.lab+'</b><br>'+r.x+(late.length?'<br><span class="pl-late">⏰ '+late.length+' pas encore arrivé'+(late.length>1?'s':'')+(fs||late.length<=3?' : '+late.map(esc).join(', '):'')+'</span>':'')+'</span></div>';}).join('')+'</div>';}
+function orgHtml(s){const G=orgGroups(s);if(!G.length)return '';
+  return '<div class="org"><b>📋 Organisation par groupe</b> <span class="cc-dim">— se met à jour toute seule d\'après le déroulé ; ⛶ pour l\'afficher en grand aux élèves</span><div class="org-cols">'+G.map(g=>orgColHtml(s,g,false)).join('')+'</div></div>';}
+function orgFull(gid){const s=getActiveSeance();if(!s)return;const G=orgGroups(s);const g=G.find(x=>x.id===gid);if(!g)return;
+  const old=document.getElementById('org'+'-fs');if(old)old.remove();
+  const o=document.createElement('div');o.className='org-fs';o.id=['org','fs'].join('-');
+  o.innerHTML='<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px;"><b style="flex:1;font-size:1.5rem;color:'+esc(g.color||'#fff')+'">'+esc(String(g.label))+'</b>'
+    +G.filter(x=>x.id!==gid).map(x=>'<button type="button" class="btn-xs" style="background:'+esc(x.color||'#334155')+';color:#fff;padding:10px 14px;" data-g="'+esc(x.id)+'" onclick="orgFull(this.dataset.g)">'+esc(String(x.label))+'</button>').join('')
+    +'<button type="button" class="btn-xs" style="background:#334155;color:#fff;padding:10px 14px;" onclick="document.getElementById(\'org-fs\').remove()">✕ Fermer</button></div>'+orgColHtml(s,g,true);
+  document.body.appendChild(o);}
+
+// tous les découpages dans les groupes de la séance (« Groupe 1 (Garçons) »…)
+(function(){try{const o=seanceGroupChips;seanceGroupChips=function(s){const L=o.apply(this,arguments);try{s=s||getActiveSeance();const D=(s&&s.decoupages)||[];if(D.length<2)return L;
+  const tag=d=>' ('+String(d.label||'').split(' · ')[0]+')';const act=D.find(d=>d.id===s.activeDecoup);
+  const out=L.map(g=>(!g.auto&&!g.team&&act&&(act.groupes||[]).some(x=>x.id===g.id))?Object.assign({},g,{label:g.label+tag(act)}):g);
+  const have={};out.forEach(g=>{have[g.id]=1;});
+  D.forEach(d=>(d.groupes||[]).forEach(g=>{if(have[g.id]||!(g.members||[]).length)return;have[g.id]=1;out.push(Object.assign({},g,{label:g.label+tag(d)}));}));
+  return out;}catch(e){return L;}};}catch(e){}})();
+// heure d'arrivée par catégorie (ex. les filles à 17h30)
+function sbCatStartHtml(s){const C=(s.categories||[]).filter(Boolean);if(C.length<2)return '';
+  return '<'+'div class="sb-cats">🕒 Arrivée'+C.map((c,i)=>' · '+esc(c)+' <input type="time" step="300" value="'+esc((s.catStart||{})[c]||'')+'" data-c="'+esc(c)+'" onchange="sbSetCatStart(this.dataset.c,this.value)" aria-label="Arrivée '+esc(c)+'">').join('')+' <small>(vide = début de séance)</small></'+'div>';}
+function sbSetCatStart(c,v){const s=getActiveSeance();if(!s)return;if(!s.catStart)s.catStart={};if(v)s.catStart[c]=v;else delete s.catStart[c];saveSeances();renderSeanceTab();}
+(function(){try{const o=planArrive;planArrive=function(s,name){let a=o.apply(this,arguments);try{const r=rosterOf(name);const cs=s&&s.catStart;if(r&&cs){const k=Object.keys(cs).find(c=>clsNorm(c)===clsNorm(r.categorie||''));const m=k?planMin(cs[k]):null;if(m!=null){if(a==null)a=m;else if(a!==-1)a=Math.max(a,m);}}}catch(e){}return a;};}catch(e){}})();
+(function(){
+  try{const o=sbPalOtherHtml;sbPalOtherHtml=function(s,tab){if(tab==='grp')return sbGroupsPalHtml(s);return o.apply(this,arguments);};}catch(e){}
+  try{const o2=sbCanDrop;sbCanDrop=function(p,drop){if(String(p).indexOf('grp:')===0){const dt=drop.split(':')[0];return dt==='step'||dt==='mstep'||dt==='gap';}return o2.apply(this,arguments);};}catch(e){}
+  try{const o3=sbDo;sbDo=function(p,drop){if(String(p).indexOf('grp:')===0){const gid=p.slice(4),dt=drop.slice(0,drop.indexOf(':')),dv=drop.slice(drop.indexOf(':')+1);
+      if(dt==='gap'){sbGroupNewStep(gid,+dv);return;}const key=dv.split('~')[0];const s=getActiveSeance();const multi=s&&parAteliers(s,key).length>1;sbGroupDrop(gid,key,dv,multi&&dv!==key?false:false);return;}
+    return o3.apply(this,arguments);};}catch(e){}
+  try{const o4=sbStepHtml;sbStepHtml=function(s,st){let h=o4.apply(this,arguments);try{const b=seanceStepBase(st.key);if(b==='match'||b==='remediation'){const tm=seanceStepTimes(s)[st.key];if(tm){const chips=seanceGroupChips(s);const w=[];parAteliers(s,st.key).forEach(a=>atelierGroups(s,a.key,b).forEach(id=>{const g=chips.find(x=>x.id===id);if(!g)return;const L=orgLate(s,g,tm.from);if(L.length)w.push(g.label+' : '+L.length+' pas encore là');}));if(w.length)h=h.replace('<'+'div class="sb-body">','<'+'div class="sb-body"><'+'div class="sb-conf">⏰ '+w.map(esc).join(' · ')+'</'+'div>');}
+      const cf=sbConflicts(s,st.key);if(cf.length)h=h.replace('<'+'div class="sb-body">','<'+'div class="sb-body"><'+'div class="sb-conf">⚠ '+cf.length+' élève'+(cf.length>1?'s':'')+' dans 2 ateliers en même temps : '+cf.slice(0,4).map(esc).join(', ')+(cf.length>4?'…':'')+'</'+'div>');}}catch(e){}return h;};}catch(e){}
+  try{const o5=renderSeanceBuilder;renderSeanceBuilder=function(s){let h=o5.apply(this,arguments);try{const c=sbCatStartHtml(s);if(c)h=h.replace('<'+'div class="sb-track">',c+'<'+'div class="sb-track">');}catch(e){}let x='';try{x=orgHtml(s);}catch(e){console.warn('org',e);}return h+x;};}catch(e){}
 })();
 </script>
 </body>
