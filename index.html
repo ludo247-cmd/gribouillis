@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v243</title>
+<title>Gribouillis EPS v244</title>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
 /* ── THÈME SOMBRE UNIQUEMENT ── */
@@ -7096,6 +7096,8 @@ const SPORT_POSTE_ALIASES={
     'gardien':'GK','goal':'GK','gk':'GK','goalkeeper':'GK',
     'defense centre':'DC','defenseur central':'DC','dc':'DC','defense':'DC','defenseur':'DC','centre':'DC',
     'cotes':'COTES','cote':'COTES','lateral':'COTES','couloir':'COTES',
+    'cote offensif':'COTES','cotes offensifs':'COTES','cote offensive':'COTES','cote off':'COTES','hybride offensif':'COTES','lateral offensif':'COTES',
+    'cote defensif':'COTES','cotes defensifs':'COTES','cote defensive':'COTES','cote def':'COTES','hybride defensif':'COTES','lateral defensif':'COTES',
     'milieu centre':'MC','milieu':'MC','mc':'MC','milieu defensif':'MC','milieu offensif':'MC',
     'attaque':'ATT','attaquant':'ATT','att':'ATT','avant centre':'ATT'
   },
@@ -7116,8 +7118,12 @@ function normalizePoste(raw,sport){
   const k=stripAccents(raw).toLowerCase().trim();
   if(!k)return null;
   const table=SPORT_POSTE_ALIASES[sport]||SPORT_POSTE_ALIASES.football;
-  return table[k]||null;
+  if(table[k])return table[k];
+  if((sport||'football')==='football'&&/(^|\s)(cotes?|lateral|laterale|couloir|hybride|piston)(\s|$)/.test(k))return 'COTES'; // v244 : côté offensif / défensif…
+  return null;
 }
+// v244 : côté offensif (avec les milieux) ou défensif (avec les défenseurs)
+function coteSideOf(raws){for(const r of raws){const k=stripAccents(String(r||'')).toLowerCase();if(!k.trim())continue;if(normalizePoste(r,'football')!=='COTES')continue;if(/off|attaq/.test(k))return 'off';if(/def/.test(k))return 'def';return '';}return '';}
 // Raccourcis dépendants du sport actif (COMPO.sport), avec repli football
 // si un sport inconnu se glissait quelque part.
 function compoRoles(){return SPORT_ROLES[COMPO.sport]||SPORT_ROLES.football;}
@@ -7476,7 +7482,8 @@ function parseCompoCSV(text){
     const roles=iRoles.map(i=>(cols[i]||'').trim()).filter(v=>v&&!/^\d+([.,]\d+)?$/.test(v));
     const finCours={};Object.keys(iFin).forEach(j=>{const v=(cols[iFin[j]]||'').trim();if(v&&v!=='0')finCours[j]=v;});
     let sexe='';if(iSexe!==-1){const sv=stripAccents((cols[iSexe]||'').trim()).toLowerCase();if(/^f/.test(sv))sexe='F';else if(/^(g|m|h)/.test(sv))sexe='M';}
-    roster.push({name:nom,postes,note,categorie,absent,arriveLater,club,roles,finCours,sexe});
+    const cote=(COMPO.sport==='football'||!COMPO.sport)?coteSideOf([iP1,iP2,iP3].map(i=>i!==-1?cols[i]:'')):'';
+    roster.push({name:nom,postes,note,categorie,absent,arriveLater,club,roles,finCours,sexe,cote});
   });
   if(!roster.length)throw new Error('Aucun joueur valide trouvé');
   COMPO.roster=roster;
@@ -19542,13 +19549,14 @@ function genExplain(o){
   return n+' groupes tirés au hasard.';
 }
 const GEN_LAB={2:['Les plus forts','Les plus faibles'],3:['Les plus forts','Niveau moyen','Les plus faibles'],4:['Très forts','Forts','Moyens','Plus faibles']};
-const POSTE_LAB={GK:'Gardiens',DC:'Défenseurs',COTES:'Défenseurs',MC:'Milieux',ATT:'Attaquants'};
+const POSTE_LAB={GK:'Gardiens',DC:'Défenseurs',COTES:'Défenseurs',MC:'Milieux',ATT:'Attaquants',COTES_OFF:'Milieux',COTES_DEF:'Défenseurs'};
+function posteCodeOf(r){const p=((r&&r.postes)||[])[0]||'';if(p==='COTES'&&r.cote==='off')return 'COTES_OFF';if(p==='COTES'&&r.cote==='def')return 'COTES_DEF';return p;}
 function genGroupsRun(){
   const s=getActiveSeance();if(!s)return;const o=GEN_UI;
   const names=groupNamePool(s).filter(n=>{const r=rosterOf(n);return !(r&&r.absent);});
   if(names.length<2){alert('Aucun élève à répartir : choisis d\'abord la classe / les équipes de la séance.');return;}
   if((s.groupes||[]).length&&!confirm('Remplacer les groupes actuels par de nouveaux groupes ?'))return;
-  const info=names.map(n=>{const r=rosterOf(n)||{};return {n:n,note:r.note||3,sx:grpSexe(n),r:Math.random(),po:(r.postes||[])[0]||''};});
+  const info=names.map(n=>{const r=rosterOf(n)||{};return {n:n,note:r.note||3,sx:grpSexe(n),r:Math.random(),po:posteCodeOf(r)};});
   const byNote=(a,b)=>b.note-a.note||a.r-b.r;
   const n=Math.max(2,Math.min(4,o.n));
   const band=(arr,k)=>{const a=arr.slice().sort(byNote),out=[];for(let i=0;i<k;i++)out.push([]);a.forEach((p,i)=>out[Math.min(k-1,Math.floor(i*k/a.length))].push(p));return out;};
@@ -19706,7 +19714,7 @@ function renderSeanceExoConsole(s){
 // ══════════ v212 — filles / garçons / mixte en parallèle, découpages par étape, postes regroupés ══════════
 const POSTE_MAP_DEF={GK:'Gardiens / Attaquants',ATT:'Gardiens / Attaquants',DC:'Défenseurs',MC:'Milieux',COTES:'Milieux'};
 const POSTE_CODE_LAB={DC:'Défenseur(se) central(e)',COTES:'Côtés / latéraux',MC:'Milieu',GK:'Gardien(ne)',ATT:'Attaquant(e)'};
-function posteMap(){let m={};try{m=JSON.parse(localStorage.getItem('grib_poste_map')||'{}')||{};}catch(e){}return Object.assign({},POSTE_MAP_DEF,m);}
+function posteMap(){let m={};try{m=JSON.parse(localStorage.getItem('grib_poste_map')||'{}')||{};}catch(e){}const r=Object.assign({},POSTE_MAP_DEF,m);r.COTES_OFF=r.MC;r.COTES_DEF=r.DC;return r;}
 function setPosteMap(code,v){let m={};try{m=JSON.parse(localStorage.getItem('grib_poste_map')||'{}')||{};}catch(e){}m[code]=String(v||'').trim()||POSTE_MAP_DEF[code];try{localStorage.setItem('grib_poste_map',JSON.stringify(m));}catch(e){}renderSeanceTab();}
 function groupNamePool(s){
   const out=seanceParticipantPool(s).slice();
@@ -19756,7 +19764,7 @@ function genGroupsRun(){
   const s=getActiveSeance();if(!s)return;const o=GEN_UI;if(!o.pop)o.pop=genPopDefault(s);
   const names=genPool(s,o.pop);
   if(names.length<2){alert('Pas assez d\'élèves pour cette sélection ('+names.length+'). Vérifie la colonne Sexe / la catégorie Filles-Garçons du fichier, ou choisis « Mixte ».');return;}
-  const info=names.map(n=>{const r=rosterOf(n)||{};return {n:n,note:r.note||3,sx:grpSexe(n),r:Math.random(),po:(r.postes||[])[0]||''};});
+  const info=names.map(n=>{const r=rosterOf(n)||{};return {n:n,note:r.note||3,sx:grpSexe(n),r:Math.random(),po:posteCodeOf(r)};});
   const byNote=(a,b)=>b.note-a.note||a.r-b.r;
   const n=Math.max(2,Math.min(4,o.n));
   const band=(arr,k)=>{const a=arr.slice().sort(byNote),out=[];for(let i=0;i<k;i++)out.push([]);a.forEach((p,i)=>out[Math.min(k-1,Math.floor(i*k/a.length))].push(p));return out;};
@@ -19827,7 +19835,7 @@ function renderSeanceGroupsBlock(s){
   });
   const pm=posteMap();
   h+='<details style="margin-top:10px;"'+(o.poste?' open':'')+'><summary style="font-size:.74rem;color:var(--dim);cursor:pointer;">Regroupement des postes (pour « Par poste »)</summary><div style="margin:8px 0;font-size:.72rem;color:var(--dim2);">Les postes du fichier sont regroupés ainsi. Écris le même nom pour deux postes pour les mettre ensemble, ou choisis un modèle :</div>'+posteQuickHtml()
-    +Object.keys(POSTE_CODE_LAB).map(c=>'<div style="display:flex;gap:8px;align-items:center;margin:4px 0;"><span style="flex:1;font-size:.78rem;">'+esc(POSTE_CODE_LAB[c])+'</span><input class="remed-edit-field" style="flex:1.4;margin:0;" value="'+esc(pm[c])+'" onchange="setPosteMap(\''+c+'\',this.value)"></div>').join('')+'</details>';
+    +Object.keys(POSTE_CODE_LAB).map(c=>'<div style="display:flex;gap:8px;align-items:center;margin:4px 0;"><span style="flex:1;font-size:.78rem;">'+esc(POSTE_CODE_LAB[c])+'</span><input class="remed-edit-field" style="flex:1.4;margin:0;" value="'+esc(pm[c])+'" onchange="setPosteMap(\''+c+'\',this.value)"></div>').join('')+'<div style="font-size:.72rem;color:var(--dim2);margin:6px 0;">Postes hybrides du fichier : <b>côté offensif</b> → avec « '+esc(pm.MC||'')+' » · <b>côté défensif</b> → avec « '+esc(pm.DC||'')+' »</div></details>';
   h+='<details style="margin-top:10px;"><summary style="font-size:.74rem;color:var(--dim);cursor:pointer;">Autres façons de faire des groupes</summary><div style="display:flex;gap:6px;flex-wrap:wrap;margin:8px 0;">'
     +'<button class="btn-xs" style="background:#0f766e;color:#fff;" onclick="importCompoTeamsAsGroups()">🧩 Équipes de Composition</button>'
     +'<button class="btn-xs" style="background:#0f766e;color:#fff;" onclick="importCompoRolesAsGroups()">🧩 Postes de Composition</button>'
@@ -19908,7 +19916,7 @@ function genGroupsRun(){
   const s=getActiveSeance();if(!s)return;const o=GEN_UI;if(!o.pop)o.pop=genPopDefault(s);
   const names=genPool(s,o.pop);
   if(names.length<2){alert('Pas assez d\'élèves pour cette sélection ('+names.length+'). Vérifie la colonne Sexe / la catégorie Filles-Garçons du fichier, ou choisis « Mixte ».');return;}
-  const info=names.map(n=>{const r=rosterOf(n)||{};return {n:n,note:r.note||3,sx:grpSexe(n),r:Math.random(),po:(r.postes||[])[0]||''};});
+  const info=names.map(n=>{const r=rosterOf(n)||{};return {n:n,note:r.note||3,sx:grpSexe(n),r:Math.random(),po:posteCodeOf(r)};});
   const byNote=(a,b)=>b.note-a.note||a.r-b.r;
   const n=Math.max(2,Math.min(6,o.n));
   const band=(arr,k)=>{const a=arr.slice().sort(byNote),out=[];for(let i=0;i<k;i++)out.push([]);a.forEach((p,i)=>out[Math.min(k-1,Math.floor(i*k/a.length))].push(p));return out;};
@@ -19941,7 +19949,7 @@ function genBlockInfo(s){
   const o=GEN_UI;if(!o.pop)o.pop=genPopDefault(s);
   const names=genPool(s,o.pop),pm=posteMap(),order=[],cnt={};
   ['GK','DC','COTES','MC','ATT'].forEach(c=>{const l=pm[c];if(l&&order.indexOf(l)<0)order.push(l);});
-  names.forEach(n=>{const r=rosterOf(n)||{};const l=pm[(r.postes||[])[0]]||'Polyvalents';cnt[l]=(cnt[l]||0)+1;});
+  names.forEach(n=>{const r=rosterOf(n)||{};const l=pm[posteCodeOf(r)]||'Polyvalents';cnt[l]=(cnt[l]||0)+1;});
   return order.concat(['Polyvalents']).filter(l=>cnt[l]).map(l=>({label:l,count:cnt[l]}));
 }
 function genAuto(B,N){
@@ -19978,7 +19986,7 @@ function genGroupsRun(){
   const s=getActiveSeance();if(!s)return;const o=GEN_UI;if(!o.pop)o.pop=genPopDefault(s);
   const names=genPool(s,o.pop);
   if(names.length<2){alert('Pas assez d\'élèves pour cette sélection ('+names.length+'). Vérifie la colonne Sexe / la catégorie Filles-Garçons du fichier, ou choisis « Mixte ».');return;}
-  const info=names.map(n=>{const r=rosterOf(n)||{};return {n:n,note:r.note||3,sx:grpSexe(n),r:Math.random(),po:(r.postes||[])[0]||''};});
+  const info=names.map(n=>{const r=rosterOf(n)||{};return {n:n,note:r.note||3,sx:grpSexe(n),r:Math.random(),po:posteCodeOf(r)};});
   const byNote=(a,b)=>b.note-a.note||a.r-b.r;
   const n=Math.max(2,Math.min(6,o.n));
   const band=(arr,k)=>{const a=arr.slice().sort(byNote),out=[];for(let i=0;i<k;i++)out.push([]);a.forEach((p,i)=>out[Math.min(k-1,Math.floor(i*k/a.length))].push(p));return out;};
