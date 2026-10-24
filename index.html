@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v238</title>
+<title>Gribouillis EPS v239</title>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
 /* ── THÈME SOMBRE UNIQUEMENT ── */
@@ -872,6 +872,55 @@ body.sb-dragging{user-select:none;cursor:grabbing;}
 .wm-phase{margin:14px 0 6px;}
 .wm-phase h3{margin:0;font-size:1.15rem;}
 .wm-note{background:rgba(250,204,21,.12);border:1px solid rgba(250,204,21,.5);border-radius:10px;padding:8px 10px;margin:6px 0;font-size:.95rem;}
+.asp-head{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:6px;}
+.asp-head b{font-size:1rem;}
+.asp-head input[type=time]{width:auto;padding:3px 5px;}
+.asp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(205px,1fr));gap:8px;align-items:start;}
+.asp-b{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:6px;min-height:70px;}
+.asp-b.fix{border-style:dashed;opacity:.9;}
+.asp-b.over,.asp-at.over,.asp-par.over,.asp-gap.over{outline:3px dashed #facc15;outline-offset:-2px;}
+.asp-bh{display:flex;gap:4px;align-items:center;flex-wrap:wrap;font-size:.76rem;margin-bottom:4px;}
+.asp-bh .t{font-weight:800;color:#93c5fd;}
+.asp-bh b{flex:1 1 90px;font-size:.8rem;line-height:1.15;}
+.asp-bh button{border:none;background:#334155;color:#fff;border-radius:6px;padding:1px 6px;font-size:.72rem;cursor:pointer;}
+.asp-bh button.x{background:#7f1d1d;}
+.asp-at{border:1px dashed #475569;border-radius:9px;padding:5px;margin:4px 0;background:#0f172a;}
+.asp-at .lab{font-size:.62rem;color:var(--dim2);font-weight:800;letter-spacing:.05em;}
+.asp-g{display:inline-flex;align-items:center;gap:3px;border-radius:999px;padding:2px 8px;font-size:.72rem;font-weight:800;margin:2px 2px 2px 0;color:#fff;background:var(--gc,#475569);cursor:grab;user-select:none;-webkit-user-select:none;}
+.asp-ex{display:flex;gap:6px;align-items:center;background:#1e293b;border-radius:7px;padding:3px 5px;margin:3px 0;font-size:.74rem;cursor:grab;user-select:none;-webkit-user-select:none;}
+.asp-ex .th{width:38px;height:26px;border-radius:5px;overflow:hidden;flex:0 0 auto;background:#14532d;display:flex;align-items:center;justify-content:center;font-size:.85rem;}
+.asp-ex .th img{width:100%;height:100%;object-fit:cover;}
+.asp-ex span.n{flex:1;}
+.asp-ex button,.asp-at button.obs{border:none;border-radius:6px;padding:1px 6px;font-size:.68rem;cursor:pointer;}
+.asp-ex button{background:transparent;color:#fca5a5;}
+.asp-at button.obs{background:#1d4ed8;color:#fff;margin-top:3px;}
+.asp-par{border:1px dashed #a855f7;color:#d8b4fe;border-radius:8px;text-align:center;font-size:.7rem;padding:4px;margin-top:4px;cursor:pointer;}
+.asp-empty{font-size:.66rem;color:var(--dim2);}
+.asp-warn{font-size:.66rem;color:#fde68a;background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.5);border-radius:7px;padding:3px 5px;margin:3px 0;}
+.asp-gap{border:1px dashed #475569;border-radius:12px;display:flex;align-items:center;justify-content:center;min-height:70px;color:var(--dim2);font-size:.8rem;cursor:pointer;}
+.asp-pal{margin-top:10px;border-top:1px solid var(--border);padding-top:8px;}
+.asp-pal .tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px;}
+.asp-pal .tabs button{border:1px solid var(--border);border-radius:999px;padding:6px 11px;background:#0f172a;color:var(--text);font-weight:700;cursor:pointer;font-size:.8rem;}
+.asp-pal .tabs button.on{background:#2563eb;border-color:#2563eb;color:#fff;}
+.asp-pal .list{display:flex;gap:6px;flex-wrap:wrap;max-height:260px;overflow:auto;}
+.asp-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px;margin-top:12px;}
+.asp-col{border:2px solid var(--c);border-radius:12px;padding:8px;background:#0f172a;}
+.asp-col h4{margin:0 0 4px;color:var(--c);}
+.asp-li{display:flex;gap:8px;border-top:1px solid rgba(148,163,184,.15);padding:5px 0;font-size:.78rem;}
+.asp-li b.t{min-width:44px;color:#93c5fd;}
+.asp-li.off{opacity:.45;}
+[data-drag]{-webkit-touch-callout:none;}
+.asp-pal{position:sticky;bottom:0;z-index:5;background:var(--card);border-radius:10px;box-shadow:0 -6px 14px rgba(0,0,0,.45);padding:8px 6px 4px;}
+@media (max-width:700px){.asp-pal .list{max-height:22vh;}.asp-pal .cc-dim{display:none;}}
+body.sb-dragging{user-select:none;-webkit-user-select:none;}
+.ael-names{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
+.ael-names button{border:2px solid var(--border);border-radius:999px;padding:10px 16px;background:#0f172a;color:var(--text);font-size:1rem;font-weight:700;cursor:pointer;}
+.ael-step{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px;margin:10px 0;}
+.ael-step h3{margin:0 0 6px;font-size:1.1rem;}
+.ael-step .t{color:#93c5fd;font-weight:800;margin-right:6px;}
+.ael-with{font-size:.9rem;color:#cbd5e1;margin:4px 0 8px;}
+.ael-ex{border-top:1px solid rgba(148,163,184,.2);padding-top:8px;margin-top:8px;}
+.ael-ex video,.ael-ex img{max-width:100%;border-radius:10px;}
 .fit-vid{display:block;max-width:100%;max-height:calc(100vh - 170px);margin:8px auto;border-radius:10px;background:#000;}
 .pres-vids h5{margin:12px 0 2px;font-size:.9rem;color:#93c5fd;}
 .ok-list{margin:0;padding:0;list-style:none;}
@@ -12255,7 +12304,7 @@ function warmSectionsBody(s,sc){
 function addWarmupPhase(secId){
   const s=getActiveSeance();if(!s)return;
   const e=warmEnsure(s);
-  const np={id:'ph-'+Date.now(),titre:'Nouvel atelier',desc:'',image:null,video:null,audio:null,participants:[],criteres:[],scores:{},sec:(typeof secId==='string'&&e.secs.some(x=>x.id===secId))?secId:(e.secs.filter(x=>x.type!=='av'&&x.type!=='ex').slice(-1)[0]||e.secs[e.secs.length-1]).id,sub:''};
+  const np={id:'ph-'+Date.now(),titre:'Nouvel atelier',desc:'',image:null,video:null,audio:null,participants:[],criteres:[],scores:{},sec:(typeof secId==='string'&&e.secs.some(x=>x.id===secId))?secId:(e.secs.filter(x=>x.type!=='av'&&x.type!=='ex'&&x.type!=='x2'&&x.type!=='x3').slice(-1)[0]||e.secs[e.secs.length-1]).id,sub:''};
   e.phases.push(np);WARM_OPEN[np.id]=true;
   saveSeances();renderSeanceTab();
 }
@@ -12614,7 +12663,7 @@ function eleveSetWarmupScore(i,participant,critId,inputEl){
 function renderEleveStepEchauffement(s,st){
   const e=warmEnsure(s);let h='';let cards=''; // v194 : une seule mosaïque, la phase est rappelée sur chaque carte
   e.secs.forEach(sc=>{
-    if(sc.type==='av'||sc.type==='ex')return; // v209 : sections à part (boutons)
+    if(sc.type==='av'||sc.type==='ex'||sc.type==='x2'||sc.type==='x3')return; // v209 : sections à part (boutons)
     const idx=[];e.phases.forEach((ph,i)=>{if(ph.sec===sc.id)idx.push(i);});
     if(!idx.length)return;
     const lbl=warmTypeDef(sc.type).ico+' '+esc(warmTypeDef(sc.type).e);
@@ -20398,7 +20447,7 @@ function elProxy(s){const pop=elMePop(s);if(!pop||!s.proj2||!REMED_CONTENT[s.pro
 // échauffement élève : par phase (nom élève + consigne), seulement ses ateliers
 function renderEleveStepEchauffementV2(s,st){
   const e=warmEnsure(s);const pop=elMePop(s);let h='';
-  e.secs.forEach(sc=>{if(sc.type==='av'||sc.type==='ex')return;
+  e.secs.forEach(sc=>{if(sc.type==='av'||sc.type==='ex'||sc.type==='x2'||sc.type==='x3')return;
     const idx=[];e.phases.forEach((ph,i)=>{if(ph.sec===sc.id&&warmPopOk(ph,pop))idx.push(i);});const note=warmSecNote(sc,pop);
     if(!idx.length&&!note)return;
     h+='<div class="wm-phase"><h3>'+warmTypeDef(sc.type).ico+' '+esc(warmSecLab(sc))+'</h3>'+(note?'<div class="wm-note">⏱ '+esc(note).replace(/\n/g,'<br>')+'</div>':'')+'</div>';
@@ -20426,6 +20475,207 @@ function renderEleveStepEchauffementV2(s,st){
           return x+doneBtn;}}catch(e){console.warn('impose AS',e);}
       return o2.apply(this,arguments);};}catch(e){}
 })();
+
+// ══════════════════════════════════════════════════════════════════════
+// v239 — NOUVEAU DÉROULÉ AS (simple)
+// s.asp.blocks = [{id,kind:'objectif'|'bloc'|'bilan',dur,ats:[{id,groups:[id],exos:[{k:'warm'}|{k:'exo',key}|{k:'lib',id}]}]}]
+// Un atelier : ses groupes font ses exercices (l'un après l'autre). Ateliers d'un bloc = en parallèle.
+// ══════════════════════════════════════════════════════════════════════
+const ASP_UI={tab:'grp',q:''};
+function aspNid(p){return (p||'b')+Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
+function aspRoster(){return (COMPO.roster||[]).filter(r=>r&&r.name!=null&&!r.absent).map(r=>r.name);}
+function aspBase(){const R=aspRoster();const M=R.filter(n=>grpSexe(n)==='M'),F=R.filter(n=>grpSexe(n)==='F');const out=[];
+  if(M.length)out.push({id:'pop-M',label:'Garçons',color:'#2563eb',members:M,base:true});if(F.length)out.push({id:'pop-F',label:'Filles',color:'#db2777',members:F,base:true});return out;}
+function aspChips(s){const B=aspBase();let G=[];try{G=seanceGroupChips(s).filter(g=>!g.auto&&!g.team&&(g.members||[]).length);}catch(e){}return B.concat(G);}
+function aspChip(s,id){return aspChips(s).find(g=>g.id===id)||null;}
+function aspIsAS(s){try{if(!s)return false;if(/(^|[^a-z0-9])as([^a-z0-9]|$)/i.test(String(s.classe||'')))return true;const C=(s.categories||[]).join(' ')+' '+(s.categorie||'');return /fille/i.test(C)&&/gar[cç]/i.test(C);}catch(e){return false;}}
+function aspInit(s){
+  const A=g=>({id:aspNid('a'),groups:g?[g]:[],exos:[]});const w=g=>{const a=A(g);a.exos.push({k:'warm'});return a;};
+  s.asp={blocks:[{id:aspNid(),kind:'objectif',dur:5,ats:[]},{id:aspNid(),kind:'bloc',dur:15,ats:[w('pop-M')]},{id:aspNid(),kind:'bloc',dur:20,ats:[A('pop-M')]},{id:aspNid(),kind:'bloc',dur:20,ats:[A('pop-M')]},
+    {id:aspNid(),kind:'bloc',dur:20,ats:[w('pop-F'),A('pop-M')]},{id:aspNid(),kind:'bloc',dur:20,ats:[A()]},{id:aspNid(),kind:'bloc',dur:20,ats:[A()]},{id:aspNid(),kind:'bilan',dur:10,ats:[]}]};
+  if(!s.start)s.start='16:30';
+  try{const cf=(s.categories||[]).find(c=>/fille/i.test(c));if(cf){if(!s.catStart)s.catStart={};if(!s.catStart[cf])s.catStart[cf]='17:30';}}catch(e){}
+}
+function aspTimes(s){let t=hm2m(s.start||'')||hm2m('16:30');const out={};(s.asp.blocks||[]).forEach(b=>{out[b.id]={a:t,b:t+(+b.dur||0)};t+=(+b.dur||0);});return out;}
+function aspAtMembers(s,at){const set={};(at.groups||[]).forEach(id=>{const g=aspChip(s,id);(g&&g.members||[]).forEach(n=>{set[n]=1;});});return Object.keys(set);}
+function aspArr(s,n){try{const a=planArrive(s,n);return a;}catch(e){return null;}}
+function aspPresent(s,from){return aspRoster().filter(n=>{const a=aspArr(s,n);return !(a!=null&&a>0&&a>from);});}
+function aspExInfo(ex){if(!ex)return null;
+  if(ex.k==='warm')return {titre:'Échauffement',ico:'🔥',kind:'warm'};
+  if(ex.k==='exo'){let r=null;try{r=exoByKey(ex.key);}catch(e){}return r?{titre:r.exo.titre||'Situation',ico:'🏃',kind:'exo',src:r.exo,cpPath:r.cpPath,minJ:r.exo.minJ}:null;}
+  if(ex.k==='lib'){const it=libLoad().find(x=>x.id===ex.id);return it?{titre:it.titre||'Sans titre',ico:it.kind==='match'?'⚽':(it.kind==='warm'||it.kind==='phase')?'🔥':'🏃',kind:it.kind==='match'?'fps':it.kind,src:it,minJ:it.minJ}:null;}
+  return null;}
+function aspThumb(inf){if(!inf)return '<span>❔</span>';const x=inf.src||{};const ph=(x.phases||[])[0]||{};
+  if(x.image||ph.image)return '<img src="'+(x.image||ph.image)+'" alt="" draggable="false">';
+  const an=x.anim||ph.anim;if(an)return thumbImgHtml(an,inf.ico);return '<span>'+inf.ico+'</span>';}
+function aspLabel(s,b){if(b.kind==='objectif')return '📋 Objectif';if(b.kind==='bilan')return '🏁 Bilan';
+  const T=[];(b.ats||[]).forEach(a=>(a.exos||[]).forEach(e=>{const i=aspExInfo(e);if(i&&T.indexOf(i.titre)<0)T.push(i.titre);}));
+  return T.length?(T.length>2?T.slice(0,2).join(' · ')+' +'+(T.length-2):T.join(' · ')):'Bloc';}
+function aspAlerts(s,b,tm){if(b.kind!=='bloc')return '';const cnt={};(b.ats||[]).forEach(a=>aspAtMembers(s,a).forEach(n=>{cnt[n]=(cnt[n]||0)+1;}));
+  const pres=aspPresent(s,tm.a);const none=pres.filter(n=>!cnt[n]);const two=Object.keys(cnt).filter(n=>cnt[n]>1);let h='';
+  if(none.length)h+='<'+'div class="asp-warn">⚠ '+none.length+' sans rien de prévu'+(none.length<=4?' : '+none.map(esc).join(', '):'')+'</'+'div>';
+  if(two.length)h+='<'+'div class="asp-warn">⚠ '+two.length+' dans 2 ateliers'+(two.length<=4?' : '+two.map(esc).join(', '):'')+'</'+'div>';
+  (b.ats||[]).forEach((a,i)=>{const n=aspAtMembers(s,a).filter(x=>pres.indexOf(x)>=0).length;(a.exos||[]).forEach(e=>{const inf=aspExInfo(e);if(inf&&inf.minJ&&(a.groups||[]).length&&n<inf.minJ)h+='<'+'div class="asp-warn">⚠ Atelier '+String.fromCharCode(65+i)+' : '+n+' présents pour '+inf.minJ+' minimum</'+'div>';});});
+  return h;}
+function aspAtHtml(s,b,a,i){const bi=esc(b.id),ai=esc(a.id);
+  let h='<'+'div class="asp-at" data-drop="asa:'+bi+':'+ai+'">'+((b.ats||[]).length>1?'<'+'div class="lab">ATELIER '+String.fromCharCode(65+i)+'</'+'div>':'');
+  h+=(a.groups||[]).map(gid=>{const g=aspChip(s,gid);if(!g)return '';return '<span class="asp-g" style="--gc:'+esc(g.color||'#475569')+'" data-drag="ag:'+bi+':'+ai+':'+esc(gid)+'" title="Glisser vers un autre atelier · double-clic pour retirer" ondblclick="aspDelGroup(\''+bi+'\',\''+ai+'\',\''+esc(gid)+'\')">'+esc(String(g.label))+'</span>';}).join('');
+  h+=(a.exos||[]).map((e,k)=>{const inf=aspExInfo(e);return '<'+'div class="asp-ex" data-drag="ae:'+bi+':'+ai+':'+k+'"><span class="th">'+aspThumb(inf)+'</span><span class="n">'+esc(inf?String(inf.titre):'(supprimé)')+'</span><button type="button" onclick="aspDelEx(\''+bi+'\',\''+ai+'\','+k+')" aria-label="Retirer">✕</button></'+'div>';}).join('');
+  if(!(a.groups||[]).length&&!(a.exos||[]).length)h+='<'+'div class="asp-empty">Glissez un groupe et un exercice ici</'+'div>';
+  if((a.exos||[]).some(e=>{const i=aspExInfo(e);return i&&i.kind==='fps';}))h+='<button type="button" class="obs" onclick="aspObserve(\''+bi+'\',\''+ai+'\')">▶ Observer ce match</button>';
+  if((b.ats||[]).length>1)h+='<button type="button" class="obs" style="background:#7f1d1d;margin-left:4px;" onclick="aspDelAt(\''+bi+'\',\''+ai+'\')">✕ atelier</button>';
+  return h+'</'+'div>';}
+function aspBlockHtml(s,b,tm,idx){const bi=esc(b.id);const fix=b.kind!=='bloc';
+  let h='<'+'div class="asp-b'+(fix?' fix':'')+'"'+(fix?'':' data-drop="asb:'+bi+'"')+'><'+'div class="asp-bh"><span class="t">'+hmFmt(tm.a)+'</span><b>'+esc(aspLabel(s,b))+'</b>'
+    +'<button type="button" onclick="aspDur(\''+bi+'\',-5)" aria-label="5 min de moins">−</button><span>'+b.dur+'′</span><button type="button" onclick="aspDur(\''+bi+'\',5)" aria-label="5 min de plus">+</button>'
+    +(fix?'':'<button type="button" onclick="aspMove(\''+bi+'\',-1)" aria-label="Avancer">◀</button><button type="button" onclick="aspMove(\''+bi+'\',1)" aria-label="Reculer">▶</button><button type="button" class="x" onclick="aspDelBlock(\''+bi+'\')" aria-label="Supprimer">✕</button>')+'</'+'div>';
+  if(fix)h+='<'+'div class="asp-empty">'+(b.kind==='objectif'?'Roues Garçons / Filles (② Objet & contenus)':'Fin de séance')+'</'+'div>';
+  else{h+=aspAlerts(s,b,tm);h+=(b.ats||[]).map((a,i)=>aspAtHtml(s,b,a,i)).join('');if((b.ats||[]).length<6)h+='<'+'div class="asp-par" data-drop="asp:'+bi+'" onclick="aspAddAt(\''+bi+'\')">⫴ ＋ travail parallèle</'+'div>';}
+  return h+'</'+'div>';}
+function hmFmt(m){if(m==null)return '';const h=Math.floor(m/60),mm=m%60;return h+'h'+(mm?String(mm).padStart(2,'0'):'');}
+function aspPalHtml(s){const t=ASP_UI.tab;const q=stripAccents(ASP_UI.q||'').toLowerCase();const ok=x=>!q||stripAccents(String(x||'')).toLowerCase().indexOf(q)>=0;
+  const tabs=[['grp','👥 Groupes'],['exo','🏃 Situations'],['fps','⚽ FPS'],['warm','🔥 Échauffements']];
+  let h='<'+'div class="asp-pal"><'+'div class="tabs">'+tabs.map(x=>'<button type="button" class="'+(t===x[0]?'on':'')+'" onclick="ASP_UI.tab=\''+x[0]+'\';renderSeanceTab()">'+x[1]+'</button>').join('')
+    +'<input type="search" placeholder="🔍 rechercher" value="'+esc(ASP_UI.q||'')+'" onchange="ASP_UI.q=this.value;renderSeanceTab()" style="flex:1 1 160px;min-width:120px;padding:5px 8px;"></'+'div><'+'div class="list">';
+  if(t==='grp'){h+=aspChips(s).filter(g=>ok(g.label)).map(g=>'<span class="asp-g" style="--gc:'+esc(g.color||'#475569')+';padding:6px 12px;font-size:.82rem;" data-drag="grp:'+esc(g.id)+'">'+esc(String(g.label))+' <small style="opacity:.8;">'+(g.members||[]).length+'</small></span>').join('')
+      +'<button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="planGoGroups()">🎲 Créer / ✎ modifier des groupes</button>';}
+  else if(t==='exo'){let rows=[];try{rows=sbPaletteRows(s);}catch(e){}const seen={};
+    h+=rows.filter(r=>ok(r.exo.titre)).map(r=>{seen[r.key]=1;return sbVigHtml(s,r,null);}).join('');
+    h+=libLoad().filter(x=>x.kind==='remed'&&libFitsSeance(x,s)&&ok(x.titre)).map(sbLibVigHtml).join('');}
+  else if(t==='fps'){h+=libLoad().filter(x=>x.kind==='match'&&libFitsSeance(x,s)&&ok(x.titre)).map(x=>'<'+'div class="sb-vig fps lib" style="--oe:#2563eb" data-drag="fps:'+esc(x.id)+'"><'+'div class="sb-th">'+(x.image?'<img src="'+x.image+'" alt="" draggable="false">':(x.anim?thumbImgHtml(x.anim,'⚽'):'<span>⚽</span>'))+'</'+'div><'+'div class="sb-vt">'+esc(String(x.titre||'FPS'))+'</'+'div></'+'div>').join('');}
+  else{h+='<'+'div class="sb-vig" style="--oe:#f97316" data-drag="aw:1"><'+'div class="sb-th"><span>🔥</span></'+'div><'+'div class="sb-vt">Échauffement de la séance (3 phases)</'+'div></'+'div>'
+      +libLoad().filter(x=>(x.kind==='warm'||x.kind==='phase')&&libFitsSeance(x,s)&&ok(x.titre)).map(x=>{const ph=x.kind==='warm'?(x.phases||[])[0]||{}:x;const th=(ph.image||x.image)?'<img src="'+(ph.image||x.image)+'" alt="" draggable="false">':((ph.anim||x.anim)?thumbImgHtml(ph.anim||x.anim,'🔥'):'<span>🔥</span>');
+        return '<'+'div class="sb-vig lib" style="--oe:#f97316" data-drag="lw:'+esc(x.id)+'" title="Ajouté à l\'échauffement de la séance"><'+'div class="sb-th">'+th+'</'+'div><'+'div class="sb-vt">'+esc(String(x.titre||'Échauffement'))+'</'+'div></'+'div>';}).join('');}
+  if(h.slice(-18).indexOf('class="list">')>=0)h+='<span class="cc-dim">'+(t==='exo'?'Aucune situation : choisis les orientations dans ② (roues Garçons / Filles) ou crée-en dans la Biblio.':t==='fps'?'Aucune FPS dans la Biblio pour ce sport.':'Rien ici pour l\'instant.')+'</span>';
+  return h+'</'+'div><'+'div class="cc-dim" style="margin-top:4px;">Ordinateur : glisser-déposer. Tablette / téléphone : appui long sur un groupe ou un exercice, puis glisser.</'+'div></'+'div>';}
+function aspColsHtml(s){const T=aspTimes(s);const B=aspBase();if(!B.length)return '';
+  const col=g=>{let r='';(s.asp.blocks||[]).forEach(b=>{const tm=T[b.id];
+      if(b.kind!=='bloc'){r+='<'+'div class="asp-li"><b class="t">'+hmFmt(tm.a)+'</b><span>'+esc(aspLabel(s,b))+'</span></'+'div>';return;}
+      const pres=aspPresent(s,tm.a).filter(n=>g.members.indexOf(n)>=0);
+      const L=[];(b.ats||[]).forEach(a=>{const m=aspAtMembers(s,a);if(!m.some(n=>g.members.indexOf(n)>=0))return;const gl=(a.groups||[]).map(id=>(aspChip(s,id)||{}).label).filter(Boolean);const ex=(a.exos||[]).map(e=>(aspExInfo(e)||{}).titre).filter(Boolean);L.push('<b>'+esc(gl.join(' + ')||'—')+'</b> : '+(ex.length?esc(ex.join(' → ')):'<i>exercice à choisir</i>'));});
+      const off=!pres.length;r+='<'+'div class="asp-li'+(off?' off':'')+'"><b class="t">'+hmFmt(tm.a)+'</b><span>'+(L.length?L.join('<br>'):(off?'pas encore là':'<span style="color:#fde68a;">⚠ rien de prévu</span>'))+'</span></'+'div>';});
+    return '<'+'div class="asp-col" style="--c:'+g.color+'"><h4>'+(g.id==='pop-F'?'👧 ':'👦 ')+esc(g.label)+'</h4>'+r+'</'+'div>';};
+  return '<'+'div class="asp-cols">'+B.map(col).join('')+'</'+'div>';}
+function aspHtml(s){const T=aspTimes(s);const bl=s.asp.blocks||[];const last=bl.length?T[bl[bl.length-1].id]:null;
+  let h=(typeof seqBannerHtml==='function'?seqBannerHtml(s):'')+'<'+'div class="sb" id="'+['sb','root'].join('-')+'"><'+'div class="asp-head"><b>🧱 Déroulé de la séance</b><label class="sb-start">🕒 début <input type="time" step="300" value="'+esc(s.start||'')+'" onchange="seanceSetStart(this.value)"></label>'+(last?'<span class="cc-dim">fin ≈ '+hmFmt(last.b)+'</span>':'')+'</'+'div>';
+  try{const c=sbCatStartHtml(s);if(c)h+=c;}catch(e){}
+  h+='<'+'div class="asp-grid">'+bl.map((b,i)=>aspBlockHtml(s,b,T[b.id],i)).join('')+'<'+'div class="asp-gap" data-drop="asg:'+Math.max(0,bl.length-1)+'" onclick="aspAddBlock()">＋ Bloc</'+'div></'+'div>';
+  h+=aspPalHtml(s)+'</'+'div>';
+  h+='<'+'div class="org"><b>📋 Les séances en colonnes</b> <span class="cc-dim">— se remplissent toutes seules</span>'+aspColsHtml(s)+'</'+'div>';
+  return h;}
+// ── actions ──
+function aspS(){const s=getActiveSeance();return s&&s.asp?s:null;}
+function aspB(s,id){return (s.asp.blocks||[]).find(b=>b.id===id);}
+function aspSave(){saveSeances();renderSeanceTab();}
+function aspDur(id,d){const s=aspS();if(!s)return;const b=aspB(s,id);if(!b)return;b.dur=Math.max(5,Math.min(120,(+b.dur||0)+d));aspSave();}
+function aspMove(id,d){const s=aspS();if(!s)return;const L=s.asp.blocks;const i=L.findIndex(b=>b.id===id);const j=i+d;if(i<0||j<1||j>=L.length-1)return;const t=L[i];L[i]=L[j];L[j]=t;aspSave();}
+function aspDelBlock(id){const s=aspS();if(!s)return;const b=aspB(s,id);if(!b||b.kind!=='bloc')return;if((b.ats||[]).some(a=>(a.exos||[]).length||(a.groups||[]).length)&&!confirm('Supprimer ce bloc ?'))return;s.asp.blocks=s.asp.blocks.filter(x=>x.id!==id);aspSave();}
+function aspAddBlock(idx){const s=aspS();if(!s)return;const L=s.asp.blocks;const bi=L.findIndex(b=>b.kind==='bilan');const at=idx!=null?Math.min(idx+1,bi<0?L.length:bi):(bi<0?L.length:bi);const nb={id:aspNid(),kind:'bloc',dur:20,ats:[{id:aspNid('a'),groups:[],exos:[]}]};L.splice(Math.max(1,at),0,nb);saveSeances();renderSeanceTab();return nb;}
+function aspAddAt(bid){const s=aspS();if(!s)return null;const b=aspB(s,bid);if(!b||(b.ats||[]).length>=6)return null;const a={id:aspNid('a'),groups:[],exos:[]};b.ats.push(a);saveSeances();renderSeanceTab();return a;}
+function aspDelAt(bid,aid){const s=aspS();if(!s)return;const b=aspB(s,bid);if(!b)return;b.ats=b.ats.filter(a=>a.id!==aid);if(!b.ats.length)b.ats.push({id:aspNid('a'),groups:[],exos:[]});aspSave();}
+function aspAt(s,bid,aid){const b=aspB(s,bid);return b?(b.ats||[]).find(a=>a.id===aid):null;}
+function aspDelGroup(bid,aid,gid){const s=aspS();if(!s)return;const a=aspAt(s,bid,aid);if(!a)return;a.groups=a.groups.filter(x=>x!==gid);aspSave();}
+function aspDelEx(bid,aid,k){const s=aspS();if(!s)return;const a=aspAt(s,bid,aid);if(!a)return;a.exos.splice(k,1);aspSave();}
+function aspPayload(p){const t=p.slice(0,p.indexOf(':')),v=p.slice(p.indexOf(':')+1);
+  if(t==='exo'){const at=v.lastIndexOf('@');return {ex:{k:'exo',key:at>=0?v.slice(0,at):v}};}
+  if(t==='lib'||t==='fps')return {ex:{k:'lib',id:v}};
+  if(t==='aw')return {ex:{k:'warm'}};
+  if(t==='lw')return {ex:{k:'warm'},warmLib:v};
+  if(t==='grp')return {grp:v};
+  if(t==='ag'){const q=v.split(':');return {grp:q[2],from:{b:q[0],a:q[1],g:q[2]}};}
+  if(t==='ae'){const q=v.split(':');return {exFrom:{b:q[0],a:q[1],k:+q[2]}};}
+  return null;}
+function aspDrop(p,drop){const s=aspS();if(!s)return;const P=aspPayload(p);if(!P)return;
+  const dt=drop.slice(0,drop.indexOf(':')),dv=drop.slice(drop.indexOf(':')+1);
+  let ex=P.ex||null;
+  if(P.exFrom){const a0=aspAt(s,P.exFrom.b,P.exFrom.a);if(!a0||!a0.exos[P.exFrom.k])return;ex=a0.exos[P.exFrom.k];}
+  // cible
+  let tgt=null;
+  if(dt==='asa'){const q=dv.split(':');tgt=aspAt(s,q[0],q[1]);}
+  else if(dt==='asb'){const b=aspB(s,dv);if(b){tgt=(b.ats||[])[0];if(!tgt){tgt={id:aspNid('a'),groups:[],exos:[]};b.ats.push(tgt);}}}
+  else if(dt==='asp'){const b=aspB(s,dv);const emp=b&&(b.ats||[]).find(a=>!(a.groups||[]).length&&!(a.exos||[]).length);if(emp)tgt=emp;else if(b&&(b.ats||[]).length<6){tgt={id:aspNid('a'),groups:[],exos:[]};b.ats.push(tgt);}}
+  else if(dt==='asg'){const L=s.asp.blocks;const bi=L.findIndex(b=>b.kind==='bilan');const nb={id:aspNid(),kind:'bloc',dur:20,ats:[{id:aspNid('a'),groups:[],exos:[]}]};L.splice(bi<0?L.length:bi,0,nb);tgt=nb.ats[0];}
+  if(!tgt)return;
+  if(P.grp){if(P.from){const a0=aspAt(s,P.from.b,P.from.a);if(a0===tgt)return;if(a0)a0.groups=a0.groups.filter(x=>x!==P.from.g);}if(tgt.groups.indexOf(P.grp)<0)tgt.groups.push(P.grp);}
+  else if(ex){if(P.exFrom){const a0=aspAt(s,P.exFrom.b,P.exFrom.a);if(a0===tgt)return;a0.exos.splice(P.exFrom.k,1);}tgt.exos.push(ex);if(P.warmLib){try{WARM_TARGET=null;warmEnsure(s);libInsert(P.warmLib);}catch(e){}}}
+  saveSeances();renderSeanceTab();}
+// ── observer une FPS d'un atelier ──
+function aspObserve(bid,aid){const s=aspS();if(!s)return;const a=aspAt(s,bid,aid);if(!a)return;
+  const G=(a.groups||[]).map(id=>aspChip(s,id)).filter(Boolean);
+  const fx=(a.exos||[]).map(aspExInfo).find(i=>i&&i.kind==='fps');
+  try{if(fx&&fx.src){const pn=fx.src.profile||(fx.src.cfg&&fx.src.cfg.profile)||'';const P=CFG.savedPresets||[];let idx=pn?P.findIndex(p=>p&&p.name===pn):-1;if(idx>=0)applyNamedPreset(idx);}}catch(e){}
+  const tt=G.slice(0,2).map(g=>calEnsureTeam(g.label,String(g.label).split(/\s+/)[0]));saveTeams();try{renderTeams();}catch(e){}
+  const gm=E('game-mode');const want=tt.length>1?'2eq':'1eq';if(gm){gm.value=want;onModeChange();}else{CFG.gameMode=want;saveConfig();}
+  const s1=E('sel-t1'),s2=E('sel-t2');if(s1&&tt[0])s1.value=String(tt[0].id);if(s2&&tt[1])s2.value=String(tt[1].id);if(tt[0])teamsNames[0]=tt[0].name;if(tt[1])teamsNames[1]=tt[1].name;
+  try{updateFooter();}catch(e){}goTab('t-home');try{toast2('Prêt : '+G.map(g=>g.label).join(' contre ')+(fx?' · '+fx.titre:'')+' — appuie sur ▶ Démarrer');}catch(e){}}
+// ── élève : « Qui es-tu ? » puis sa séance ──
+function aspMyGroups(s,me){const D=s.decoupages||[];const niv=id=>D.some(d=>/niveau/i.test(d.label||'')&&(d.groupes||[]).some(g=>g.id===id))||/fort|faible|moyen|niveau/i.test(String((aspChip(s,id)||{}).label||''));
+  return aspChips(s).filter(g=>!g.base&&(g.members||[]).indexOf(me)>=0&&!niv(g.id));}
+function aspEleveExHtml(s,e){const inf=aspExInfo(e);if(!inf)return '';let h='<'+'div class="ael-ex"><h4 style="margin:0 0 4px;">'+inf.ico+' '+esc(String(inf.titre))+'</h4>';
+  try{if(inf.kind==='warm')return h+renderEleveStepEchauffementV2(s,{status:'x'})+'</'+'div>';
+    if(inf.kind==='exo')return h+renderEleveExo(inf.cpPath,inf.src)+'</'+'div>';
+    const x=inf.src;if(x.desc)h+='<'+'div class="sel-text">'+esc(String(x.desc))+'</'+'div>';
+    if(x.video)h+='<video src="'+esc(String(x.video))+'" controls playsinline preload="metadata"></video>';
+    if(x.image)h+='<img src="'+x.image+'" alt="">';
+    if(x.anim)h+=animEleveHtml(x.anim);
+    if((x.criteres||[]).length)h+='<'+'div class="sel-crit">🎯 '+x.criteres.map(c=>esc(String(c.label||c))).join(' · ')+'</'+'div>';}catch(err){console.warn(err);}
+  return h+'</'+'div>';}
+function aspEleveHtml(s){const me=elMeGet(s);const all=!me&&!aspRoster().length;
+  if(!me&&!all){const N=aspRoster().slice().sort((a,b)=>String(a).localeCompare(String(b),'fr'));
+    return '<'+'div class="ael-step"><h3>🙋 Qui es-tu ?</h3><'+'div class="cc-dim">Touche ton prénom : tu verras toute ta séance.</'+'div><'+'div class="ael-names">'+N.map(n=>'<button type="button" data-n="'+esc(n)+'" onclick="aspMe(this.dataset.n)">'+esc(n)+'</button>').join('')+'</'+'div></'+'div>';}
+  const T=aspTimes(s);const MG=aspMyGroups(s,me);
+  let h=all?'':'<'+'div class="ael-step" style="border-color:#22c55e;"><h3>Salut '+esc(me)+' 👋</h3>'+(MG.length?'<'+'div>Tes groupes aujourd\'hui : '+MG.map(g=>'<span class="asp-g" style="--gc:'+esc(g.color||'#475569')+'">'+esc(String(g.label))+'</span>').join('')+'</'+'div>':'')
+    +'<button type="button" class="btn-xs" style="background:#334155;color:#fff;margin-top:8px;" onclick="aspMe(null)">↩ Ce n\'est pas moi</button></'+'div>';
+  let n=0;(s.asp.blocks||[]).forEach(b=>{const tm=T[b.id];
+    if(b.kind==='objectif'){n++;let w='';try{const px=elProxy(s);const sd=seanceSportDef(px);if(sd&&sd.custom)w='<'+'div class="sel-box as-wheel-el"><'+'div class="sel-dim">Les phases en couleur sont celles qu\'on travaille aujourd\'hui. Touche une autre phase pour voir ses vidéos.</'+'div><'+'div class="wheel-wrap"><'+'div class="wheel-col">'+wheelSvg(px,sd,'eleve')+'</'+'div><'+'div class="wheel-cards">'+wheelCardsHtml(px,sd,true,ELEVE_WHEEL_PEEK)+'</'+'div><svg class="wheel-links" aria-hidden="true"></svg></'+'div></'+'div>'+presVideosHtml(px,sd);}catch(e){}
+      h+='<'+'div class="ael-step"><h3><span class="t">'+n+' · '+hmFmt(tm.a)+'</span>📋 Notre projet de jeu</h3>'+(w||'<'+'div class="cc-dim">Écoute la présentation de ton enseignant.</'+'div>')+'</'+'div>';return;}
+    if(b.kind==='bilan'){n++;h+='<'+'div class="ael-step"><h3><span class="t">'+n+' · '+hmFmt(tm.a)+'</span>🏁 Bilan</h3></'+'div>';return;}
+    const A2=all?(b.ats||[]).filter(x=>(x.exos||[]).length||(x.groups||[]).length):(b.ats||[]).filter(x=>aspAtMembers(s,x).indexOf(me)>=0).slice(0,1);A2.forEach(a=>{n++;
+    const mates=aspAtMembers(s,a).filter(x=>x!==me);const gl=(a.groups||[]).map(id=>(aspChip(s,id)||{}).label).filter(Boolean);
+    h+='<'+'div class="ael-step"><h3><span class="t">'+n+' · '+hmFmt(tm.a)+'</span>'+esc(((a.exos||[]).map(e=>(aspExInfo(e)||{}).titre).filter(Boolean).join(' → '))||'À suivre')+'</h3>'
+      +(gl.length?'<'+'div class="ael-with">👥 '+esc(gl.join(' + '))+(mates.length&&mates.length<=14&&(a.groups||[]).some(id=>!/^pop-/.test(id))?' — avec '+mates.map(esc).join(', '):'')+'</'+'div>':'')
+      +((a.exos||[]).length?(a.exos||[]).map(e=>aspEleveExHtml(s,e)).join(''):'<'+'div class="cc-dim">Ton enseignant te donnera la consigne.</'+'div>')+'</'+'div>';});});
+  return h;}
+function aspMe(n){const s=getActiveSeance();if(!s)return;ELEVE_ME=n?{sid:s.id,n:n}:null;try{if(n)sessionStorage.setItem(elMeKey(s),n);else sessionStorage.removeItem(elMeKey(s));}catch(e){}renderSeanceTab();try{window.scrollTo(0,0);}catch(e){}}
+// ── raccordements ──
+(function(){
+  // échauffement : noms élèves d'origine, pas de choix Tous/Garçons/Filles, express en 3 phases
+  try{const OLD={p1:'1. Mise en train Cardio-Articulaire',p2:'2. Verrouillage Postural & Mobilité',p3:'3. Intensité Spécifique & Réactivité'};WARM_TYPES.forEach(t=>{if(OLD[t.id])t.e=OLD[t.id];});
+    const ex=WARM_TYPES.find(t=>t.id==='ex');if(ex){ex.t='Échauffement express — 1. Activation';ex.e='Express · 1. Mise en train';}
+    if(!WARM_TYPES.some(t=>t.id==='x2')){const i=WARM_TYPES.findIndex(t=>t.id==='ex');WARM_TYPES.splice(i+1,0,{id:'x2',t:'Échauffement express — 2. Gainage & mobilité',e:'Express · 2. Gainage & mobilité',ico:'⚡'},{id:'x3',t:'Échauffement express — 3. Vitesse & potentialisation',e:'Express · 3. Vitesse',ico:'⚡'});}}catch(e){}
+  try{warmPops=function(){return [];};WARM_UI.pop='all';}catch(e){}
+  try{const o=warmXCards;warmXCards=function(s,type){if(type!=='ex')return o.apply(this,arguments);const e=warmEnsure(s);let c='';['ex','x2','x3'].forEach(t=>{e.secs.filter(x=>x.type===t).forEach(sc=>{const note=warmSecNote(sc,'all');let k='';e.phases.forEach((ph,i)=>{if(ph.sec===sc.id)k+=renderEleveWarmupPhase(i,ph,'',warmTypeDef(t).ico);});if(k||note)c+='<'+'div class="wm-phase" style="flex-basis:100%"><h3>⚡ '+esc(warmSecLab(sc))+'</h3>'+(note?'<'+'div class="wm-note">⏱ '+esc(note)+'</'+'div>':'')+'</'+'div>'+k;});});return c;};}catch(e){}
+  try{renderEleveStepEchauffement=renderEleveStepEchauffementV2;}catch(e){}
+  try{const o3=warmSectionsBody;warmSectionsBody=function(s,sc){let h=o3.apply(this,arguments);if((sc.type==='ex'||sc.type==='x2'||sc.type==='x3')&&h.indexOf('warm-ctl')<0)h='<'+'div class="warm-ctl"><label>Nom pour les élèves<input value="'+esc(warmSecLab(sc))+'" onchange="warmSecSet(\''+esc(sc.id)+'\',\'eleve\',this.value)"></label><label>Consigne de la phase<textarea rows="2" onchange="warmSecSet(\''+esc(sc.id)+'\',\'note\',this.value)">'+esc(((sc.notes||{}).all)||'')+'</textarea></label></'+'div>'+h;return h;};}catch(e){}
+  // plus de groupe « Polyvalents » : ses élèves vont dans les plus petits groupes
+  try{const og=genGroupsRun;genGroupsRun=function(){const r=og.apply(this,arguments);try{const s=getActiveSeance();const G=s&&s.groupes;const pv=G&&G.find(g=>/^Polyvalents/.test(g.label||''));
+      if(pv){const PV=G.filter(g=>/^Polyvalents/.test(g.label||''));const others=G.filter(g=>PV.indexOf(g)<0);
+        if(others.length){PV.forEach(g=>(g.members||[]).forEach(n=>{others.sort((a,b)=>(a.members||[]).length-(b.members||[]).length);others[0].members.push(n);}));s.groupes=others;}
+        else PV.forEach((g,i)=>{g.label=String(g.label).replace(/^Polyvalents\s*[—-]?\s*/,'')||('Groupe '+(i+1));if(/^(faibles?|moyens?|forts?)$/i.test(g.label))g.label='Groupe '+(i+1);});
+        saveSeances();renderSeanceTab();}}catch(e){}return r;};}catch(e){}
+  // nouvelle séance AS : nouveau déroulé
+  try{const oc=createSeance;createSeance=function(){const n0=(SEANCES||[]).length;const r=oc.apply(this,arguments);try{const s=getActiveSeance();if(s&&(SEANCES||[]).length>n0&&aspIsAS(s)&&!s.asp){aspInit(s);saveSeances();renderSeanceTab();}}catch(e){console.warn('asp init',e);}return r;};}catch(e){}
+  try{const ob=renderSeanceBuilder;renderSeanceBuilder=function(s){if(s&&s.asp){try{return aspHtml(s);}catch(e){console.warn('asp',e);}}
+      const h=ob.apply(this,arguments);if(s&&aspIsAS(s))return '<'+'div class="cc-dim" style="margin:0 0 6px;"><button type="button" class="btn-xs green" onclick="aspEnable()">🆕 Passer au déroulé simplifié (blocs + ateliers)</button></'+'div>'+h;return h;};}catch(e){}
+  try{const oe=renderSeanceEleve;renderSeanceEleve=function(s){if(s&&s.asp){const host=E('seance-tab-content');if(host){host.innerHTML='<'+'div class="seance-eleve">'+aspEleveHtml(s)+'</'+'div>';setTimeout(()=>{try{drawRemedDiagrams();}catch(e){}},0);}return;}return oe.apply(this,arguments);};}catch(e){}
+  // glisser-déposer : nouvelles cibles + appui long au doigt
+  try{const oc2=sbCanDrop;sbCanDrop=function(p,drop){const dt=String(drop).split(':')[0];if(dt==='asa'||dt==='asb'||dt==='asp'||dt==='asg'){const t=String(p).split(':')[0];return ['grp','exo','lib','fps','aw','lw','ag','ae'].indexOf(t)>=0;}return oc2.apply(this,arguments);};}catch(e){}
+  try{const od=sbDo;sbDo=function(p,drop){const dt=String(drop).split(':')[0];if(dt==='asa'||dt==='asb'||dt==='asp'||dt==='asg'){aspDrop(p,drop);return;}return od.apply(this,arguments);};}catch(e){}
+  try{let lp=null;
+    document.addEventListener('pointerdown',e=>{if(e.pointerType!=='touch')return;const el=e.target.closest&&e.target.closest('#sb-root [data-drag]');if(!el||e.target.closest('button'))return;
+      const x=e.clientX,y=e.clientY;clearTimeout(lp&&lp.t);lp={x:x,y:y,t:setTimeout(()=>{SB_DRAG={el:el,p:el.dataset.drag,x:x,y:y,on:false,z:null};try{navigator.vibrate&&navigator.vibrate(25);}catch(_){}el.style.outline='3px solid #facc15';},420)};},true);
+    document.addEventListener('pointermove',e=>{if(lp&&!SB_DRAG&&Math.abs(e.clientX-lp.x)+Math.abs(e.clientY-lp.y)>10){clearTimeout(lp.t);lp=null;}},true);
+    const clr=()=>{if(lp){clearTimeout(lp.t);lp=null;}document.querySelectorAll('#sb-root [data-drag]').forEach(x=>{if(x.style.outline)x.style.outline='';});};
+    document.addEventListener('pointerup',clr,true);document.addEventListener('pointercancel',clr,true);
+    document.addEventListener('touchmove',e=>{if(SB_DRAG)e.preventDefault();},{passive:false});
+    // défilement automatique quand on approche du bord pendant un glisser
+    const scr=el=>{let x=el;while(x&&x!==document.body){const st=getComputedStyle(x);if(/(auto|scroll)/.test(st.overflowY)&&x.scrollHeight>x.clientHeight+4)return x;x=x.parentElement;}return document.scrollingElement||document.documentElement;};
+    let asY=null,asT=null;document.addEventListener('pointermove',e=>{asY=(SB_DRAG&&SB_DRAG.on)?e.clientY:null;if(asY!=null&&!asT)asT=setInterval(()=>{if(!(SB_DRAG&&SB_DRAG.on)||asY==null){clearInterval(asT);asT=null;return;}const H=innerHeight;const d=asY<90?-14:asY>H-90?14:0;if(d){const r=E('sb-root');(r?scr(r):document.scrollingElement).scrollBy(0,d);}},30);},true);
+    document.addEventListener('contextmenu',e=>{if(e.target.closest&&e.target.closest('#sb-root [data-drag]'))e.preventDefault();});}catch(e){}
+  // une équipe = un groupe de la séance : ses joueurs pour l'observation individuelle
+  try{const og2=getPlayersForTeam;getPlayersForTeam=function(name){try{const s=getActiveSeance();if(s&&s.asp){const g=aspChips(s).find(x=>stripAccents(String(x.label)).toLowerCase()===stripAccents(String(name||'')).toLowerCase());if(g)return g.members.slice();}}catch(e){}return og2.apply(this,arguments);};}catch(e){}
+})();
+function aspEnable(){const s=getActiveSeance();if(!s)return;aspInit(s);saveSeances();renderSeanceTab();}
 </script>
 </body>
 </html>
