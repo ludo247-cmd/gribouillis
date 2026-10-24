@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v237</title>
+<title>Gribouillis EPS v238</title>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
 /* ── THÈME SOMBRE UNIQUEMENT ── */
@@ -863,6 +863,15 @@ body.sb-dragging{user-select:none;cursor:grabbing;}
 .el-me .names{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;}
 .el-me .names button{border:1px solid var(--border);border-radius:999px;padding:7px 12px;background:#0f172a;color:var(--text);font-size:.9rem;cursor:pointer;}
 .el-me .names button.on{background:#16a34a;border-color:#16a34a;color:#fff;font-weight:800;}
+.warm-ctl{display:flex;gap:6px;flex-wrap:wrap;align-items:flex-start;margin:4px 0 8px;}
+.warm-ctl label{font-size:.72rem;color:var(--dim2);display:flex;flex-direction:column;gap:2px;flex:1 1 200px;}
+.warm-ctl input,.warm-ctl textarea{font-size:.82rem;padding:5px 7px;}
+.warm-pop{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 8px;}
+.warm-pop button{border:1px solid var(--border);border-radius:999px;padding:7px 12px;background:#0f172a;color:var(--text);font-weight:700;cursor:pointer;font-size:.8rem;}
+.warm-pop button.on{background:#b45309;border-color:#b45309;color:#fff;}
+.wm-phase{margin:14px 0 6px;}
+.wm-phase h3{margin:0;font-size:1.15rem;}
+.wm-note{background:rgba(250,204,21,.12);border:1px solid rgba(250,204,21,.5);border-radius:10px;padding:8px 10px;margin:6px 0;font-size:.95rem;}
 .fit-vid{display:block;max-width:100%;max-height:calc(100vh - 170px);margin:8px auto;border-radius:10px;background:#000;}
 .pres-vids h5{margin:12px 0 2px;font-size:.9rem;color:#93c5fd;}
 .ok-list{margin:0;padding:0;list-style:none;}
@@ -20345,6 +20354,77 @@ function elPerson(name){const s=getActiveSeance();if(!s)return;const tms=seanceS
   try{const o2=eleveAtelierRoute;eleveAtelierRoute=function(s,st){try{const me=elMeGet(s);if(me){const c=(s.eleveChoix&&s.eleveChoix[st.key])||null;const ats=parAteliers(s,st.key);
       if(ats.length>1&&!(c&&ats.some(a=>a.key===c.atelier))){const w=elWhere(s,st.key,me);if(w.ak){if(!s.eleveChoix)s.eleveChoix={};s.eleveChoix[st.key]=Object.assign({},s.eleveChoix[st.key]||{},{atelier:w.ak});}}}}catch(e){}
     return o2.apply(this,arguments);};}catch(e){}
+})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v238 — ÉCHAUFFEMENT EN 3 PHASES (activation / gainage-mobilité / vitesse-potentialisation)
+// nom de chaque phase en langage élève + consigne par phase ; ateliers pour tous,
+// les garçons ou les filles. Élève : son parcours (sa roue, son échauffement, ses ateliers).
+// « Tout imposé » : aucun choix de principes côté élève.
+// ══════════════════════════════════════════════════════════════════════
+(function(){try{const D={p1:['Phase 1 — Activation','1. J\'active mon corps'],p2:['Phase 2 — Gainage & mobilité','2. Je gaine et je mobilise'],p3:['Phase 3 — Vitesse & potentialisation','3. Je deviens vif et rapide']};
+  WARM_TYPES.forEach(t=>{if(D[t.id]){t.t=D[t.id][0];t.e=D[t.id][1];}});}catch(e){}})();
+const WARM_UI={pop:'all'};
+function warmPops(s){const C=(s&&s.categories)||[];const P=[];C.forEach(c=>{const p=planPopOf(c);if(p!=='all'&&P.indexOf(p)<0)P.push(p);});if(s&&s.proj2&&P.length<2){['M','F'].forEach(p=>{if(P.indexOf(p)<0)P.push(p);});}return P.length>1?P:[];}
+function warmPopLab(p){return p==='F'?'👧 Filles':p==='M'?'👦 Garçons':'Tous';}
+function warmSecSet(id,f,v){const s=getActiveSeance();if(!s)return;const e=warmEnsure(s);const sc=e.secs.find(x=>x.id===id);if(!sc)return;
+  if(f==='note'){if(!sc.notes||typeof sc.notes!=='object')sc.notes={};sc.notes[WARM_UI.pop||'all']=v;}else sc[f]=v;saveSeances();}
+function warmSecLab(sc){return (sc&&sc.eleve)||warmTypeDef(sc.type).e;}
+function warmSecNote(sc,pop){const n=(sc&&sc.notes)||{};const a=(n.all||'').trim(),b=pop&&pop!=='all'?(n[pop]||'').trim():'';return [a,b].filter(Boolean).join('\n');}
+function warmPopOk(ph,pop){return !pop||pop==='all'||!ph.pop||ph.pop==='all'||ph.pop===pop;}
+(function(){
+  // ateliers sans population = pour tous ; un atelier ajouté pendant le filtre Filles est pour les filles
+  try{const o=warmEnsure;warmEnsure=function(s){const e=o.apply(this,arguments);try{if(e)e.phases.forEach(ph=>{if(ph.pop===undefined)ph.pop=WARM_UI.pop||'all';});}catch(x){}return e;};}catch(e){}
+  try{const o2=warmSectionsHtml;warmSectionsHtml=function(s){const P=warmPops(s);let h='';
+      if(P.length){if(['all'].concat(P).indexOf(WARM_UI.pop)<0)WARM_UI.pop='all';
+        h='<div class="warm-pop">'+['all'].concat(P).map(p=>'<button type="button" class="'+(WARM_UI.pop===p?'on':'')+'" onclick="WARM_UI.pop=\''+p+'\';renderSeanceTab()">'+warmPopLab(p)+'</button>').join('')+'<span class="cc-dim" style="align-self:center;">'+(WARM_UI.pop==='all'?'Ateliers pour tout le monde (et vue d\'ensemble)':'Ateliers pour les '+warmPopLab(WARM_UI.pop).slice(3).toLowerCase()+' en plus des ateliers « Tous »')+'</span></div>';}
+      else WARM_UI.pop='all';
+      return h+o2.apply(this,arguments);};}catch(e){}
+  try{const o3=warmSectionsBody;warmSectionsBody=function(s,sc){
+      const ctl=(sc.type==='p1'||sc.type==='p2'||sc.type==='p3')?'<div class="warm-ctl"><label>Nom pour les élèves<input value="'+esc(warmSecLab(sc))+'" onchange="warmSecSet(\''+esc(sc.id)+'\',\'eleve\',this.value)"></label><label>Consigne de la phase'+(WARM_UI.pop!=='all'?' ('+warmPopLab(WARM_UI.pop)+')':'')+'<textarea rows="2" placeholder="Ex : circuit de 5 × 30 s par exercice, 15 s de récupération" onchange="warmSecSet(\''+esc(sc.id)+'\',\'note\',this.value)">'+esc(((sc.notes||{})[WARM_UI.pop||'all'])||'')+'</textarea></label></div>':'';
+      return ctl+o3.apply(this,arguments);};}catch(e){}
+  try{const o4=warmWallHtml;warmWallHtml=function(s,sc){const pop=WARM_UI.pop||'all';const e=s.echauffement;
+      const px=Object.create(s);px.echauffement=Object.assign({},e,{phases:e.phases.map(ph=>{const t=(ph.pop==='F'?'👧 ':ph.pop==='M'?'👦 ':'');const c=Object.assign({},ph,{titre:t+(ph.titre||'Atelier')});if(!warmPopOk(ph,pop))c.sec='__autre';return c;})});
+      return o4.call(this,px,sc);};}catch(e){}
+  try{const o5=addWarmupPhase;addWarmupPhase=function(secId){const s=getActiveSeance();const n0=s&&s.echauffement?s.echauffement.phases.length:0;const r=o5.apply(this,arguments);try{const s2=getActiveSeance();if(s2&&s2.echauffement.phases.length>n0){s2.echauffement.phases[s2.echauffement.phases.length-1].pop=WARM_UI.pop||'all';saveSeances();renderSeanceTab();}}catch(e){}return r;};}catch(e){}
+})();
+// ── élève : qui est-il, quelle population, quel projet ──
+function elMePop(s){const me=elMeGet(s);if(!me)return '';return grpSexe(me)||'';}
+function elRefPop(ref){const r=REMED_CONTENT&&REMED_CONTENT[ref];return r?planPopOf(r.label||''):'all';}
+function elProxy(s){const pop=elMePop(s);if(!pop||!s.proj2||!REMED_CONTENT[s.proj2.referentiel])return s;
+  if(elRefPop(s.referentiel)===pop||elRefPop(s.proj2.referentiel)!==pop)return s;
+  const p2=s.proj2;const px=Object.create(s);px.referentiel=p2.referentiel;px.oeId=p2.oeId||null;px.oeExtra=(p2.oeExtra||[]).slice();px.phaseSel=(p2.phaseSel||[]).slice();px.customOeMode=false;
+  if(Object.prototype.hasOwnProperty.call(p2,'restrictions')&&p2.restrictions)px.restrictions=JSON.parse(JSON.stringify(p2.restrictions));return px;}
+// échauffement élève : par phase (nom élève + consigne), seulement ses ateliers
+function renderEleveStepEchauffementV2(s,st){
+  const e=warmEnsure(s);const pop=elMePop(s);let h='';
+  e.secs.forEach(sc=>{if(sc.type==='av'||sc.type==='ex')return;
+    const idx=[];e.phases.forEach((ph,i)=>{if(ph.sec===sc.id&&warmPopOk(ph,pop))idx.push(i);});const note=warmSecNote(sc,pop);
+    if(!idx.length&&!note)return;
+    h+='<div class="wm-phase"><h3>'+warmTypeDef(sc.type).ico+' '+esc(warmSecLab(sc))+'</h3>'+(note?'<div class="wm-note">⏱ '+esc(note).replace(/\n/g,'<br>')+'</div>':'')+'</div>';
+    if(idx.length)h+='<div class="warm-mosaic">'+idx.map(i=>renderEleveWarmupPhase(i,e.phases[i],'',warmTypeDef(sc.type).ico)).join('')+'</div>';});
+  if(!h)h='<div class="sel-box sel-dim">Écoute les consignes de ton enseignant pour l\'échauffement.</div>';
+  const av=warmXCards(s,'av');
+  if(av){h+='<button type="button" class="sel-big" style="background:#7c3aed;" onclick="ELEVE_WARM_AV=!ELEVE_WARM_AV;renderSeanceTab()">'+(ELEVE_WARM_AV?'▲ Masquer les exercices en plus':'🚀 Je suis en avance : exercices en plus')+'</button>';if(ELEVE_WARM_AV)h+='<div class="warm-mosaic">'+av+'</div>';}
+  if(st.status==='current')h+='<button type="button" class="sel-big" onclick="eleveStepDone(\'echauffement\')">✓ Échauffement terminé</button>';
+  return h;}
+(function(){
+  try{renderEleveStepEchauffement=renderEleveStepEchauffementV2;}catch(e){}
+  // tout le mode élève voit la séance « de son point de vue » (sa roue si elle est dans l'autre projet)
+  try{const o=renderSeanceEleve;renderSeanceEleve=function(s){let px=s;try{px=elProxy(s);}catch(e){}return o.call(this,px);};}catch(e){}
+  // « tout imposé » : pas de bouton « Choisir nos principes », on montre ce qu'on travaille
+  try{const o2=renderEleveAsRemed;renderEleveAsRemed=function(s,st,key,h,doneBtn){
+      let imp=false;try{imp=trajetCur(s)==='guide'||allowedCps(s,null).mode==='impose';}catch(e){}
+      if(!imp)return o2.apply(this,arguments);
+      try{const cps=allowedCps(s,null);const paths=(cps.ids||[]).filter(p=>getCpByPath(p));
+        if(paths.length){let x=h+'<div class="sel-box"><div class="sel-sub" style="margin-top:0;">🎯 Aujourd\'hui, on travaille</div>';
+          paths.forEach(p=>{const c=getCpByPath(p);x+='<div class="sel-text" style="margin:6px 0;font-weight:700;">• '+esc(String(eleveCp(c)))+'</div>'+eleveReglesHtml(c)+eleveCpMediaHtml(c.media);});
+          x+='</div>';
+          const kept=(s.keepExos||[]).filter(k=>exoByKey(k)&&paths.some(p=>k.indexOf(p+'#')===0));
+          if(kept.length===1){const r=exoByKey(kept[0]);x+=renderEleveExo(r.cpPath,r.exo);}
+          else if(kept.length>1)x+='<div class="sel-box sel-dim">Ton enseignant te dira quelle situation faire.</div>';
+          return x+doneBtn;}}catch(e){console.warn('impose AS',e);}
+      return o2.apply(this,arguments);};}catch(e){}
 })();
 </script>
 </body>
