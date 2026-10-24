@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v240</title>
+<title>Gribouillis EPS v241</title>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
 /* ── THÈME SOMBRE UNIQUEMENT ── */
@@ -910,7 +910,14 @@ body.sb-dragging{user-select:none;cursor:grabbing;}
 .asp-li b.t{min-width:44px;color:#93c5fd;}
 .asp-li.off{opacity:.45;}
 [data-drag]{-webkit-touch-callout:none;}
-.asp-pal{position:sticky;bottom:0;z-index:5;background:var(--card);border-radius:10px;box-shadow:0 -6px 14px rgba(0,0,0,.45);padding:8px 6px 4px;}
+.asp-pal{position:sticky;top:0;z-index:5;background:var(--card);border-radius:10px;box-shadow:0 6px 14px rgba(0,0,0,.45);padding:6px;margin:0 0 8px;border:1px solid var(--border);}
+.asp-pal .sb-vig{width:118px;flex:0 0 auto;}
+.asp-pal .asp-g{flex:0 0 auto;}
+.aspx-ov .box{max-width:560px;}
+.asp-pal .sb-filt{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:4px 0;}
+.asp-pal .sb-filt input,.asp-pal .sb-filt select{width:auto;flex:1 1 150px;margin:0;}
+.asp-ex .th video{width:100%;height:100%;object-fit:cover;pointer-events:none;}
+.aspx-ov video,.aspx-ov img{max-width:100%;border-radius:10px;}
 @media (max-width:700px){.asp-pal .list{max-height:22vh;}.asp-pal .cc-dim{display:none;}}
 body.sb-dragging{user-select:none;-webkit-user-select:none;}
 .ael-names{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
@@ -17348,7 +17355,7 @@ function sbAtelierHtml(s,st,a,i){
 }
 function sbVigHtml(s,r,stepKey){
   const ex=r.exo,col=pathOeColor(s,r.cpPath),k=esc(r.key);
-  const th=ex.image?'<img src="'+ex.image+'" alt="" draggable="false">':(ex.anim?thumbImgHtml(ex.anim,'🎞'):(ex.video?'<video src="'+ex.video+'#t=0.5" muted preload="metadata"></video>':'<span>🏃</span>'));
+  const th=ex.image?'<img src="'+ex.image+'" alt="" draggable="false">':(ex.anim?thumbImgHtml(ex.anim,'🎞'):(ex.video?vidThumbHtml(ex.video):'<span>🏃</span>'));
   return '<div class="sb-vig" style="--oe:'+col+'" data-drag="exo:'+k+(stepKey?'@'+esc(stepKey):'')+'" onclick="sbVigClick(this)" title="'+esc(String(ex.titre||''))+'">'
     +'<div class="sb-th">'+th+(ex.anim&&(ex.image||ex.video)?'<i>🎞</i>':'')+((ex.paliers||[]).length?'<b class="sb-niv">📶'+((ex.paliers||[]).length+1)+'</b>':'')+'</div><div class="sb-vt">'+esc(String(ex.titre||'Situation'))+'</div>'+(ex.stars?'<div class="stars-ro">'+'★'.repeat(ex.stars)+'</div>':'')
     +(stepKey?'<button type="button" class="sb-vx" title="Retirer de cette étape" data-s="'+esc(stepKey)+'" data-k="'+k+'" onclick="event.stopPropagation();sbUnassign(this.dataset.s,this.dataset.k)">✕</button>':'')+'</div>';
@@ -17865,7 +17872,7 @@ function sbFiltersHtml(s,all){
     +'<select onchange="SB_UI.min=+this.value;sbPalRefresh()"><option value="0">★ toutes</option><option value="3"'+(SB_UI.min===3?' selected':'')+'>★★★ et plus</option><option value="4"'+(SB_UI.min===4?' selected':'')+'>★★★★ et plus</option><option value="5"'+(SB_UI.min===5?' selected':'')+'>★★★★★</option></select>'
     +'<label style="font-size:.72rem;display:flex;gap:4px;align-items:center;"><input type="checkbox"'+(SB_UI.lib?' checked':'')+' onchange="SB_UI.lib=this.checked;sbPalRefresh()"> 📚 inclure la bibliothèque</label></div>';
 }
-function sbLibVigHtml(x){const th=x.image?'<img src="'+x.image+'" alt="" draggable="false">':(x.anim?thumbImgHtml(x.anim,'🎞'):(x.video&&x.video.indexOf('data:')!==0?'<span>🎬</span>':'<span>🏃</span>'));
+function sbLibVigHtml(x){const th=x.image?'<img src="'+x.image+'" alt="" draggable="false">':(x.anim?thumbImgHtml(x.anim,'🎞'):(x.video?vidThumbHtml(x.video):'<span>🏃</span>'));
   return '<div class="sb-vig lib" style="--oe:#64748b" data-drag="lib:'+esc(x.id)+'" onclick="sbVigClick(this)" title="Bibliothèque : '+esc(String(x.titre||''))+' — glisser dans le déroulé ou toucher pour l\'ajouter"><div class="sb-th">'+th+'</div><div class="sb-vt">'+esc(String(x.titre||'Situation'))+'</div>'+(x.stars?'<div class="stars-ro">'+'★'.repeat(x.stars)+'</div>':'')+'</div>';}
 function sbPalListInner(s,rows){const lib=sbLibRows(s);const h=rows.map(r=>sbVigHtml(s,r,null)).join('')+lib.map(sbLibVigHtml).join('');return h||'<div class="sb-meta">Aucune situation avec ces filtres.</div>';}
 function sbPalRefresh(){const s=getActiveSeance();const el=E('sb-pal-list');if(!s||!el)return;const all=sbPaletteRows(s);const prio=all.filter(r=>r.f>=2);el.innerHTML=sbPalListInner(s,sbFilterRows((SB_UI.all||!prio.length)?all:prio));}
@@ -20511,7 +20518,7 @@ function aspExInfo(ex){if(!ex)return null;
   return null;}
 function aspThumb(inf){if(!inf)return '<span>❔</span>';const x=inf.src||{};const ph=(x.phases||[])[0]||{};
   if(x.image||ph.image)return '<img src="'+(x.image||ph.image)+'" alt="" draggable="false">';
-  const an=x.anim||ph.anim;if(an)return thumbImgHtml(an,inf.ico);return '<span>'+inf.ico+'</span>';}
+  const an=x.anim||ph.anim;if(an)return thumbImgHtml(an,inf.ico);if(x.video||ph.video)return vidThumbHtml(x.video||ph.video);return '<span>'+inf.ico+'</span>';}
 function aspLabel(s,b){if(b.kind==='objectif')return '📋 Objectif';if(b.kind==='bilan')return '🏁 Bilan';
   const T=[];(b.ats||[]).forEach(a=>(a.exos||[]).forEach(e=>{const i=aspExInfo(e);if(i&&T.indexOf(i.titre)<0)T.push(i.titre);}));
   return T.length?(T.length>2?T.slice(0,2).join(' · ')+' +'+(T.length-2):T.join(' · ')):'Bloc';}
@@ -20537,21 +20544,20 @@ function aspBlockHtml(s,b,tm,idx){const bi=esc(b.id);const fix=b.kind!=='bloc';
   else{h+=aspAlerts(s,b,tm);h+=(b.ats||[]).map((a,i)=>aspAtHtml(s,b,a,i)).join('');if((b.ats||[]).length<6)h+='<'+'div class="asp-par" data-drop="asp:'+bi+'" onclick="aspAddAt(\''+bi+'\')">⫴ ＋ travail parallèle</'+'div>';}
   return h+'</'+'div>';}
 function hmFmt(m){if(m==null)return '';const h=Math.floor(m/60),mm=m%60;return h+'h'+(mm?String(mm).padStart(2,'0'):'');}
-function aspPalHtml(s){const t=ASP_UI.tab;const q=stripAccents(ASP_UI.q||'').toLowerCase();const ok=x=>!q||stripAccents(String(x||'')).toLowerCase().indexOf(q)>=0;
+function aspPalHtml(s){const t=ASP_UI.tab;
   const tabs=[['grp','👥 Groupes'],['exo','🏃 Situations'],['fps','⚽ FPS'],['warm','🔥 Échauffements']];
-  let h='<'+'div class="asp-pal"><'+'div class="tabs">'+tabs.map(x=>'<button type="button" class="'+(t===x[0]?'on':'')+'" onclick="ASP_UI.tab=\''+x[0]+'\';renderSeanceTab()">'+x[1]+'</button>').join('')
-    +'<input type="search" placeholder="🔍 rechercher" value="'+esc(ASP_UI.q||'')+'" onchange="ASP_UI.q=this.value;renderSeanceTab()" style="flex:1 1 160px;min-width:120px;padding:5px 8px;"></'+'div><'+'div class="list">';
-  if(t==='grp'){h+=aspChips(s).filter(g=>ok(g.label)).map(g=>'<span class="asp-g" style="--gc:'+esc(g.color||'#475569')+';padding:6px 12px;font-size:.82rem;" data-drag="grp:'+esc(g.id)+'">'+esc(String(g.label))+' <small style="opacity:.8;">'+(g.members||[]).length+'</small></span>').join('')
-      +'<button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="planGoGroups()">🎲 Créer / ✎ modifier des groupes</button>';}
-  else if(t==='exo'){let rows=[];try{rows=sbPaletteRows(s);}catch(e){}const seen={};
-    h+=rows.filter(r=>ok(r.exo.titre)).map(r=>{seen[r.key]=1;return sbVigHtml(s,r,null);}).join('');
-    h+=libLoad().filter(x=>x.kind==='remed'&&libFitsSeance(x,s)&&ok(x.titre)).map(sbLibVigHtml).join('');}
-  else if(t==='fps'){h+=libLoad().filter(x=>x.kind==='match'&&libFitsSeance(x,s)&&ok(x.titre)).map(x=>'<'+'div class="sb-vig fps lib" style="--oe:#2563eb" data-drag="fps:'+esc(x.id)+'"><'+'div class="sb-th">'+(x.image?'<img src="'+x.image+'" alt="" draggable="false">':(x.anim?thumbImgHtml(x.anim,'⚽'):'<span>⚽</span>'))+'</'+'div><'+'div class="sb-vt">'+esc(String(x.titre||'FPS'))+'</'+'div></'+'div>').join('');}
-  else{h+='<'+'div class="sb-vig" style="--oe:#f97316" data-drag="aw:1"><'+'div class="sb-th"><span>🔥</span></'+'div><'+'div class="sb-vt">Échauffement de la séance (3 phases)</'+'div></'+'div>'
-      +libLoad().filter(x=>(x.kind==='warm'||x.kind==='phase')&&libFitsSeance(x,s)&&ok(x.titre)).map(x=>{const ph=x.kind==='warm'?(x.phases||[])[0]||{}:x;const th=(ph.image||x.image)?'<img src="'+(ph.image||x.image)+'" alt="" draggable="false">':((ph.anim||x.anim)?thumbImgHtml(ph.anim||x.anim,'🔥'):'<span>🔥</span>');
-        return '<'+'div class="sb-vig lib" style="--oe:#f97316" data-drag="lw:'+esc(x.id)+'" title="Ajouté à l\'échauffement de la séance"><'+'div class="sb-th">'+th+'</'+'div><'+'div class="sb-vt">'+esc(String(x.titre||'Échauffement'))+'</'+'div></'+'div>';}).join('');}
-  if(h.slice(-18).indexOf('class="list">')>=0)h+='<span class="cc-dim">'+(t==='exo'?'Aucune situation : choisis les orientations dans ② (roues Garçons / Filles) ou crée-en dans la Biblio.':t==='fps'?'Aucune FPS dans la Biblio pour ce sport.':'Rien ici pour l\'instant.')+'</span>';
-  return h+'</'+'div><'+'div class="cc-dim" style="margin-top:4px;">Ordinateur : glisser-déposer. Tablette / téléphone : appui long sur un groupe ou un exercice, puis glisser.</'+'div></'+'div>';}
+  let h='<'+'div class="sb-pal asp-pal"><'+'div class="sb-pal-head"><span class="sb-pal-tabs">'+tabs.map(x=>'<button type="button" class="'+(t===x[0]?'on':'')+'" onclick="ASP_UI.tab=\''+x[0]+'\';renderSeanceTab()">'+x[1]+'</button>').join('')+'</span>'
+    +(t!=='grp'?'<label class="sf-allap" title="Montrer aussi les contenus des autres APSA"><input type="checkbox"'+(SB_UI.allSport?' checked':'')+' onchange="SB_UI.allSport=this.checked;renderSeanceTab()"> autres APSA</label>':'')
+    +'<span style="flex:1;"></span><button type="button" class="btn-xs lib-main" onclick="sbLib()">📚 Bibliothèque</button></'+'div>';
+  if(t==='grp'){h+='<'+'div class="sb-pal-list">'+aspChips(s).map(g=>'<span class="asp-g" style="--gc:'+esc(g.color||'#475569')+';padding:7px 12px;font-size:.82rem;" data-drag="grp:'+esc(g.id)+'">'+esc(String(g.label))+' <small style="opacity:.8;">'+(g.members||[]).length+'</small></span>').join('')
+      +'<button type="button" class="btn-xs" style="background:#334155;color:#fff;flex:0 0 auto;" onclick="planGoGroups()">🎲 Créer / ✎ modifier des groupes</button></'+'div>';}
+  else if(t==='exo'){let all=[];try{all=sbPaletteRows(s);}catch(e){}const prio=all.filter(r=>r.f>=2);const rows=sbFilterRows((SB_UI.all||!prio.length)?all:prio);
+    if(prio.length&&prio.length<all.length)h+='<span class="view-tog" style="margin:0 0 4px;"><button type="button" class="'+(SB_UI.all?'':'on')+'" onclick="SB_UI.all=false;renderSeanceTab()">★ Contenus prioritaires ('+prio.length+')</button><button type="button" class="'+(SB_UI.all?'on':'')+'" onclick="SB_UI.all=true;renderSeanceTab()">Toutes ('+all.length+')</button></span>';
+    h+=sbFiltersHtml(s,all)+'<'+'div class="sb-pal-list" id="'+['sb','pal','list'].join('-')+'">'+sbPalListInner(s,rows)+'</'+'div>';}
+  else{let x=sbPalOtherHtml(s,t);x=x.replace(new RegExp('<'+'div class="sb-meta">Glissez [^<]*</'+'div>'),'');
+    if(t==='warm'){const L2='id="'+['sb','pal','list2'].join('-')+'">';x=x.replace(L2,L2+'<'+'div class="sb-vig" style="--oe:#f97316" data-drag="aw:1" title="L\'échauffement de la séance (3 phases)"><'+'div class="sb-th"><span>🔥</span></'+'div><'+'div class="sb-vt">Échauffement de la séance</'+'div></'+'div>');}
+    h+=x;}
+  return h+'<'+'div class="cc-dim" style="margin-top:2px;font-size:.68rem;">Toucher une vignette = la voir · la glisser sur un bloc (appui long sur tablette) = la programmer</'+'div></'+'div>';}
 function aspColsHtml(s){const T=aspTimes(s);const B=aspBase();if(!B.length)return '';
   const col=g=>{let r='';(s.asp.blocks||[]).forEach(b=>{const tm=T[b.id];
       if(b.kind!=='bloc'){r+='<'+'div class="asp-li"><b class="t">'+hmFmt(tm.a)+'</b><span>'+esc(aspLabel(s,b))+'</span></'+'div>';return;}
@@ -20563,8 +20569,8 @@ function aspColsHtml(s){const T=aspTimes(s);const B=aspBase();if(!B.length)retur
 function aspHtml(s){const T=aspTimes(s);const bl=s.asp.blocks||[];const last=bl.length?T[bl[bl.length-1].id]:null;
   let h=(typeof seqBannerHtml==='function'?seqBannerHtml(s):'')+'<'+'div class="sb" id="'+['sb','root'].join('-')+'"><'+'div class="asp-head"><b>🧱 Déroulé de la séance</b><label class="sb-start">🕒 début <input type="time" step="300" value="'+esc(s.start||'')+'" onchange="seanceSetStart(this.value)"></label>'+(last?'<span class="cc-dim">fin ≈ '+hmFmt(last.b)+'</span>':'')+'</'+'div>';
   try{const c=sbCatStartHtml(s);if(c)h+=c;}catch(e){}
-  h+='<'+'div class="asp-grid">'+bl.map((b,i)=>aspBlockHtml(s,b,T[b.id],i)).join('')+'<'+'div class="asp-gap" data-drop="asg:'+Math.max(0,bl.length-1)+'" onclick="aspAddBlock()">＋ Bloc</'+'div></'+'div>';
-  h+=aspPalHtml(s)+'</'+'div>';
+  h+=aspPalHtml(s)+'<'+'div class="asp-grid">'+bl.map((b,i)=>aspBlockHtml(s,b,T[b.id],i)).join('')+'<'+'div class="asp-gap" data-drop="asg:'+Math.max(0,bl.length-1)+'" onclick="aspAddBlock()">＋ Bloc</'+'div></'+'div>';
+  h+='</'+'div>';
   h+='<'+'div class="org"><b>📋 Les séances en colonnes</b> <span class="cc-dim">— se remplissent toutes seules</span>'+aspColsHtml(s)+'</'+'div>';
   return h;}
 // ── actions ──
@@ -20661,7 +20667,7 @@ function aspMe(n){const s=getActiveSeance();if(!s)return;ELEVE_ME=n?{sid:s.id,n:
   try{const oc=createSeance;createSeance=function(){const n0=(SEANCES||[]).length;const r=oc.apply(this,arguments);try{const s=getActiveSeance();if(s&&(SEANCES||[]).length>n0&&aspIsAS(s)&&!s.asp){aspInit(s);saveSeances();renderSeanceTab();}}catch(e){console.warn('asp init',e);}return r;};}catch(e){}
   try{const ob=renderSeanceBuilder;renderSeanceBuilder=function(s){if(s&&s.asp){try{return aspHtml(s);}catch(e){console.warn('asp',e);}}
       const h=ob.apply(this,arguments);if(s&&aspIsAS(s))return '<'+'div class="cc-dim" style="margin:0 0 6px;"><button type="button" class="btn-xs green" onclick="aspEnable()">🆕 Passer au déroulé simplifié (blocs + ateliers)</button></'+'div>'+h;return h;};}catch(e){}
-  try{const oe=renderSeanceEleve;renderSeanceEleve=function(s){if(s&&s.asp){const host=E('seance-tab-content');if(host){host.innerHTML='<'+'div class="seance-eleve">'+aspEleveHtml(s)+'</'+'div>';setTimeout(()=>{try{drawRemedDiagrams();}catch(e){}},0);}return;}return oe.apply(this,arguments);};}catch(e){}
+  try{const oe=renderSeanceEleve;renderSeanceEleve=function(s){if(s&&s.asp){const host=E('seance-tab-content');if(host){host.innerHTML='<'+'div class="card seance-eleve"><'+'div class="sel-top"><'+'div class="sel-title">📅 '+esc(String(s.classe||''))+'</'+'div><button type="button" id="'+['sel','exit','btn'].join('-')+'" class="sel-exit" oncontextmenu="return false" onpointerdown="eleveExitHoldStart(this)" onpointerup="eleveExitHoldCancel()" onpointerleave="eleveExitPtrLeave(event)" onpointercancel="eleveExitPtrCancel(event)" ontouchstart="eleveExitHoldStart(this)" ontouchend="eleveExitHoldCancel()" onclick="eleveExitTap()"><span class="sel-exit-fill"></span><span class="lbl">👩‍🏫 Enseignant<small>maintenir 2 s · ou 5 appuis rapides</small></span></button></'+'div>'+aspEleveHtml(s)+'</'+'div>';setTimeout(()=>{try{drawRemedDiagrams();}catch(e){}},0);}return;}return oe.apply(this,arguments);};}catch(e){}
   // glisser-déposer : nouvelles cibles + appui long au doigt
   try{const oc2=sbCanDrop;sbCanDrop=function(p,drop){const dt=String(drop).split(':')[0];if(dt==='asa'||dt==='asb'||dt==='asp'||dt==='asg'){const t=String(p).split(':')[0];return ['grp','exo','lib','fps','aw','lw','ag','ae'].indexOf(t)>=0;}return oc2.apply(this,arguments);};}catch(e){}
   try{const od=sbDo;sbDo=function(p,drop){const dt=String(drop).split(':')[0];if(dt==='asa'||dt==='asb'||dt==='asp'||dt==='asg'){aspDrop(p,drop);return;}return od.apply(this,arguments);};}catch(e){}
@@ -20680,6 +20686,26 @@ function aspMe(n){const s=getActiveSeance();if(!s)return;ELEVE_ME=n?{sid:s.id,n:
   try{const og2=getPlayersForTeam;let inG=false;getPlayersForTeam=function(name){if(inG)return og2.apply(this,arguments);try{const s=getActiveSeance();if(s&&s.asp&&ASP_OBS.on){inG=true;const g=aspChips(s).find(x=>stripAccents(String(x.label)).toLowerCase()===stripAccents(String(name||'')).toLowerCase());inG=false;if(g)return g.members.slice();}}catch(e){inG=false;}return og2.apply(this,arguments);};}catch(e){}
 })();
 function aspEnable(){const s=getActiveSeance();if(!s)return;aspInit(s);saveSeances();renderSeanceTab();}
+
+// ── v241 : vignette = 1re image de la vidéo ; toucher une vignette en déroulé AS = la voir ──
+function vidThumbHtml(u){u=String(u||'');const y=/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{6,})/.exec(u);
+  if(y)return '<img src="https://img.youtube.com/vi/'+y[1]+'/mqdefault.jpg" alt="" draggable="false">';
+  if(/^data:video|\.(mp4|webm|mov|m4v|ogg)(\?|#|$)/i.test(u)||/^blob:/.test(u))return '<video src="'+esc(u)+(u.indexOf('data:')===0?'':'#t=0.5')+'" muted playsinline preload="metadata"></video>';
+  return '<span>🎬</span>';}
+function aspPreview(kind,id){const it=kind==='exo'?null:libLoad().find(x=>x.id===id);if(!it)return;
+  const o=document.createElement('div');o.className='lib-pick-ov aspx-ov';o.onclick=e=>{if(e.target===o)o.remove();};
+  let b='<h3 style="margin:0 0 6px;">'+esc(String(it.titre||''))+'</h3>';if(it.desc)b+='<p style="white-space:pre-wrap;">'+esc(String(it.desc))+'</p>';
+  const ph=(it.phases||[]);if(it.video)b+='<video src="'+esc(String(it.video))+'" controls playsinline preload="metadata"></video>';if(it.image)b+='<img src="'+it.image+'" alt="">';
+  try{if(it.anim)b+=animEleveHtml(it.anim);}catch(e){}
+  ph.forEach(p=>{b+='<h4 style="margin:10px 0 4px;">'+esc(String(p.titre||''))+'</h4>'+(p.desc?'<p>'+esc(String(p.desc))+'</p>':'')+(p.image?'<img src="'+p.image+'" alt="">':'')+(p.video?'<video src="'+esc(String(p.video))+'" controls playsinline preload="metadata"></video>':'');});
+  o.innerHTML='<'+'div class="lib-pick box" style="padding:14px;max-height:85vh;overflow:auto;">'+b+'<'+'div style="text-align:right;margin-top:10px;"><button type="button" class="btn-xs" style="background:#334155;color:#fff;padding:8px 14px;" onclick="this.closest(\'.aspx-ov\').remove()">Fermer</button></'+'div></'+'div>';
+  document.body.appendChild(o);}
+(function(){
+  const asp=()=>{try{const s=getActiveSeance();return !!(s&&s.asp&&SEANCE_STATE.mode!=='eleve');}catch(e){return false;}};
+  try{const o=sbVigClick;sbVigClick=function(el){if(asp()){if(Date.now()-SB_JUST<350)return;const p=el.dataset.drag||'';if(p.indexOf('lib:')===0){aspPreview('lib',p.slice(4));return;}if(p.indexOf('aw:')===0)return;}return o.apply(this,arguments);};}catch(e){}
+  try{const o2=sbWarmTap;sbWarmTap=function(el){if(asp()){if(Date.now()-SB_JUST<350)return;aspPreview('lib',el.dataset.drag.slice(3));return;}return o2.apply(this,arguments);};}catch(e){}
+  try{const o3=sbFpsTap;sbFpsTap=function(el){if(asp()){if(Date.now()-SB_JUST<350)return;const p=el.dataset.drag;if(p.indexOf('fps:')===0)aspPreview('lib',p.slice(4));return;}return o3.apply(this,arguments);};}catch(e){}
+})();
 </script>
 </body>
 </html>
