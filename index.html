@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v231</title>
+<title>Gribouillis EPS v232</title>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
 /* ── THÈME SOMBRE UNIQUEMENT ── */
@@ -794,6 +794,39 @@ body.sb-dragging{user-select:none;cursor:grabbing;}
 .seq-gs input{flex:1 1 260px;font-size:.8rem;}
 .seq-gs input.sm{flex:0 1 120px;}
 .seq-gs .cc-dim{flex-basis:100%;}
+.pl-card{border:1px solid var(--border);border-radius:14px;background:var(--card);padding:12px;margin-bottom:12px;}
+.pl-top{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:8px;}
+.pl-lanes{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:10px;}
+.pl-lane{border:2px solid var(--lc,#64748b);border-radius:12px;padding:8px;background:rgba(15,23,42,.55);}
+.pl-lh{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:6px;}
+.pl-lh b{font-size:1rem;color:var(--lc);}
+.pl-lh input[type=time]{width:auto;padding:3px 5px;font-size:.78rem;}
+.pl-lh select{width:auto;flex:1 1 140px;font-size:.78rem;padding:4px 6px;}
+.pl-pal{display:flex;gap:5px;flex-wrap:wrap;margin:4px 0 8px;}
+.pl-g{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--gc,#64748b);border-left:5px solid var(--gc,#64748b);border-radius:8px;padding:3px 8px;font-size:.76rem;background:#0f172a;color:var(--text);cursor:grab;}
+.pl-g.pick{outline:3px solid #facc15;}
+.pl-b{border:1px solid var(--border);border-radius:10px;background:#0f172a;margin:6px 0;}
+.pl-b.fix{border-style:dashed;}
+.pl-b.com{border-color:#a855f7;background:rgba(168,85,247,.08);}
+.pl-b.over{outline:3px dashed #facc15;}
+.pl-bh{display:flex;gap:6px;align-items:center;flex-wrap:wrap;padding:6px 8px;border-bottom:1px solid var(--border);font-size:.82rem;}
+.pl-bh .pl-t{font-weight:800;color:#93c5fd;min-width:92px;}
+.pl-bh input{flex:1 1 110px;font-size:.82rem;padding:3px 6px;font-weight:700;}
+.pl-bh select{width:auto;font-size:.74rem;padding:2px 4px;}
+.pl-bb{padding:6px 8px;}
+.pl-it{border-left:4px solid var(--gc,#475569);padding:4px 6px;margin:4px 0;background:rgba(148,163,184,.06);border-radius:6px;font-size:.8rem;}
+.pl-ex{margin:3px 0 0 10px;font-size:.78rem;color:#e2e8f0;}
+.pl-warn{color:#fbbf24;font-size:.72rem;}
+.pl-late{color:#fda4af;font-size:.72rem;}
+.pl-min{width:46px!important;padding:1px 3px!important;font-size:.72rem!important;}
+.pl-wait{font-size:.72rem;color:var(--dim2);text-align:center;margin:2px 0;}
+.pl-sum{font-size:.72rem;color:var(--dim2);margin-top:4px;}
+.pl-fs{position:fixed;inset:0;z-index:9600;background:#0b1220;color:#fff;overflow:auto;padding:18px;}
+.pl-fs h2{margin:0 0 10px;font-size:1.6rem;}
+.pl-fs .pl-b{font-size:1.05rem;}
+.pl-fs .pl-it{font-size:1rem;}
+.pl-fs .pl-ex{font-size:1rem;}
+.sf-cat{display:flex;gap:6px;flex-wrap:wrap;}
 .fit-vid{display:block;max-width:100%;max-height:calc(100vh - 170px);margin:8px auto;border-radius:10px;background:#000;}
 .pres-vids h5{margin:12px 0 2px;font-size:.9rem;color:#93c5fd;}
 .ok-list{margin:0;padding:0;list-style:none;}
@@ -14590,8 +14623,8 @@ function renderSeanceRefChooser(){
   const refs=listReferentiels();if(!refs.length)return '';
   const first=(refs.find(r=>/^AS\b/.test(r.label))||refs[0]).id;
   return '<label style="margin-top:8px;display:block;">Nomenclature des contenus :</label><div class="remed-chip-row" style="margin-top:4px;">'
-    +'<label class="remed-chip" style="display:flex;align-items:center;gap:6px;"><input type="radio" name="seance-ref" value="" checked> 📘 CEDREPS</label>'
-    +'<label class="remed-chip" style="display:flex;align-items:center;gap:6px;"><input type="radio" name="seance-ref" value="'+esc(first)+'"> 🏟️ AS (projets de jeu)</label></div>';
+    +'<label class="remed-chip" style="display:flex;align-items:center;gap:6px;"><input type="radio" name="seance-ref" value=""'+(sfIsAS()?'':' checked')+'> 📘 CEDREPS</label>'
+    +'<label class="remed-chip" style="display:flex;align-items:center;gap:6px;"><input type="radio" name="seance-ref" value="'+esc(first)+'"'+(sfIsAS()?' checked':'')+'> 🏟️ AS (projets de jeu)</label></div>';
 }
 // Écran élève : choix de l'objet, regroupé par phase de jeu si le référentiel en a.
 function eleveOeChoicesHtml(sd,ids,selId){
@@ -16194,7 +16227,7 @@ function renderSeanceTab(){
     // de l'équipe (liste des équipes déjà créées dans l'onglet Accueil).
     const catOpts=(Array.isArray(CLASS_NIVEAUX)?CLASS_NIVEAUX:[]).map(c=>'<option value="'+esc(c)+'">'+esc(c)+'</option>').join('');
     const equipeNames=seanceEquipeOptions();
-    const equipeChipsHtml=equipeNames.length?('<div class="remed-chip-row" id="seance-equipe-chips" style="margin-top:4px;">'+equipeNames.map(n=>'<label class="remed-chip" style="display:flex;align-items:center;gap:6px;"><input type="checkbox" class="seance-equipe-cb" value="'+esc(n)+'"> '+esc(n)+'</label>').join('')+'</div>'):'';
+    const equipeChipsHtml=equipeNames.length?('<div class="remed-chip-row" id="seance-equipe-chips" style="margin-top:4px;">'+equipeNames.map(n=>'<label class="remed-chip" style="display:flex;align-items:center;gap:6px;"><input type="checkbox" class="seance-equipe-cb" value="'+esc(n)+'"'+(sfEqDefault(n)?' checked':'')+'> '+esc(n)+'</label>').join('')+'</div>'):'';
     host.innerHTML=
       '<div class="card">'
       +'<div class="card-title"><span class="ico">📅</span>Nouvelle séance</div>'
@@ -16210,7 +16243,7 @@ function renderSeanceTab(){
       +'<details class="sf-more"><summary>⚙ Plus d\'options <span class="cc-dim">(catégorie, équipes, ordre'+(sfIsAS()?'':', nomenclature')+', modèle)</span></summary>'
       +'<div class="form-row" style="margin-top:8px;">'
       +'<div><label>Catégorie :</label>'
-      +(catOpts?'<select id="seance-cat-select"><option value="">—</option>'+catOpts+'</select>':'<input type="text" id="seance-cat-free" placeholder="Ex : Minimes">')
+      +(catOpts?sfCatChipsHtml():'<input type="text" id="seance-cat-free" placeholder="Ex : Minimes">')
       +'</div>'
       +'</div>'
       +'<div style="margin-top:8px;"><label>Équipe(s) :</label>'
@@ -19847,6 +19880,181 @@ function mediaStudioEdit(){const t=MEDIA_T;const r=t&&mediaRes(t);if(!r||!r.n.me
   STUDIO_LINK={kind:'media',t:t,titre:r.ttl};const j=r.n.media.anim.json;
   document.querySelector('[data-tab="t-studio"]').click();
   studioReady(()=>{try{studioFrame().contentWindow.loadP(JSON.parse(j));}catch(e){alert('Animation illisible');}});showLinkBar();}
+
+// ══════════════════════════════════════════════════════════════════════
+// v232 — SÉANCE EN COULOIRS (AS garçons / filles en parallèle, horaires décalés)
+// s.plan = {lanes:[{id,label,pop,debut,fin,ref,color}],
+//           blocks:[{id,lane ('*' = commun), kind:'presentation'|'echauffement'|'bloc'|'bilan', titre, dur, items:[{id,gid,ex}]}]}
+// ex = {k:'exo',key} | {k:'lib',id}. Heures calculées ; bloc commun = mêmes heures pour tous.
+// ══════════════════════════════════════════════════════════════════════
+const PLAN_UI={pick:null,ex:null,q:''};
+function sfCatChipsHtml(){const C=(Array.isArray(CLASS_NIVEAUX)?CLASS_NIVEAUX:[]);
+  return '<div class="sf-cat">'+C.map(c=>'<label class="remed-chip" style="display:flex;align-items:center;gap:6px;flex:0 1 auto;"><input type="checkbox" class="seance-cat-cb" value="'+esc(c)+'" checked> '+esc(c)+'</label>').join('')+'</div><div class="cc-dim" style="margin-top:3px;">Plusieurs catégories cochées = séance en parallèle (un couloir par catégorie).</div>';}
+function sfEqDefault(n){try{return (COMPO.roster||[]).some(r=>r&&r.club&&clsNorm(r.club)===clsNorm(n));}catch(e){return false;}}
+function planPopOf(lbl){const t=stripAccents(String(lbl||'')).toLowerCase();if(/fille|feminin/.test(t))return 'F';if(/garc|mascul/.test(t))return 'M';return 'all';}
+function planNid(){return 'pb'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
+function planInit(s,cats){
+  cats=(cats&&cats.length)?cats:(s.categories&&s.categories.length?s.categories:[s.categorie||'Groupe']);
+  const lanes=cats.map((c,i)=>{const pop=planPopOf(c);return {id:'L'+i,label:String(c),pop:pop,debut:pop==='F'?'17:30':'16:30',fin:'19:30',ref:planRefFor(s,pop),color:pop==='F'?'#db2777':pop==='M'?'#2563eb':['#0d9488','#d97706','#7c3aed'][i%3]};});
+  const blocks=[];lanes.forEach(l=>{blocks.push({id:planNid(),lane:l.id,kind:'presentation',titre:'Présentation',dur:10,items:[]},{id:planNid(),lane:l.id,kind:'echauffement',titre:'Échauffement',dur:20,items:[]},{id:planNid(),lane:l.id,kind:'bloc',titre:'Bloc 1',dur:30,items:[]},{id:planNid(),lane:l.id,kind:'bilan',titre:'Bilan',dur:10,items:[]});});
+  s.plan={lanes:lanes,blocks:blocks};
+}
+function planRefFor(s,pop){const R=listReferentiels();const cur=s.referentiel||s.sport||'';if(!R.length||pop==='all')return cur;if(!s.referentiel&&!(typeof sfIsAS==='function'&&sfIsAS()))return cur;
+  const f=R.find(r=>pop==='F'?/fille|f[eé]m/i.test(r.label||''):/gar[cç]|masc/i.test(r.label||''));return f?f.id:cur;}
+function planMin(h){const m=String(h||'').match(/(\d{1,2})\s*[h:]\s*(\d{0,2})/i);return m?(+m[1])*60+(+(m[2]||0)):null;}
+function planFmt(m){if(m==null)return '';const h=Math.floor(m/60),mm=m%60;return h+'h'+(mm?String(mm).padStart(2,'0'):'');}
+// ordre d'un couloir : présentation, échauffement, blocs (du couloir + communs), bilan
+function planSeq(s,l){const B=s.plan.blocks;const fx=k=>B.filter(b=>b.lane===l.id&&b.kind===k);
+  return fx('presentation').concat(fx('echauffement'),B.filter(b=>b.kind==='bloc'&&(b.lane===l.id||b.lane==='*')),fx('bilan'));}
+function planTimes(s){
+  const P=s.plan,cur={},T={},wait={};P.lanes.forEach(l=>{cur[l.id]=planMin(l.debut)||0;});
+  const put=(b,l)=>{T[b.id+'@'+l]={a:cur[l],b:cur[l]+(+b.dur||0)};cur[l]+=(+b.dur||0);};
+  P.lanes.forEach(l=>P.blocks.filter(b=>b.lane===l.id&&(b.kind==='presentation'||b.kind==='echauffement')).forEach(b=>put(b,l.id)));
+  P.blocks.filter(b=>b.kind==='bloc').forEach(b=>{
+    if(b.lane==='*'){const st=Math.max.apply(null,P.lanes.map(l=>cur[l.id]));P.lanes.forEach(l=>{if(st>cur[l.id])wait[b.id+'@'+l.id]=st-cur[l.id];cur[l.id]=st;put(b,l.id);});}
+    else if(cur[b.lane]!=null)put(b,b.lane);});
+  P.lanes.forEach(l=>P.blocks.filter(b=>b.lane===l.id&&b.kind==='bilan').forEach(b=>put(b,l.id)));
+  const over={};P.lanes.forEach(l=>{const f=planMin(l.fin);if(f!=null)over[l.id]=cur[l.id]-f;});
+  return {T,wait,over,end:cur};
+}
+// groupes disponibles (tous découpages) ; filtrés par population du couloir
+function planGroups(s){const out=[],seen={};const add=(g,dl)=>{if(!g||seen[g.id])return;seen[g.id]=1;out.push({g:g,dl:dl||''});};
+  (s.groupes||[]).forEach(g=>add(g,''));(s.decoupages||[]).forEach(d=>(d.groupes||[]).forEach(g=>add(g,d.label)));return out;}
+function planGroupById(s,id){const f=planGroups(s).find(x=>x.g.id===id);return f?f.g:null;}
+function planGroupFits(g,pop){if(pop==='all')return true;const m=g.members||[];if(!m.length)return true;const n=m.filter(x=>grpSexe(x)===pop).length;return n>=m.length/2;}
+// heure d'arrivée d'un élève (colonne « fin de cours » du jour de la séance, sinon mercredi)
+function planArrive(s,name){const r=rosterOf(name);if(!r)return null;const fc=r.finCours||{};
+  let day='mercredi';try{const d=new Date((s.date||'')+'T12:00:00');const J=['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'];if(!isNaN(d))day=J[d.getDay()];}catch(e){}
+  const k=Object.keys(fc).find(x=>stripAccents(x).toLowerCase().indexOf(day)>=0)||Object.keys(fc).find(x=>/mercredi/i.test(stripAccents(x)));
+  const m=k?planMin(fc[k]):null;if(m!=null)return m+5;return r.arriveLater?-1:null;}
+function planExInfo(ex){if(!ex)return null;
+  if(ex.k==='exo'){let r=null;try{r=exoByKey(ex.key);}catch(e){}return r?{titre:r.exo.titre||'Situation',src:r.exo,anim:r.exo.anim,minJ:r.exo.minJ}:null;}
+  if(ex.k==='lib'){const it=libLoad().find(x=>x.id===ex.id);return it?{titre:it.titre||'Situation',src:it,anim:it.anim,minJ:it.minJ,lib:true,kind:it.kind}:null;}
+  return null;}
+function planItemHtml(s,b,it,t0,fs){
+  const g=it.gid?planGroupById(s,it.gid):null;const inf=planExInfo(it.ex);const mem=g?(g.members||[]):[];
+  const ab=mem.filter(n=>{const r=rosterOf(n);return r&&r.absent;});const late=mem.filter(n=>{if(ab.indexOf(n)>=0)return false;const a=planArrive(s,n);return a===-1||(a!=null&&t0!=null&&a>t0);});
+  const pres=mem.length-ab.length-late.length;const bi=esc(b.id),ii=esc(it.id);
+  let h='<div class="pl-it" style="--gc:'+esc(g?(g.color||'#64748b'):'#475569')+'">';
+  h+=g?'<b>👥 '+esc(g.label)+'</b> <span class="cc-dim">'+pres+'/'+mem.length+' présents</span>':'<b>👥 Tout le couloir</b>';
+  if(fs&&g)h+='<div style="font-size:.9em;margin-top:2px;">'+mem.map(n=>esc(n)+(g.leader===n?' 👑':'')).join(' · ')+'</div>';
+  if(late.length)h+='<div class="pl-late">⏰ '+late.map(n=>{const a=planArrive(s,n);return esc(n)+(a>0?' ('+planFmt(a)+')':' (en retard)');}).join(', ')+'</div>';
+  if(inf){h+='<div class="pl-ex">↳ '+(inf.kind==='match'?'⚽ ':'🏃 ')+esc(String(inf.titre))+(fs&&inf.anim?' '+animEleveHtml(inf.anim):'')+'</div>';
+    if(!fs)h+='<div class="pl-ex cc-dim">joueurs min. <input class="pl-min" type="number" min="0" max="30" value="'+(inf.minJ||'')+'" onchange="planSetMin(\''+bi+'\',\''+ii+'\',this.value)" aria-label="Nombre minimum de joueurs"></div>';
+    if(inf.minJ&&g&&pres<inf.minJ)h+='<div class="pl-warn">⚠ '+pres+' présent'+(pres>1?'s':'')+' pour '+inf.minJ+' minimum</div>';}
+  else if(!fs)h+='<div class="pl-ex"><button type="button" class="btn-xs" style="background:#1d4ed8;color:#fff;" onclick="planPickEx(\''+bi+'\',\''+ii+'\')">＋ '+(b.kind==='echauffement'?'échauffement':'situation / FPS')+'</button></div>';
+  if(!fs)h+='<div style="text-align:right;margin-top:2px;">'+(inf?'<button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="planPickEx(\''+bi+'\',\''+ii+'\')">⇄</button> ':'')+'<button type="button" class="btn-xs red" onclick="planDelItem(\''+bi+'\',\''+ii+'\')" aria-label="Retirer">✕</button></div>';
+  return h+'</div>';
+}
+function planBlockHtml(s,l,b,TT,fs){
+  const t=TT.T[b.id+'@'+l.id]||{};const w=TT.wait[b.id+'@'+l.id];const bi=esc(b.id);const free=b.kind==='bloc';
+  let h=(w?'<div class="pl-wait">⏸ attente '+w+' min</div>':'')+'<div class="pl-b'+(free?'':' fix')+(b.lane==='*'?' com':'')+'" data-pb="'+bi+'" ondragover="planDragOver(event,this)" ondragleave="this.classList.remove(\'over\')" ondrop="planDrop(event,\''+bi+'\')">';
+  h+='<div class="pl-bh"><span class="pl-t">'+planFmt(t.a)+'–'+planFmt(t.b)+'</span>';
+  if(fs)h+='<b>'+(b.lane==='*'?'⚥ ':'')+esc(b.titre)+'</b>';
+  else{h+=(free?'<input value="'+esc(b.titre)+'" onchange="planSet(\''+bi+'\',\'titre\',this.value)" aria-label="Nom du bloc">':'<b>'+({presentation:'📣',echauffement:'🔥',bilan:'🏁'}[b.kind]||'')+' '+esc(b.titre)+'</b>')
+    +(b.lane==='*'?'<span class="cal-tag" style="background:#a855f7;color:#fff;">⚥ commun</span>':'')
+    +'<select onchange="planSet(\''+bi+'\',\'dur\',+this.value)" aria-label="Durée">'+[5,10,15,20,25,30,35,40,45,50,60,75,90].map(d=>'<option value="'+d+'"'+(+b.dur===d?' selected':'')+'>'+d+' min</option>').join('')+'</select>'
+    +(free?'<button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="planMove(\''+bi+'\',-1)" aria-label="Monter">▲</button><button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="planMove(\''+bi+'\',1)" aria-label="Descendre">▼</button><button type="button" class="btn-xs red" onclick="planDelBlock(\''+bi+'\')" aria-label="Supprimer le bloc">🗑</button>':'');}
+  h+='</div><div class="pl-bb">';
+  const items=b.items||[];
+  h+=items.map(it=>planItemHtml(s,b,it,t.a,fs)).join('');
+  if(!fs){h+=(PLAN_UI.pick?'<button type="button" class="btn-xs green" onclick="planDropPick(\''+bi+'\')">⬇ Déposer « '+esc((planGroupById(s,PLAN_UI.pick)||{}).label||'groupe')+' » ici</button> ':'')
+    +'<button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="planAddAll(\''+bi+'\')">＋ '+(b.kind==='echauffement'?'échauffement':'situation')+' pour tout le couloir</button>';
+    if(!items.length&&!PLAN_UI.pick)h+='<div class="cc-dim" style="margin-top:4px;">Glissez un groupe ici, puis ajoutez sa situation juste en dessous.</div>';}
+  return h+'</div></div>';
+}
+function planLaneHtml(s,l,TT,fs){
+  const li=esc(l.id);const refs=listReferentiels();
+  let h='<div class="pl-lane" style="--lc:'+esc(l.color)+'"><div class="pl-lh"><b>'+(l.pop==='F'?'👧 ':l.pop==='M'?'👦 ':'')+esc(l.label)+'</b>';
+  if(!fs){h+='<input type="time" value="'+esc(l.debut)+'" onchange="planLane(\''+li+'\',\'debut\',this.value)" aria-label="Début"><span class="cc-dim">→</span><input type="time" value="'+esc(l.fin)+'" onchange="planLane(\''+li+'\',\'fin\',this.value)" aria-label="Fin">'
+    +'<button type="button" class="btn-xs" style="background:#0f766e;color:#fff;" onclick="planFull(\''+li+'\')">⛶ Plein écran</button>';
+    if(refs.length)h+='<select onchange="planLane(\''+li+'\',\'ref\',this.value)" aria-label="Projet de jeu"><option value="">Projet de jeu…</option>'+refs.map(r=>'<option value="'+esc(r.id)+'"'+(l.ref===r.id?' selected':'')+'>'+esc(r.label)+'</option>').join('')+'</select>';}
+  else h+='<span style="font-size:1.1rem;">'+planFmt(planMin(l.debut))+' – '+planFmt(planMin(l.fin))+'</span>';
+  h+='</div>';
+  if(!fs){const G=planGroups(s).filter(x=>planGroupFits(x.g,l.pop));
+    h+='<div class="pl-pal">'+(G.length?G.map(x=>{const g=x.g;return '<span class="pl-g'+(PLAN_UI.pick===g.id?' pick':'')+'" style="--gc:'+esc(g.color||'#64748b')+'" draggable="true" ondragstart="planDragStart(event,\''+esc(g.id)+'\')" onclick="planPick(\''+esc(g.id)+'\')" title="Glisser dans un bloc (ou toucher puis « Déposer »)">'+esc(g.label)+' <small>'+(g.members||[]).length+'</small>'+(x.dl?' <small class="cc-dim">'+esc(x.dl)+'</small>':'')+'</span>';}).join(''):'<span class="cc-dim">Pas encore de groupes : bloc « Groupes » plus bas (génération puis ✎ pour les modifier).</span>')+'</div>';}
+  const seq=planSeq(s,l);h+=seq.map(b=>planBlockHtml(s,l,b,TT,fs)).join('');
+  const ov=TT.over[l.id];
+  if(!fs)h+='<div class="pl-sum">'+(ov>0?'⚠ Dépasse '+planFmt(planMin(l.fin))+' de '+ov+' min':ov<0?'Reste '+(-ov)+' min avant '+planFmt(planMin(l.fin)):'Pile à l\'heure ✓')+'</div>'
+    +'<button type="button" class="btn-xs green" style="margin-top:6px;" onclick="planAddBlock(\''+li+'\')">＋ Bloc '+esc(l.label)+'</button>';
+  return h+'</div>';
+}
+function planHtml(s){
+  const TT=planTimes(s);
+  let h='<div class="pl-card"><div class="pl-top"><b style="flex:1;">🗂 Plan de la séance — couloirs en parallèle</b>'
+    +(s.plan.lanes.length>1?'<button type="button" class="btn-xs" style="background:#7c3aed;color:#fff;" onclick="planAddBlock(\'*\')">＋ Bloc commun (mixte)</button>':'')
+    +'<button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="planGoGroups()">👥 Groupes</button></div>'
+    +'<div class="cc-dim" style="margin-bottom:6px;">Présentation, échauffement et bilan sont toujours là. Ajoutez vos blocs, glissez-y un groupe, puis sa situation juste en dessous. Les heures se calculent toutes seules.</div>'
+    +'<div class="pl-lanes">'+s.plan.lanes.map(l=>planLaneHtml(s,l,TT,false)).join('')+'</div></div>';
+  return h;
+}
+function planRefresh(){try{renderSeanceTab();}catch(e){}}
+function planS(){const s=getActiveSeance();return s&&s.plan?s:null;}
+function planB(s,id){return s.plan.blocks.find(b=>b.id===id);}
+function planSet(id,f,v){const s=planS();if(!s)return;const b=planB(s,id);if(!b)return;b[f]=v;saveSeances();planRefresh();}
+function planLane(id,f,v){const s=planS();if(!s)return;const l=s.plan.lanes.find(x=>x.id===id);if(!l)return;l[f]=v;saveSeances();planRefresh();}
+function planAddBlock(lane){const s=planS();if(!s)return;const n=s.plan.blocks.filter(b=>b.kind==='bloc'&&(b.lane===lane||lane==='*'||b.lane==='*')).length+1;
+  s.plan.blocks.push({id:planNid(),lane:lane,kind:'bloc',titre:lane==='*'?'Moment mixte':'Bloc '+n,dur:30,items:[]});saveSeances();planRefresh();}
+function planDelBlock(id){const s=planS();if(!s)return;const b=planB(s,id);if(!b||b.kind!=='bloc')return;if((b.items||[]).length&&!confirm('Supprimer ce bloc et son contenu ?'))return;s.plan.blocks=s.plan.blocks.filter(x=>x.id!==id);saveSeances();planRefresh();}
+function planMove(id,d){const s=planS();if(!s)return;const B=s.plan.blocks;const i=B.findIndex(x=>x.id===id);if(i<0)return;const b=B[i];
+  const same=x=>x.kind==='bloc'&&(x.lane===b.lane||x.lane==='*'||b.lane==='*');let j=i+d;while(j>=0&&j<B.length&&!same(B[j]))j+=d;if(j<0||j>=B.length)return;B.splice(i,1);B.splice(j,0,b);saveSeances();planRefresh();}
+function planPick(gid){PLAN_UI.pick=PLAN_UI.pick===gid?null:gid;planRefresh();}
+function planDragStart(ev,gid){try{ev.dataTransfer.setData('text/plain','grp:'+gid);ev.dataTransfer.effectAllowed='copy';}catch(e){}}
+function planDragOver(ev,el){ev.preventDefault();el.classList.add('over');}
+function planDrop(ev,bid){ev.preventDefault();let d='';try{d=ev.dataTransfer.getData('text/plain');}catch(e){}if(d.indexOf('grp:')===0)planAddGroup(bid,d.slice(4));}
+function planDropPick(bid){if(PLAN_UI.pick)planAddGroup(bid,PLAN_UI.pick);PLAN_UI.pick=null;planRefresh();}
+function planAddGroup(bid,gid){const s=planS();if(!s)return;const b=planB(s,bid);if(!b)return;if(!b.items)b.items=[];b.items.push({id:planNid(),gid:gid,ex:null});saveSeances();planRefresh();}
+function planAddAll(bid){const s=planS();if(!s)return;const b=planB(s,bid);if(!b)return;if(!b.items)b.items=[];const it={id:planNid(),gid:null,ex:null};b.items.push(it);saveSeances();planPickEx(bid,it.id);}
+function planDelItem(bid,iid){const s=planS();if(!s)return;const b=planB(s,bid);if(!b)return;b.items=(b.items||[]).filter(x=>x.id!==iid);saveSeances();planRefresh();}
+function planSetMin(bid,iid,v){const s=planS();if(!s)return;const b=planB(s,bid);const it=b&&(b.items||[]).find(x=>x.id===iid);const inf=it&&planExInfo(it.ex);if(!inf)return;
+  const n=Math.max(0,parseInt(v,10)||0);if(inf.lib){const a=libLoad();const x=a.find(y=>y.id===it.ex.id);if(x){if(n)x.minJ=n;else delete x.minJ;libSave(a);}}else{if(n)inf.src.minJ=n;else delete inf.src.minJ;try{saveRemedEdits();}catch(e){}}
+  planRefresh();}
+function planGoGroups(){try{const el=[...document.querySelectorAll('#seance-tab-content details, #seance-tab-content .remed-axe-box')].find(x=>/Générateur de groupes|Groupes/i.test(x.textContent||''));if(el){if(el.tagName==='DETAILS')el.open=true;el.scrollIntoView({behavior:'smooth',block:'start'});}}catch(e){}}
+// ── choisir une situation / FPS / échauffement ──
+function planExRows(s,b){const l=s.plan.lanes.find(x=>x.id===b.lane)||s.plan.lanes[0];const ref=(l&&l.ref)||s.referentiel||s.sport;const out=[];
+  if(b.kind!=='echauffement'){const refs=[ref];if(REMED_CONTENT&&REMED_CONTENT[ref]&&REMED_CONTENT[ref].custom&&s.sport&&REMED_CONTENT[s.sport])refs.push(s.sport);
+    refs.forEach((rf,ri)=>{const sd=REMED_CONTENT&&REMED_CONTENT[rf];
+    if(sd)(sd.oe||[]).forEach(o=>(o.micro||[]).forEach(m=>(m.cps||[]).forEach(c=>{const p=[rf,o.id,m.id,c.id].join('|');(c.exercices||[]).forEach(ex=>{if(ex&&ex.id)out.push({k:'exo',key:p+'#'+ex.id,titre:ex.titre||'Situation',sub:(ri?'CEDREPS · ':'')+(c.label||''),minJ:ex.minJ,ico:'🏃'});});})));});}
+  libLoad().forEach(x=>{const ok=b.kind==='echauffement'?(x.kind==='warm'||x.kind==='phase'):(x.kind==='remed'||x.kind==='match');if(!ok)return;if(!libFitsSeance(x,s))return;out.push({k:'lib',id:x.id,titre:x.titre||'Sans titre',sub:x.kind==='match'?'FPS':x.kind==='remed'?'Bibliothèque':'Échauffement',minJ:x.minJ,ico:x.kind==='match'?'⚽':x.kind==='remed'?'📚':'🔥'});});
+  return out;}
+function planPickEx(bid,iid){PLAN_UI.ex={bid,iid};PLAN_UI.q='';planPickRender();}
+function planPickClose(){const o=E(['plan','ov'].join('-'));if(o)o.remove();PLAN_UI.ex=null;}
+function planPickRender(){
+  const s=planS();if(!s||!PLAN_UI.ex)return;const b=planB(s,PLAN_UI.ex.bid);if(!b)return planPickClose();
+  let ov=E(['plan','ov'].join('-'));if(!ov){ov=document.createElement('div');ov.id=['plan','ov'].join('-');ov.className='lib-pick-ov';ov.onclick=e=>{if(e.target===ov)planPickClose();};document.body.appendChild(ov);}
+  const q=stripAccents(PLAN_UI.q||'').toLowerCase();const R=planExRows(s,b).filter(r=>!q||stripAccents(r.titre+' '+r.sub).toLowerCase().indexOf(q)>=0);
+  window.__planRows=R;
+  ov.innerHTML='<'+'div class="lib-pick-box" style="max-width:560px;"><div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;"><b style="flex:1;">'+(b.kind==='echauffement'?'🔥 Choisir un échauffement':'🏃 Choisir une situation ou une FPS')+'</b><button type="button" class="btn-xs red" onclick="planPickClose()">✕</button></div>'
+    +'<input type="search" placeholder="🔍 rechercher" value="'+esc(PLAN_UI.q||'')+'" oninput="PLAN_UI.q=this.value;planPickRender();setTimeout(()=>{const i=document.querySelector(\'.lib-pick-box input[type=search]\');if(i){i.focus();i.setSelectionRange(i.value.length,i.value.length);}},0)" style="width:100%;margin-bottom:8px;">'
+    +(R.length?R.slice(0,150).map((r,i)=>'<button type="button" class="qj-team" onclick="planPickDo('+i+')"><span>'+r.ico+'</span><span class="qj-n">'+esc(String(r.titre))+'<br><small class="cc-dim">'+esc(String(r.sub).slice(0,80))+'</small></span>'+(r.minJ?'<span class="qj-badge">min. '+r.minJ+'</span>':'')+'</button>').join(''):'<div class="cc-dim">Rien à proposer : choisissez le projet de jeu du couloir, ou ajoutez des situations dans la bibliothèque.</div>')
+    +calEndHtml();
+}
+function planPickDo(i){const r=(window.__planRows||[])[i];const s=planS();if(!r||!s||!PLAN_UI.ex)return;const b=planB(s,PLAN_UI.ex.bid);const it=b&&(b.items||[]).find(x=>x.id===PLAN_UI.ex.iid);if(!it)return planPickClose();
+  it.ex=r.k==='exo'?{k:'exo',key:r.key}:{k:'lib',id:r.id};saveSeances();planPickClose();planRefresh();}
+// ── plein écran d'un couloir (pour les élèves) ──
+function planFull(lid){const s=planS();if(!s)return;const l=s.plan.lanes.find(x=>x.id===lid);if(!l)return;const TT=planTimes(s);
+  const o=document.createElement('div');o.className='pl-fs';o.id=['plan','fs'].join('-');
+  o.innerHTML='<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;"><h2 style="flex:1;color:'+esc(l.color)+'">'+esc(l.label)+' · '+esc(s.date||'')+'</h2>'
+    +s.plan.lanes.filter(x=>x.id!==lid).map(x=>'<button type="button" class="btn-xs" style="background:'+esc(x.color)+';color:#fff;padding:10px 14px;" onclick="document.getElementById(\'plan-fs\').remove();planFull(\''+esc(x.id)+'\')">⇄ '+esc(x.label)+'</button>').join('')
+    +'<button type="button" class="btn-xs" style="background:#334155;color:#fff;padding:10px 14px;" onclick="document.getElementById(\'plan-fs\').remove()">✕ Fermer</button></div>'
+    +planLaneHtml(s,l,TT,true);
+  document.body.appendChild(o);try{if(o.requestFullscreen)o.requestFullscreen().catch(()=>{});}catch(e){}}
+function planShouldShow(s){return !!(s&&(s.plan||(typeof sfIsAS==='function'&&sfIsAS())||(s.referentiel&&REMED_CONTENT&&REMED_CONTENT[s.referentiel]&&REMED_CONTENT[s.referentiel].custom)));}
+function planEnable(){const s=getActiveSeance();if(!s)return;planInit(s);saveSeances();planRefresh();}
+(function(){
+  try{const o=createSeance;createSeance=function(){
+    const cats=[...document.querySelectorAll('.seance-cat-cb:checked')].map(x=>x.value);const allCats=document.querySelectorAll('.seance-cat-cb').length;const before=(SEANCES||[]).length;
+    const r=o.apply(this,arguments);
+    try{const s=getActiveSeance();if(s&&(SEANCES||[]).length>before&&allCats){s.categories=cats;s.categorie=cats.join(' + ');if(cats.length>1||planShouldShow(s))planInit(s,cats);saveSeances();renderSeanceTab();}}catch(e){console.warn('plan create',e);}
+    return r;};}catch(e){}
+  try{const o2=renderSeanceTab;renderSeanceTab=function(){const r=o2.apply(this,arguments);
+    try{const s=getActiveSeance();const host=E('seance-tab-content');if(s&&host&&SEANCE_STATE.mode!=='eleve'){
+      let ph=host.querySelector('.pl-host');
+      if(s.plan||planShouldShow(s)){if(!ph){ph=document.createElement('div');ph.className='pl-host';const first=host.firstElementChild;if(first&&first.nextSibling)host.insertBefore(ph,first.nextSibling);else host.appendChild(ph);}
+        ph.innerHTML=s.plan?planHtml(s):'<div class="pl-card"><b>🗂 Plan en couloirs</b> <span class="cc-dim">— garçons / filles en parallèle, horaires décalés, groupes placés bloc par bloc.</span> <button type="button" class="btn-xs green" onclick="planEnable()">Organiser cette séance en couloirs</button></div>';}
+    }}catch(e){console.warn('plan render',e);}
+    return r;};}catch(e){}
+})();
 </script>
 </body>
 </html>
