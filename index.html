@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v236</title>
+<title>Gribouillis EPS v237</title>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
 /* ── THÈME SOMBRE UNIQUEMENT ── */
@@ -855,6 +855,14 @@ body.sb-dragging{user-select:none;cursor:grabbing;}
 .pj-chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px;}
 .pj-chips button{border:1px solid var(--border);border-radius:999px;padding:5px 10px;background:#0f172a;color:var(--text);font-size:.74rem;cursor:pointer;}
 .pj-chips button.on{background:var(--pc,#2563eb);border-color:var(--pc,#2563eb);color:#fff;font-weight:700;}
+.sblock-body .grp-card{display:inline-block;vertical-align:top;width:calc(50% - 12px);margin:5px;box-sizing:border-box;}
+@media (min-width:1300px){.sblock-body .grp-card{width:calc(33.3% - 12px);}}
+@media (max-width:700px){.sblock-body .grp-card{width:calc(100% - 10px);}}
+.sblock-body .grp-card textarea{min-height:34px;}
+.el-me{border:2px solid #22c55e;border-radius:14px;padding:10px 12px;margin:0 0 12px;background:rgba(34,197,94,.08);}
+.el-me .names{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;}
+.el-me .names button{border:1px solid var(--border);border-radius:999px;padding:7px 12px;background:#0f172a;color:var(--text);font-size:.9rem;cursor:pointer;}
+.el-me .names button.on{background:#16a34a;border-color:#16a34a;color:#fff;font-weight:800;}
 .fit-vid{display:block;max-width:100%;max-height:calc(100vh - 170px);margin:8px auto;border-radius:10px;background:#000;}
 .pres-vids h5{margin:12px 0 2px;font-size:.9rem;color:#93c5fd;}
 .ok-list{margin:0;padding:0;list-style:none;}
@@ -17306,7 +17314,7 @@ function sbPaletteHtml(s){
     +(tab==='exo'&&prio.length&&prio.length<all.length?'<span class="view-tog" style="margin:0;"><button type="button" class="'+(SB_UI.all?'':'on')+'" onclick="SB_UI.all=false;renderSeanceTab()">★ Contenus prioritaires ('+prio.length+')</button><button type="button" class="'+(SB_UI.all?'on':'')+'" onclick="SB_UI.all=true;renderSeanceTab()">Toutes ('+all.length+')</button></span>':'')
     +'<button type="button" class="btn-xs lib-main" onclick="sbLib()">📚 Bibliothèque</button></div>';
   if(tab!=='exo')h+=sbPalOtherHtml(s,tab);
-  else if(!s.oeId||s.customOeMode)h+='<div class="sb-meta">Choisissez d\'abord l\'objet d\'enseignement (②) pour voir ses situations.</div>';
+  else if((!s.oeId&&!(s.proj2&&s.proj2.oeId)&&!SB_UI.lib)||s.customOeMode)h+='<div class="sb-meta">Choisissez d\'abord l\'objet d\'enseignement (②) pour voir ses situations.</div>';
   else{h+=sbFiltersHtml(s,all);h+='<div class="sb-pal-list" id="sb-pal-list">'+sbPalListInner(s,rows)+'</div>';}
   return h+'</div>';
 }
@@ -20278,6 +20286,65 @@ function seqPj2Toggle(id,oid){seqUpdate(id,q=>{const L=(q.oeIds2||[]).slice();co
       const r1=R.find(r=>r.id===s.referentiel);return '<div class="pj2"><div class="pj-box" style="--pc:'+(r1?pjColor(r1):'#64748b')+'"><h4>🎡 '+esc(r1?r1.label:'Projet')+'</h4>'+h+'</div>'+pj2PanelHtml(s)+'</div>';}catch(e){console.warn('pj2',e);return h;}};}catch(e){}
   try{const o2=sbPaletteRows;sbPaletteRows=function(s){const A=o2.apply(this,arguments);try{const p=pjProxy(s);if(p&&p.oeId){const B=o2.call(this,p);const seen={};A.forEach(r=>{seen[r.key]=1;});B.forEach(r=>{if(!seen[r.key]){seen[r.key]=1;A.push(r);}});}}catch(e){}return A;};}catch(e){}
   try{const o3=seqCreateSeance;seqCreateSeance=function(id,k){const r=o3.apply(this,arguments);try{const q=seqGet(id);const s=q&&seqSeance(q,k);if(s&&q.ref2&&REMED_CONTENT[q.ref2]){const L=(q.oeIds2||[]).slice();s.proj2={referentiel:q.ref2,oeId:L[0]||null,oeExtra:L.slice(1)};saveSeances();}}catch(e){}return r;};}catch(e){}
+})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v237 — roue du 2e projet cliquable (avec ses principes), groupes en mosaïque,
+// élève : « je trouve mon nom » → toute sa séance + son atelier choisi pour lui
+// ══════════════════════════════════════════════════════════════════════
+// ── 2e roue : mêmes actions que la 1re, appliquées au 2e projet ──
+(function(){
+  try{const o=wheelSd;wheelSd=function(){if(WHEEL_UI.alt===1){const s=getActiveSeance();if(s&&s.proj2&&REMED_CONTENT[s.proj2.referentiel]&&REMED_CONTENT[s.proj2.referentiel].custom){
+        if(Object.getPrototypeOf(s.proj2)!==s){try{Object.setPrototypeOf(s.proj2,s);}catch(e){}}
+        const own=k=>Object.prototype.hasOwnProperty.call(s.proj2,k);if(!own('phaseSel')||!Array.isArray(s.proj2.phaseSel))s.proj2.phaseSel=[];if(!own('oeExtra')||!Array.isArray(s.proj2.oeExtra))s.proj2.oeExtra=[];if(!own('oeId'))s.proj2.oeId=null;if(!own('customOeMode'))s.proj2.customOeMode=false;
+        return {s:s.proj2,sd:REMED_CONTENT[s.proj2.referentiel]};}}
+      return o.apply(this,arguments);};}catch(e){}
+  try{const o2=renderSeanceTab;renderSeanceTab=function(){const r=o2.apply(this,arguments);WHEEL_UI.alt=0;return r;};}catch(e){}
+})();
+function pj2LiveHtml(s){const p2=s.proj2;const sd2=p2&&REMED_CONTENT[p2.referentiel];if(!sd2)return '';
+  const px=Object.create(s);px.referentiel=p2.referentiel;px.oeId=p2.oeId||null;px.oeExtra=(p2.oeExtra||[]).slice();px.phaseSel=(p2.phaseSel||[]).slice();px.customOeMode=false;
+  let h='';try{h='<div class="wheel-wrap"><div class="wheel-col">'+wheelSvg(px,sd2,false)+'</div><div class="wheel-cards">'+wheelCardsHtml(px,sd2,false)+'</div><svg class="wheel-links" aria-hidden="true"></svg></div>';}catch(e){console.warn('pj2 roue',e);return '';}
+  return h.replace(/onclick="/g,'onclick="WHEEL_UI.alt=1;');}
+(function(){
+  try{const o=pj2PanelHtml;pj2PanelHtml=function(s){let h=o.apply(this,arguments);try{if(s.proj2&&REMED_CONTENT[s.proj2.referentiel]){const live=pj2LiveHtml(s);if(live){
+      const D='<'+'div ';const M=D+'class="cc-dim" style="margin-top:6px;">';
+      h=h.replace(new RegExp(D+'class="pj-wh">[\\s\\S]*?</svg></'+'div>'),'');
+      const a=h.indexOf(D+'class="cc-dim">Orientations travaillées :'),b=h.indexOf(M);if(a>=0&&b>a)h=h.slice(0,a)+h.slice(b);
+      h=h.replace(M,live+M);}}}catch(e){console.warn(e);}return h;};}catch(e){}
+  // 1re roue : ses clics visent le 1er projet
+  try{const o3=wheelPanelHtml;wheelPanelHtml=function(s,sd){const h=o3.apply(this,arguments);return h.replace(/onclick="(?!WHEEL_UI\.alt)/g,'onclick="WHEEL_UI.alt=0;');};}catch(e){}
+})();
+// ── élève : trouver son nom → sa séance complète ; son atelier est choisi pour lui ──
+let ELEVE_ME=null;
+try{SB_UI.lib=true;}catch(e){} // bibliothèque visible d'office dans « Situations »
+function elMeKey(s){return 'grib_eleve_me_'+(s&&s.id||'');}
+function elMeGet(s){if(ELEVE_ME&&ELEVE_ME.sid===s.id)return ELEVE_ME.n;try{const v=sessionStorage.getItem(elMeKey(s));if(v){ELEVE_ME={sid:s.id,n:v};return v;}}catch(e){}return null;}
+function elMeSet(n){const s=getActiveSeance();if(!s)return;ELEVE_ME=n?{sid:s.id,n:n}:null;try{if(n)sessionStorage.setItem(elMeKey(s),n);else sessionStorage.removeItem(elMeKey(s));}catch(e){}renderSeanceTab();if(n)elPerson(n);}
+function elNames(s){const used=sbUsedGroupIds(s);const out=[];seanceGroupChips(s).forEach(g=>{if(!used[g.id])return;(g.members||[]).forEach(n=>{if(out.indexOf(n)<0)out.push(n);});});
+  (s.steps||[]).forEach(st=>{const b=seanceStepBase(st.key);if(b!=='match'&&b!=='remediation')return;parAteliers(s,st.key).forEach(a=>atelierEleves(s,a.key,b).forEach(n=>{if(out.indexOf(n)<0)out.push(n);}));});
+  return out.sort((a,b)=>String(a).localeCompare(String(b),'fr'));}
+function elMeBoxHtml(s){const N=elNames(s);if(!N.length)return '';const me=elMeGet(s);
+  return '<div class="el-me"><b>🙋 '+(me?'Tu es <span style="color:#4ade80;">'+esc(me)+'</span>':'Trouve ton nom pour voir toute ta séance')+'</b>'+(me?' <button type="button" class="btn-xs green" onclick="elPerson(\''+esc(me).replace(/'/g,"\\'")+'\')">📋 Ma séance</button> <button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="elMeSet(null)">Ce n\'est pas moi</button>':'')
+    +(me?'':'<div class="names">'+N.map(n=>'<button type="button" data-n="'+esc(n)+'" onclick="elMeSet(this.dataset.n)">'+esc(n)+'</button>').join('')+'</div>')+'</div>';}
+function elWhere(s,key,name){const b=seanceStepBase(key);const ats=parAteliers(s,key);
+  if(b!=='match'&&b!=='remediation')return {txt:'tous ensemble'};
+  const any=ats.some(a=>sbAtMembers(s,key,a.key).length);if(!any)return {txt:'tous ensemble'+orgContent(s,key,key,b)};
+  const i=ats.findIndex(a=>sbAtMembers(s,key,a.key).indexOf(name)>=0);if(i<0)return {txt:'— pas dans cette étape',off:true};
+  const a=ats[i];const gl=atelierGroupLabels(s,a.key,b);return {txt:(ats.length>1?'Atelier '+String.fromCharCode(65+i)+' · ':'')+esc(gl.join(' · '))+orgContent(s,key,a.key,b),ak:a.key};}
+function elPerson(name){const s=getActiveSeance();if(!s)return;const tms=seanceStepTimes(s);
+  const old=document.getElementById('pers'+'-ov2');if(old)old.remove();
+  const o=document.createElement('div');o.id=['pers','ov2'].join('-');o.className='org-fs';
+  let rows='';(s.steps||[]).forEach(st=>{const d=seanceStepDef(st.key);const w=elWhere(s,st.key,name);const tm=tms[st.key];
+    let lab=d.ico+' '+esc(d.label)+seanceStepNum(s,st.key);try{if(sbIsAS(s)){const c=sbContentLabel(s,st.key);if(c)lab=d.ico+' '+esc(c);}}catch(e){}
+    rows+='<div class="org-row'+(w.off?' off':'')+'"><span class="t">'+esc(tm?tm.start:'')+'</span><span class="x"><b>'+lab+'</b><br>'+w.txt+'</span></div>';});
+  o.innerHTML='<div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;"><b style="flex:1;font-size:1.5rem;">🙋 La séance de '+esc(name)+'</b><button type="button" class="btn-xs" style="background:#334155;color:#fff;padding:10px 14px;" onclick="document.getElementById(\'pers-ov2\').remove()">✕ Fermer</button></div>'+rows;
+  document.body.appendChild(o);}
+(function(){
+  try{const o=renderSeanceEleve;renderSeanceEleve=function(s){const r=o.apply(this,arguments);try{const host=E('seance-tab-content');const b=elMeBoxHtml(s);if(host&&b){const d=document.createElement('div');d.innerHTML=b;host.insertBefore(d.firstChild,host.firstChild);}}catch(e){console.warn('el-me',e);}return r;};}catch(e){}
+  // l'élève qui a donné son nom va directement dans SON atelier (pas de choix à faire)
+  try{const o2=eleveAtelierRoute;eleveAtelierRoute=function(s,st){try{const me=elMeGet(s);if(me){const c=(s.eleveChoix&&s.eleveChoix[st.key])||null;const ats=parAteliers(s,st.key);
+      if(ats.length>1&&!(c&&ats.some(a=>a.key===c.atelier))){const w=elWhere(s,st.key,me);if(w.ak){if(!s.eleveChoix)s.eleveChoix={};s.eleveChoix[st.key]=Object.assign({},s.eleveChoix[st.key]||{},{atelier:w.ak});}}}}catch(e){}
+    return o2.apply(this,arguments);};}catch(e){}
 })();
 </script>
 </body>
