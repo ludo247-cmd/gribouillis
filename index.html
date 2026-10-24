@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v239</title>
+<title>Gribouillis EPS v240</title>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
 /* ── THÈME SOMBRE UNIQUEMENT ── */
@@ -20483,10 +20483,14 @@ function renderEleveStepEchauffementV2(s,st){
 // ══════════════════════════════════════════════════════════════════════
 const ASP_UI={tab:'grp',q:''};
 function aspNid(p){return (p||'b')+Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
-function aspRoster(){return (COMPO.roster||[]).filter(r=>r&&r.name!=null&&!r.absent).map(r=>r.name);}
+function aspRoster(){if(ASP_RC)return ASP_RC;ASP_RC=aspRoster0();setTimeout(()=>{ASP_RC=null;},0);return ASP_RC;}
+let ASP_RC=null;
+function aspRoster0(){return (COMPO.roster||[]).filter(r=>r&&r.name!=null&&!r.absent).map(r=>r.name);}
 function aspBase(){const R=aspRoster();const M=R.filter(n=>grpSexe(n)==='M'),F=R.filter(n=>grpSexe(n)==='F');const out=[];
   if(M.length)out.push({id:'pop-M',label:'Garçons',color:'#2563eb',members:M,base:true});if(F.length)out.push({id:'pop-F',label:'Filles',color:'#db2777',members:F,base:true});return out;}
-function aspChips(s){const B=aspBase();let G=[];try{G=seanceGroupChips(s).filter(g=>!g.auto&&!g.team&&(g.members||[]).length);}catch(e){}return B.concat(G);}
+const ASP_OBS={on:false};let ASP_CC=null;
+function aspChips(s){if(ASP_CC&&ASP_CC.id===s.id)return ASP_CC.v;const v=aspChips0(s);ASP_CC={id:s.id,v:v};setTimeout(()=>{ASP_CC=null;},0);return v;}
+function aspChips0(s){const B=aspBase();let G=[];try{G=seanceGroupChips(s).filter(g=>!g.auto&&!g.team&&(g.members||[]).length);}catch(e){}return B.concat(G);}
 function aspChip(s,id){return aspChips(s).find(g=>g.id===id)||null;}
 function aspIsAS(s){try{if(!s)return false;if(/(^|[^a-z0-9])as([^a-z0-9]|$)/i.test(String(s.classe||'')))return true;const C=(s.categories||[]).join(' ')+' '+(s.categorie||'');return /fille/i.test(C)&&/gar[cç]/i.test(C);}catch(e){return false;}}
 function aspInit(s){
@@ -20600,7 +20604,7 @@ function aspDrop(p,drop){const s=aspS();if(!s)return;const P=aspPayload(p);if(!P
   else if(ex){if(P.exFrom){const a0=aspAt(s,P.exFrom.b,P.exFrom.a);if(a0===tgt)return;a0.exos.splice(P.exFrom.k,1);}tgt.exos.push(ex);if(P.warmLib){try{WARM_TARGET=null;warmEnsure(s);libInsert(P.warmLib);}catch(e){}}}
   saveSeances();renderSeanceTab();}
 // ── observer une FPS d'un atelier ──
-function aspObserve(bid,aid){const s=aspS();if(!s)return;const a=aspAt(s,bid,aid);if(!a)return;
+function aspObserve(bid,aid){const s=aspS();if(!s)return;ASP_OBS.on=true;const a=aspAt(s,bid,aid);if(!a)return;
   const G=(a.groups||[]).map(id=>aspChip(s,id)).filter(Boolean);
   const fx=(a.exos||[]).map(aspExInfo).find(i=>i&&i.kind==='fps');
   try{if(fx&&fx.src){const pn=fx.src.profile||(fx.src.cfg&&fx.src.cfg.profile)||'';const P=CFG.savedPresets||[];let idx=pn?P.findIndex(p=>p&&p.name===pn):-1;if(idx>=0)applyNamedPreset(idx);}}catch(e){}
@@ -20673,7 +20677,7 @@ function aspMe(n){const s=getActiveSeance();if(!s)return;ELEVE_ME=n?{sid:s.id,n:
     let asY=null,asT=null;document.addEventListener('pointermove',e=>{asY=(SB_DRAG&&SB_DRAG.on)?e.clientY:null;if(asY!=null&&!asT)asT=setInterval(()=>{if(!(SB_DRAG&&SB_DRAG.on)||asY==null){clearInterval(asT);asT=null;return;}const H=innerHeight;const d=asY<90?-14:asY>H-90?14:0;if(d){const r=E('sb-root');(r?scr(r):document.scrollingElement).scrollBy(0,d);}},30);},true);
     document.addEventListener('contextmenu',e=>{if(e.target.closest&&e.target.closest('#sb-root [data-drag]'))e.preventDefault();});}catch(e){}
   // une équipe = un groupe de la séance : ses joueurs pour l'observation individuelle
-  try{const og2=getPlayersForTeam;getPlayersForTeam=function(name){try{const s=getActiveSeance();if(s&&s.asp){const g=aspChips(s).find(x=>stripAccents(String(x.label)).toLowerCase()===stripAccents(String(name||'')).toLowerCase());if(g)return g.members.slice();}}catch(e){}return og2.apply(this,arguments);};}catch(e){}
+  try{const og2=getPlayersForTeam;let inG=false;getPlayersForTeam=function(name){if(inG)return og2.apply(this,arguments);try{const s=getActiveSeance();if(s&&s.asp&&ASP_OBS.on){inG=true;const g=aspChips(s).find(x=>stripAccents(String(x.label)).toLowerCase()===stripAccents(String(name||'')).toLowerCase());inG=false;if(g)return g.members.slice();}}catch(e){inG=false;}return og2.apply(this,arguments);};}catch(e){}
 })();
 function aspEnable(){const s=getActiveSeance();if(!s)return;aspInit(s);saveSeances();renderSeanceTab();}
 </script>
