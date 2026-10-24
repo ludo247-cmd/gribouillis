@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v246</title>
+<title>Gribouillis EPS v247</title>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
 /* ── THÈME SOMBRE UNIQUEMENT ── */
@@ -13592,7 +13592,7 @@ function renderLibPickList(){
   const allK=libLoad().filter(x=>kinds.indexOf(x.kind)>=0);
   let list=allK.filter(x=>(!q||((x.titre||'')+' '+(x.desc||'')).toLowerCase().indexOf(q)>=0)&&libPickPass(x));
   const hidden=allK.length-list.length;
-  const score=x=>(LIB_PICK.wt&&x.wtype===LIB_PICK.wt?8:0)+(LIB_PICK.cp&&x.cp===LIB_PICK.cp?4:0)+(c.oe&&x.oe===c.oe?2:0)+(c.apsa&&x.apsa===c.apsa?1:0);
+  const score=x=>(LIB_PICK.wt&&(x.wtype===LIB_PICK.wt||(x.wtypes||[]).indexOf(LIB_PICK.wt)>=0)?8:0)+(LIB_PICK.cp&&x.cp===LIB_PICK.cp?4:0)+(c.oe&&x.oe===c.oe?2:0)+(c.apsa&&x.apsa===c.apsa?1:0);
   const rel=x=>LIB_PICK.kind==='remed'?libPickRel(x):0;
   list.sort((a,b)=>rel(b)-rel(a)||(b.stars||0)-(a.stars||0)||score(b)-score(a)||(b.date||0)-(a.date||0));
   const wider=(hidden>0&&(LIB_PICK.foe||LIB_PICK.fcp))?'<div style="font-size:.68rem;color:var(--dim2);margin:2px 0 4px;">'+hidden+' autre'+(hidden>1?'s':'')+' situation'+(hidden>1?'s':'')+' hors filtres · <a href="#" onclick="LIB_PICK.foe=\'\';LIB_PICK.fcp=\'\';renderLibPick();return false;" style="color:#93c5fd;">tout afficher</a></div>':'';
@@ -13611,7 +13611,7 @@ function renderLibTab(){
   const s=getActiveSeance();
   const uniq=f=>all.map(f).filter((x,i,a)=>x&&a.indexOf(x)===i);
   const sel=(k,opts,lab)=>'<select class="remed-edit-field" style="max-width:100%;margin-top:0;" onchange="libSet(\''+k+'\',this.value)"><option value="">'+lab+'</option>'+opts.map(o=>'<option value="'+esc(o[0])+'"'+(LIB_UI[k]===o[0]?' selected':'')+'>'+esc(o[1])+'</option>').join('')+'</select>';
-  const list=all.filter(x=>(!LIB_UI.kind||x.kind===LIB_UI.kind)&&(!LIB_UI.niv||x.niveau===LIB_UI.niv)&&(!LIB_UI.apsa||x.apsa===LIB_UI.apsa)&&(!LIB_UI.oe||x.oe===LIB_UI.oe||(x.oeAlso||[]).indexOf(LIB_UI.oe)>=0)&&(!LIB_UI.cp||x.cp===LIB_UI.cp)&&(!LIB_UI.tag||(x.tags||[]).indexOf(LIB_UI.tag)>=0)&&(!LIB_UI.wt||x.wtype===LIB_UI.wt)&&(!LIB_UI.q||((x.titre||'')+' '+(x.desc||'')).toLowerCase().indexOf(LIB_UI.q.toLowerCase())>=0)&&(!LIB_UI.note||(x.stars||0)>=+LIB_UI.note));
+  const list=all.filter(x=>(!LIB_UI.kind||x.kind===LIB_UI.kind)&&(!LIB_UI.niv||x.niveau===LIB_UI.niv)&&(!LIB_UI.apsa||x.apsa===LIB_UI.apsa)&&(!LIB_UI.oe||x.oe===LIB_UI.oe||(x.oeAlso||[]).indexOf(LIB_UI.oe)>=0)&&(!LIB_UI.cp||x.cp===LIB_UI.cp)&&(!LIB_UI.tag||(x.tags||[]).indexOf(LIB_UI.tag)>=0)&&(!LIB_UI.wt||x.wtype===LIB_UI.wt||(x.wtypes||[]).indexOf(LIB_UI.wt)>=0)&&(!LIB_UI.q||((x.titre||'')+' '+(x.desc||'')).toLowerCase().indexOf(LIB_UI.q.toLowerCase())>=0)&&(!LIB_UI.note||(x.stars||0)>=+LIB_UI.note));
   const counts={};all.forEach(x=>{counts[x.kind]=(counts[x.kind]||0)+1;});
   let h='<div class="card"><div class="card-title"><span class="ico">📚</span>Bibliothèque ('+all.length+')</div>'
     +'<div style="display:flex;gap:6px;flex-wrap:wrap;margin:0 0 10px;"><button type="button" class="btn-xs" style="background:#15803d;color:#fff;padding:7px 12px;" onclick="libcOpen(\'remed\')">➕ Situation</button><button type="button" class="btn-xs" style="background:#b45309;color:#fff;padding:7px 12px;" onclick="wcOpen()">🔥 Composer un échauffement</button><button type="button" class="btn-xs" style="background:#c2410c;color:#fff;padding:7px 12px;" onclick="libcOpen(\'warm\')">➕ Exercice d\'échauffement</button><button type="button" class="btn-xs" style="background:#15803d;color:#fff;padding:7px 12px;" onclick="libcOpen(\'match\')">➕ Match</button><button type="button" class="btn-xs" style="background:#15803d;color:#fff;padding:7px 12px;" onclick="libcOpen(\'oe\')">➕ Objet d\'enseignement</button><button type="button" class="btn-xs" style="background:#1e3a8a;color:#fff;padding:7px 12px;" onclick="libVideoNew()">🎬 Mes vidéos</button></div>'
@@ -13805,7 +13805,7 @@ function libcRender(){
     h+=libcPhotoHtml();
     h+=animField(f.anim,'LIBC.f.anim=J?{name:animName(J),json:J}:null;libcRender()');
     h+='<label class="remed-edit-label">Lien vidéo (facultatif)</label><input class="remed-edit-field" placeholder="https://…" value="'+esc(f.video||'')+'" oninput="libcSet(\'video\',this.value)" onchange="libcSet(\'video\',this.value);libcRender()">'+(f.video?'<video src="'+esc(f.video)+'" controls playsinline style="max-width:100%;max-height:200px;border-radius:8px;margin-top:6px;display:block;"></video>':'')+'<div style="margin-top:4px;"><button type="button" class="btn-xs" style="background:#1e3a8a;color:#fff;" onclick="libcVideoGh()">📂 Choisir dans GitHub</button></div>';
-    h+='<label class="remed-edit-label">🔥 Phase de l\'échauffement</label><div class="remed-chip-row">'+WARM_TYPES.map(t=>'<div class="remed-chip'+(f.wtype===t.id?' selected':'')+'" style="flex:0 1 auto;padding:5px 10px;font-size:.74rem;" onclick="libcSet(\'wtype\',\''+t.id+'\');libcRender()">'+t.ico+' '+esc(t.t)+'</div>').join('')+'</div>';
+    h+='<label class="remed-edit-label">🔥 Phase(s) de l\'échauffement <small style="font-weight:400;">(une ou plusieurs)</small></label><div class="remed-chip-row">'+WARM_TYPES.filter(t=>!/^(ex|x2|x3)$/.test(t.id)).map(t=>'<div class="remed-chip'+(wtList(f).indexOf(t.id)>=0?' selected':'')+'" style="flex:0 1 auto;padding:5px 10px;font-size:.74rem;" onclick="wtToggle(\''+t.id+'\')">'+t.ico+' '+esc(t.t)+'</div>').join('')+'</div>';
     if(f.wtype==='p2')h+='<label class="remed-edit-label">Type</label><div class="remed-chip-row">'+WARM_SUBS.filter(x=>x[0]).map(x=>'<div class="remed-chip'+(f.sub===x[0]?' selected':'')+'" style="flex:0 1 auto;padding:5px 10px;font-size:.74rem;" onclick="libcSet(\'sub\',\''+(f.sub===x[0]?'':x[0])+'\');libcRender()">'+x[1]+'</div>').join('')+'</div>';
     h+='<label class="remed-edit-label">🏷 Mes tags (ex : gainage)</label><div class="remed-chip-row">'+libAllTags().map(t=>'<div class="remed-chip'+(f.tags.indexOf(t)>=0?' selected':'')+'" style="flex:0 1 auto;padding:5px 10px;font-size:.74rem;" onclick="libcTagToggle(\''+esc(t).replace(/'/g,"\\'")+'\')">#'+esc(t)+'</div>').join('')+'<div class="remed-chip" style="flex:0 1 auto;padding:5px 10px;font-size:.74rem;" onclick="libcTagAdd()">＋ tag</div></div>';
     if(f.crits.length){h+='<label class="remed-edit-label">🎯 Critères de réussite</label>';f.crits.forEach((c,i)=>{h+='<div style="display:flex;gap:6px;align-items:center;margin-bottom:4px;"><input class="remed-edit-field" style="flex:2;margin-top:0;" placeholder="Ex : secondes tenues" value="'+esc(c.label)+'" oninput="libcCrit('+i+',\'label\',this.value)"><input class="remed-edit-field" type="number" style="flex:0 0 64px;margin-top:0;" value="'+c.cible+'" oninput="libcCrit('+i+',\'cible\',this.value)"><button type="button" class="btn-xs red" onclick="libcCritDel('+i+')">✕</button></div>';});}
@@ -20966,7 +20966,7 @@ let WC=null;
 function wcCopy(x,t){const c=JSON.parse(JSON.stringify({titre:x.titre||'Exercice',desc:x.desc||'',image:x.image||null,video:x.video||null,anim:x.anim||null,criteres:x.criteres||[],sub:x.sub||''}));c.wtype=t;c.src=x.id||'';return c;}
 function wcOpen(id){const it=id?libLoad().find(x=>x.id===id&&x.kind==='warm'):null;
   WC={id:it?it.id:null,titre:it?it.titre:'Mon échauffement',desc:it?(it.desc||''):'',apsas:it?wapsOf(it):['general'],secs:{},notes:Object.assign({},(it&&it.notes)||{}),pick:null,q:''};
-  if(it){(it.phases||[]).forEach(p=>{const t=WARM_TYPES.some(w=>w.id===p.wtype)?p.wtype:'p3';(WC.secs[t]=WC.secs[t]||[]).push(JSON.parse(JSON.stringify(p)));});
+  if(it){const XM={ex:'p1',x2:'p2',x3:'p3'};(it.phases||[]).forEach(p=>{let t=WARM_TYPES.some(w=>w.id===p.wtype)?p.wtype:'p3';const c=JSON.parse(JSON.stringify(p));if(XM[t]){t=XM[t];c.wtype=t;c.express=true;const L0=WC.secs[t]||[];const same=L0.find(y=>y.titre===c.titre);if(same){same.express=true;return;}}(WC.secs[t]=WC.secs[t]||[]).push(c);});
     (it.secs||[]).forEach(sc=>{const v=sc&&sc.notes&&sc.notes.all;if(v&&!WC.notes[sc.type])WC.notes[sc.type]=v;});}
   wcRender();}
 function wcClose(){const o=E(['wc','ov'].join('-'));if(o)o.remove();WC=null;}
@@ -20977,28 +20977,57 @@ function wcRender(){if(!WC)return;let o=E(['wc','ov'].join('-'));if(!o){o=docume
     +'<label class="remed-edit-label">Nom</label><input class="remed-edit-field" value="'+esc(WC.titre)+'" oninput="WC.titre=this.value">'
     +warmApsaChips(WC.apsas,'WC.apsas','wcRender()')
     +'<label class="remed-edit-label">Description (facultatif)</label><textarea class="remed-edit-field" rows="2" oninput="WC.desc=this.value">'+esc(WC.desc)+'</textarea>';
-  WARM_TYPES.forEach(t=>{const L=WC.secs[t.id]||[];
+  h+='<'+'div class="cc-dim" style="margin:6px 0;">⚡ <b>Version express</b> = les mêmes mouvements, en moins : touche ⚡ sur les exercices à garder pour l\'express ('+wcExpN()+' choisi'+(wcExpN()>1?'s':'')+').</'+'div>';
+  WARM_TYPES.filter(t=>!/^(ex|x2|x3)$/.test(t.id)).forEach(t=>{const L=WC.secs[t.id]||[];
     h+=D+' class="wc-sec"'+(/^(av|ex|x2|x3)$/.test(t.id)?' style="border-left-color:#a855f7"':'')+'><h4>'+t.ico+' '+esc(t.t)+' <small style="font-weight:400;color:var(--dim2);">('+L.length+')</small></h4>'
       +'<textarea placeholder="Consigne de la phase (ex : circuit 5 × 30 s, 15 s de récupération)" oninput="WC.notes[\''+t.id+'\']=this.value">'+esc(WC.notes[t.id]||'')+'</textarea>'
-      +D+' class="wc-exs">'+L.map((x,i)=>D+' class="wc-ex">'+D+' class="th">'+wcThumb(x)+C+D+' class="nm">'+esc(String(x.titre||''))+C+D+' class="ac"><button type="button" onclick="wcMove(\''+t.id+'\','+i+',-1)">◀</button><button type="button" onclick="wcMove(\''+t.id+'\','+i+',1)">▶</button><button type="button" class="x" onclick="wcDel(\''+t.id+'\','+i+')">✕</button>'+C+C).join('')+C
+      +D+' class="wc-exs">'+L.map((x,i)=>D+' class="wc-ex">'+D+' class="th">'+wcThumb(x)+C+D+' class="nm">'+esc(String(x.titre||''))+C+D+' class="ac"><button type="button" onclick="wcMove(\''+t.id+'\','+i+',-1)">◀</button><button type="button" onclick="wcMove(\''+t.id+'\','+i+',1)">▶</button>'+(t.id!=='av'?'<button type="button" title="Garder dans l\'échauffement express" style="'+(x.express?'background:#ca8a04;':'')+'" onclick="wcExp(\''+t.id+'\','+i+')">⚡</button>':'')+'<button type="button" class="x" onclick="wcDel(\''+t.id+'\','+i+')">✕</button>'+C+C).join('')+C
       +'<button type="button" class="btn-xs" style="background:#b45309;color:#fff;" onclick="WC.pick=WC.pick===\''+t.id+'\'?null:\''+t.id+'\';wcRender()">'+(WC.pick===t.id?'▲ Fermer':'＋ Ajouter un exercice')+'</button> <button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="wcNew(\''+t.id+'\')">✎ Créer un nouvel exercice</button>';
     if(WC.pick===t.id){const q=stripAccents(String(WC.q||'')).toLowerCase();
       const P=libLoad().filter(x=>x.kind==='phase').filter(x=>{const A=wapsOf(x);return WC.apsas.indexOf('general')>=0||A.indexOf('general')>=0||A.some(k=>WC.apsas.indexOf(k)>=0);}).filter(x=>!q||stripAccents(String(x.titre||'')+' '+(x.desc||'')).toLowerCase().indexOf(q)>=0);
-      P.sort((a,b)=>((a.wtype===t.id)?0:1)-((b.wtype===t.id)?0:1)||(b.stars||0)-(a.stars||0));
+      P.sort((a,b)=>(wtList(a).indexOf(t.id)>=0?0:1)-(wtList(b).indexOf(t.id)>=0?0:1)||(b.stars||0)-(a.stars||0));
       h+=D+' class="wc-pick"><input type="search" class="remed-edit-field" style="margin:0 0 6px;" placeholder="🔍 rechercher un exercice" value="'+esc(WC.q||'')+'" onchange="WC.q=this.value;wcRender()">'
-        +D+' class="wc-exs">'+(P.map(x=>D+' class="wc-ex" data-id="'+esc(x.id)+'" onclick="wcAdd(\''+t.id+'\',this.dataset.id)" title="Ajouter">'+D+' class="th">'+wcThumb(x)+C+D+' class="nm">'+esc(String(x.titre||''))+(x.wtype&&x.wtype!==t.id?' <small style="opacity:.6;font-weight:400;">('+esc(warmTypeDef(x.wtype).e||'')+')</small>':'')+C+C).join('')||'<span class="cc-dim">Aucun exercice dans la Biblio : « ✎ Créer un nouvel exercice ».</span>')+C+C;}
+        +D+' class="wc-exs">'+(P.map(x=>D+' class="wc-ex" data-id="'+esc(x.id)+'" onclick="wcAdd(\''+t.id+'\',this.dataset.id)" title="Ajouter">'+D+' class="th">'+wcThumb(x)+C+D+' class="nm">'+esc(String(x.titre||''))+(x.wtype&&wtList(x).indexOf(t.id)<0?' <small style="opacity:.6;font-weight:400;">('+esc(warmTypeDef(x.wtype).e||'')+')</small>':'')+C+C).join('')||'<span class="cc-dim">Aucun exercice dans la Biblio : « ✎ Créer un nouvel exercice ».</span>')+C+C;}
     h+=C;});
   o.innerHTML=h+C;o.scrollTop=keep;}
 function wcAdd(t,id){const x=libLoad().find(y=>y.id===id);if(!x||!WC)return;(WC.secs[t]=WC.secs[t]||[]).push(wcCopy(x,t));wcRender();}
 function wcDel(t,i){if(!WC||!WC.secs[t])return;WC.secs[t].splice(i,1);wcRender();}
 function wcMove(t,i,d){const L=WC&&WC.secs[t];if(!L)return;const j=i+d;if(j<0||j>=L.length)return;const x=L[i];L[i]=L[j];L[j]=x;wcRender();}
-function wcNew(t){if(!WC)return;WC.waitNew=t;libcOpen('warm');if(LIBC){LIBC.f.wtype=t;LIBC.f.apsas=WC.apsas.slice();libcRender();}}
+function wcNew(t){if(!WC)return;WC.waitNew=t;libcOpen('warm');if(LIBC){LIBC.f.wtype=t;LIBC.f.wtypes=[t];LIBC.f.apsas=WC.apsas.slice();libcRender();}}
 function wcSave(){if(!WC)return;const tit=String(WC.titre||'').trim()||'Mon échauffement';const ph=[];WARM_TYPES.forEach(t=>(WC.secs[t.id]||[]).forEach(x=>{const c=JSON.parse(JSON.stringify(x));c.wtype=t.id;ph.push(c);}));
   if(!ph.length){alert('Ajoute au moins un exercice.');return;}
   const aps=WC.apsas.slice();const a=libLoad();const old=WC.id?a.find(x=>x.id===WC.id):null;
   const item=Object.assign(old||{id:'lib-'+Date.now()+'-'+Math.floor(Math.random()*1000),kind:'warm',date:Date.now(),oe:'',oeLab:'',cp:''},{titre:tit,desc:WC.desc||'',phases:ph,notes:Object.assign({},WC.notes),apsas:aps,apsa:aps.indexOf('general')>=0?'':aps.map(k=>k.charAt(0).toUpperCase()+k.slice(1)).join(' / ')});
   delete item.secs;if(!old)a.push(item);libSave(a);WC.id=item.id;try{libRefresh();}catch(e){}try{renderLibTab();}catch(e){}
   toast2('💾 « '+tit+' » enregistré ('+ph.length+' exercices)');wcClose();}
+
+// ══════════════════════════════════════════════════════════════════════
+// v247 — exercice d'échauffement dans PLUSIEURS phases ; l'express n'est
+// plus une phase d'exercice : c'est une version allégée de l'échauffement
+// (⚡ sur les exercices gardés) ; la fiche ne saute plus quand on clique.
+// ══════════════════════════════════════════════════════════════════════
+function wtList(x){if(!x)return [];if(Array.isArray(x.wtypes))return x.wtypes.slice();return x.wtype?[x.wtype]:[];}
+function wtToggle(id){if(!LIBC)return;const f=LIBC.f;let L=wtList(f);const i=L.indexOf(id);if(i>=0)L.splice(i,1);else L.push(id);
+  const ord=t=>WARM_TYPES.findIndex(w=>w.id===t);L.sort((a,b)=>ord(a)-ord(b));f.wtypes=L;f.wtype=L.indexOf('p2')>=0?'p2':(L[0]||'p3');libcRender();}
+function wcExpN(){if(!WC)return 0;let n=0;Object.keys(WC.secs).forEach(k=>(WC.secs[k]||[]).forEach(x=>{if(x.express)n++;}));return n;}
+function wcExp(t,i){const x=WC&&WC.secs[t]&&WC.secs[t][i];if(!x)return;x.express=!x.express;wcRender();}
+(function(){
+  // pas de saut : on garde la position de défilement de la fiche
+  try{const o=libcRender;libcRender=function(){const ov=E('libc-ov');const a=ov?ov.scrollTop:0,b=ov&&ov.firstChild?ov.firstChild.scrollTop:0;const r=o.apply(this,arguments);try{const ov2=E('libc-ov');if(ov2){ov2.scrollTop=a;if(ov2.firstChild)ov2.firstChild.scrollTop=b;}}catch(e){}return r;};}catch(e){}
+  try{const oe=libEdit;libEdit=function(id){const r=oe.apply(this,arguments);try{const it=libLoad().find(x=>x.id===id);if(it&&it.kind==='phase'&&LIBC){LIBC.f.wtypes=wtList(it).filter(t=>!/^(ex|x2|x3)$/.test(t));if(!LIBC.f.wtypes.length)LIBC.f.wtypes=['p1'];libcRender();}}catch(e){}return r;};}catch(e){}
+  try{const oo=libcOpen;libcOpen=function(kind){const r=oo.apply(this,arguments);try{if(kind==='warm'&&LIBC){LIBC.f.wtypes=[];libcRender();}}catch(e){}return r;};}catch(e){}
+  try{const os=libcSave;libcSave=function(){const L=LIBC;const isW=L&&L.kind==='warm';let wts=isW?wtList(L.f):null;if(isW&&!wts.length)wts=[L.f.wtype||'p3'];const before={};libLoad().forEach(x=>{before[x.id]=1;});
+      const r=os.apply(this,arguments);
+      try{if(isW&&wts&&wts.length){const a=libLoad();const it=L.editId?a.find(x=>x.id===L.editId):a.filter(x=>!before[x.id]&&x.kind==='phase').pop();if(it){it.wtypes=wts;it.wtype=wts.indexOf('p2')>=0?'p2':wts[0];if(wts.indexOf('p2')>=0&&L.f.sub)it.sub=L.f.sub;libSave(a);try{libRefresh();}catch(e){}}}}catch(e){}
+      return r;};}catch(e){}
+  // échauffement complet → séance : les exercices ⚡ vont aussi dans l'express de la séance
+  try{const oi=libInsert;libInsert=function(id){const it=libLoad().find(x=>x.id===id);const s0=getActiveSeance();const n0=s0&&s0.echauffement&&Array.isArray(s0.echauffement.phases)?s0.echauffement.phases.length:0;
+      const r=oi.apply(this,arguments);
+      try{if(it&&it.kind==='warm'&&(it.phases||[]).some(p=>p.express)){const s=getActiveSeance();const e=warmEnsure(s);const XM={p1:'ex',p2:'x2',p3:'x3'};
+        (it.phases||[]).forEach((p,k)=>{if(!p.express||!XM[p.wtype])return;const sc=e.secs.find(x=>x.type===XM[p.wtype]);const base=e.phases[n0+k];if(!sc||!base)return;const c=JSON.parse(JSON.stringify(base));c.id='ph-'+Date.now()+'-x'+k;c.sec=sc.id;c.wtype=XM[p.wtype];c.scores={};c.participants=[];e.phases.push(c);});
+        saveSeances();renderSeanceTab();}}catch(e){console.warn('express',e);}
+      return r;};}catch(e){}
+})();
 </script>
 </body>
 </html>
