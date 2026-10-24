@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v248</title>
+<title>Gribouillis EPS v249</title>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
 /* ── THÈME SOMBRE UNIQUEMENT ── */
@@ -1002,6 +1002,7 @@ body:has(#t-seance.active) .btn-start{padding:7px;font-size:.9rem;}
 .wc-ap{display:flex;gap:5px;flex-wrap:wrap;margin:4px 0 6px;}
 .wc-ap button{border:1px solid var(--border);border-radius:999px;padding:5px 10px;background:#0f172a;color:var(--text);font-size:.74rem;font-weight:700;cursor:pointer;}
 .wc-ap button.on{background:#b45309;border-color:#b45309;color:#fff;}
+.asp-late{font-size:.68rem;color:#fbbf24;margin:3px 0;line-height:1.3;}
 .fit-vid{display:block;max-width:100%;max-height:calc(100vh - 170px);margin:8px auto;border-radius:10px;background:#000;}
 .pres-vids h5{margin:12px 0 2px;font-size:.9rem;color:#93c5fd;}
 .ok-list{margin:0;padding:0;list-style:none;}
@@ -20622,6 +20623,7 @@ function aspAlerts(s,b,tm){if(b.kind!=='bloc')return '';const cnt={};(b.ats||[])
 function aspAtHtml(s,b,a,i){const bi=esc(b.id),ai=esc(a.id);
   let h='<'+'div class="asp-at" data-drop="asa:'+bi+':'+ai+'">'+((b.ats||[]).length>1?'<'+'div class="lab">ATELIER '+String.fromCharCode(65+i)+'</'+'div>':'');
   h+=(a.groups||[]).map(gid=>{const g=aspChip(s,gid);if(!g)return '';return '<span class="asp-g" style="--gc:'+esc(g.color||'#475569')+'" data-drag="ag:'+bi+':'+ai+':'+esc(gid)+'" title="Glisser vers un autre atelier · double-clic pour retirer" ondblclick="aspDelGroup(\''+bi+'\',\''+ai+'\',\''+esc(gid)+'\')">'+esc(String(g.label))+'</span>';}).join('');
+  h+=aspLateHtml(s,b,a);
   h+=(a.exos||[]).map((e,k)=>{const inf=aspExInfo(e);return '<'+'div class="asp-ex" data-drag="ae:'+bi+':'+ai+':'+k+'"><span class="th">'+aspThumb(inf)+'</span><span class="n">'+esc(inf?String(inf.titre):'(supprimé)')+'</span><button type="button" onclick="aspDelEx(\''+bi+'\',\''+ai+'\','+k+')" aria-label="Retirer">✕</button></'+'div>';}).join('');
   if(!(a.groups||[]).length&&!(a.exos||[]).length)h+='<'+'div class="asp-empty">Glissez un groupe et un exercice ici</'+'div>';
   if((a.exos||[]).some(e=>{const i=aspExInfo(e);return i&&i.kind==='fps';}))h+='<button type="button" class="obs" onclick="aspObserve(\''+bi+'\',\''+ai+'\')">▶ Observer ce match</button>';
@@ -20762,7 +20764,7 @@ function aspEleveExHtml(s,e){const inf=aspExInfo(e);if(!inf)return '';let h='<'+
     if(x.anim)h+=animEleveHtml(x.anim);
     if((x.criteres||[]).length)h+='<'+'div class="sel-crit">🎯 '+x.criteres.map(c=>esc(String(c.label||c))).join(' · ')+'</'+'div>';}catch(err){console.warn(err);}
   return h+'</'+'div>';}
-function aspEleveHtml(s){const me=elMeGet(s);const all=!me&&!aspRoster().length;
+function aspEleveHtml(s){const me=elMeGet(s);const LATE={arr:me?aspLateArr(s,me):null,done:0};const all=!me&&!aspRoster().length;
   if(!me&&!all){const N=aspRoster().slice().sort((a,b)=>String(a).localeCompare(String(b),'fr'));
     return '<'+'div class="ael-step"><h3>🙋 Qui es-tu ?</h3><'+'div class="cc-dim">Touche ton prénom : tu verras toute ta séance.</'+'div><'+'div class="ael-names">'+N.map(n=>'<button type="button" data-n="'+esc(n)+'" onclick="aspMe(this.dataset.n)">'+esc(n)+'</button>').join('')+'</'+'div></'+'div>';}
   const T=aspTimes(s);const MG=aspMyGroups(s,me);
@@ -20771,8 +20773,9 @@ function aspEleveHtml(s){const me=elMeGet(s);const all=!me&&!aspRoster().length;
   let n=0;(s.asp.blocks||[]).forEach(b=>{const tm=T[b.id];
     if(b.kind==='objectif'){n++;let w='';try{const px=elProxy(s);const sd=seanceSportDef(px);if(sd&&sd.custom)w='<'+'div class="sel-box as-wheel-el"><'+'div class="sel-dim">Les phases en couleur sont celles qu\'on travaille aujourd\'hui. Touche une autre phase pour voir ses vidéos.</'+'div><'+'div class="wheel-wrap"><'+'div class="wheel-col">'+wheelSvg(px,sd,'eleve')+'</'+'div><'+'div class="wheel-cards">'+wheelCardsHtml(px,sd,true,ELEVE_WHEEL_PEEK)+'</'+'div><svg class="wheel-links" aria-hidden="true"></svg></'+'div></'+'div>'+presVideosHtml(px,sd);}catch(e){}
       h+='<'+'div class="ael-step"><h3><span class="t">'+n+' · '+hmFmt(tm.a)+'</span>📋 Notre projet de jeu</h3>'+(w||'<'+'div class="cc-dim">Écoute la présentation de ton enseignant.</'+'div>')+'</'+'div>';return;}
-    if(b.kind==='bilan'){n++;h+='<'+'div class="ael-step"><h3><span class="t">'+n+' · '+hmFmt(tm.a)+'</span>🏁 Bilan</h3></'+'div>';return;}
-    const A2=all?(b.ats||[]).filter(x=>(x.exos||[]).length||(x.groups||[]).length):(b.ats||[]).filter(x=>aspAtMembers(s,x).indexOf(me)>=0).slice(0,1);A2.forEach(a=>{n++;
+    if(b.kind==='bilan'){if(me&&LATE.arr!=null&&!LATE.done){LATE.done=1;n++;h+=aspExpressStep(s,n,LATE.arr===-1?'à ton arrivée':hmFmt(LATE.arr));}n++;h+='<'+'div class="ael-step"><h3><span class="t">'+n+' · '+hmFmt(tm.a)+'</span>🏁 Bilan</h3></'+'div>';return;}
+    if(me&&LATE.arr!=null){if(LATE.arr!==-1&&tm.b<=LATE.arr)return;if(!LATE.done){LATE.done=1;n++;h+=aspExpressStep(s,n,LATE.arr===-1?'à ton arrivée':hmFmt(LATE.arr));}}
+    const A2=all?(b.ats||[]).filter(x=>(x.exos||[]).length||(x.groups||[]).length):(b.ats||[]).filter(x=>aspAtMembers(s,x).indexOf(me)>=0).slice(0,1);A2.forEach(a=>{if(LATE.done&&(a.exos||[]).length&&(a.exos||[]).every(e=>e.k==='warm'))return;n++;
     const mates=aspAtMembers(s,a).filter(x=>x!==me);const gl=(a.groups||[]).map(id=>(aspChip(s,id)||{}).label).filter(Boolean);
     h+='<'+'div class="ael-step"><h3><span class="t">'+n+' · '+hmFmt(tm.a)+'</span>'+esc(((a.exos||[]).map(e=>(aspExInfo(e)||{}).titre).filter(Boolean).join(' → '))||'À suivre')+'</h3>'
       +(gl.length?'<'+'div class="ael-with">👥 '+esc(gl.join(' + '))+(mates.length&&mates.length<=14&&(a.groups||[]).some(id=>!/^pop-/.test(id))?' — avec '+mates.map(esc).join(', '):'')+'</'+'div>':'')
@@ -21053,6 +21056,38 @@ function vthRun(){if(VTH.busy||!VTH.q.length)return;VTH.busy=true;const it=VTH.q
         if(ids.length&&e.phases.some(p=>ids.indexOf(p.id)>=0)){try{toast2('« '+(it.titre||'')+' » est déjà dans l\'échauffement de cette séance');}catch(x){}return;}
         const n0=e.phases.length;const r=oi.apply(this,arguments);try{const s2=getActiveSeance();const e2=warmEnsure(s2);const nw=e2.phases.slice(n0).map(p=>p.id);if(nw.length){if(!s2.warmLibMap||typeof s2.warmLibMap!=='object')s2.warmLibMap={};s2.warmLibMap[id]=nw;saveSeances();}}catch(x){}return r;}
       return oi.apply(this,arguments);};}catch(e){}
+})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v249 — arrivées (fin de cours du mercredi dans le Sheets) : ⏰ dans les
+// ateliers ; l'élève en retard a, à son arrivée, l'échauffement express (10 min)
+// dans SA séance. Échauffements de la Biblio : jamais d'exercices en double.
+// ══════════════════════════════════════════════════════════════════════
+function aspLateHtml(s,b,a){if(b.kind!=='bloc')return '';const tm=aspTimes(s)[b.id];if(!tm)return '';
+  const L=aspAtMembers(s,a).map(n=>({n:n,x:aspArr(s,n)})).filter(o=>o.x===-1||(o.x!=null&&o.x>tm.a));if(!L.length)return '';
+  L.sort((p,q)=>(p.x===-1?9999:p.x)-(q.x===-1?9999:q.x));
+  return '<'+'div class="asp-late" title="Pas encore là au début de ce bloc (fin de cours + 5 min)">⏰ '+L.slice(0,8).map(o=>esc(o.n)+' '+(o.x===-1?'(en retard)':hmFmt(o.x))).join(' · ')+(L.length>8?' +'+(L.length-8):'')+'</'+'div>';}
+// heure d'arrivée si l'élève arrive APRÈS le début normal (de sa catégorie, sinon de la séance) ; -1 = en retard, heure inconnue
+function aspLateArr(s,me){const x=aspArr(s,me);if(x==null)return null;if(x===-1)return -1;
+  let nm=hm2m(s.start||'')||hm2m('16:30');try{const r=rosterOf(me);const cs=s.catStart||{};const k=r&&Object.keys(cs).find(c=>clsNorm(c)===clsNorm(r.categorie||''));const m=k?planMin(cs[k]):null;if(m!=null)nm=m;}catch(e){}
+  return x>nm?x:null;}
+function aspExpressStep(s,n,t){let c='';try{c=warmXCards(s,'ex');}catch(e){}
+  return '<'+'div class="ael-step" style="border-color:#ca8a04;"><h3><span class="t">'+n+' · '+esc(t)+'</span>⚡ Échauffement express (10 min)</h3><'+'div class="ael-with">Tu arrives après les autres : fais d\'abord ces exercices, puis rejoins ton groupe.</'+'div>'
+    +(c?'<'+'div class="warm-mosaic">'+c+'</'+'div>':'<'+'div class="cc-dim">Ton enseignant te montre l\'échauffement express.</'+'div>')+'</'+'div>';}
+function warmDupKey(e,ph){const sc=(e.secs||[]).find(x=>x.id===ph.sec);return (sc?sc.type:'?')+'|'+String(ph.titre||'')+'|'+String(ph.desc||'')+'|'+String(ph.video||'')+'|'+String(ph.image||'').length;}
+function warmDedupe(s){try{const e=s&&s.echauffement;if(!e||!Array.isArray(e.phases)||!e.phases.length)return false;warmEnsure(s);const seen={};const keep=[];let n=0;
+  e.phases.forEach(ph=>{const k=warmDupKey(e,ph);const used=(ph.participants||[]).length||Object.keys(ph.scores||{}).length;if(seen[k]&&!used){n++;return;}seen[k]=1;keep.push(ph);});
+  if(n){e.phases=keep;}return n>0;}catch(x){return false;}}
+(function(){
+  try{const oi=libInsert;libInsert=function(id){const s=getActiveSeance();const it=libLoad().find(x=>x.id===id);
+      if(!(s&&it&&(it.kind==='warm'||it.kind==='phase')))return oi.apply(this,arguments);
+      const e0=warmEnsure(s);const before={};e0.phases.forEach(p=>{before[warmDupKey(e0,p)]=1;});const ids0={};e0.phases.forEach(p=>{ids0[p.id]=1;});
+      const r=oi.apply(this,arguments);
+      try{const s2=getActiveSeance();const e=warmEnsure(s2);let n=0;e.phases=e.phases.filter(p=>{if(ids0[p.id])return true;const k=warmDupKey(e,p);if(before[k]){n++;return false;}before[k]=1;return true;});
+        if(n){saveSeances();renderSeanceTab();try{toast2(n+' exercice'+(n>1?'s':'')+' déjà présent'+(n>1?'s':'')+' : pas ajouté'+(n>1?'s':'')+' en double');}catch(x){}}}catch(x){}
+      return r;};}catch(e){}
+  // séances AS déjà doublées : on retire les doublons (sans toucher à ceux qui ont des scores)
+  try{const ob=renderSeanceTab;renderSeanceTab=function(){try{const s=getActiveSeance();if(s&&s.asp&&warmDedupe(s))saveSeances();}catch(e){}return ob.apply(this,arguments);};}catch(e){}
 })();
 </script>
 </body>
