@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v249</title>
+<title>Gribouillis EPS v250</title>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
 /* ── THÈME SOMBRE UNIQUEMENT ── */
@@ -13616,7 +13616,7 @@ function renderLibTab(){
   const list=all.filter(x=>(!LIB_UI.kind||x.kind===LIB_UI.kind)&&(!LIB_UI.niv||x.niveau===LIB_UI.niv)&&(!LIB_UI.apsa||x.apsa===LIB_UI.apsa)&&(!LIB_UI.oe||x.oe===LIB_UI.oe||(x.oeAlso||[]).indexOf(LIB_UI.oe)>=0)&&(!LIB_UI.cp||x.cp===LIB_UI.cp)&&(!LIB_UI.tag||(x.tags||[]).indexOf(LIB_UI.tag)>=0)&&(!LIB_UI.wt||x.wtype===LIB_UI.wt||(x.wtypes||[]).indexOf(LIB_UI.wt)>=0)&&(!LIB_UI.q||((x.titre||'')+' '+(x.desc||'')).toLowerCase().indexOf(LIB_UI.q.toLowerCase())>=0)&&(!LIB_UI.note||(x.stars||0)>=+LIB_UI.note));
   const counts={};all.forEach(x=>{counts[x.kind]=(counts[x.kind]||0)+1;});
   let h='<div class="card"><div class="card-title"><span class="ico">📚</span>Bibliothèque ('+all.length+')</div>'
-    +'<div style="display:flex;gap:6px;flex-wrap:wrap;margin:0 0 10px;"><button type="button" class="btn-xs" style="background:#15803d;color:#fff;padding:7px 12px;" onclick="libcOpen(\'remed\')">➕ Situation</button><button type="button" class="btn-xs" style="background:#b45309;color:#fff;padding:7px 12px;" onclick="wcOpen()">🔥 Composer un échauffement</button><button type="button" class="btn-xs" style="background:#c2410c;color:#fff;padding:7px 12px;" onclick="libcOpen(\'warm\')">➕ Exercice d\'échauffement</button><button type="button" class="btn-xs" style="background:#15803d;color:#fff;padding:7px 12px;" onclick="libcOpen(\'match\')">➕ Match</button><button type="button" class="btn-xs" style="background:#15803d;color:#fff;padding:7px 12px;" onclick="libcOpen(\'oe\')">➕ Objet d\'enseignement</button><button type="button" class="btn-xs" style="background:#1e3a8a;color:#fff;padding:7px 12px;" onclick="libVideoNew()">🎬 Mes vidéos</button></div>'
+    +'<div style="display:flex;gap:6px;flex-wrap:wrap;margin:0 0 10px;"><button type="button" class="btn-xs" style="background:#15803d;color:#fff;padding:7px 12px;" onclick="libcOpen(\'remed\')">➕ Situation</button><button type="button" class="btn-xs" style="background:#b45309;color:#fff;padding:7px 12px;" onclick="wcOpen()">🔥 Composer un échauffement</button><button type="button" class="btn-xs" style="background:#334155;color:#fff;padding:7px 12px;" onclick="libImportAsk()">📥 Importer un code</button><button type="button" class="btn-xs" style="background:#c2410c;color:#fff;padding:7px 12px;" onclick="libcOpen(\'warm\')">➕ Exercice d\'échauffement</button><button type="button" class="btn-xs" style="background:#15803d;color:#fff;padding:7px 12px;" onclick="libcOpen(\'match\')">➕ Match</button><button type="button" class="btn-xs" style="background:#15803d;color:#fff;padding:7px 12px;" onclick="libcOpen(\'oe\')">➕ Objet d\'enseignement</button><button type="button" class="btn-xs" style="background:#1e3a8a;color:#fff;padding:7px 12px;" onclick="libVideoNew()">🎬 Mes vidéos</button></div>'
     +'<div class="remed-chip-row" style="margin-bottom:8px;">'
     +[['','Tout']].concat(Object.keys(LIB_KINDS).map(k=>[k,LIB_KINDS[k]])).map(o=>'<div class="remed-chip'+(LIB_UI.kind===o[0]?' selected':'')+'" style="flex:0 1 auto;padding:6px 10px;font-size:.74rem;" onclick="libSet(\'kind\',\''+o[0]+'\')">'+(o[0]?(LIB_ICO[o[0]]+' '):'')+esc(o[1])+' <b style="color:#86efac;">'+(o[0]?(counts[o[0]]||0):all.length)+'</b></div>').join('')
     +'</div>'+(libAllTags().length?'<div class="remed-chip-row" style="margin-bottom:8px;"><div class="remed-chip'+(!LIB_UI.tag?' selected':'')+'" style="flex:0 1 auto;padding:5px 10px;font-size:.72rem;" onclick="libSet(\'tag\',\'\')">🏷 Tous tags</div>'+libAllTags().map(t=>'<div class="remed-chip'+(LIB_UI.tag===t?' selected':'')+'" style="flex:0 1 auto;padding:5px 10px;font-size:.72rem;" onclick="libSet(\'tag\',\''+esc(t).replace(/'/g,"\\'")+'\')">#'+esc(t)+'</div>').join('')+'</div>':'')
@@ -21089,6 +21089,25 @@ function warmDedupe(s){try{const e=s&&s.echauffement;if(!e||!Array.isArray(e.pha
   // séances AS déjà doublées : on retire les doublons (sans toucher à ceux qui ont des scores)
   try{const ob=renderSeanceTab;renderSeanceTab=function(){try{const s=getActiveSeance();if(s&&s.asp&&warmDedupe(s))saveSeances();}catch(e){}return ob.apply(this,arguments);};}catch(e){}
 })();
+
+// ══════════════════════════════════════════════════════════════════════
+// v250 — Biblio : importer des situations / FPS / échauffements à partir
+// d'un code (préparé par Claude ou copié depuis une autre appli Gribouillis).
+// Format : {"gribouillis":"lib","items":[ {kind,titre,…} ]} (ou un tableau).
+// ══════════════════════════════════════════════════════════════════════
+function libImportParse(t){let d=null;try{d=JSON.parse(String(t||'').trim());}catch(e){return null;}
+  const L=Array.isArray(d)?d:(d&&Array.isArray(d.items)?d.items:(d&&d.kind&&d.titre?[d]:null));if(!L)return null;
+  const ok=L.filter(x=>x&&typeof x==='object'&&/^(remed|match|warm|phase)$/.test(x.kind||'')&&String(x.titre||'').trim());return ok.length?ok:null;}
+function libImportText(t){const L=libImportParse(t);if(!L){alert('Ce code n\'est pas un lot de la Biblio Gribouillis.');return 0;}
+  const a=libLoad();let n=0;L.forEach((x,i)=>{const it=JSON.parse(JSON.stringify(x));it.id=['lib',Date.now(),'imp'+i,Math.floor(Math.random()*1000)].join('-');it.date=Date.now();
+    if(it.anim&&typeof it.anim.json!=='string'&&it.anim.json)it.anim.json=JSON.stringify(it.anim.json);
+    if(!Array.isArray(it.tags))it.tags=[];if(!Array.isArray(it.criteres))it.criteres=[];if(it.kind==='remed'&&!Array.isArray(it.roles))it.roles=[];
+    if(a.some(y=>y.kind===it.kind&&y.titre===it.titre&&String(y.desc||'')===String(it.desc||'')))return;a.push(it);n++;});
+  libSave(a);try{renderLibTab();}catch(e){}try{toast2(n?('📥 '+n+' élément'+(n>1?'s':'')+' ajouté'+(n>1?'s':'')+' à la Biblio'):'Déjà dans la Biblio : rien d\'ajouté');}catch(e){}return n;}
+function libImportAsk(){const fb=()=>askTextDlg('Collez le code à importer','',v=>{if(v)libImportText(v);},'{"gribouillis":"lib",…}');
+  try{if(navigator.clipboard&&navigator.clipboard.readText){navigator.clipboard.readText().then(t=>{if(libImportParse(t))libImportText(t);else fb();}).catch(fb);return;}}catch(e){}fb();}
+document.addEventListener('paste',e=>{try{const tg=e.target;if(tg&&((/INPUT|TEXTAREA/.test(tg.tagName)&&tg.type!=='file')||tg.isContentEditable))return;if(!document.querySelector('#t-lib.active'))return;
+  const t=e.clipboardData&&e.clipboardData.getData('text');if(!t||t.indexOf('"gribouillis"')<0)return;if(libImportParse(t)){e.preventDefault();e.stopImmediatePropagation();libImportText(t);}}catch(x){}},true);
 </script>
 </body>
 </html>
