@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v244</title>
+<title>Gribouillis EPS v245</title>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
 /* ── THÈME SOMBRE UNIQUEMENT ── */
@@ -975,6 +975,15 @@ body:has(#t-seance.active) .btn-start{padding:7px;font-size:.9rem;}
 .pje button.pb{border:none;border-radius:6px;padding:2px 7px;font-size:.7rem;cursor:pointer;background:#334155;color:#fff;}
 .pje button.pa{border:1px dashed #22c55e;background:transparent;color:#86efac;border-radius:7px;padding:2px 8px;font-size:.72rem;cursor:pointer;margin-top:4px;}
 .pje small.el{color:var(--dim2);font-weight:400;font-size:.7rem;}
+.lib-mos{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:8px;margin-top:10px;}
+.lib-tile{border:2px solid var(--kc,#334155);border-radius:10px;overflow:hidden;background:#0f172a;cursor:pointer;display:flex;flex-direction:column;}
+.lib-tile .th{height:84px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;background:color-mix(in srgb,var(--kc,#334155) 30%,#0f172a);overflow:hidden;}
+.lib-tile .th img,.lib-tile .th video{width:100%;height:100%;object-fit:cover;pointer-events:none;display:block;}
+.lib-tile .nm{font-size:.76rem;font-weight:700;padding:5px 6px;line-height:1.2;}
+.lib-tile:hover{filter:brightness(1.15);}
+.lib-card-ov{position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;padding:14px;}
+.lib-card-ov .box{background:#1e293b;border-radius:14px;padding:10px 12px;max-width:560px;width:100%;max-height:86vh;overflow:auto;}
+.asp-g .gx{border:none;background:rgba(0,0,0,.35);color:#fff;border-radius:999px;width:18px;height:18px;line-height:18px;padding:0;font-size:.65rem;cursor:pointer;margin-left:3px;}
 .fit-vid{display:block;max-width:100%;max-height:calc(100vh - 170px);margin:8px auto;border-radius:10px;background:#000;}
 .pres-vids h5{margin:12px 0 2px;font-size:.9rem;color:#93c5fd;}
 .ok-list{margin:0;padding:0;list-style:none;}
@@ -13600,21 +13609,23 @@ function renderLibTab(){
     +sel('note',[['5','★★★★★ seulement'],['4','★★★★ et plus'],['3','★★★ et plus']],'★ Toutes les notes')
     +'<input class="remed-edit-field" style="margin-top:0;" placeholder="🔍 mot-clé" value="'+esc(LIB_UI.q)+'" onchange="libSet(\'q\',this.value)"></div>';
   if(!list.length)h+='<p style="font-size:.74rem;color:var(--dim2);margin-top:10px;">'+(all.length?'Aucun résultat avec ces filtres.':'Bibliothèque vide pour l\'instant.')+'</p>';
+  h+='<'+'div class="lib-mos">';LIB_CARDS={};
   list.map((x,i)=>[x,i]).sort((a,b)=>(b[0].stars||0)-(a[0].stars||0)||b[1]-a[1]).map(a=>a[0]).forEach(x=>{ // v194 : les mieux notées en haut
     const inner=x.kind==='seance'&&x.tpl?((x.tpl.steps||[]).filter(b=>b==='match'||b==='remediation').map(b=>b==='match'?'⚽':'🧭').join(' ')+(x.tpl.phases&&x.tpl.phases.length?' · 🔥 '+x.tpl.phases.length+' phase'+(x.tpl.phases.length>1?'s':''):'')+((x.tpl.keepExos||[]).length?' · ⭐ '+x.tpl.keepExos.length+' situation'+(x.tpl.keepExos.length>1?'s':''):'')):'';
     const phs=(x.kind==='warm'?x.phases:(x.kind==='seance'&&x.tpl?x.tpl.phases:null))||[];
-    h+='<div class="remed-exo-card" style="margin-top:8px;"><div class="remed-exo-title">'+(LIB_ICO[x.kind]||'')+' '+esc(x.titre)+'</div>'+(x.kind!=='seance'?starsHtml(x.stars,'libSetStars',x.id):'')
+    const card='<div class="remed-exo-card" style="margin-top:8px;"><div class="remed-exo-title">'+(LIB_ICO[x.kind]||'')+' '+esc(x.titre)+'</div>'+(x.kind!=='seance'?starsHtml(x.stars,'libSetStars',x.id):'')
       +'<div style="font-size:.64rem;color:var(--dim2);">'+(x.niveau?'<span class="niv-tag niv-'+x.niveau+'">'+(x.niveau==='regle'?'📏 règle':'🎯 principe')+'</span> ':'')+(x.theme?'<span class="niv-tag">⚽ match à thème</span> ':'')+esc(LIB_KINDS[x.kind]||'')+(x.wtype?' · 🔥 '+esc(warmTypeDef(x.wtype).t.split(' — ')[0]):'')+(x.apsa?' · '+esc(x.apsa):'')+(x.oeLab?' · '+esc(x.oeLab):'')+(x.cp?' · '+esc(libCpLabel(x.cp)||'CP'):'')+(x.regleLabel?' › '+esc(x.regleLabel):'')+((x.tags||[]).length?' · '+x.tags.map(t=>'#'+esc(t)).join(' '):'')+(x.date?' · '+new Date(x.date).toLocaleDateString('fr-FR'):'')+'</div>'
       +(inner?'<div style="font-size:.72rem;margin-top:4px;">'+inner+'</div>':'')
       +(phs.length?'<div style="font-size:.68rem;color:var(--dim);margin-top:3px;">'+phs.map(p=>esc(p.titre||'')).join(' · ')+'</div>':'')
-      +(x.desc?'<div class="remed-exo-desc">'+esc(x.desc)+'</div>':'')
+      +(x.objectif?'<div class="remed-exo-desc">🎯 '+esc(x.objectif)+'</div>':'')+(x.desc?'<div class="remed-exo-desc">'+esc(x.desc)+'</div>':'')
       +(x.video&&x.video.indexOf('data:')!==0?'<div style="font-size:.64rem;color:#93c5fd;margin-top:3px;">🎬 vidéo liée</div>':'')
       +'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;">'+animLibBtns(x)
       +(x.kind==='seance'?'<button type="button" class="btn-xs" style="background:#15803d;color:#fff;" onclick="libStartFromModel(\''+x.id+'\')">▶ Nouvelle séance avec ce modèle</button>'
         :(s&&s.status!=='done'?'<button type="button" class="btn-xs" style="background:#1d4ed8;color:#fff;" onclick="libInsertFromTab(\''+x.id+'\')">➕ Insérer dans la séance en cours</button>':'<span style="font-size:.66rem;color:var(--dim2);align-self:center;">Ouvre une séance pour l\'insérer.</span>'))
       +'<button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="'+((x.kind==='remed'||x.kind==='match'||x.kind==='phase')?'libEdit':'libRename')+'(\''+x.id+'\')">✎ '+((x.kind==='remed'||x.kind==='match'||x.kind==='phase')?'Modifier':'Renommer')+'</button><button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="libDup(\''+x.id+'\')">⧉</button><button type="button" class="btn-xs red" onclick="libDelete(\''+x.id+'\')">🗑</button></div></div>';
+    LIB_CARDS[x.id]=card;h+=libTileHtml(x);
   });
-  h+='</div>';
+  h+='</'+'div></div>';
   host.innerHTML=h;
 }
 function libInsertFromTab(id){
@@ -13787,15 +13798,15 @@ function libcRender(){
     if(r&&(r.phases||[]).length)h+='<label class="remed-edit-label">'+esc(refLv(r,'phase'))+'</label><select class="remed-edit-field" onchange="libcSet(\'phase\',this.value)">'+r.phases.map(p=>'<option value="'+esc(p.id)+'"'+((f.phase||r.phases[0].id)===p.id?' selected':'')+'>'+esc(String(p.label||''))+'</option>').join('')+'</select>';
     h+=inp('short','Nom court (dans la roue)','Ex : Lignes de passe')+inp('label','Nom complet','Ex : Trouver le moment pour créer des lignes de passe')+area('principes','Principes / contenus (un par ligne, facultatif)','Un contenu par ligne',4);
   }else{
-    h+=inp('titre',k==='match'?'Nom de la FPS':'Titre de la situation',k==='match'?'Ex : Le 1000 buts':'Ex : Jeu des 3 passes')
-      +(k==='match'?inp('format','Format','Ex : 5c5, 2 × 4 min'):area('desc','Description','Dispositif, consignes…',3));
+    h+=selRef(false);
+    h+=inp('titre',k==='match'?'Nom de la FPS':'Nom de la situation',k==='match'?'Ex : Le 1000 buts':'Ex : Jeu des 3 passes');
+    h+=area('objectif','🎯 Objectif','Ex : conserver le ballon pour progresser vers la cible',2);
+    h+=(k==='match'?inp('format','Format','Ex : 5c5, 2 × 4 min'):area('desc','Description','Dispositif, consignes…',3));
     if(k==='match')h+=area('points','Comment on marque (un par ligne)','',2)+area('regs','Règles du match (une par ligne)','',2)+area('aide','Pour aider (une par ligne)','',2);
-    h+=terrainSelectHtml(f.terrain||'','libcSet(\'terrain\',this.value);libcRender();'); // v185
     if(k==='match')h+=fpsProfileSelectHtml(null,f.profile||'','libcSet(\'profile\',this.value);libcRender();')+fpsObjPanelHtml(null,f.profile||'','l:'); // v187 / v199
     h+=libcPhotoHtml();
     h+=animField(f.anim,'LIBC.f.anim=J?{name:animName(J),json:J}:null;libcRender()');
     h+='<label class="remed-edit-label">Lien vidéo (facultatif)</label><input class="remed-edit-field" placeholder="https://…" value="'+esc(f.video||'')+'" oninput="libcSet(\'video\',this.value)" onchange="libcSet(\'video\',this.value);libcRender()">'+(f.video?'<video src="'+esc(f.video)+'" controls playsinline style="max-width:100%;max-height:200px;border-radius:8px;margin-top:6px;display:block;"></video>':'')+'<div style="margin-top:4px;"><button type="button" class="btn-xs" style="background:#1e3a8a;color:#fff;" onclick="libcVideoGh()">📂 Choisir dans GitHub</button></div>';
-    h+=selRef(false);
     const r=REMED_CONTENT[f.ref];
     if(r){
       const chip=(on,lab,call)=>'<div class="remed-chip'+(on?' selected':'')+'" style="flex:0 1 auto;padding:5px 10px;font-size:.74rem;" onclick="'+call+'">'+(on?'🏷 ':'')+lab+'</div>';
@@ -13828,12 +13839,14 @@ function libcRender(){
         }
       }
     }
-    h+='<label class="remed-edit-label">🏷 Mes tags (ex : gainage)</label><div class="remed-chip-row">'+libAllTags().map(t=>'<div class="remed-chip'+(f.tags.indexOf(t)>=0?' selected':'')+'" style="flex:0 1 auto;padding:5px 10px;font-size:.74rem;" onclick="libcTagToggle(\''+esc(t).replace(/'/g,"\\'")+'\')">#'+esc(t)+'</div>').join('')+'<div class="remed-chip" style="flex:0 1 auto;padding:5px 10px;font-size:.74rem;" onclick="libcTagAdd()">＋ tag</div></div>';
     h+=libcPrincipesHtml(f); // v190 : principes d'action (projets AS) reliables
+    h+='<label class="remed-edit-label">🏷 Mes tags (ex : gainage)</label><div class="remed-chip-row">'+libAllTags().map(t=>'<div class="remed-chip'+(f.tags.indexOf(t)>=0?' selected':'')+'" style="flex:0 1 auto;padding:5px 10px;font-size:.74rem;" onclick="libcTagToggle(\''+esc(t).replace(/'/g,"\\'")+'\')">#'+esc(t)+'</div>').join('')+'<div class="remed-chip" style="flex:0 1 auto;padding:5px 10px;font-size:.74rem;" onclick="libcTagAdd()">＋ tag</div></div>';
     h+='<label class="remed-edit-label">🎯 Critères de réussite</label>';
     f.crits.forEach((c,i)=>{h+='<div style="display:flex;gap:6px;align-items:center;margin-bottom:4px;"><input class="remed-edit-field" style="flex:2;margin-top:0;" placeholder="Ex : ballons conservés" value="'+esc(c.label)+'" oninput="libcCrit('+i+',\'label\',this.value)"><input class="remed-edit-field" type="number" style="flex:0 0 60px;margin-top:0;" value="'+esc(String(c.cible))+'" oninput="libcCrit('+i+',\'cible\',parseFloat(this.value)||0)"><label style="font-size:.66rem;white-space:nowrap;"><input type="checkbox"'+(c.collectif?' checked':'')+' onchange="libcCrit('+i+',\'collectif\',this.checked)"> 👥 équipe</label><button type="button" class="btn-xs red" onclick="libcCritDel('+i+')">✕</button></div>';});
     h+='<div style="display:flex;gap:6px;flex-wrap:wrap;"><button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="libcCritAdd(false)">+ Critère individuel</button><button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="libcCritAdd(true)">+ Critère collectif</button></div>';
+    h+='<label class="remed-edit-label">👥 Nombre de joueurs nécessaires (minimum)</label><input class="remed-edit-field" type="number" min="0" max="40" style="max-width:120px;" placeholder="Ex : 6" value="'+esc(f.minJ||'')+'" oninput="libcSet(\'minJ\',this.value)">';
     h+='<label class="remed-edit-label">🎭 Rôles</label><div class="remed-chip-row">'+EXO_ROLE_SUGG.concat(f.roles.filter(x=>EXO_ROLE_SUGG.indexOf(x)<0)).map(l=>'<div class="remed-chip'+(f.roles.indexOf(l)>=0?' selected':'')+'" style="flex:0 1 auto;padding:4px 9px;font-size:.72rem;" data-l="'+esc(l)+'" onclick="libcRoleToggle(this.dataset.l)">'+esc(l)+'</div>').join('')+'<div class="remed-chip" style="flex:0 1 auto;padding:4px 9px;font-size:.72rem;" onclick="libcRoleAdd()">+ Autre</div></div>';
+    h+=terrainSelectHtml(f.terrain||'','libcSet(\'terrain\',this.value);libcRender();'); // v185
   }
   h+='<div style="display:flex;gap:8px;margin-top:12px;"><button type="button" class="btn-xs" style="background:#15803d;color:#fff;padding:8px 14px;" onclick="libcSave()">💾 Enregistrer</button><button type="button" class="btn-xs" style="background:#334155;color:#fff;padding:8px 14px;" onclick="libcClose()">Annuler</button></div>';
   let o=E('libc-ov');
@@ -13866,7 +13879,7 @@ function libcSave(){
   if(!f.titre.trim()){alert('Donne un titre.');return;}
   f.oe=(f.oes&&f.oes[0])||f.oe||'';const r=REMED_CONTENT[f.ref];const oe=r&&(r.oe||[]).find(o=>o.id===f.oe);
   const crits=f.crits.filter(c=>String(c.label||'').trim()).map(c=>({label:c.label.trim(),cible:Number(c.cible)||1,collectif:!!c.collectif}));
-  const item={id:'lib-'+Date.now()+'-'+Math.floor(Math.random()*1000),kind:k==='match'?'match':'remed',titre:f.titre.trim(),desc:(k==='match'?f.format:f.desc)||'',image:f.image||null,video:f.video.trim()||null,criteres:crits,roles:f.roles.slice(),apsa:r?(r.label||''):'',oe:oe?oe.id:'',oeLab:oe?(oe.short||oe.label||''):'',cp:f.cps[0]||'',oeAlso:(f.oes||[]).filter(x=>x!==(oe?oe.id:'')),cpAlso:f.cps.slice(1),tags:(f.tags||[]).slice(),date:Date.now()};
+  const item={id:'lib-'+Date.now()+'-'+Math.floor(Math.random()*1000),kind:k==='match'?'match':'remed',titre:f.titre.trim(),objectif:String(f.objectif||'').trim(),minJ:+f.minJ||0,desc:(k==='match'?f.format:f.desc)||'',image:f.image||null,video:f.video.trim()||null,criteres:crits,roles:f.roles.slice(),apsa:r?(r.label||''):'',oe:oe?oe.id:'',oeLab:oe?(oe.short||oe.label||''):'',cp:f.cps[0]||'',oeAlso:(f.oes||[]).filter(x=>x!==(oe?oe.id:'')),cpAlso:f.cps.slice(1),tags:(f.tags||[]).slice(),date:Date.now()};
   if(k==='remed'&&f.cps[0]&&exoAsCp(f.cps[0])){
     const rg=f.regles.filter(x=>x.split('#')[0]===f.cps[0]);
     if(rg.length){const cp=getCpByPath(f.cps[0]);const rr=(cp.regles||[]).find(x=>x.id===rg[0].split('#')[1]);item.niveau='regle';item.regleLabel=rr?rr.label:'';}else item.niveau='principe';
@@ -13912,7 +13925,7 @@ function libEdit(id){
   }
   const r=libcRefs().find(x=>(x.label||'')===it.apsa);
   const cfg=it.cfg||{};
-  LIBC={kind:it.kind==='match'?'match':'remed',editId:id,openK:{},f:{oes:[it.oe].concat(it.oeAlso||[]).filter(Boolean),tags:(it.tags||[]).slice(),mode:(r&&r.custom)?'ref':'apsa',titre:it.titre||'',desc:it.desc||'',video:it.video||'',anim:it.anim||null,image:it.image||null,ref:r?r.id:'',oe:it.oe||'',cps:[it.cp].concat(it.cpAlso||[]).filter(Boolean),regles:[],crits:(it.criteres||[]).map(c=>({label:c.label||'',cible:c.cible||1,collectif:!!c.collectif})),roles:(it.roles||[]).slice(),profile:it.profile||cfg.profile||'',terrain:it.terrain||cfg.terrain||'',aslinks:(it.principes||[]).slice(),format:it.desc||cfg.format||'',points:(cfg.points||[]).join('\n'),regs:(cfg.emblematiques||[]).join('\n'),aide:(cfg.etayage||[]).join('\n'),phase:'',short:'',label:'',principes:'',newLabel:''}};
+  LIBC={kind:it.kind==='match'?'match':'remed',editId:id,openK:{},f:{objectif:it.objectif||'',minJ:it.minJ||'',oes:[it.oe].concat(it.oeAlso||[]).filter(Boolean),tags:(it.tags||[]).slice(),mode:(r&&r.custom)?'ref':'apsa',titre:it.titre||'',desc:it.desc||'',video:it.video||'',anim:it.anim||null,image:it.image||null,ref:r?r.id:'',oe:it.oe||'',cps:[it.cp].concat(it.cpAlso||[]).filter(Boolean),regles:[],crits:(it.criteres||[]).map(c=>({label:c.label||'',cible:c.cible||1,collectif:!!c.collectif})),roles:(it.roles||[]).slice(),profile:it.profile||cfg.profile||'',terrain:it.terrain||cfg.terrain||'',aslinks:(it.principes||[]).slice(),format:it.desc||cfg.format||'',points:(cfg.points||[]).join('\n'),regs:(cfg.emblematiques||[]).join('\n'),aide:(cfg.etayage||[]).join('\n'),phase:'',short:'',label:'',principes:'',newLabel:''}};
   libcRender();
 }
 function libSaveMatchFromSeance(key){
@@ -20551,7 +20564,7 @@ function aspRoster0(){return (COMPO.roster||[]).filter(r=>r&&r.name!=null&&!r.ab
 function aspBase(){const R=aspRoster();const M=R.filter(n=>grpSexe(n)==='M'),F=R.filter(n=>grpSexe(n)==='F');const out=[];
   if(M.length)out.push({id:'pop-M',label:'Garçons',color:'#2563eb',members:M,base:true});if(F.length)out.push({id:'pop-F',label:'Filles',color:'#db2777',members:F,base:true});return out;}
 const ASP_OBS={on:false};let ASP_CC=null;
-function aspChips(s){if(ASP_CC&&ASP_CC.id===s.id)return ASP_CC.v;const v=aspChips0(s);ASP_CC={id:s.id,v:v};setTimeout(()=>{ASP_CC=null;},0);return v;}
+function aspChips(s){const key=s.id+'|'+(s.groupes||[]).map(g=>g.id+':'+(g.members||[]).length+':'+g.label).join(',')+'|'+(s.decoupages||[]).map(d=>d.id+':'+(d.groupes||[]).length).join(',')+'|'+(COMPO.roster||[]).length;if(ASP_CC&&ASP_CC.id===key)return ASP_CC.v;const v=aspChips0(s);ASP_CC={id:key,v:v};setTimeout(()=>{ASP_CC=null;},0);return v;}
 function aspChips0(s){const B=aspBase();let G=[];try{G=seanceGroupChips(s).filter(g=>!g.auto&&!g.team&&(g.members||[]).length);}catch(e){}return B.concat(G);}
 function aspChip(s,id){return aspChips(s).find(g=>g.id===id)||null;}
 function aspIsAS(s){try{if(!s)return false;if(/(^|[^a-z0-9])as([^a-z0-9]|$)/i.test(String(s.classe||'')))return true;const C=(s.categories||[]).join(' ')+' '+(s.categorie||'');return /fille/i.test(C)&&/gar[cç]/i.test(C);}catch(e){return false;}}
@@ -20632,8 +20645,8 @@ function aspPalHtml(s){const t=ASP_UI.tab;
   let h='<'+'div class="sb-pal asp-pal"><'+'div class="sb-pal-head"><span class="sb-pal-tabs">'+tabs.map(x=>'<button type="button" class="'+(t===x[0]?'on':'')+'" onclick="ASP_UI.tab=\''+x[0]+'\';renderSeanceTab()">'+x[1]+'</button>').join('')+'</span>'
     +(t!=='grp'?'<label class="sf-allap" title="Montrer aussi les contenus des autres APSA"><input type="checkbox"'+(SB_UI.allSport?' checked':'')+' onchange="SB_UI.allSport=this.checked;renderSeanceTab()"> autres APSA</label>':'')
     +'<span style="flex:1;"></span><button type="button" class="btn-xs lib-main" onclick="sbLib()">📚 Bibliothèque</button></'+'div>';
-  if(t==='grp'){h+='<'+'div class="sb-pal-list">'+aspChips(s).map(g=>'<span class="asp-g" style="--gc:'+esc(g.color||'#475569')+';padding:7px 12px;font-size:.82rem;" data-drag="grp:'+esc(g.id)+'">'+esc(String(g.label))+' <small style="opacity:.8;">'+(g.members||[]).length+'</small></span>').join('')
-      +'<button type="button" class="btn-xs" style="background:#334155;color:#fff;flex:0 0 auto;" onclick="planGoGroups()">🎲 Créer / ✎ modifier des groupes</button></'+'div>';}
+  if(t==='grp'){const CH=aspChips(s);h+='<'+'div class="sb-pal-list">'+CH.map(g=>'<span class="asp-g" style="--gc:'+esc(g.color||'#475569')+';padding:7px 10px;font-size:.82rem;" data-drag="grp:'+esc(g.id)+'">'+esc(String(g.label))+' <small style="opacity:.8;">'+(g.members||[]).length+'</small>'+(g.base?'':'<button type="button" class="gx" title="Supprimer ce groupe" data-g="'+esc(g.id)+'" onclick="event.stopPropagation();aspGroupDel(this.dataset.g)">✕</button>')+'</span>').join('')
+      +'<button type="button" class="btn-xs" style="background:#334155;color:#fff;flex:0 0 auto;" onclick="planGoGroups()">🎲 Créer / ✎ modifier des groupes</button>'+(CH.some(g=>!g.base)?'<button type="button" class="btn-xs red" style="flex:0 0 auto;" onclick="aspGroupDelAll()">🗑 Effacer tous les groupes créés</button>':'')+'</'+'div>';}
   else if(t==='exo'){const D=aspExoData(s);const tous=ASP_UI.mode==='tous';
     const opts={};D.rows.forEach(r=>{if(!opts[r.cpPath])opts[r.cpPath]=r.pj;});D.libs.forEach(x=>[x.cp].concat(x.cpAlso||[]).forEach(c=>{if(c&&getCpByPath(c)&&!opts[c])opts[c]=D.paths[c]||'';}));
     if(ASP_UI.cp&&!opts[ASP_UI.cp])ASP_UI.cp='';
@@ -20874,6 +20887,31 @@ function pjEleve(oid,path){let n=null;if(path)n=getCpByPath(path);else{const sd=
   askTextDlg('Version élève de « '+String(n.short||n.label||'')+' »',n.eleve||'',v=>{n.eleve=String(v||'').trim();saveReferentiels();renderSeqTab();},'Les mots des élèves');}
 function pjCpDel(path,oid){const c=getCpByPath(path);const sd=REMED_CONTENT[PJ_REF];if(!c||!sd)return;if(!confirm('Supprimer le principe « '+(c.label||'')+' » ?'))return;const o=(sd.oe||[]).find(x=>x.id===oid);if(o)(o.micro||[]).forEach(m=>{m.cps=(m.cps||[]).filter(x=>x!==c);});saveReferentiels();renderSeqTab();}
 function pjDelOe(oid){const sd=REMED_CONTENT[PJ_REF];if(!sd)return;const o=(sd.oe||[]).find(x=>x.id===oid);if(!o)return;if(!confirm('Supprimer l\'orientation « '+(o.short||o.label||'')+' » et ses principes ?'))return;sd.oe=sd.oe.filter(x=>x.id!==oid);saveReferentiels();renderSeqTab();}
+
+// ══════════════════════════════════════════════════════════════════════
+// v245 — supprimer des groupes d'entraînement ; Biblio en mosaïque
+// ══════════════════════════════════════════════════════════════════════
+function aspGroupPurge(s,ids){const has=id=>ids.indexOf(id)>=0;
+  s.groupes=(s.groupes||[]).filter(g=>!has(g.id));
+  (s.decoupages||[]).forEach(d=>{d.groupes=(d.groupes||[]).filter(g=>!has(g.id));});
+  s.decoupages=(s.decoupages||[]).filter(d=>(d.groupes||[]).length);
+  if(s.activeDecoup&&!s.decoupages.some(d=>d.id===s.activeDecoup))s.activeDecoup=s.decoupages.length?s.decoupages[0].id:null;
+  if(s.asp)(s.asp.blocks||[]).forEach(b=>(b.ats||[]).forEach(a=>{a.groups=(a.groups||[]).filter(x=>!has(x));}));
+  if(s.parGroups)Object.keys(s.parGroups).forEach(k=>{if(Array.isArray(s.parGroups[k]))s.parGroups[k]=s.parGroups[k].filter(x=>!has(x));});
+  if(s.matchCfg)Object.keys(s.matchCfg).forEach(k=>{const c=s.matchCfg[k];if(c&&Array.isArray(c.groupes))c.groupes=c.groupes.filter(x=>!has(x));});}
+function aspGroupDel(id){const s=getActiveSeance();if(!s)return;const g=aspChips(s).find(x=>x.id===id);if(!confirm('Supprimer le groupe « '+(g?g.label:'')+' » ? (il est retiré des ateliers)'))return;aspGroupPurge(s,[id]);saveSeances();renderSeanceTab();}
+function aspGroupDelAll(){const s=getActiveSeance();if(!s)return;const ids=aspChips(s).filter(g=>!g.base).map(g=>g.id);if(!ids.length)return;if(!confirm('Effacer les '+ids.length+' groupes créés ? (Garçons et Filles restent)'))return;aspGroupPurge(s,ids);s.groupes=[];s.decoupages=[];s.activeDecoup=null;saveSeances();renderSeanceTab();}
+let LIB_CARDS={};
+const LIB_KC={remed:'#16a34a',match:'#2563eb',warm:'#f97316',phase:'#f97316',seance:'#7c3aed',oe:'#0d9488'};
+function libTileHtml(x){const ph=(x.kind==='warm'?(x.phases||[])[0]:(x.kind==='seance'&&x.tpl?(x.tpl.phases||[])[0]:null))||{};
+  const img=x.image||ph.image,an=x.anim||ph.anim,vd=x.video||ph.video;
+  const th=img?'<img src="'+img+'" alt="" loading="lazy">':(an?thumbImgHtml(an,LIB_ICO[x.kind]||'📄'):(vd?vidThumbHtml(vd):'<span>'+(LIB_ICO[x.kind]||'📄')+'</span>'));
+  return '<'+'div class="lib-tile" style="--kc:'+(LIB_KC[x.kind]||'#334155')+'" data-id="'+esc(x.id)+'" onclick="libTileOpen(this.dataset.id)" title="'+esc(String(x.titre||''))+'"><'+'div class="th">'+th+'</'+'div><'+'div class="nm">'+esc(String(x.titre||'Sans titre'))+'</'+'div></'+'div>';}
+function libTileClose(){const o=document.querySelector('.lib-card-ov');if(o)o.remove();}
+function libTileOpen(id){libTileClose();const c=LIB_CARDS[id];if(!c)return;const o=document.createElement('div');o.className='lib-card-ov';
+  o.onclick=e=>{if(e.target===o){libTileClose();return;}const b=e.target.closest&&e.target.closest('button');if(b&&!/libSetStars/.test(b.getAttribute('onclick')||''))setTimeout(libTileClose,0);};
+  o.innerHTML='<'+'div class="box"><'+'div style="text-align:right;"><button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="libTileClose()">✕ Fermer</button></'+'div>'+c+'</'+'div>';document.body.appendChild(o);}
+(function(){try{const o=libSetStars;libSetStars=function(){const r=o.apply(this,arguments);try{const ov=document.querySelector('.lib-card-ov');const id=arguments[0];if(ov&&LIB_CARDS[id]){libTileOpen(id);}}catch(e){}return r;};}catch(e){}})();
 </script>
 </body>
 </html>
