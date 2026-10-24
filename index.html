@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v234</title>
+<title>Gribouillis EPS v236</title>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
 /* ── THÈME SOMBRE UNIQUEMENT ── */
@@ -844,6 +844,17 @@ body.sb-dragging{user-select:none;cursor:grabbing;}
 .org-fs .org-row .t{min-width:80px;}
 .sb-cats{font-size:.76rem;color:var(--dim2);margin:0 0 6px;display:flex;gap:4px;align-items:center;flex-wrap:wrap;}
 .sb-cats input{width:auto;padding:2px 4px;font-size:.76rem;}
+.sb-th img.th-anim{object-fit:cover;width:100%;height:100%;}
+.sb-par.over{outline:2px dashed #facc15;background:rgba(250,204,21,.12);}
+.pj2{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:10px;align-items:start;}
+.pj-box{border:2px solid var(--pc,#64748b);border-radius:12px;padding:8px;background:rgba(15,23,42,.45);}
+.pj-box h4{margin:0 0 6px;color:var(--pc);display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:.92rem;}
+.pj-box select{width:auto;flex:1 1 140px;font-size:.8rem;padding:4px 6px;}
+.pj-wh{max-width:280px;margin:0 auto;}
+.pj-wh svg{width:100%!important;height:auto!important;display:block;}
+.pj-chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px;}
+.pj-chips button{border:1px solid var(--border);border-radius:999px;padding:5px 10px;background:#0f172a;color:var(--text);font-size:.74rem;cursor:pointer;}
+.pj-chips button.on{background:var(--pc,#2563eb);border-color:var(--pc,#2563eb);color:#fff;font-weight:700;}
 .fit-vid{display:block;max-width:100%;max-height:calc(100vh - 170px);margin:8px auto;border-radius:10px;background:#000;}
 .pres-vids h5{margin:12px 0 2px;font-size:.9rem;color:#93c5fd;}
 .ok-list{margin:0;padding:0;list-style:none;}
@@ -17246,7 +17257,7 @@ function sbStepHtml(s,st){
     const ats=parAteliers(s,st.key);n=ats.length;
     if(base==='remediation'){const ex0=seanceStepExos(s,st.key);col=ex0[0]?pathOeColor(s,ex0[0].cpPath):'#7c3aed';}else col='#2563eb';
     body=n>1?'<div class="sb-ats">'+ats.map((a,i)=>sbAtelierHtml(s,st,a,i)).join('')+'</div>':sbAtelierInner(s,st,ats[0],true);
-    if(st.status!=='done'&&n<4)body+='<button type="button" class="sb-par" onclick="parAdd(\''+st.key+'\')" title="Ajouter un atelier qui se déroule en même temps">⫴ ＋ atelier en parallèle</button>';
+    if(st.status!=='done'&&n<6)body+='<button type="button" class="sb-par" data-drop="par:'+st.key+'" onclick="parAdd(\''+st.key+'\')" title="Ajouter un atelier qui se déroule en même temps (ou y déposer un groupe)">⫴ ＋ atelier en parallèle</button>';
   }
   else body='<span class="sb-meta">Bilan de séance</span>';
   const tm=seanceStepTimes(s)[st.key];
@@ -17271,7 +17282,7 @@ function sbAtelierHtml(s,st,a,i){
 }
 function sbVigHtml(s,r,stepKey){
   const ex=r.exo,col=pathOeColor(s,r.cpPath),k=esc(r.key);
-  const th=ex.image?'<img src="'+ex.image+'" alt="" draggable="false">':(ex.video?'<video src="'+ex.video+'#t=0.5" muted preload="metadata"></video>':'<span>'+(ex.anim?'🎞':'🏃')+'</span>');
+  const th=ex.image?'<img src="'+ex.image+'" alt="" draggable="false">':(ex.anim?thumbImgHtml(ex.anim,'🎞'):(ex.video?'<video src="'+ex.video+'#t=0.5" muted preload="metadata"></video>':'<span>🏃</span>'));
   return '<div class="sb-vig" style="--oe:'+col+'" data-drag="exo:'+k+(stepKey?'@'+esc(stepKey):'')+'" onclick="sbVigClick(this)" title="'+esc(String(ex.titre||''))+'">'
     +'<div class="sb-th">'+th+(ex.anim&&(ex.image||ex.video)?'<i>🎞</i>':'')+((ex.paliers||[]).length?'<b class="sb-niv">📶'+((ex.paliers||[]).length+1)+'</b>':'')+'</div><div class="sb-vt">'+esc(String(ex.titre||'Situation'))+'</div>'+(ex.stars?'<div class="stars-ro">'+'★'.repeat(ex.stars)+'</div>':'')
     +(stepKey?'<button type="button" class="sb-vx" title="Retirer de cette étape" data-s="'+esc(stepKey)+'" data-k="'+k+'" onclick="event.stopPropagation();sbUnassign(this.dataset.s,this.dataset.k)">✕</button>':'')+'</div>';
@@ -17788,7 +17799,7 @@ function sbFiltersHtml(s,all){
     +'<select onchange="SB_UI.min=+this.value;sbPalRefresh()"><option value="0">★ toutes</option><option value="3"'+(SB_UI.min===3?' selected':'')+'>★★★ et plus</option><option value="4"'+(SB_UI.min===4?' selected':'')+'>★★★★ et plus</option><option value="5"'+(SB_UI.min===5?' selected':'')+'>★★★★★</option></select>'
     +'<label style="font-size:.72rem;display:flex;gap:4px;align-items:center;"><input type="checkbox"'+(SB_UI.lib?' checked':'')+' onchange="SB_UI.lib=this.checked;sbPalRefresh()"> 📚 inclure la bibliothèque</label></div>';
 }
-function sbLibVigHtml(x){const th=x.image?'<img src="'+x.image+'" alt="" draggable="false">':(x.video&&x.video.indexOf('data:')!==0?'<span>🎬</span>':'<span>'+(x.anim?'🎞':'🏃')+'</span>');
+function sbLibVigHtml(x){const th=x.image?'<img src="'+x.image+'" alt="" draggable="false">':(x.anim?thumbImgHtml(x.anim,'🎞'):(x.video&&x.video.indexOf('data:')!==0?'<span>🎬</span>':'<span>🏃</span>'));
   return '<div class="sb-vig lib" style="--oe:#64748b" data-drag="lib:'+esc(x.id)+'" onclick="sbVigClick(this)" title="Bibliothèque : '+esc(String(x.titre||''))+' — glisser dans le déroulé ou toucher pour l\'ajouter"><div class="sb-th">'+th+'</div><div class="sb-vt">'+esc(String(x.titre||'Situation'))+'</div>'+(x.stars?'<div class="stars-ro">'+'★'.repeat(x.stars)+'</div>':'')+'</div>';}
 function sbPalListInner(s,rows){const lib=sbLibRows(s);const h=rows.map(r=>sbVigHtml(s,r,null)).join('')+lib.map(sbLibVigHtml).join('');return h||'<div class="sb-meta">Aucune situation avec ces filtres.</div>';}
 function sbPalRefresh(){const s=getActiveSeance();const el=E('sb-pal-list');if(!s||!el)return;const all=sbPaletteRows(s);const prio=all.filter(r=>r.f>=2);el.innerHTML=sbPalListInner(s,sbFilterRows((SB_UI.all||!prio.length)?all:prio));}
@@ -18130,6 +18141,7 @@ function renderSeqTab(){
     +'<div class="row"><span>Nomenclature :</span><span class="seq-tog"><button type="button" class="'+(!isAS?'on':'')+'" onclick="seqNomen(\''+qi+'\',false)">📘 CEDREPS</button><button type="button" class="'+(isAS?'on':'')+'" onclick="seqNomen(\''+qi+'\',true)">🏟️ Projet de jeu AS</button></span>'+(!isAS?seqSportPickHtml(q):'')
     +(isAS&&refs.length>1?'<span style="margin-left:8px;">Projet :</span><span class="seq-tog">'+refs.map(r=>'<button type="button" class="'+(q.ref===r.id?'on':'')+'" onclick="seqSet(\''+qi+'\',\'ref\',\''+esc(r.id)+'\')">'+esc(r.label)+'</button>').join('')+'</span>':'')+'</div>';
   h+=(()=>{try{return seqGsRowHtml(q);}catch(e){return '';}})();
+  h+=(()=>{try{return isAS?seqProjetsHtml(q):'';}catch(e){console.warn('seqProjets',e);return '';}})();
   if(!sd)h+='<div class="cc-warn">Nomenclature introuvable.</div>';
   else{h+='<div class="row"><span>'+(isAS?'Phases travaillées (chaque phase a son orientation et ses principes) :':'Objet(s) d\'enseignement (1 ou 2) :')+'</span></div><div class="remed-chip-row">'+(sd.oe||[]).map(o=>'<div class="remed-chip'+((q.oeIds||[]).indexOf(o.id)>=0?' selected':'')+'" data-oe="1" style="flex:0 1 auto;padding:6px 10px;font-size:.74rem;--oe:'+OE_COLORS[(sd.oe||[]).indexOf(o)%OE_COLORS.length]+';" onclick="seqToggleOe(\''+qi+'\',\''+esc(o.id)+'\')">'+(isAS&&refPhaseLabel(sd,o.phase)?'<b style="display:block;">'+esc(refPhaseLabel(sd,o.phase))+'</b>':'')+esc(o.short||o.label)+'</div>').join('')+'</div>';
     const rows=seqRows(q);
@@ -18226,13 +18238,13 @@ function sbPalOtherHtml(s,tab){
   const q=(SB_UI.q2||'').toLowerCase().trim();const ok=x=>!q||((x.titre||'')+' '+(x.desc||'')).toLowerCase().indexOf(q)>=0;
   let items='';
   if(tab==='warm'){
-    items=libLoad().filter(x=>(x.kind==='warm'||x.kind==='phase')&&ok(x)&&libFitsSeance(x,s)).sort((a,b)=>(b.stars||0)-(a.stars||0)).map(x=>{const ph=x.kind==='warm'?(x.phases||[])[0]||{}:x;const th=(ph.image||x.image)?'<img src="'+(ph.image||x.image)+'" alt="" draggable="false">':'<span>🔥</span>';
+    items=libLoad().filter(x=>(x.kind==='warm'||x.kind==='phase')&&ok(x)&&libFitsSeance(x,s)).sort((a,b)=>(b.stars||0)-(a.stars||0)).map(x=>{const ph=x.kind==='warm'?(x.phases||[])[0]||{}:x;const th=(ph.image||x.image)?'<img src="'+(ph.image||x.image)+'" alt="" draggable="false">':((ph.anim||x.anim)?thumbImgHtml(ph.anim||x.anim,'🔥'):'<span>🔥</span>');
       return '<div class="sb-vig lib" style="--oe:#f97316" data-drag="lw:'+esc(x.id)+'" onclick="sbWarmTap(this)" title="Glisser sur l\'échauffement, ou toucher pour l\'ajouter"><div class="sb-th">'+th+'</div><div class="sb-vt">'+esc(String(x.titre||'Échauffement'))+'</div><div class="stars-ro" style="color:var(--dim2);">'+(x.kind==='warm'?(x.phases||[]).length+' ateliers':(x.wtype?warmTypeDef(x.wtype).ico:'')+' atelier')+'</div></div>';}).join('');
     return '<div class="sb-filt"><input type="search" placeholder="🔍 rechercher un échauffement" value="'+esc(SB_UI.q2||'')+'" oninput="SB_UI.q2=this.value;sbPalOtherRefresh(\'warm\')"></div><div class="sb-meta">Glissez un échauffement de la bibliothèque sur l\'étape 🔥 du déroulé (il se range dans sa phase, ou dans « en avance » / « express »).</div>'+sbListWrap(items,'<div class="sb-meta">Aucun échauffement dans la bibliothèque : enregistrez-en depuis l\'étape Échauffement.</div>');
   }
   const mods=[];wheelWorked(s).forEach(oid=>{const d=fpsDefaultFor(oid);if(d&&(d.nom||d.format)&&ok({titre:d.nom,desc:d.format}))mods.push({oid:oid,d:d});});
   items=mods.map(m=>'<div class="sb-vig fps" style="--oe:'+oeColor(s,m.oid)+'" data-drag="fpd:'+esc(m.oid)+'" onclick="sbFpsTap(this)" title="Modèle de l\'objet — glisser sur un match ou entre deux étapes"><div class="sb-th"><span>⚽</span></div><div class="sb-vt">'+esc(String(m.d.nom||'FPS de l\'objet'))+'</div><div class="stars-ro" style="color:var(--dim2);">modèle</div></div>').join('')
-    +libLoad().filter(x=>x.kind==='match'&&ok(x)&&libFitsSeance(x,s)).sort((a,b)=>(b.stars||0)-(a.stars||0)).map(x=>'<div class="sb-vig fps lib" style="--oe:#2563eb" data-drag="fps:'+esc(x.id)+'" onclick="sbFpsTap(this)" title="Glisser sur un match ou entre deux étapes"><div class="sb-th">'+(x.image?'<img src="'+x.image+'" alt="" draggable="false">':'<span>⚽</span>')+'</div><div class="sb-vt">'+esc(String(x.titre||'FPS'))+'</div>'+(x.stars?'<div class="stars-ro">'+'★'.repeat(x.stars)+'</div>':'')+'</div>').join('');
+    +libLoad().filter(x=>x.kind==='match'&&ok(x)&&libFitsSeance(x,s)).sort((a,b)=>(b.stars||0)-(a.stars||0)).map(x=>'<div class="sb-vig fps lib" style="--oe:#2563eb" data-drag="fps:'+esc(x.id)+'" onclick="sbFpsTap(this)" title="Glisser sur un match ou entre deux étapes"><div class="sb-th">'+(x.image?'<img src="'+x.image+'" alt="" draggable="false">':(x.anim?thumbImgHtml(x.anim,'⚽'):'<span>⚽</span>'))+'</div><div class="sb-vt">'+esc(String(x.titre||'FPS'))+'</div>'+(x.stars?'<div class="stars-ro">'+'★'.repeat(x.stars)+'</div>':'')+'</div>').join('');
   return '<div class="sb-filt"><input type="search" placeholder="🔍 rechercher une FPS" value="'+esc(SB_UI.q2||'')+'" oninput="SB_UI.q2=this.value;sbPalOtherRefresh(\'fps\')"></div><div class="sb-meta">Glissez une FPS sur un match du déroulé (elle remplace ses règles, les groupes sont gardés) ou entre deux étapes (nouveau match).</div>'+sbListWrap(items,'<div class="sb-meta">Aucune FPS dans la bibliothèque.</div>');
 }
 function sbListWrap(x,empty){return '<div class="sb-pal-list" id="sb-pal-list2">'+(x||empty)+'</div>';}
@@ -20164,6 +20176,108 @@ function sbSetCatStart(c,v){const s=getActiveSeance();if(!s)return;if(!s.catStar
   try{const o4=sbStepHtml;sbStepHtml=function(s,st){let h=o4.apply(this,arguments);try{const b=seanceStepBase(st.key);if(b==='match'||b==='remediation'){const tm=seanceStepTimes(s)[st.key];if(tm){const chips=seanceGroupChips(s);const w=[];parAteliers(s,st.key).forEach(a=>atelierGroups(s,a.key,b).forEach(id=>{const g=chips.find(x=>x.id===id);if(!g)return;const L=orgLate(s,g,tm.from);if(L.length)w.push(g.label+' : '+L.length+' pas encore là');}));if(w.length)h=h.replace('<'+'div class="sb-body">','<'+'div class="sb-body"><'+'div class="sb-conf">⏰ '+w.map(esc).join(' · ')+'</'+'div>');}
       const cf=sbConflicts(s,st.key);if(cf.length)h=h.replace('<'+'div class="sb-body">','<'+'div class="sb-body"><'+'div class="sb-conf">⚠ '+cf.length+' élève'+(cf.length>1?'s':'')+' dans 2 ateliers en même temps : '+cf.slice(0,4).map(esc).join(', ')+(cf.length>4?'…':'')+'</'+'div>');}}catch(e){}return h;};}catch(e){}
   try{const o5=renderSeanceBuilder;renderSeanceBuilder=function(s){let h=o5.apply(this,arguments);try{const c=sbCatStartHtml(s);if(c)h=h.replace('<'+'div class="sb-track">',c+'<'+'div class="sb-track">');}catch(e){}let x='';try{x=orgHtml(s);}catch(e){console.warn('org',e);}return h+x;};}catch(e){}
+})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v235 — vignettes des animations, groupes « ensemble » ou « en parallèle »,
+// étapes AS nommées par leur contenu, bibliothèque visible dans Situations
+// ══════════════════════════════════════════════════════════════════════
+// ── vignettes : image de la 1re image de l'animation (générée une fois, gardée) ──
+const THUMB={q:[],busy:false,cache:null,fr:null};
+function thumbKey(j){j=String(j||'');let h=0;const st=Math.max(1,Math.floor(j.length/3000));for(let i=0;i<j.length;i+=st)h=(h*31+j.charCodeAt(i))|0;return 'a'+j.length+'_'+(h>>>0).toString(36);}
+function thumbCache(){if(THUMB.cache)return THUMB.cache;let c={};try{c=JSON.parse(localStorage.getItem('grib_anim_thumbs_v1')||'{}')||{};}catch(e){}THUMB.cache=c;return c;}
+function thumbSave(){try{const c=thumbCache();const k=Object.keys(c);if(k.length>160)k.slice(0,k.length-160).forEach(x=>delete c[x]);localStorage.setItem('grib_anim_thumbs_v1',JSON.stringify(c));}catch(e){}}
+function thumbImgHtml(a,ico){if(!a||!a.json)return '<span>'+(ico||'🎞')+'</span>';const k=thumbKey(a.json);const c=thumbCache()[k];
+  if(c)return '<img class="th-anim" src="'+c+'" alt="" draggable="false">';
+  if(!THUMB.q.some(x=>x.k===k))THUMB.q.push({k:k,j:a.json});setTimeout(thumbRun,60);
+  return '<span data-thumb="'+k+'">'+(ico||'🎞')+'</span>';}
+function thumbRun(){if(THUMB.busy||!THUMB.q.length)return;THUMB.busy=true;const it=THUMB.q.shift();
+  let fr=THUMB.fr;if(!fr){fr=document.createElement('iframe');fr.setAttribute('aria-hidden','true');fr.tabIndex=-1;fr.style.cssText='position:fixed;left:-2000px;top:0;width:800px;height:520px;border:0;opacity:0;pointer-events:none;';document.body.appendChild(fr);THUMB.fr=fr;}
+  let done=false;const fin=()=>{if(done)return;done=true;THUMB.busy=false;setTimeout(thumbRun,30);};
+  fr.onload=()=>{setTimeout(()=>{try{const cv=fr.contentDocument.getElementById('cv');if(cv&&cv.width){const W=320,H=Math.round(W*cv.height/cv.width);const c=document.createElement('canvas');c.width=W;c.height=H;c.getContext('2d').drawImage(cv,0,0,W,H);
+      const url=c.toDataURL('image/jpeg',.72);thumbCache()[it.k]=url;thumbSave();document.querySelectorAll('[data-thumb="'+it.k+'"]').forEach(el=>{const im=document.createElement('img');im.className='th-anim';im.src=url;im.alt='';im.draggable=false;el.replaceWith(im);});}}catch(e){console.warn('thumb',e);}fin();},120);};
+  setTimeout(fin,4000);
+  try{fr.srcdoc=animViewerHtml(it.j);}catch(e){fin();}}
+// ── groupes : déposer SUR un atelier = ensemble (ils s'affrontent / travaillent ensemble) ;
+//    déposer sur « ⫴ atelier en parallèle » = un autre atelier en même temps ──
+function sbGroupJoin(gid,key,ak){const s=getActiveSeance();if(!s)return;const base=seanceStepBase(key);if(base!=='match'&&base!=='remediation')return;
+  if(parAteliers(s,key).some(a=>atelierGroups(s,a.key,base).indexOf(gid)>=0)){toast2('Ce groupe est déjà dans cette étape.');return;}
+  sbAtGroupAdd(s,key,ak||key,gid);saveSeances();renderSeanceTab();
+  const cf=sbConflicts(s,key);if(cf.length)toast2('⚠ '+cf.length+' élève'+(cf.length>1?'s':'')+' dans 2 ateliers en même temps : '+cf.slice(0,5).join(', ')+(cf.length>5?'…':''));}
+function sbGroupPar(gid,key){const s=getActiveSeance();if(!s)return;const base=seanceStepBase(key);if(base!=='match'&&base!=='remediation')return;
+  const ats=parAteliers(s,key);if(ats.some(a=>atelierGroups(s,a.key,base).indexOf(gid)>=0)){toast2('Ce groupe est déjà dans cette étape.');return;}
+  const full=x=>atelierGroups(s,x,base).length||atelierEleves(s,x,base).length;
+  if(!full(key)&&ats.length===1){sbAtGroupAdd(s,key,key,gid);}
+  else{if(ats.length>=6){toast2('6 ateliers maximum par étape.');return;}const nk=sbAtAdd(s,key);sbAtGroupAdd(s,key,nk,gid);}
+  saveSeances();renderSeanceTab();
+  const cf=sbConflicts(s,key);if(cf.length)toast2('⚠ '+cf.length+' élève'+(cf.length>1?'s':'')+' dans 2 ateliers en même temps : '+cf.slice(0,5).join(', ')+(cf.length>5?'…':''));}
+// ── étapes AS : nommées par leur contenu ──
+function sbIsAS(s){return !!(s&&s.referentiel&&REMED_CONTENT&&REMED_CONTENT[s.referentiel]&&REMED_CONTENT[s.referentiel].custom);}
+function sbContentLabel(s,key){const b=seanceStepBase(key);const ats=parAteliers(s,key);const L=[];
+  ats.forEach(a=>{if(b==='remediation'){seanceStepExos(s,a.key).forEach(r=>L.push(String(r.exo.titre||'')));}else{let nm='';try{nm=matchCfgOf(s,a.key).nom||'';}catch(e){}if(nm)L.push(String(nm));}});
+  const u=L.filter((x,i)=>x&&L.indexOf(x)===i);if(!u.length)return '';return u.length>2?u.slice(0,2).join(' · ')+' +'+(u.length-2):u.join(' · ');}
+(function(){
+  try{if(SB_UI.lib===undefined)SB_UI.lib=true;}catch(e){}
+  try{const o=sbCanDrop;sbCanDrop=function(p,drop){const dt=String(drop).split(':')[0];if(dt==='par')return String(p).indexOf('grp:')===0;return o.apply(this,arguments);};}catch(e){}
+  try{const o2=sbDo;sbDo=function(p,drop){if(String(p).indexOf('grp:')===0){const gid=p.slice(4),dt=drop.slice(0,drop.indexOf(':')),dv=drop.slice(drop.indexOf(':')+1);
+      if(dt==='par'){sbGroupPar(gid,dv);return;}
+      if(dt==='step'||dt==='mstep'){sbGroupJoin(gid,dv.split('~')[0],dv);return;}}
+    return o2.apply(this,arguments);};}catch(e){}
+  try{const o3=sbStepHtml;sbStepHtml=function(s,st){let h=o3.apply(this,arguments);
+    try{const b=seanceStepBase(st.key);if(sbIsAS(s)&&(b==='match'||b==='remediation')){const def=seanceStepDef(st.key);const old='<b>'+esc(def.label)+seanceStepNum(s,st.key);const lab=sbContentLabel(s,st.key);
+      h=h.replace(old,'<b>'+(lab?esc(lab):(b==='match'?'Bloc jeu':'Bloc'))+(lab?'':seanceStepNum(s,st.key)));}}catch(e){}return h;};}catch(e){}
+  // « Générer / modifier les groupes » : ouvre l'outil de création des groupes
+  try{planGoGroups=function(){const s=getActiveSeance();if(!s)return;SEANCE_FOLD[s.id]=Object.assign(SEANCE_FOLD[s.id]||{},{groups:true});renderSeanceTab();
+    setTimeout(()=>{const el=document.querySelector('#seance-tab-content details[data-k="groups"]');if(el){el.open=true;el.scrollIntoView({behavior:'smooth',block:'start'});}},60);};}catch(e){}
+})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v236 — DEUX PROJETS DE JEU EN PARALLÈLE (AS garçons / filles)
+// Séance : s.proj2 = {referentiel, oeId, oeExtra} à côté du projet principal (s.referentiel).
+// Séquence : q.ref2 + q.oeIds2 ; les séances créées depuis la séquence en héritent.
+// ══════════════════════════════════════════════════════════════════════
+function pjRefs(){try{return listReferentiels();}catch(e){return [];}}
+function pjColor(r){const l=String(r&&r.label||'');return /fille|f[ée]m/i.test(l)?'#db2777':/gar[cç]|masc/i.test(l)?'#2563eb':'#0d9488';}
+function pjOther(id){const R=pjRefs();const cur=R.find(r=>r.id===id);if(!cur)return null;const want=/fille|f[ée]m/i.test(cur.label||'')?/gar[cç]|masc/i:/fille|f[ée]m/i;return (R.find(r=>r.id!==id&&want.test(r.label||''))||null);}
+function pjProxy(s){if(!s||!s.proj2||!s.proj2.referentiel||!REMED_CONTENT[s.proj2.referentiel])return null;const p=Object.create(s);p.referentiel=s.proj2.referentiel;p.oeId=s.proj2.oeId||null;p.oeExtra=(s.proj2.oeExtra||[]).slice();p.phaseSel=(s.proj2.phaseSel||[]).slice();p.customOeMode=false;return p;}
+function pjEnsure(s){if(!s||s.proj2!==undefined)return;if(!s.referentiel||!REMED_CONTENT[s.referentiel]||!REMED_CONTENT[s.referentiel].custom)return;
+  const two=(s.categories||[]).length>1||/fille/i.test(s.categorie||'')&&/gar/i.test(s.categorie||'');const o=pjOther(s.referentiel);if(two&&o)s.proj2={referentiel:o.id,oeId:null,oeExtra:[]};}
+function pjOeChipsHtml(sd,sel,fn){const ph=sd.phases||[];const lab=o=>esc(String(o.short||o.label||o.id));
+  if(!(sd.oe||[]).length)return '<span class="cc-dim">Ce projet n\'a pas encore d\'orientations.</span>';
+  return '<div class="pj-chips">'+(sd.oe||[]).map(o=>{const p=ph.find(x=>x.id===o.phase);return '<button type="button" class="'+(sel.indexOf(o.id)>=0?'on':'')+'" data-o="'+esc(o.id)+'" onclick="'+fn+'(this.dataset.o)" title="'+esc(p?p.label:'')+'">'+(p?esc(String(p.short||p.label||''))+' · ':'')+lab(o)+'</button>';}).join('')+'</div>';}
+function pjWheel(s,ref,sel){const sd=REMED_CONTENT[ref];if(!sd)return '';const fake=Object.create(s||{});fake.referentiel=ref;fake.oeId=sel[0]||null;fake.oeExtra=sel.slice(1);fake.phaseSel=[];
+  try{return '<div class="pj-wh">'+wheelSvg(fake,sd,true)+'</div>';}catch(e){return '';}}
+// ── séance : 2e roue à côté de la première ──
+function pj2PanelHtml(s){
+  const R=pjRefs();if(R.length<2)return '';const p2=s.proj2||null;const sd2=p2&&REMED_CONTENT[p2.referentiel];
+  const r2=sd2?R.find(r=>r.id===p2.referentiel):null;const col=r2?pjColor(r2):'#64748b';
+  const sel=p2?[p2.oeId].concat(p2.oeExtra||[]).filter(Boolean):[];
+  let h='<div class="pj-box" style="--pc:'+col+'"><h4>🎡 2ᵉ projet en parallèle <select aria-label="Deuxième projet de jeu" onchange="pj2Set(this.value)"><option value="">— aucun —</option>'+R.filter(r=>r.id!==s.referentiel).map(r=>'<option value="'+esc(r.id)+'"'+(p2&&p2.referentiel===r.id?' selected':'')+'>'+esc(r.label)+'</option>').join('')+'</select></h4>';
+  if(sd2){h+=pjWheel(s,p2.referentiel,sel)+'<div class="cc-dim">Orientations travaillées :</div>'+pjOeChipsHtml(sd2,sel,'pj2Toggle')
+    +'<div class="cc-dim" style="margin-top:6px;">Leurs situations apparaissent aussi dans l\'onglet « Situations » du déroulé.</div>';}
+  else h+='<div class="cc-dim">Choisissez le projet des filles (ou des garçons) pour l\'avoir à côté.</div>';
+  return h+'</div>';
+}
+function pj2Set(id){const s=getActiveSeance();if(!s)return;s.proj2=id?{referentiel:id,oeId:null,oeExtra:[]}:null;saveSeances();renderSeanceTab();}
+function pj2Toggle(oid){const s=getActiveSeance();if(!s||!s.proj2)return;const L=[s.proj2.oeId].concat(s.proj2.oeExtra||[]).filter(Boolean);const i=L.indexOf(oid);if(i>=0)L.splice(i,1);else L.push(oid);s.proj2.oeId=L[0]||null;s.proj2.oeExtra=L.slice(1);saveSeances();renderSeanceTab();}
+// ── séquence : rubrique Projets de jeu ──
+function seqProjetsHtml(q){
+  const R=pjRefs();if(!R.length)return '';const qi=esc(q.id);
+  const box=(n,ref,sel,fnSel,fnTog)=>{const r=R.find(x=>x.id===ref);const col=r?pjColor(r):'#64748b';
+    return '<div class="pj-box" style="--pc:'+col+'"><h4>'+(n===1?'Projet 1':'Projet 2')+' <select aria-label="Projet de jeu '+n+'" onchange="'+fnSel+'(\''+qi+'\',this.value)">'+(n===2?'<option value="">— aucun —</option>':'')+R.map(x=>'<option value="'+esc(x.id)+'"'+(ref===x.id?' selected':'')+'>'+esc(x.label)+'</option>').join('')+'</select></h4>'
+      +(ref&&REMED_CONTENT[ref]?pjWheel(null,ref,sel)+(n===2?'<div class="cc-dim">Orientations travaillées dans la séquence :</div>'+pjOeChipsHtml(REMED_CONTENT[ref],sel,'seqPj2TogCur'):'<div class="cc-dim">Orientations : choisies ci-dessous (comme avant).</div>'):'')+'</div>';};
+  return '<div class="row"><b>🎡 Projets de jeu de la séquence</b><span class="cc-dim">— fixés pour toutes les séances de la séquence (garçons et filles en parallèle)</span></div><div class="pj2">'
+    +box(1,q.ref,(q.oeIds||[]),'seqPj1Set')+box(2,q.ref2||'',(q.oeIds2||[]),'seqPj2Set')+'</div>';
+}
+function seqPj2TogCur(oid){if(SEQ_UI.open)seqPj2Toggle(SEQ_UI.open,oid);}
+function seqPj1Set(id,v){seqSet(id,'ref',v);}
+function seqPj2Set(id,v){seqUpdate(id,q=>{q.ref2=v||'';q.oeIds2=[];});renderSeqTab();}
+function seqPj2Toggle(id,oid){seqUpdate(id,q=>{const L=(q.oeIds2||[]).slice();const i=L.indexOf(oid);if(i>=0)L.splice(i,1);else L.push(oid);q.oeIds2=L;});renderSeqTab();}
+(function(){
+  try{const o=wheelPanelHtml;wheelPanelHtml=function(s,sd){const h=o.apply(this,arguments);try{pjEnsure(s);const R=pjRefs();if(R.length<2)return h;
+      const r1=R.find(r=>r.id===s.referentiel);return '<div class="pj2"><div class="pj-box" style="--pc:'+(r1?pjColor(r1):'#64748b')+'"><h4>🎡 '+esc(r1?r1.label:'Projet')+'</h4>'+h+'</div>'+pj2PanelHtml(s)+'</div>';}catch(e){console.warn('pj2',e);return h;}};}catch(e){}
+  try{const o2=sbPaletteRows;sbPaletteRows=function(s){const A=o2.apply(this,arguments);try{const p=pjProxy(s);if(p&&p.oeId){const B=o2.call(this,p);const seen={};A.forEach(r=>{seen[r.key]=1;});B.forEach(r=>{if(!seen[r.key]){seen[r.key]=1;A.push(r);}});}}catch(e){}return A;};}catch(e){}
+  try{const o3=seqCreateSeance;seqCreateSeance=function(id,k){const r=o3.apply(this,arguments);try{const q=seqGet(id);const s=q&&seqSeance(q,k);if(s&&q.ref2&&REMED_CONTENT[q.ref2]){const L=(q.oeIds2||[]).slice();s.proj2={referentiel:q.ref2,oeId:L[0]||null,oeExtra:L.slice(1)};saveSeances();}}catch(e){}return r;};}catch(e){}
 })();
 </script>
 </body>
