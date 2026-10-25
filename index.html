@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v253</title>
+<title>Gribouillis EPS v254</title>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
 /* ── THÈME SOMBRE UNIQUEMENT ── */
@@ -19398,7 +19398,7 @@ function animPick(cb){closeAnimOv();const cur=studioCurrent();let lib=[];try{lib
   const o=document.createElement('div');o.id='anim-ov';o.style.cssText='position:fixed;inset:0;z-index:30000;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;padding:16px;';
   o.innerHTML='<div style="background:#1e293b;color:#fff;border-radius:12px;padding:14px;max-width:520px;width:100%;max-height:80vh;overflow:auto;"><div style="display:flex;align-items:center;margin-bottom:8px;"><b style="flex:1;">🎞 Lier une animation</b><button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="closeAnimOv()">✕</button></div>'+h+'</div>';
   document.body.appendChild(o);animGhLoad();}
-function animImportCheck(t){try{const p=JSON.parse(t);if(!p||typeof p!=='object'||!Array.isArray(p.objs)||!Array.isArray(p.frames))throw 0;return JSON.stringify(p);}catch(e){alert('Ce texte n\'est pas une animation du Studio (il faut un projet .json avec « objs » et « frames »).');return null;}}
+function animImportCheck(t){try{if(String(t||'').indexOf('"gribouillis"')>=0&&typeof libImportParse==='function'&&libImportParse(t)){closeAnimOv();libImportText(t);return null;}}catch(e){}try{const p=JSON.parse(t);if(!p||typeof p!=='object'||!Array.isArray(p.objs)||!Array.isArray(p.frames))throw 0;return JSON.stringify(p);}catch(e){alert('Ce texte n\'est pas une animation du Studio (il faut un projet .json avec « objs » et « frames »).');return null;}}
 function animImportFile(inp){const f=inp.files&&inp.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const j=animImportCheck(String(r.result||''));if(!j)return;closeAnimOv();if(window.__animPickCb)window.__animPickCb(j);};r.readAsText(f);}
 function animImportPaste(){askTextDlg('Collez le texte de l\'animation (.json)','',v=>{if(!v)return;const j=animImportCheck(v);if(!j)return;closeAnimOv();if(window.__animPickCb)window.__animPickCb(j);});}
 function animPicked(i){const j=window.__animPickItems[i];closeAnimOv();if(window.__animPickCb)window.__animPickCb(j);}
@@ -20867,7 +20867,7 @@ function pasteAnim(j){if(E('anim-ov')&&window.__animPickCb){const cb=window.__an
 document.addEventListener('paste',e=>{try{const cd=e.clipboardData;if(!cd)return;const tg=e.target;const inText=tg&&((/INPUT|TEXTAREA/.test(tg.tagName)&&tg.type!=='file')||tg.isContentEditable);
   let file=null;[...(cd.items||[])].some(it=>{if(it.kind==='file'&&/^image\//.test(it.type)){file=it.getAsFile();return true;}return false;});
   if(file){const inp=pasteImgInput();if(inp){e.preventDefault();if(pasteFileInto(inp,file))toast2('📋 Photo collée');}else if(!inText)toast2('Touche d\'abord la situation (ou son bouton photo), puis colle (Ctrl+V).');return;}
-  if(inText&&!E('anim-ov'))return;const j=animFromText(cd.getData('text'));if(!j)return;e.preventDefault();if(!pasteAnim(j))toast2('Touche d\'abord « Lier une animation » (ou la situation), puis colle (Ctrl+V).');}catch(err){console.warn('paste',err);}});
+  if(inText&&!E('anim-ov'))return;const tx=cd.getData('text');if(E('anim-ov')&&tx&&tx.indexOf('"gribouillis"')>=0&&libImportParse(tx)){e.preventDefault();closeAnimOv();libImportText(tx);return;}const j=animFromText(tx);if(!j)return;e.preventDefault();if(!pasteAnim(j))toast2('Touche d\'abord « Lier une animation » (ou la situation), puis colle (Ctrl+V).');}catch(err){console.warn('paste',err);}});
 // bouton 📋 à côté de chaque bouton photo (lit le presse-papiers)
 function pasteBtnClick(btn){const lab=btn.previousElementSibling;const inp=lab&&(lab.matches('input')?lab:lab.querySelector('input[type=file]'));if(!inp)return;
   if(!(navigator.clipboard&&navigator.clipboard.read)){toast2('Fais Ctrl+V après avoir touché ce bouton.');PASTE_AT=btn;return;}
@@ -20876,7 +20876,7 @@ function pasteBtnClick(btn){const lab=btn.previousElementSibling;const inp=lab&&
     const b=document.createElement('button');b.type='button';b.className='btn-xs';b.textContent='📋 Coller';b.title='Coller une image copiée (ou Ctrl+V)';b.style.cssText='background:#334155;color:#fff;margin-left:4px;';b.onclick=ev=>{ev.preventDefault();ev.stopPropagation();pasteBtnClick(b);};l.insertAdjacentElement('afterend',b);});};
   try{new MutationObserver(()=>{if(!pend){pend=true;requestAnimationFrame(run);}}).observe(document.body,{childList:true,subtree:true});}catch(e){}})();
 // « Coller le texte d'une animation » : lit directement le presse-papiers si possible
-(function(){try{const o=animImportPaste;animImportPaste=function(){const self=this,args=arguments;try{if(navigator.clipboard&&navigator.clipboard.readText){navigator.clipboard.readText().then(t=>{const j=animFromText(t);if(j&&window.__animPickCb){const cb=window.__animPickCb;closeAnimOv();cb(j);toast2('🎞 Animation collée');}else o.apply(self,args);}).catch(()=>o.apply(self,args));return;}}catch(e){}return o.apply(this,arguments);};}catch(e){}})();
+(function(){try{const o=animImportPaste;animImportPaste=function(){const self=this,args=arguments;try{if(navigator.clipboard&&navigator.clipboard.readText){navigator.clipboard.readText().then(t=>{if(t&&t.indexOf('"gribouillis"')>=0&&libImportParse(t)){closeAnimOv();libImportText(t);return;}const j=animFromText(t);if(j&&window.__animPickCb){const cb=window.__animPickCb;closeAnimOv();cb(j);toast2('🎞 Animation collée');}else o.apply(self,args);}).catch(()=>o.apply(self,args));return;}}catch(e){}return o.apply(this,arguments);};}catch(e){}})();
 
 // ══════════════════════════════════════════════════════════════════════
 // v243 — SÉQUENCE AS : 2 rubriques séparées « Projet de jeu Garçons » / « Filles »
