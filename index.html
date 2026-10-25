@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v251</title>
+<title>Gribouillis EPS v252</title>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
 /* ── THÈME SOMBRE UNIQUEMENT ── */
@@ -1002,6 +1002,7 @@ body:has(#t-seance.active) .btn-start{padding:7px;font-size:.9rem;}
 .wc-ap{display:flex;gap:5px;flex-wrap:wrap;margin:4px 0 6px;}
 .wc-ap button{border:1px solid var(--border);border-radius:999px;padding:5px 10px;background:#0f172a;color:var(--text);font-size:.74rem;font-weight:700;cursor:pointer;}
 .wc-ap button.on{background:#b45309;border-color:#b45309;color:#fff;}
+.asp-arr{font-size:.7rem;color:#a7f3d0;background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.45);border-radius:7px;padding:3px 6px;margin:3px 0;line-height:1.35;}
 .asp-late{font-size:.68rem;color:#fbbf24;margin:3px 0;line-height:1.3;}
 .fit-vid{display:block;max-width:100%;max-height:calc(100vh - 170px);margin:8px auto;border-radius:10px;background:#000;}
 .pres-vids h5{margin:12px 0 2px;font-size:.9rem;color:#93c5fd;}
@@ -20623,7 +20624,6 @@ function aspAlerts(s,b,tm){if(b.kind!=='bloc')return '';const cnt={};(b.ats||[])
 function aspAtHtml(s,b,a,i){const bi=esc(b.id),ai=esc(a.id);
   let h='<'+'div class="asp-at" data-drop="asa:'+bi+':'+ai+'">'+((b.ats||[]).length>1?'<'+'div class="lab">ATELIER '+String.fromCharCode(65+i)+'</'+'div>':'');
   h+=(a.groups||[]).map(gid=>{const g=aspChip(s,gid);if(!g)return '';return '<span class="asp-g" style="--gc:'+esc(g.color||'#475569')+'" data-drag="ag:'+bi+':'+ai+':'+esc(gid)+'" title="Glisser vers un autre atelier · double-clic pour retirer" ondblclick="aspDelGroup(\''+bi+'\',\''+ai+'\',\''+esc(gid)+'\')">'+esc(String(g.label))+'</span>';}).join('');
-  h+=aspLateHtml(s,b,a);
   h+=(a.exos||[]).map((e,k)=>{const inf=aspExInfo(e);return '<'+'div class="asp-ex" data-drag="ae:'+bi+':'+ai+':'+k+'"><span class="th">'+aspThumb(inf)+'</span><span class="n">'+esc(inf?String(inf.titre):'(supprimé)')+'</span><button type="button" onclick="aspDelEx(\''+bi+'\',\''+ai+'\','+k+')" aria-label="Retirer">✕</button></'+'div>';}).join('');
   if(!(a.groups||[]).length&&!(a.exos||[]).length)h+='<'+'div class="asp-empty">Glissez un groupe et un exercice ici</'+'div>';
   if((a.exos||[]).some(e=>{const i=aspExInfo(e);return i&&i.kind==='fps';}))h+='<button type="button" class="obs" onclick="aspObserve(\''+bi+'\',\''+ai+'\')">▶ Observer ce match</button>';
@@ -20634,7 +20634,7 @@ function aspBlockHtml(s,b,tm,idx){const bi=esc(b.id);const fix=b.kind!=='bloc';
     +'<button type="button" onclick="aspDur(\''+bi+'\',-5)" aria-label="5 min de moins">−</button><span>'+b.dur+'′</span><button type="button" onclick="aspDur(\''+bi+'\',5)" aria-label="5 min de plus">+</button>'
     +(fix?'':'<button type="button" onclick="aspMove(\''+bi+'\',-1)" aria-label="Avancer">◀</button><button type="button" onclick="aspMove(\''+bi+'\',1)" aria-label="Reculer">▶</button><button type="button" class="x" onclick="aspDelBlock(\''+bi+'\')" aria-label="Supprimer">✕</button>')+'</'+'div>';
   if(fix)h+='<'+'div class="asp-empty">'+(b.kind==='objectif'?'Roues Garçons / Filles (② Objet & contenus)':'Fin de séance')+'</'+'div>';
-  else{h+=aspAlerts(s,b,tm);h+=(b.ats||[]).map((a,i)=>aspAtHtml(s,b,a,i)).join('');if((b.ats||[]).length<6)h+='<'+'div class="asp-par" data-drop="asp:'+bi+'" onclick="aspAddAt(\''+bi+'\')">⫴ ＋ travail parallèle</'+'div>';}
+  else{h+=aspArrivalsHtml(s,b,tm,idx);h+=aspAlerts(s,b,tm);h+=(b.ats||[]).map((a,i)=>aspAtHtml(s,b,a,i)).join('');if((b.ats||[]).length<6)h+='<'+'div class="asp-par" data-drop="asp:'+bi+'" onclick="aspAddAt(\''+bi+'\')">⫴ ＋ travail parallèle</'+'div>';}
   return h+'</'+'div>';}
 function hmFmt(m){if(m==null)return '';const h=Math.floor(m/60),mm=m%60;return h+'h'+(mm?String(mm).padStart(2,'0'):'');}
 function aspRefShort(ref){const l=String((REMED_CONTENT[ref]||{}).label||'');const m=/gar[cç]ons?|filles?/i.exec(l);return m?m[0][0].toUpperCase()+m[0].slice(1).toLowerCase():l;}
@@ -21108,6 +21108,21 @@ function libImportAsk(){const fb=()=>askTextDlg('Collez le code à importer','',
   try{if(navigator.clipboard&&navigator.clipboard.readText){navigator.clipboard.readText().then(t=>{if(libImportParse(t))libImportText(t);else fb();}).catch(fb);return;}}catch(e){}fb();}
 document.addEventListener('paste',e=>{try{const tg=e.target;if(tg&&((/INPUT|TEXTAREA/.test(tg.tagName)&&tg.type!=='file')||tg.isContentEditable))return;if(!document.querySelector('#t-lib.active'))return;
   const t=e.clipboardData&&e.clipboardData.getData('text');if(!t||t.indexOf('"gribouillis"')<0)return;if(libImportParse(t)){e.preventDefault();e.stopImmediatePropagation();libImportText(t);}}catch(x){}},true);
+
+// ══════════════════════════════════════════════════════════════════════
+// v252 — dans chaque bloc : « Arrivée de Joséphine (18h35) » au lieu de la
+// liste de tous ceux qui ne sont pas encore là.
+// ══════════════════════════════════════════════════════════════════════
+function aspArrivalsHtml(s,b,tm,idx){if(b.kind!=='bloc'||!tm)return '';let h='';
+  // arrivée d'une catégorie entière (ex : les filles à 17h30)
+  try{const cs=s.catStart||{};Object.keys(cs).forEach(c=>{const m=planMin(cs[c]);if(m!=null&&m>=tm.a&&m<tm.b&&m>(hm2m(s.start||'')||hm2m('16:30')))h+='<'+'div class="asp-arr">🚩 Arrivée : <b>'+esc(String(c))+'</b> ('+hmFmt(m)+')</'+'div>';});}catch(e){}
+  // arrivées individuelles (fin de cours plus tard que le début de leur groupe)
+  const BL=(s.asp.blocks||[]).filter(x=>x.kind==='bloc');const isLast=BL.length&&BL[BL.length-1].id===b.id;const L=[],U=[];aspRoster().forEach(n=>{const x=aspLateArr(s,n);if(x==null)return;if(x===-1)U.push(n);else if((x>=tm.a&&x<tm.b)||(isLast&&x>=tm.b))L.push({n:n,x:x});});
+  L.sort((p,q)=>p.x-q.x);
+  if(L.length)h+='<'+'div class="asp-arr">🕒 '+L.map(o=>'Arrivée de <b>'+esc(o.n)+'</b> ('+hmFmt(o.x)+')').join(' · ')+'</'+'div>';
+  const first=(s.asp.blocks||[]).find(x=>x.kind==='bloc');
+  if(U.length&&first&&first.id===b.id)h+='<'+'div class="asp-arr" style="color:#fde68a;border-color:rgba(251,191,36,.5);background:rgba(251,191,36,.1);">🕒 En retard (heure inconnue) : '+U.map(esc).join(', ')+'</'+'div>';
+  return h;}
 </script>
 </body>
 </html>
