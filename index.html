@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v252</title>
+<title>Gribouillis EPS v253</title>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
 /* ── THÈME SOMBRE UNIQUEMENT ── */
@@ -21097,13 +21097,18 @@ function warmDedupe(s){try{const e=s&&s.echauffement;if(!e||!Array.isArray(e.pha
 // ══════════════════════════════════════════════════════════════════════
 function libImportParse(t){let d=null;try{d=JSON.parse(String(t||'').trim());}catch(e){return null;}
   const L=Array.isArray(d)?d:(d&&Array.isArray(d.items)?d.items:(d&&d.kind&&d.titre?[d]:null));if(!L)return null;
-  const ok=L.filter(x=>x&&typeof x==='object'&&/^(remed|match|warm|phase)$/.test(x.kind||'')&&String(x.titre||'').trim());return ok.length?ok:null;}
-function libImportText(t){const L=libImportParse(t);if(!L){alert('Ce code n\'est pas un lot de la Biblio Gribouillis.');return 0;}
-  const a=libLoad();let n=0;L.forEach((x,i)=>{const it=JSON.parse(JSON.stringify(x));it.id=['lib',Date.now(),'imp'+i,Math.floor(Math.random()*1000)].join('-');it.date=Date.now();
+  const ok=L.filter(x=>x&&typeof x==='object'&&/^(remed|match|warm|phase|anim)$/.test(x.kind||'')&&String(x.titre||'').trim());return ok.length?ok:null;}
+function libImportText(t){let L=libImportParse(t);if(!L){alert('Ce code n\'est pas un lot de la Biblio Gribouillis.');return 0;}
+  const a=libLoad();let n=0,na=0;const miss=[];const nk=t=>stripAccents(String(t||'')).toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
+  L.filter(x=>x.kind==='anim').forEach(x=>{const an=JSON.parse(JSON.stringify(x.anim||{}));if(an.json&&typeof an.json!=='string')an.json=JSON.stringify(an.json);if(!an.json)return;if(!an.name)an.name=x.titre;
+    const T=a.filter(y=>y.kind!=='seance'&&nk(y.titre)===nk(x.titre));if(!T.length){miss.push(x.titre);return;}T.forEach(y=>{y.anim=an;});na+=T.length;});
+  if(miss.length)alert('Pas trouvé dans la Biblio : '+miss.join(', ')+'. Vérifie le nom de la FPS / situation.');
+  L=L.filter(x=>x.kind!=='anim');
+  L.forEach((x,i)=>{const it=JSON.parse(JSON.stringify(x));it.id=['lib',Date.now(),'imp'+i,Math.floor(Math.random()*1000)].join('-');it.date=Date.now();
     if(it.anim&&typeof it.anim.json!=='string'&&it.anim.json)it.anim.json=JSON.stringify(it.anim.json);
     if(!Array.isArray(it.tags))it.tags=[];if(!Array.isArray(it.criteres))it.criteres=[];if(it.kind==='remed'&&!Array.isArray(it.roles))it.roles=[];
     if(a.some(y=>y.kind===it.kind&&y.titre===it.titre&&String(y.desc||'')===String(it.desc||'')))return;a.push(it);n++;});
-  libSave(a);try{renderLibTab();}catch(e){}try{toast2(n?('📥 '+n+' élément'+(n>1?'s':'')+' ajouté'+(n>1?'s':'')+' à la Biblio'):'Déjà dans la Biblio : rien d\'ajouté');}catch(e){}return n;}
+  libSave(a);try{renderLibTab();}catch(e){}try{toast2((n?('📥 '+n+' élément'+(n>1?'s':'')+' ajouté'+(n>1?'s':'')+' à la Biblio'):'')+(na?((n?' · ':'')+'🎞 animation rattachée à '+na+' élément'+(na>1?'s':'')):'')||'Déjà dans la Biblio : rien d\'ajouté');}catch(e){}return n+na;}
 function libImportAsk(){const fb=()=>askTextDlg('Collez le code à importer','',v=>{if(v)libImportText(v);},'{"gribouillis":"lib",…}');
   try{if(navigator.clipboard&&navigator.clipboard.readText){navigator.clipboard.readText().then(t=>{if(libImportParse(t))libImportText(t);else fb();}).catch(fb);return;}}catch(e){}fb();}
 document.addEventListener('paste',e=>{try{const tg=e.target;if(tg&&((/INPUT|TEXTAREA/.test(tg.tagName)&&tg.type!=='file')||tg.isContentEditable))return;if(!document.querySelector('#t-lib.active'))return;
