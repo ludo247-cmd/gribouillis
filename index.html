@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v260</title>
+<title>Gribouillis EPS v261</title>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
 /* ── THÈME SOMBRE UNIQUEMENT ── */
@@ -1077,6 +1077,20 @@ body:has(#t-seance.active) .btn-start{padding:7px;font-size:.9rem;}
 .wc-pfoc .wm-media{aspect-ratio:16/10;height:auto;margin-bottom:4px;}
 .ael-paged .wc-pfoc .wm-media{height:auto;aspect-ratio:16/10;}
 .wc-pfoc h4{font-size:.85rem;margin:0;}
+.gr-rule{border:1px solid var(--border);border-radius:10px;padding:7px 8px;margin:6px 0;background:rgba(15,23,42,.35);}
+.gr-rule .row1{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
+.gr-rule input.nm{flex:1 1 180px;margin:0;font-weight:700;}
+.gr-rule .pc{display:flex;gap:4px;flex-wrap:wrap;margin-top:5px;}
+.gr-rule .pc button{border:1px solid #475569;background:#1e293b;color:#cbd5e1;border-radius:999px;padding:3px 9px;font-size:.74rem;cursor:pointer;}
+.gr-rule .pc button.on{background:#2563eb;border-color:#60a5fa;color:#fff;font-weight:700;}
+.gr-rule select{font-size:.76rem;}
+.gr-cnt{font-size:.72rem;color:#93c5fd;font-weight:700;}
+.gen-ctx{background:rgba(124,58,237,.18);border:1px solid #7c3aed;border-radius:10px;padding:7px 10px;margin:6px 0;font-size:.82rem;}
+.wc-pfoc{grid-template-columns:repeat(auto-fill,minmax(210px,1fr));}
+.wc-pfoc .wm-card{cursor:zoom-in;position:relative;}
+.wc-pfoc .wm-media{position:relative;display:flex;align-items:center;justify-content:center;background:#000;border-radius:8px;overflow:hidden;}
+.wc-pfoc .wm-media img,.wc-pfoc .wm-media video{width:100%;height:100%;object-fit:contain;}
+.wc-pfoc .wm-media .pfp{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:50px;height:50px;border-radius:50%;background:rgba(124,58,237,.92);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.3rem;pointer-events:none;}
 .fit-vid{display:block;max-width:100%;max-height:calc(100vh - 170px);margin:8px auto;border-radius:10px;background:#000;}
 .pres-vids h5{margin:12px 0 2px;font-size:.9rem;color:#93c5fd;}
 .ok-list{margin:0;padding:0;list-style:none;}
@@ -7548,6 +7562,7 @@ function parseCompoCSV(text){
   // buildCompoTeamsFromClub, appelée juste après l'import).
   const iClub=hdrs.findIndex(h=>h.includes('equipe')||h.includes('club'));
   const iSexe=hdrs.findIndex(h=>h.includes('sexe')||h==='genre'||h==='fg'||h==='f/g');
+  const iPz=hdrs.findIndex(h=>h.includes('prozap'));
   // v197 : rôles (« Autre rôle », « Autre rôle 2 », « Mission match ») et heures de fin de cours par jour
   const iRoles=hdrs.map((h,i)=>(h.includes('role')||h.includes('mission'))?i:-1).filter(i=>i>=0);
   const JOURS=['lundi','mardi','mercredi','jeudi','vendredi','samedi'];
@@ -7585,7 +7600,8 @@ function parseCompoCSV(text){
     const finCours={};Object.keys(iFin).forEach(j=>{const v=(cols[iFin[j]]||'').trim();if(v&&v!=='0')finCours[j]=v;});
     let sexe='';if(iSexe!==-1){const sv=stripAccents((cols[iSexe]||'').trim()).toLowerCase();if(/^f/.test(sv))sexe='F';else if(/^(g|m|h)/.test(sv))sexe='M';}
     const cote=(COMPO.sport==='football'||!COMPO.sport)?coteSideOf([iP1,iP2,iP3].map(i=>i!==-1?cols[i]:'')):'';
-    roster.push({name:nom,postes,note,categorie,absent,arriveLater,club,roles,finCours,sexe,cote});
+    const prozap=iPz!==-1?parseCompoBool(cols[iPz]):false;
+    roster.push({name:nom,postes,note,categorie,absent,arriveLater,club,roles,finCours,sexe,cote,prozap});
   });
   if(!roster.length)throw new Error('Aucun joueur valide trouvé');
   COMPO.roster=roster;
@@ -20700,7 +20716,7 @@ function aspAtHtml(s,b,a,i){const bi=esc(b.id),ai=esc(a.id);
   h+=(a.groups||[]).map(gid=>{const g=aspChip(s,gid);if(!g)return '';return '<span class="asp-g" style="--gc:'+esc(g.color||'#475569')+'" data-drag="ag:'+bi+':'+ai+':'+esc(gid)+'" title="Glisser vers un autre atelier · double-clic pour retirer" ondblclick="aspDelGroup(\''+bi+'\',\''+ai+'\',\''+esc(gid)+'\')">'+esc(String(g.label))+'</span>';}).join('');
   h+=(a.exos||[]).map((e,k)=>{const inf=aspExInfo(e);return '<'+'div class="asp-ex" data-drag="ae:'+bi+':'+ai+':'+k+'"><span class="th">'+aspThumb(inf)+'</span><span class="n">'+esc(inf?String(inf.titre):'(supprimé)')+'</span><button type="button" onclick="aspDelEx(\''+bi+'\',\''+ai+'\','+k+')" aria-label="Retirer">✕</button></'+'div>';}).join('');
   if(!(a.groups||[]).length&&!(a.exos||[]).length)h+='<'+'div class="asp-empty">Glissez un groupe et un exercice ici</'+'div>';
-  if((a.exos||[]).some(e=>{const i=aspExInfo(e);return i&&i.kind==='fps';}))h+='<button type="button" class="obs" onclick="aspObserve(\''+bi+'\',\''+ai+'\')">▶ Observer ce match</button>';
+  if((a.exos||[]).some(e=>{const i=aspExInfo(e);return i&&i.kind==='fps';}))h+='<button type="button" class="obs" onclick="aspObserve(\''+bi+'\',\''+ai+'\')">▶ Observer ce match</button><button type="button" class="obs" style="background:#7c3aed;margin-left:4px;" onclick="aspMakeTeams(\''+bi+'\',\''+ai+'\')">⚖️ Faire les équipes</button>';
   if((b.ats||[]).length>1)h+='<button type="button" class="obs" style="background:#7f1d1d;margin-left:4px;" onclick="aspDelAt(\''+bi+'\',\''+ai+'\')">✕ atelier</button>';
   h+=aspRolesAtHtml(s,b,a,null);
   return h+'</'+'div>';}
@@ -21363,7 +21379,7 @@ function aspRolesAll(s){const key=s.id+'|'+JSON.stringify(s.asp.blocks.map(b=>[b
     (b.ats||[]).forEach(a=>{const R=[];aspAtRoleLabels(a).forEach(l=>{
         const avail=pres.filter(n=>!used[n]);const holders=avail.filter(n=>aspHasRole(n,l));
         const pick=L=>L.slice().sort((x,y)=>(load[x]||0)-(load[y]||0)||String(x).localeCompare(String(y),'fr'))[0];
-        let n=pick(holders.filter(x=>mem[a.id].indexOf(x)>=0))||pick(holders.filter(x=>!playing[x]))||pick(avail.filter(x=>!playing[x]))||null;
+        let n=pick(holders.filter(x=>mem[a.id].indexOf(x)>=0))||pick(holders.filter(x=>!playing[x]))||pick(aspSameSex(avail.filter(x=>!playing[x]),mem[a.id]))||null;
         if(n){used[n]=1;load[n]=(load[n]||0)+1;}R.push({role:l,name:n});});out[b.id][a.id]=R;});});
   ASP_RL={k:key,v:out};setTimeout(()=>{ASP_RL=null;},0);return out;}
 function aspRolesOf(s,b,a){try{return ((aspRolesAll(s)[b.id]||{})[a.id])||[];}catch(e){console.warn('roles',e);return [];}}
@@ -21457,6 +21473,103 @@ function pjCedCpsHtml(s,ref,ids){const sd=REMED_CONTENT[ref];if(!sd||!ids.length
   return h?'<'+'div class="cc-dim" style="margin-top:8px;">'+esc(NOMEN_DEFAULTS.cps)+' (● priorité · ◐ important · ○ normal · ✕ masqué)</'+'div>'+h:'';}
 (function(){try{const o=pj2PanelHtml;pj2PanelHtml=function(s){let h=o.apply(this,arguments);try{if(s.proj2&&s.proj2.referentiel===s.sport&&REMED_CONTENT[s.sport]&&!REMED_CONTENT[s.sport].custom){
     const ids=[s.proj2.oeId].concat(s.proj2.oeExtra||[]).filter(Boolean);const x=pjCedCpsHtml(s,s.sport,ids);const k=h.indexOf('<'+'div class="cc-dim" style="margin-top:6px;">Leurs situations');if(x&&k>=0)h=h.slice(0,k)+x+h.slice(k);}}catch(e){console.warn('pjced',e);}return h;};}catch(e){}})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v261 — Générateur sur mesure : regroupements de postes (sous-critères),
+// niveau, mixité, critère Prozap ; bouton « Faire les équipes » sur une FPS ;
+// responsables de situation pris parmi les joueurs (1 par équipe) ;
+// côté élève : plus de grande vidéo, vignettes des principes majoritaires
+// ══════════════════════════════════════════════════════════════════════
+function aspSameSex(L,M){const f=M.filter(n=>grpSexe(n)==='F').length,m=M.length-f;if(!M.length||f===m)return L;const want=f>m?'F':'M';const S=L.filter(n=>grpSexe(n)===want);return S.length?S:L;}
+const GR_POSTES=[['GK','🧤 Gardiens'],['DC','Déf. centraux'],['COTES_DEF','Côtés déf.'],['MC','Milieux'],['COTES_OFF','Côtés off.'],['COTES','Côtés'],['ATT','Attaquants'],['','Sans poste']];
+const GR_NIV={all:['tous niveaux',()=>true],forts:['forts (4-5)',n=>n>=4],moyens:['moyens (3)',n=>n>=3&&n<4],faibles:['faibles (1-2)',n=>n<3],fm:['forts + moyens (3-5)',n=>n>=3],mf:['moyens + faibles (1-3)',n=>n<4]};
+function grDefaultRules(){return [{name:'Défenseurs',postes:['DC','COTES_DEF'],niv:'all',pz:'',k:1},{name:'Milieux',postes:['MC','COTES_OFF','COTES'],niv:'all',pz:'',k:1},{name:'Gardiens / Attaquants',postes:['GK','ATT'],niv:'all',pz:'',k:1}];}
+if(!Array.isArray(GEN_UI.rules))GEN_UI.rules=grDefaultRules();if(!GEN_UI.restK)GEN_UI.restK=1;
+function grInfo(names){return names.map(x=>{const r=rosterOf(x)||{};return {n:x,note:+r.note||3,sx:grpSexe(x)||'',po:posteCodeOf(r)||'',pz:!!r.prozap,r:Math.random()};});}
+function grMatch(p,ru){if((ru.postes||[]).length&&ru.postes.indexOf(p.po)<0&&!(p.po.indexOf('COTES')===0&&ru.postes.indexOf('COTES')>=0))return false;if(!(GR_NIV[ru.niv]||GR_NIV.all)[1](p.note))return false;if(ru.pz==='oui'&&!p.pz)return false;if(ru.pz==='non'&&p.pz)return false;return true;}
+function grPartition(info,rules){const out=rules.map(()=>[]),rest=[];info.forEach(p=>{const i=rules.findIndex(ru=>grMatch(p,ru));if(i>=0)out[i].push(p);else rest.push(p);});return {parts:out,rest:rest};}
+function grSplit(arr,k,mode,par){k=Math.max(1,Math.min(k,arr.length||1));const byNote=(a,b)=>b.note-a.note||a.r-b.r;
+  const band=a=>{const s=a.slice().sort(byNote),o=[];for(let i=0;i<k;i++)o.push([]);s.forEach((p,i)=>o[Math.min(k-1,Math.floor(i*k/s.length))].push(p));return o;};
+  const snake=(a,o,st)=>{let pos=st||0;a.slice().sort(byNote).forEach(p=>{const c=pos%(2*k);o[c<k?c:2*k-1-c].push(p);pos++;});return pos;};
+  if(k===1)return [arr.slice()];
+  if(mode==='niveau'){if(!par)return band(arr);const m=band(arr.filter(p=>p.sx!=='F')),f=band(arr.filter(p=>p.sx==='F'));return m.map((x,i)=>x.concat(f[i]));}
+  const o=[];for(let i=0;i<k;i++)o.push([]);if(par){const pos=snake(arr.filter(p=>p.sx!=='F'),o,0);snake(arr.filter(p=>p.sx==='F'),o,pos);}else snake(arr,o,0);return o;}
+function grSave(s,groups,label){const st=Date.now().toString(36);s.groupes=groups.filter(g=>g.m.length).map((g,k)=>({id:'gr'+st+'k'+k,label:g.l,color:GROUP_COLORS[k%GROUP_COLORS.length],members:g.m.sort((a,b)=>b.note-a.note).map(p=>p.n),src:'gen',poste:g.po||null}));
+  s.groupes.forEach(g=>{if(g.poste)try{posteEnsure(s,g.poste);}catch(e){}});ensureLeaders(s);decoupSave(s,label);saveSeances();renderSeanceTab();}
+function grWho(o){return o.mixte?'Mixte':(o.pop==='F'?'Filles':(o.pop==='M'?'Garçons':'Tous'));}
+function grRulesRun(){const s=getActiveSeance();if(!s)return;const o=GEN_UI;const info=grInfo(genPool(s,o.mixte?'all':o.pop));if(info.length<2){alert('Pas assez d\'élèves pour cette sélection.');return;}
+  const P=grPartition(info,o.rules);const G=[];const par=!!o.mixte;
+  o.rules.forEach((ru,i)=>{const k=+ru.k||1;grSplit(P.parts[i],k,'niveau',par).forEach((m,j)=>G.push({l:(ru.name||('Groupe '+(i+1)))+(k>1?' — '+GEN_SHORT[k][j]:''),m:m,po:ru.name}));});
+  const k=+o.restK||1;if(P.rest.length)grSplit(P.rest,k,'niveau',par).forEach((m,j)=>G.push({l:'Tous les autres'+(k>1?' — '+GEN_SHORT[k][j]:''),m:m}));
+  grSave(s,G,grWho(o)+' · sur mesure ('+G.filter(g=>g.m.length).length+' groupes)');}
+function grPzRun(){const s=getActiveSeance();if(!s)return;const o=GEN_UI;const info=grInfo(genPool(s,o.mixte?'all':o.pop));const n=Math.max(1,Math.min(6,o.n||2));const par=!!o.mixte;const mode=o.niveau?'niveau':'melange';
+  const A=info.filter(p=>p.pz),B=info.filter(p=>!p.pz);if(!A.length){alert('Aucun élève coché Prozap dans la liste (colonne « Prozap » du fichier, puis 🔄 Mettre à jour la classe).');return;}
+  const G=[];const lab=(t,arr)=>{const parts=grSplit(arr,n,mode,par);parts.forEach((m,j)=>G.push({l:t+(parts.length>1?(mode==='niveau'?' — '+GEN_SHORT[parts.length][j]:' '+(j+1)):''),m:m}));};
+  lab('🏆 Prozap',A);if(B.length)lab('Autres',B);grSave(s,G,grWho(o)+' · Prozap');}
+function grRuleSet(i,k,v){const r=GEN_UI.rules[i];if(!r)return;if(k==='k')v=+v;r[k]=v;renderSeanceTab();}
+function grRulePo(i,c){const r=GEN_UI.rules[i];if(!r)return;const L=r.postes||(r.postes=[]);const j=L.indexOf(c);if(j>=0)L.splice(j,1);else L.push(c);renderSeanceTab();}
+function grRuleAdd(){GEN_UI.rules.push({name:'Nouveau regroupement',postes:[],niv:'all',pz:'',k:1});renderSeanceTab();}
+function grRuleDel(i){GEN_UI.rules.splice(i,1);renderSeanceTab();}
+function grRuleReset(){GEN_UI.rules=grDefaultRules();GEN_UI.restK=1;renderSeanceTab();}
+genBlocksHtml=function(s){const o=GEN_UI;let P={parts:[],rest:[]};try{P=grPartition(grInfo(genPool(s,o.mixte?'all':o.pop)),o.rules);}catch(e){}
+  const sel=(v,opts,fn)=>'<select onchange="'+fn+'">'+opts.map(x=>'<option value="'+x[0]+'"'+(String(v)===String(x[0])?' selected':'')+'>'+x[1]+'</option>').join('')+'</select>';
+  const kOpts=[[1,'1 groupe'],[2,'2 niveaux'],[3,'3 niveaux'],[4,'4 niveaux']];let tot=0;
+  let h='<'+'div style="margin:8px 0;"><'+'div style="font-size:.72rem;color:var(--dim2);">⚙️ Regroupements (sous-critères) : chaque élève va dans le <b>premier</b> regroupement qui lui correspond (son poste 1), les autres dans « Tous les autres ». Ex. « Milieux + attaquants forts » puis tous les autres.</'+'div>';
+  o.rules.forEach((ru,i)=>{const n=(P.parts[i]||[]).length;const k=Math.min(+ru.k||1,Math.max(1,n));tot+=n?k:0;
+    h+='<'+'div class="gr-rule"><'+'div class="row1"><input class="remed-edit-field nm" value="'+esc(ru.name||'')+'" onchange="grRuleSet('+i+',\'name\',this.value)"><span class="gr-cnt">'+n+' élève'+(n>1?'s':'')+'</span>'
+      +sel(ru.niv,Object.keys(GR_NIV).map(x=>[x,GR_NIV[x][0]]),'grRuleSet('+i+',\'niv\',this.value)')+sel(ru.pz,[['','Prozap : indifférent'],['oui','🏆 Prozap seulement'],['non','sans les Prozap']],'grRuleSet('+i+',\'pz\',this.value)')+sel(ru.k,kOpts,'grRuleSet('+i+',\'k\',this.value)')
+      +'<button type="button" class="btn-xs red" onclick="grRuleDel('+i+')">✕</button></'+'div><'+'div class="pc">'+GR_POSTES.map(p=>'<button type="button" class="'+((ru.postes||[]).indexOf(p[0])>=0?'on':'')+'" onclick="grRulePo('+i+',\''+p[0]+'\')">'+p[1]+'</button>').join('')+'<span style="font-size:.68rem;color:var(--dim2);align-self:center;">'+((ru.postes||[]).length?'':'(aucun poste coché = tous les postes)')+'</span></'+'div></'+'div>';});
+  const nr=P.rest.length;tot+=nr?Math.min(+o.restK||1,nr):0;
+  h+='<'+'div class="gr-rule" style="opacity:.9;"><'+'div class="row1"><b style="flex:1 1 180px;">Tous les autres</b><span class="gr-cnt">'+nr+' élève'+(nr>1?'s':'')+'</span>'+sel(o.restK,kOpts,'GEN_UI.restK=+this.value;renderSeanceTab()')+'</'+'div></'+'div>'
+    +'<button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="grRuleAdd()">＋ Ajouter un regroupement</button> <button type="button" class="btn-xs" style="background:#1e293b;color:#cbd5e1;" onclick="grRuleReset()">↺ Regroupements par défaut</button>'
+    +'<'+'div style="font-size:.8rem;font-weight:700;margin-top:6px;">= '+tot+' groupe'+(tot>1?'s':'')+(o.mixte?' · chacun avec autant de filles que de garçons':'')+'</'+'div></'+'div>';
+  return h;};
+(function(){
+  try{const og=genGroupsRun;genGroupsRun=function(){const o=GEN_UI;if(o.eq)return og.apply(this,arguments);if(o.poste)return grRulesRun();if(o.pz)return grPzRun();return og.apply(this,arguments);};}catch(e){}
+  try{const orb=renderSeanceGroupsBlock;renderSeanceGroupsBlock=function(s){let h=orb.apply(this,arguments);try{const o=GEN_UI;
+      if(!o.eq){const k='>🧤 Par poste</button>';const i=h.indexOf(k);if(i>=0&&!o.poste)h=h.slice(0,i+k.length)+'<button type="button" class="remed-chip'+(o.pz?' selected':'')+'" style="flex:0 1 auto;padding:8px 13px;font-size:.8rem;" onclick="GEN_UI.pz=!GEN_UI.pz;renderSeanceTab()">🏆 Prozap</button>'+h.slice(i+k.length);
+        if(o.pz&&!o.poste)h=h.replace(new RegExp('(<'+'div style="font-size:\\.7rem;color:var\\(--dim2\\);margin:6px 0 8px;">)([^<]*)'),(m,a,b)=>a+'🏆 Les élèves Prozap à part, les autres à part ; chaque partie coupée en '+(o.n||2)+(o.niveau?' niveaux':' groupes mélangés')+'. ');}
+      if(o.ctx){const c=o.ctx;h=h.replace('<b>🎲 Générateur de groupes</b>','<b>🎲 Générateur de groupes</b><'+'div class="gen-ctx">⚖️ Équipes pour <b>'+esc(c.lab)+'</b> — '+c.pool+' joueurs présents, '+(c.size?c.size+' par équipe dans la FPS':'')+'. Les équipes iront directement dans l\'atelier. <button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="GEN_UI.ctx=null;renderSeanceTab()">✕ Annuler</button></'+'div>');}}catch(e){console.warn('gen ui2',e);}return h;};}catch(e){}
+})();
+// ── « Faire les équipes » depuis une FPS d'un atelier ──
+function aspFpsSize(src){const t=[src.format,src.cfg&&src.cfg.format,src.titre,src.desc].filter(Boolean).join(' ');const m=/(\d{1,2})\s*(?:c|contre|vs|v|x|×)\s*(\d{1,2})/i.exec(t);if(m)return +m[1];const j=/(\d{1,2})\s*joueurs?/i.exec(t);if(j)return +j[1];return 0;}
+function aspMakeTeams(bid,aid){const s=aspS();if(!s)return;const b=aspB(s,bid),a=aspAt(s,bid,aid);if(!b||!a)return;const T=aspTimes(s)[bid];
+  const fx=(a.exos||[]).map(aspExInfo).find(i=>i&&i.kind==='fps');const size=fx&&fx.src?aspFpsSize(fx.src):0;
+  let pool=aspAtMembers(s,a);const pres=aspPresent(s,T?T.a:0);pool=pool.filter(n=>pres.indexOf(n)>=0);
+  const sx=pool.map(grpSexe);const pop=!pool.length?(GEN_UI.pop||'all'):(sx.every(x=>x==='F')?'F':(sx.every(x=>x==='M')?'M':'all'));
+  if(!pool.length)pool=genPool(s,pop).filter(n=>pres.indexOf(n)>=0);
+  const n=Math.max(2,Math.min(6,size?Math.floor(pool.length/size)||2:2));
+  GEN_UI.eq=true;GEN_UI.poste=false;GEN_UI.pop=pop;GEN_UI.mixte=(pop==='all');GEN_UI.eqNs=[n];
+  GEN_UI.ctx={bid:bid,aid:aid,pool:pool.length,names:pool,size:size,lab:hmFmt(T?T.a:0)+' · '+(fx?fx.titre:'FPS')};
+  SEANCE_FOLD[s.id]=Object.assign(SEANCE_FOLD[s.id]||{},{groups:true});renderSeanceTab();setTimeout(()=>{const d=document.querySelector('details[data-k="groups"]');if(d){d.open=true;d.scrollIntoView({behavior:'smooth',block:'start'});}},60);}
+(function(){try{const ot=genTeamsRun;genTeamsRun=function(){const c=GEN_UI.ctx;if(!c)return ot.apply(this,arguments);const s=getActiveSeance();if(!s)return;
+    const Ns=(GEN_UI.eqNs||[]).filter(n=>n>=2&&n<=6).sort();if(!Ns.length){alert('Choisis un nombre d\'équipes.');return;}const n=Ns[0];
+    const T=genTeamsBuild(c.names,n,!!GEN_UI.mixte);const st=Date.now().toString(36);
+    s.groupes=T.map((m,k)=>({id:'eq'+st+'n'+n+'k'+k,label:EQ_NAMES[k][0],color:EQ_NAMES[k][1],members:m,src:'gen'}));ensureLeaders(s);decoupSave(s,c.lab+' · '+n+' équipes');
+    const a=aspAt(s,c.bid,c.aid);let msg='';if(a){const ids=s.groupes.map(g=>g.id);a.groups=ids.slice(0,2);if(ids.length>2)msg=' — '+(ids.length-2)+' équipe(s) libre(s) (arbitrage, observation) : glisse-la sur un atelier si besoin';}
+    GEN_UI.ctx=null;saveSeances();renderSeanceTab();try{toast2('⚖️ '+n+' équipes faites pour '+c.lab+msg);}catch(e){}};}catch(e){}})();
+// ── responsables de situation : un par équipe, parmi les joueurs ──
+(function(){const orl=aspRolesAll;aspRolesAll=function(s){const out=orl.apply(this,arguments);if(out.__resp)return out;out.__resp=1;try{
+  (s.asp.blocks||[]).forEach(b=>{if(b.kind!=='bloc'||!out[b.id])return;(b.ats||[]).forEach(a=>{const R=out[b.id][a.id];if(!R)return;const i=R.findIndex(r=>aspRoleKey(r.role)==='respons');if(i<0)return;
+    const lab=R[i].role;const G=(a.groups||[]).map(id=>aspChip(s,id)).filter(Boolean);const pres=aspPresent(s,(aspTimes(s)[b.id]||{}).a||0);const taken={};R.forEach(r=>{if(r.name&&aspRoleKey(r.role)!=='respons')taken[r.name]=1;});
+    const pick=g=>{const M=(g.members||[]).filter(n=>pres.indexOf(n)>=0&&!taken[n]);if(!M.length)return null;return M.find(n=>aspHasRole(n,lab))||(g.leader&&M.indexOf(g.leader)>=0?g.leader:null)||M[0];};
+    const NR=(G.length>1?G:[{members:aspAtMembers(s,a),leader:null,label:''}]).map(g=>({role:lab+(G.length>1?' ('+g.label+')':''),name:pick(g)}));
+    R.splice(i,1,...NR);});});}catch(e){console.warn('resp',e);}return out;};})();
+// ── élève : pas de galerie / grande vidéo de la phase, vignettes cliquables des principes ──
+(function(){const ow=wheelCardsHtml;wheelCardsHtml=function(s,sd,eleve,peek){if(!eleve)return ow.apply(this,arguments);const W=wheelWorked(s);const keep=[];
+  (sd.oe||[]).forEach(o=>{if(W.indexOf(o.id)>=0&&Array.isArray(o.galerie)&&o.galerie.length){keep.push([o,o.galerie]);o.galerie=[];}});
+  (sd.phases||[]).forEach(p=>{if(p.media&&(p.media.video||p.media.anim||p.media.image)){keep.push([p,p.media,'m']);p.media=null;}});
+  try{return ow.apply(this,arguments);}finally{keep.forEach(k=>{if(k[2]==='m')k[0].media=k[1];else k[0].galerie=k[1];});}};})();
+wcPrincipesHtml=(function(o){return function(s,sd,pid){let h=o.apply(this,arguments);if(!h)return h;try{
+  const W=wheelWorked(s);const L=[];const seen={};(sd.oe||[]).filter(x=>W.indexOf(x.id)>=0).forEach(x=>(x.micro||[]).forEach(m=>(m.cps||[]).forEach(c=>{const p=remedCpPath(seanceRefId(s),x.id,m.id,c.id);const k=cpGroupKey(String(c.label||''))||p;const f=cpFocusOf(s,p);if(seen[k]){seen[k].f=Math.max(seen[k].f,f);return;}seen[k]={c:c,f:f,ph:x.phase};L.push(seen[k]);})));
+  const mx=Math.max(0,...L.map(x=>x.f));const P=L.filter(x=>x.f===mx&&x.ph===pid&&x.c.media&&(x.c.media.video||x.c.media.image||(x.c.media.anim&&x.c.media.anim.json)));if(!P.length)return '';
+  return '<'+'div class="wc-pfoc">'+P.map(x=>{const M=x.c.media;let th,da='';if(M.video){th='<video src="'+esc(String(M.video))+(String(M.video).indexOf('#')<0?'#t=0.5':'')+'" preload="metadata" muted playsinline></video><span class="pfp">▶</span>';da=' data-v="'+esc(String(M.video))+'"';}
+      else if(M.anim&&M.anim.json){th=thumbImgHtml(M.anim,'🎞')+'<span class="pfp">▶</span>';da=' data-r="'+animReg(M.anim)+'"';}else th='<img src="'+M.image+'" alt="">';
+      return '<'+'div class="sel-box wm-card"'+da+'><'+'div class="wm-media">'+th+'</'+'div><h4>'+(mx>=3?'● ':'')+esc(String(eleveCp(x.c)))+'</h4></'+'div>';}).join('')+'</'+'div>';}catch(e){console.warn('pf',e);return h;}};})(wcPrincipesHtml);
+(function(){const ob=aspBig;aspBig=function(card){ob.apply(this,arguments);try{const ov=document.querySelector('.ael-big-ov');const m=ov&&ov.querySelector('.wm-media');if(!m)return;
+    if(card.dataset.v){m.innerHTML='<video src="'+esc(card.dataset.v)+'" controls autoplay playsinline style="width:100%;height:100%;object-fit:contain;"></video>';}
+    else if(card.dataset.r){const r=card.dataset.r;m.innerHTML='<'+'div class="anim-inline" data-r="'+r+'" style="max-height:none;height:100%;aspect-ratio:auto;"><button type="button">▶</button></'+'div>';const bt=m.querySelector('button');try{animInline(bt,+r);}catch(e){}}}catch(e){}};})();
+document.addEventListener('click',e=>{const card=e.target.closest&&e.target.closest('.wc-pfoc .wm-card');if(!card||(e.target.closest&&e.target.closest('.ael-pages')))return;if(e.target.closest('button,a'))return;e.preventDefault();aspBig(card);},true);
 </script>
 </body>
 </html>
