@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v256</title>
+<title>Gribouillis EPS v257</title>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
 /* ── THÈME SOMBRE UNIQUEMENT ── */
@@ -1006,6 +1006,20 @@ body:has(#t-seance.active) .btn-start{padding:7px;font-size:.9rem;}
 .asp-cnt span{border-radius:999px;padding:1px 8px;font-weight:800;}
 .asp-arr{font-size:.7rem;color:#a7f3d0;background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.45);border-radius:7px;padding:3px 6px;margin:3px 0;line-height:1.35;}
 .asp-late{font-size:.68rem;color:#fbbf24;margin:3px 0;line-height:1.3;}
+.seance-eleve.ael-paged{display:flex;flex-direction:column;overflow:hidden;margin-bottom:0;box-sizing:border-box;}
+.ael-paged .sel-top{flex:0 0 auto;}
+.ael-head{flex:0 0 auto;display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:2px 0 6px;font-size:.95rem;}
+.ael-head .btn-xs{margin-left:auto;}
+.ael-pages{flex:1 1 auto;min-height:0;position:relative;}
+.ael-paged .ael-step{display:none;margin:0;height:100%;box-sizing:border-box;overflow:hidden;}
+.ael-paged .ael-step.ael-cur{display:block;}
+.ael-paged .ael-step.ael-scroll{overflow-y:auto;}
+.ael-paged .ael-step h3{font-size:1.25rem;}
+.ael-paged .ael-ex video,.ael-paged .ael-ex img,.ael-paged .fit-vid{display:block;margin:6px auto;max-height:none;}
+.ael-nav{flex:0 0 auto;display:flex;gap:8px;align-items:center;padding-top:8px;}
+.ael-nav button{flex:1 1 0;min-height:54px;font-size:1.05rem;font-weight:800;border-radius:12px;border:0;background:#2563eb;color:#fff;cursor:pointer;}
+.ael-nav button:disabled{opacity:.3;cursor:default;}
+.ael-nav .c{flex:0 0 auto;color:var(--dim,#94a3b8);font-weight:700;text-align:center;min-width:70px;font-size:.9rem;line-height:1.2;}
 .fit-vid{display:block;max-width:100%;max-height:calc(100vh - 170px);margin:8px auto;border-radius:10px;background:#000;}
 .pres-vids h5{margin:12px 0 2px;font-size:.9rem;color:#93c5fd;}
 .ok-list{margin:0;padding:0;list-style:none;}
@@ -15920,8 +15934,9 @@ function exportSeanceEleve(){
   try{const ed=JSON.parse(raw('grib_remed_edits_v1')||'{}');const o={};if(ed[s.sport])o[s.sport]=ed[s.sport];keys['grib_remed_edits_v1']=JSON.stringify(o);}catch(e){}
   try{const ref=seanceRefId(s);const arr=JSON.parse(raw('grib_referentiels_v1')||'[]');keys['grib_referentiels_v1']=JSON.stringify((Array.isArray(arr)?arr:[]).filter(r=>r&&r.id===ref));keys['grib_ref_seeded_v1']=raw('grib_ref_seeded_v1')||'1';}catch(e){}
   ['grib_fps_v1','grib_arrows_v1'].forEach(k=>{const v=raw(k);if(v!=null)keys[k]=v;});
+  try{if(typeof exportExtraKeys==='function')exportExtraKeys(s,keys,raw);}catch(e){console.warn('export AS',e);}
   const payload=JSON.stringify({v:1,keys:keys}).replace(/</g,'\\u003c');
-  const html=GRIB_SRC_HTML.replace('<body>','<body><script>window.GRIB_EXPORT='+payload+';<\/script>');
+  const html=(typeof gribSrcFull==='function'?gribSrcFull():GRIB_SRC_HTML).replace('<body>','<body><script>window.GRIB_EXPORT='+payload+';<\/script>');
   const mb=html.length/1048576;
   const name='Seance_'+String(s.classe||'classe').replace(/[^A-Za-z0-9_-]+/g,'-')+'_'+String(s.date||'').replace(/[^0-9-]/g,'')+'.html';
   try{
@@ -20804,7 +20819,7 @@ function aspMe(n){const s=getActiveSeance();if(!s)return;ELEVE_ME=n?{sid:s.id,n:
   try{const oc=createSeance;createSeance=function(){const n0=(SEANCES||[]).length;const r=oc.apply(this,arguments);try{const s=getActiveSeance();if(s&&(SEANCES||[]).length>n0&&aspIsAS(s)&&!s.asp){aspInit(s);saveSeances();renderSeanceTab();}}catch(e){console.warn('asp init',e);}return r;};}catch(e){}
   try{const ob=renderSeanceBuilder;renderSeanceBuilder=function(s){if(s&&s.asp){try{return aspHtml(s);}catch(e){console.warn('asp',e);}}
       const h=ob.apply(this,arguments);if(s&&aspIsAS(s))return '<'+'div class="cc-dim" style="margin:0 0 6px;"><button type="button" class="btn-xs green" onclick="aspEnable()">🆕 Passer au déroulé simplifié (blocs + ateliers)</button></'+'div>'+h;return h;};}catch(e){}
-  try{const oe=renderSeanceEleve;renderSeanceEleve=function(s){if(s&&s.asp){const host=E('seance-tab-content');if(host){host.innerHTML='<'+'div class="card seance-eleve"><'+'div class="sel-top"><'+'div class="sel-title">📅 '+esc(String(s.classe||''))+'</'+'div><button type="button" id="'+['sel','exit','btn'].join('-')+'" class="sel-exit" oncontextmenu="return false" onpointerdown="eleveExitHoldStart(this)" onpointerup="eleveExitHoldCancel()" onpointerleave="eleveExitPtrLeave(event)" onpointercancel="eleveExitPtrCancel(event)" ontouchstart="eleveExitHoldStart(this)" ontouchend="eleveExitHoldCancel()" onclick="eleveExitTap()"><span class="sel-exit-fill"></span><span class="lbl">👩‍🏫 Enseignant<small>maintenir 2 s · ou 5 appuis rapides</small></span></button></'+'div>'+aspEleveHtml(s)+'</'+'div>';setTimeout(()=>{try{drawRemedDiagrams();}catch(e){}},0);}return;}return oe.apply(this,arguments);};}catch(e){}
+  try{const oe=renderSeanceEleve;renderSeanceEleve=function(s){if(s&&s.asp){const host=E('seance-tab-content');if(host){host.innerHTML='<'+'div class="card seance-eleve"><'+'div class="sel-top"><'+'div class="sel-title">📅 '+esc(String(s.classe||''))+'</'+'div><button type="button" id="'+['sel','exit','btn'].join('-')+'" class="sel-exit" oncontextmenu="return false" onpointerdown="eleveExitHoldStart(this)" onpointerup="eleveExitHoldCancel()" onpointerleave="eleveExitPtrLeave(event)" onpointercancel="eleveExitPtrCancel(event)" ontouchstart="eleveExitHoldStart(this)" ontouchend="eleveExitHoldCancel()" onclick="eleveExitTap()"><span class="sel-exit-fill"></span><span class="lbl">👩‍🏫 Enseignant<small>maintenir 2 s · ou 5 appuis rapides</small></span></button></'+'div>'+aspElPagedHtml(s)+'</'+'div>';setTimeout(()=>{try{aspElMount();}catch(e){console.warn('aspEl',e);}try{drawRemedDiagrams();}catch(e){}},0);}return;}return oe.apply(this,arguments);};}catch(e){}
   // glisser-déposer : nouvelles cibles + appui long au doigt
   try{const oc2=sbCanDrop;sbCanDrop=function(p,drop){const dt=String(drop).split(':')[0];if(dt==='asa'||dt==='asb'||dt==='asp'||dt==='asg'){const t=String(p).split(':')[0];return ['grp','exo','lib','fps','aw','lw','ag','ae'].indexOf(t)>=0;}return oc2.apply(this,arguments);};}catch(e){}
   try{const od=sbDo;sbDo=function(p,drop){const dt=String(drop).split(':')[0];if(dt==='asa'||dt==='asb'||dt==='asp'||dt==='asg'){aspDrop(p,drop);return;}return od.apply(this,arguments);};}catch(e){}
@@ -21134,6 +21149,61 @@ function aspArrivalsHtml(s,b,tm,idx){if(b.kind!=='bloc'||!tm)return '';let h='';
 // v255 — effectif disponible au début de chaque bloc (garçons / filles présents)
 function aspCountHtml(s,b,tm){if(b.kind!=='bloc'||!tm)return '';const P=aspPresent(s,tm.a);let g=0,f=0,o=0;P.forEach(n=>{const x=grpSexe(n);if(x==='M')g++;else if(x==='F')f++;else o++;});
   return '<'+'div class="asp-cnt" title="Élèves présents au début du bloc (absents et retardataires exclus)"><span style="background:rgba(37,99,235,.25);color:#bfdbfe;">👦 '+g+'</span><span style="background:rgba(219,39,119,.25);color:#fbcfe8;">👧 '+f+'</span>'+(o?'<span style="background:#334155;color:#e2e8f0;">'+o+' ?</span>':'')+'<span style="color:var(--dim2);font-weight:600;">= '+(g+f+o)+' présents</span></'+'div>';}
+
+// ══════════════════════════════════════════════════════════════════════
+// v257 — Mode élève AS : un écran par bloc (étape précédente / suivante),
+// le bloc tient dans l'écran ; plus de rubrique « Nos vidéos » (les vidéos
+// sont autour de la roue) ; envoi aux élèves d'une séance AS complet
+// ══════════════════════════════════════════════════════════════════════
+let ASP_PG={k:'',i:0};
+// la source du fichier élève s'arrêtait au script principal : on y ajoute le Studio et ce script
+const GRIB_TAIL=(()=>{try{const a=document.getElementById('studio-src'),b=document.currentScript;return '\n'+(a?a.outerHTML:'')+'\n'+(b?b.outerHTML:'')+'\n';}catch(e){return '';}})();
+function gribSrcFull(){const s=GRIB_SRC_HTML;if(!GRIB_TAIL||s.indexOf('id='+'"'+['studio','src'].join('-')+'"')>=0)return s;const i=s.lastIndexOf('</body>');return i<0?s+GRIB_TAIL:s.slice(0,i)+GRIB_TAIL+s.slice(i);}
+presVideosHtml=function(){return '';};
+function aspElNowIdx(s,steps){try{const d=new Date(),iso=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');if(s.date!==iso)return 0;
+  const now=d.getHours()*60+d.getMinutes();let k=0;steps.forEach((st,i)=>{const t=st.querySelector('h3 .t');const m=t&&/(\d{1,2})h(\d{2})?/.exec(t.textContent);if(m&&(+m[1])*60+(+(m[2]||0))<=now)k=i;});return k;}catch(e){return 0;}}
+function aspElPagedHtml(s){const raw=aspEleveHtml(s);const me=elMeGet(s);const all=!me&&!aspRoster().length;if(!me&&!all)return raw;
+  const t=document.createElement('template');t.innerHTML=raw;const steps=[...t.content.children].filter(x=>x.classList&&x.classList.contains('ael-step'));
+  let head='';if(!all&&steps.length){steps.shift();const MG=aspMyGroups(s,me);
+    head='<'+'div class="ael-head"><b>👋 '+esc(me)+'</b>'+MG.map(g=>'<span class="asp-g" style="--gc:'+esc(g.color||'#475569')+'">'+esc(String(g.label))+'</span>').join('')+'<button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="aspMe(null)">↩ Ce n\'est pas moi</button></'+'div>';}
+  if(!steps.length)return head+'<'+'div class="cc-dim">Rien de prévu pour toi dans cette séance.</'+'div>';
+  const key=s.id+'|'+(me||'');if(ASP_PG.k!==key){ASP_PG={k:key,i:aspElNowIdx(s,steps)};}
+  ASP_PG.i=Math.max(0,Math.min(steps.length-1,ASP_PG.i));
+  steps.forEach((st,i)=>{st.classList.toggle('ael-cur',i===ASP_PG.i);});
+  return head+'<'+'div class="ael-pages">'+steps.map(x=>x.outerHTML).join('')+'</'+'div><'+'div class="ael-nav"><button type="button" class="ael-prev" onclick="aspPg(-1)">◀ Étape précédente</button><span class="c"></span><button type="button" class="ael-next" onclick="aspPg(1)">Étape suivante ▶</button></'+'div>';}
+function aspElNav(){const P=document.querySelector('.ael-pages');if(!P)return;const st=[...P.children];const i=ASP_PG.i,n=st.length;
+  const pv=document.querySelector('.ael-prev'),nx=document.querySelector('.ael-next'),c=document.querySelector('.ael-nav .c');
+  if(pv)pv.disabled=i<=0;if(nx)nx.disabled=i>=n-1;if(c){const t=st[i]&&st[i].querySelector('h3 .t');const m=t&&/·\s*(.+)$/.exec(t.textContent.trim());c.innerHTML='Étape '+(i+1)+' / '+n+(m?'<br>'+esc(m[1]):'');}}
+function aspPg(d){const P=document.querySelector('.ael-pages');if(!P)return;const st=[...P.children];const ni=Math.max(0,Math.min(st.length-1,ASP_PG.i+d));if(ni===ASP_PG.i)return;
+  const cur=st[ASP_PG.i];if(cur)cur.querySelectorAll('video').forEach(v=>{try{v.pause();}catch(e){}});
+  ASP_PG.i=ni;st.forEach((x,i)=>x.classList.toggle('ael-cur',i===ni));aspElNav();aspElFit();try{drawRemedDiagrams();}catch(e){}}
+function aspElSize(){const c=document.querySelector('.seance-eleve.ael-paged');if(!c)return;
+  const top=c.getBoundingClientRect().top+window.scrollY;const vh=window.innerHeight;
+  if(top<vh*.5){try{window.scrollTo(0,0);}catch(e){}c.style.height=Math.max(320,vh-c.getBoundingClientRect().top-6)+'px';}else c.style.height=Math.max(320,vh-12)+'px';}
+function aspElRatio(m){if(m.tagName==='VIDEO')return m.videoWidth&&m.videoHeight?m.videoWidth/m.videoHeight:null;if(m.tagName==='IMG')return m.naturalWidth&&m.naturalHeight?m.naturalWidth/m.naturalHeight:null;return 1.6;}
+function aspElFit(){const P=document.querySelector('.ael-pages');if(!P)return;const st=P.querySelector('.ael-step.ael-cur');if(!st)return;
+  st.style.zoom='';st.classList.remove('ael-scroll');
+  const M=[...st.querySelectorAll('video,img,.anim-inline')].filter(m=>!m.closest('.wheel-wrap')&&!(m.parentElement&&m.parentElement.closest('.anim-inline')));
+  M.forEach(m=>{m.style.maxHeight='';m.style.width='';m.style.height='';m.style.maxWidth='';m.style.aspectRatio='';});
+  const H=st.clientHeight;if(!H)return;const over=()=>st.scrollHeight>st.clientHeight+1;
+  const K=M.filter(m=>m.getBoundingClientRect().height>0&&aspElRatio(m));
+  if(K.length){const kh=K.reduce((t,m)=>t+m.getBoundingClientRect().height,0),other=st.scrollHeight-kh,share=(H-other-8-12*K.length)/K.length;
+    K.forEach(m=>{const r=aspElRatio(m),cw=(m.parentElement||st).clientWidth||st.clientWidth;let h=Math.floor(Math.min(share,cw/r));h=Math.max(100,h);
+      m.style.maxWidth='100%';m.style.maxHeight='none';m.style.height=h+'px';m.style.width=Math.min(cw,Math.floor(h*r))+'px';if(m.tagName==='DIV'){m.style.aspectRatio='auto';m.style.marginLeft='auto';m.style.marginRight='auto';}});}
+  let z=1;while(over()&&z>.5){z=Math.round((z-.05)*100)/100;st.style.zoom=z;}
+  if(over()){st.style.zoom='';st.classList.add('ael-scroll');}}
+let ASP_FIT_T=0;function aspElFitSoon(){clearTimeout(ASP_FIT_T);ASP_FIT_T=setTimeout(()=>{aspElFit();try{drawRemedDiagrams();}catch(e){}},60);}
+function aspElMount(){const P=document.querySelector('.ael-pages');const c=document.querySelector('#seance-tab-content .seance-eleve');if(!c)return;
+  if(!P){c.classList.remove('ael-paged');c.style.height='';return;}
+  c.classList.add('ael-paged');aspElSize();aspElNav();aspElFit();
+  if(!P.dataset.l){P.dataset.l=1;P.addEventListener('loadedmetadata',aspElFitSoon,true);P.addEventListener('load',aspElFitSoon,true);}}
+window.addEventListener('resize',()=>{if(!document.querySelector('.ael-pages'))return;aspElSize();aspElFitSoon();});
+// envoi aux élèves : la séance AS a besoin des situations de la bibliothèque et de la liste des élèves (prénom, sexe, heure d'arrivée)
+function exportExtraKeys(s,keys,raw){if(!s||!s.asp)return;
+  const ids={};(s.asp.blocks||[]).forEach(b=>(b.ats||[]).forEach(a=>(a.exos||[]).forEach(e=>{if(e&&e.k==='lib')ids[e.id]=1;})));
+  let L=[];try{L=JSON.parse(raw('grib_lib_v1')||'[]');}catch(e){}keys['grib_lib_v1']=JSON.stringify((Array.isArray(L)?L:[]).filter(x=>x&&ids[x.id]));
+  const R=(COMPO.roster||[]).filter(r=>r&&r.name!=null).map(r=>{const o={name:r.name,sexe:grpSexe(r.name)||''};if(r.absent)o.absent=true;if(r.finCours)o.finCours=r.finCours;return o;});
+  keys['grib_compo_v1']=JSON.stringify({roster:R,effectif:COMPO.effectif,formationId:COMPO.formationId,categorie:COMPO.categorie,numTeams:COMPO.numTeams,sport:COMPO.sport,lastResult:null});}
 </script>
 </body>
 </html>
