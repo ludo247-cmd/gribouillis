@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v254</title>
+<title>Gribouillis EPS v255</title>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
 /* ── THÈME SOMBRE UNIQUEMENT ── */
@@ -1002,6 +1002,8 @@ body:has(#t-seance.active) .btn-start{padding:7px;font-size:.9rem;}
 .wc-ap{display:flex;gap:5px;flex-wrap:wrap;margin:4px 0 6px;}
 .wc-ap button{border:1px solid var(--border);border-radius:999px;padding:5px 10px;background:#0f172a;color:var(--text);font-size:.74rem;font-weight:700;cursor:pointer;}
 .wc-ap button.on{background:#b45309;border-color:#b45309;color:#fff;}
+.asp-cnt{display:flex;gap:6px;flex-wrap:wrap;font-size:.72rem;margin:2px 0 3px;}
+.asp-cnt span{border-radius:999px;padding:1px 8px;font-weight:800;}
 .asp-arr{font-size:.7rem;color:#a7f3d0;background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.45);border-radius:7px;padding:3px 6px;margin:3px 0;line-height:1.35;}
 .asp-late{font-size:.68rem;color:#fbbf24;margin:3px 0;line-height:1.3;}
 .fit-vid{display:block;max-width:100%;max-height:calc(100vh - 170px);margin:8px auto;border-radius:10px;background:#000;}
@@ -20634,7 +20636,7 @@ function aspBlockHtml(s,b,tm,idx){const bi=esc(b.id);const fix=b.kind!=='bloc';
     +'<button type="button" onclick="aspDur(\''+bi+'\',-5)" aria-label="5 min de moins">−</button><span>'+b.dur+'′</span><button type="button" onclick="aspDur(\''+bi+'\',5)" aria-label="5 min de plus">+</button>'
     +(fix?'':'<button type="button" onclick="aspMove(\''+bi+'\',-1)" aria-label="Avancer">◀</button><button type="button" onclick="aspMove(\''+bi+'\',1)" aria-label="Reculer">▶</button><button type="button" class="x" onclick="aspDelBlock(\''+bi+'\')" aria-label="Supprimer">✕</button>')+'</'+'div>';
   if(fix)h+='<'+'div class="asp-empty">'+(b.kind==='objectif'?'Roues Garçons / Filles (② Objet & contenus)':'Fin de séance')+'</'+'div>';
-  else{h+=aspArrivalsHtml(s,b,tm,idx);h+=aspAlerts(s,b,tm);h+=(b.ats||[]).map((a,i)=>aspAtHtml(s,b,a,i)).join('');if((b.ats||[]).length<6)h+='<'+'div class="asp-par" data-drop="asp:'+bi+'" onclick="aspAddAt(\''+bi+'\')">⫴ ＋ travail parallèle</'+'div>';}
+  else{h+=aspCountHtml(s,b,tm);h+=aspArrivalsHtml(s,b,tm,idx);h+=aspAlerts(s,b,tm);h+=(b.ats||[]).map((a,i)=>aspAtHtml(s,b,a,i)).join('');if((b.ats||[]).length<6)h+='<'+'div class="asp-par" data-drop="asp:'+bi+'" onclick="aspAddAt(\''+bi+'\')">⫴ ＋ travail parallèle</'+'div>';}
   return h+'</'+'div>';}
 function hmFmt(m){if(m==null)return '';const h=Math.floor(m/60),mm=m%60;return h+'h'+(mm?String(mm).padStart(2,'0'):'');}
 function aspRefShort(ref){const l=String((REMED_CONTENT[ref]||{}).label||'');const m=/gar[cç]ons?|filles?/i.exec(l);return m?m[0][0].toUpperCase()+m[0].slice(1).toLowerCase():l;}
@@ -21128,6 +21130,10 @@ function aspArrivalsHtml(s,b,tm,idx){if(b.kind!=='bloc'||!tm)return '';let h='';
   const first=(s.asp.blocks||[]).find(x=>x.kind==='bloc');
   if(U.length&&first&&first.id===b.id)h+='<'+'div class="asp-arr" style="color:#fde68a;border-color:rgba(251,191,36,.5);background:rgba(251,191,36,.1);">🕒 En retard (heure inconnue) : '+U.map(esc).join(', ')+'</'+'div>';
   return h;}
+
+// v255 — effectif disponible au début de chaque bloc (garçons / filles présents)
+function aspCountHtml(s,b,tm){if(b.kind!=='bloc'||!tm)return '';const P=aspPresent(s,tm.a);let g=0,f=0,o=0;P.forEach(n=>{const x=grpSexe(n);if(x==='M')g++;else if(x==='F')f++;else o++;});
+  return '<'+'div class="asp-cnt" title="Élèves présents au début du bloc (absents et retardataires exclus)"><span style="background:rgba(37,99,235,.25);color:#bfdbfe;">👦 '+g+'</span><span style="background:rgba(219,39,119,.25);color:#fbcfe8;">👧 '+f+'</span>'+(o?'<span style="background:#334155;color:#e2e8f0;">'+o+' ?</span>':'')+'<span style="color:var(--dim2);font-weight:600;">= '+(g+f+o)+' présents</span></'+'div>';}
 </script>
 </body>
 </html>
