@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v259</title>
+<title>Gribouillis EPS v260</title>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
 /* ── THÈME SOMBRE UNIQUEMENT ── */
@@ -20492,10 +20492,10 @@ function pj2PanelHtml(s){
   const R=pjRefs();if(R.length<2)return '';const p2=s.proj2||null;const sd2=p2&&REMED_CONTENT[p2.referentiel];
   const r2=sd2?R.find(r=>r.id===p2.referentiel):null;const col=r2?pjColor(r2):'#64748b';
   const sel=p2?[p2.oeId].concat(p2.oeExtra||[]).filter(Boolean):[];
-  let h='<div class="pj-box" style="--pc:'+col+'"><h4>🎡 2ᵉ projet en parallèle <select aria-label="Deuxième projet de jeu" onchange="pj2Set(this.value)"><option value="">— aucun —</option>'+R.filter(r=>r.id!==s.referentiel).map(r=>'<option value="'+esc(r.id)+'"'+(p2&&p2.referentiel===r.id?' selected':'')+'>'+esc(r.label)+'</option>').join('')+'</select></h4>';
+  let h='<div class="pj-box" style="--pc:'+col+'"><h4>🎡 <select class="pj-sel" aria-label="Deuxième projet de jeu" onchange="pj2Set(this.value)"><option value="">— aucun —</option>'+R.filter(r=>r.id!==s.referentiel).map(r=>'<option value="'+esc(r.id)+'"'+(p2&&p2.referentiel===r.id?' selected':'')+'>'+esc(r.label)+'</option>').join('')+'</select></h4>';
   if(sd2){h+=pjWheel(s,p2.referentiel,sel)+'<div class="cc-dim">Orientations travaillées :</div>'+pjOeChipsHtml(sd2,sel,'pj2Toggle')
     +'<div class="cc-dim" style="margin-top:6px;">Leurs situations apparaissent aussi dans l\'onglet « Situations » du déroulé.</div>';}
-  else h+='<div class="cc-dim">Choisissez le projet des filles (ou des garçons) pour l\'avoir à côté.</div>';
+  else h+='<div class="cc-dim">Choisis le projet de l\'autre groupe (filles ou garçons) pour l\'avoir à côté.</div>';
   return h+'</div>';
 }
 function pj2Set(id){const s=getActiveSeance();if(!s)return;s.proj2=id?{referentiel:id,oeId:null,oeExtra:[]}:null;saveSeances();renderSeanceTab();}
@@ -21405,13 +21405,58 @@ function pj1Set(v){const s=getActiveSeance();if(!s)return;s.referentiel=(v===PJ_
   try{const o=pj2PanelHtml;pj2PanelHtml=function(s){let h=o.apply(this,arguments);try{if(!REMED_CONTENT[s.sport]||REMED_CONTENT[s.sport].custom)return h;const on=s.proj2&&s.proj2.referentiel===s.sport;
       h=h.replace('</select></h4>','<option value="'+esc(s.sport)+'"'+(on?' selected':'')+'>'+esc(pjCedLabel(s))+'</option></select></h4>');
       if(on){const sd=REMED_CONTENT[s.sport];const sel=[s.proj2.oeId].concat(s.proj2.oeExtra||[]).filter(Boolean);const i=h.indexOf('</h4>')+5;
-        h=h.slice(0,i)+'<'+'div class="cc-dim">'+esc(nomenLabel('oe'))+' travaillé(s) :</'+'div><'+'div class="pj-chips">'+(sd.oe||[]).map(o=>'<button type="button" class="'+(sel.indexOf(o.id)>=0?'on':'')+'" data-o="'+esc(o.id)+'" onclick="pj2Toggle(this.dataset.o)">'+esc(String(o.short||o.label||o.id))+'</button>').join('')+'</'+'div><'+'div class="cc-dim" style="margin-top:6px;">Leurs situations apparaissent aussi dans l\'onglet « Situations » du déroulé.</'+'div></'+'div>';}}catch(e){}return h;};}catch(e){}
+        h=h.slice(0,i)+'<'+'div class="cc-dim">'+'Objets d’enseignement travaillés :</'+'div><'+'div class="pj-chips">'+(sd.oe||[]).map(o=>'<button type="button" class="'+(sel.indexOf(o.id)>=0?'on':'')+'" data-o="'+esc(o.id)+'" onclick="pj2Toggle(this.dataset.o)">'+esc(String(o.short||o.label||o.id))+'</button>').join('')+'</'+'div><'+'div class="cc-dim" style="margin-top:6px;">Leurs situations apparaissent aussi dans l\'onglet « Situations » du déroulé.</'+'div></'+'div>';}}catch(e){}return h;};}catch(e){}
   try{const ow=wheelPanelHtml;wheelPanelHtml=function(s,sd){const h=ow.apply(this,arguments);try{const r1=pjRefs().find(r=>r.id===s.referentiel);if(!r1)return h;
       return h.replace('<h4>🎡 '+esc(r1.label)+'</h4>','<h4>🎡 '+pj1SelHtml(s)+'</h4>');}catch(e){return h;}};}catch(e){}
   try{const ob=seanceBlock;seanceBlock=function(sid,key,title,sum,body,open){if(key==='pres'){try{const s=(SEANCES||[]).find(x=>x.id===sid);const sd=s&&seanceSportDef(s);
       if(s&&(s.asp||s.proj2)&&sd&&!sd.custom&&pjRefs().length){body='<'+'div class="pj2"><'+'div class="pj-box" style="--pc:#0d9488"><h4>🎡 '+pj1SelHtml(s)+'</h4>'+body+'</'+'div>'+(pjRefs().length>=1?pj2PanelHtml(s):'')+'</'+'div>';}}catch(e){console.warn('pj1',e);}}
     return ob.call(this,sid,key,title,sum,body,open);};}catch(e){}
 })();
+
+// ══════════════════════════════════════════════════════════════════════
+// v260 — Équipes équilibrées (comme Composition), plusieurs tailles d'un coup
+// (ex. 2 et 3 équipes) ; projet en CEDREPS : contenus prioritaires pour
+// chacun des deux projets, mis à égalité
+// ══════════════════════════════════════════════════════════════════════
+const EQ_NAMES=[['Rouges','#ef4444'],['Bleus','#3b82f6'],['Jaunes','#eab308'],['Verts','#22c55e'],['Oranges','#f97316'],['Violets','#a855f7']];
+if(!Array.isArray(GEN_UI.eqNs))GEN_UI.eqNs=[2,3];
+function genTeamsBuild(names,n,par){const info=names.map(x=>{const r=rosterOf(x)||{};return {n:x,note:+r.note||3,sx:grpSexe(x)||'',po:posteCodeOf(r)||'?',r:Math.random()};});
+  const T=[];for(let k=0;k<n;k++)T.push({m:[],sum:0,cat:{}});
+  const key=p=>p.po+(par?'|'+p.sx:'');const cats={};info.forEach(p=>{(cats[key(p)]=cats[key(p)]||[]).push(p);});
+  const order=Object.keys(cats).sort((a,b)=>cats[a].length-cats[b].length);
+  order.forEach(c=>{cats[c].sort((a,b)=>b.note-a.note||a.r-b.r).forEach(p=>{const t=T.slice().sort((x,y)=>(x.cat[c]||0)-(y.cat[c]||0)||x.m.length-y.m.length||x.sum-y.sum||Math.random()-.5)[0];t.m.push(p);t.sum+=p.note;t.cat[c]=(t.cat[c]||0)+1;});});
+  return T.map(t=>t.m.sort((a,b)=>b.note-a.note).map(p=>p.n));}
+function genTeamsRun(){const s=getActiveSeance();if(!s)return;const o=GEN_UI;if(!o.pop)o.pop=genPopDefault(s);
+  const names=genPool(s,o.mixte?'all':o.pop);const Ns=(o.eqNs||[]).filter(n=>n>=2&&n<=6).sort();if(!Ns.length){alert('Choisis au moins un nombre d\'équipes.');return;}
+  if(names.length<Ns[Ns.length-1]){alert('Pas assez d\'élèves ('+names.length+') pour '+Ns[Ns.length-1]+' équipes.');return;}
+  const par=!!o.mixte;const who=par?'Mixte':(o.pop==='F'?'Filles':(o.pop==='M'?'Garçons':'Tous'));const stamp=Date.now().toString(36);
+  Ns.forEach(n=>{const T=genTeamsBuild(names,n,par);
+    s.groupes=T.map((m,k)=>({id:'eq'+stamp+'n'+n+'k'+k,label:EQ_NAMES[k][0]+' ('+n+' éq.)',color:EQ_NAMES[k][1],members:m,src:'gen',team3:n}));
+    ensureLeaders(s);decoupSave(s,who+' · '+n+' équipes');});
+  saveSeances();renderSeanceTab();try{toast2('⚖️ '+Ns.map(n=>n+' équipes').join(' et ')+' créées ('+who+') : elles sont dans le bandeau 👥 Groupes');}catch(e){}}
+function genEqTog(n){const L=GEN_UI.eqNs;const i=L.indexOf(n);if(i>=0)L.splice(i,1);else L.push(n);renderSeanceTab();}
+function genModeEq(on){GEN_UI.eq=!!on;if(on){GEN_UI.poste=false;}renderSeanceTab();}
+(function(){
+  try{const og=genGroupsRun;genGroupsRun=function(){if(GEN_UI.eq)return genTeamsRun();return og.apply(this,arguments);};}catch(e){}
+  try{const orb=renderSeanceGroupsBlock;renderSeanceGroupsBlock=function(s){let h=orb.apply(this,arguments);try{const o=GEN_UI;
+      const chip=(on,l,fn)=>'<button type="button" class="remed-chip'+(on?' selected':'')+'" style="flex:0 1 auto;padding:8px 13px;font-size:.8rem;" onclick="'+fn+'">'+l+'</button>';
+      const modeRow='<div style="font-size:.7rem;color:var(--dim2);margin:8px 0 4px;">Quel type ?</div><div class="remed-chip-row">'+chip(!o.eq,'🧩 Groupes (niveau / poste)','genModeEq(false)')+chip(!!o.eq,'⚖️ Équipes équilibrées (comme Composition)','genModeEq(true)')+'</div>';
+      const i0=h.indexOf('<div style="font-size:.7rem;color:var(--dim2);margin:8px 0 4px;">Nombre de groupes</div>');
+      if(i0>=0){
+        if(o.eq){const i1=h.indexOf('<button type="button" class="btn-xs" style="background:#15803d;color:#fff;padding:11px 18px;font-size:.9rem;" onclick="genGroupsRun()">');
+          if(i1>i0){const mid='<div style="font-size:.7rem;color:var(--dim2);margin:8px 0 4px;">Nombre d\'équipes — tu peux en cocher plusieurs (ex. 2 pour le début, 3 pour la fin)</div><div class="remed-chip-row">'+[2,3,4,5,6].map(n=>chip(o.eqNs.indexOf(n)>=0,(o.eqNs.indexOf(n)>=0?'☑ ':'☐ ')+n+' équipes','genEqTog('+n+')')).join('')+'</div>'
+              +'<div style="font-size:.7rem;color:var(--dim2);margin:6px 0 8px;">Équipes de même niveau (notes de la liste) avec les postes répartis'+(o.mixte?' et autant de filles que de garçons':'')+'. Chaque taille est gardée à part : toutes les équipes apparaissent dans le bandeau 👥 Groupes du déroulé.</div>';
+            h=h.slice(0,i0)+modeRow+mid+'<button type="button" class="btn-xs" style="background:#15803d;color:#fff;padding:11px 18px;font-size:.9rem;" onclick="genGroupsRun()">⚖️ Générer les équipes</button>'+h.slice(h.indexOf('</button>',i1)+9);}}
+        else h=h.slice(0,i0)+modeRow+h.slice(i0);}}catch(e){console.warn('eq ui',e);}return h;};}catch(e){}
+})();
+// ── projet en CEDREPS : contenus prioritaires des objets choisis (2e menu) ──
+function pjCedCpsHtml(s,ref,ids){const sd=REMED_CONTENT[ref];if(!sd||!ids.length)return '';const FOC=['✕','○','◐','●'],tit=['masqué pour les élèves','normal','important','priorité de la séance'];
+  let h='';ids.forEach(id=>{const o=(sd.oe||[]).find(x=>x.id===id);if(!o)return;const seen={};const L=[];
+    (o.micro||[]).forEach(m=>(m.cps||[]).forEach(c=>{const p=remedCpPath(ref,o.id,m.id,c.id);const k=String(c.label||'');if(seen[k]){seen[k].paths.push(p);return;}seen[k]={c:c,paths:[p]};L.push(seen[k]);}));
+    h+='<'+'div style="margin-top:8px;"><b style="font-size:.85rem;">'+esc(String(o.short||o.label||''))+'</b>'+(L.length?'<ul class="wc-cps" style="margin:4px 0 0;">'+L.map(y=>{const f=cpFocusOf(s,y.paths[0]);return '<li class="f'+f+'"><span class="wc-foc">'+[0,1,2,3].map(n=>'<button type="button" class="'+(f===n?'on':'')+'" title="'+tit[n]+'" data-p="'+esc(y.paths.join(';'))+'" onclick="setCpFocusMulti(this.dataset.p,'+n+')">'+FOC[n]+'</button>').join('')+'</span> '+esc(String(y.c.label||''))+'</li>';}).join('')+'</ul>':'<'+'div class="cc-dim">Pas de '+esc(NOMEN_DEFAULTS.cps.toLowerCase())+' pour cet objet.</'+'div>')+'</'+'div>';});
+  return h?'<'+'div class="cc-dim" style="margin-top:8px;">'+esc(NOMEN_DEFAULTS.cps)+' (● priorité · ◐ important · ○ normal · ✕ masqué)</'+'div>'+h:'';}
+(function(){try{const o=pj2PanelHtml;pj2PanelHtml=function(s){let h=o.apply(this,arguments);try{if(s.proj2&&s.proj2.referentiel===s.sport&&REMED_CONTENT[s.sport]&&!REMED_CONTENT[s.sport].custom){
+    const ids=[s.proj2.oeId].concat(s.proj2.oeExtra||[]).filter(Boolean);const x=pjCedCpsHtml(s,s.sport,ids);const k=h.indexOf('<'+'div class="cc-dim" style="margin-top:6px;">Leurs situations');if(x&&k>=0)h=h.slice(0,k)+x+h.slice(k);}}catch(e){console.warn('pjced',e);}return h;};}catch(e){}})();
 </script>
 </body>
 </html>
