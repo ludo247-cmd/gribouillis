@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v262</title>
+<title>Gribouillis EPS v263</title>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
 /* ── THÈME SOMBRE UNIQUEMENT ── */
@@ -20806,7 +20806,6 @@ function aspColsHtml(s){const T=aspTimes(s);const B=aspBase();if(!B.length)retur
   return '<'+'div class="asp-cols">'+B.map(col).join('')+'</'+'div>';}
 function aspHtml(s){const T=aspTimes(s);const bl=s.asp.blocks||[];const last=bl.length?T[bl[bl.length-1].id]:null;
   let h=(typeof seqBannerHtml==='function'?seqBannerHtml(s):'')+'<'+'div class="sb" id="'+['sb','root'].join('-')+'"><'+'div class="asp-head"><b>🧱 Déroulé de la séance</b><label class="sb-start">🕒 début <input type="time" step="300" value="'+esc(s.start||'')+'" onchange="seanceSetStart(this.value)"></label>'+(last?'<span class="cc-dim">fin ≈ '+hmFmt(last.b)+'</span>':'')+'</'+'div>';
-  try{const c=sbCatStartHtml(s);if(c)h+=c;}catch(e){}
   h+=aspPalHtml(s)+'<'+'div class="asp-grid">'+bl.map((b,i)=>aspBlockHtml(s,b,T[b.id],i)).join('')+'<'+'div class="asp-gap" data-drop="asg:'+Math.max(0,bl.length-1)+'" onclick="aspAddBlock()">＋ Bloc</'+'div></'+'div>';
   h+='</'+'div>';
   return h;}
