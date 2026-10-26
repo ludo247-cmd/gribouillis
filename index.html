@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v269</title>
+<title>Gribouillis EPS v270</title>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
 /* ── THÈME SOMBRE UNIQUEMENT ── */
@@ -4310,8 +4310,8 @@ function renderCustomRatios(){
     const denSelected=(cr.denCriteria||[]).map(k=>'<span style="display:inline-flex;align-items:center;gap:3px;background:var(--card);border-radius:4px;padding:2px 6px;font-size:.7rem;margin:2px;">'+getCriteriaLabel(k)+'<span onclick="removeCR('+ci+',\'d\',\''+k+'\')" style="cursor:pointer;color:#ef4444;font-size:.8rem;">✕</span></span>').join('');
     div.innerHTML='<div style="display:flex;gap:7px;align-items:center;margin-bottom:8px;">'
       +'<input type="checkbox" '+(cr.show?'checked':'')+' style="width:16px;height:16px;accent-color:var(--accent);" onchange="CFG.customRatios['+ci+'].show=this.checked;saveConfig();">'
-      +'<input type="text" value="'+cr.label+'" placeholder="Nom" style="flex:1;" oninput="CFG.customRatios['+ci+'].label=this.value;saveConfig();">'
-      +'<select title="Au moins (≥) ou au plus (≤)" style="font-size:.75rem;" onchange="crSetNeg('+ci+',this.value)"><option value="">≥</option><option value="neg"'+(/^\s*(<|≤|max|moins)/i.test(cr.target||'')?' selected':'')+'>≤</option></select>'+'<input type="text" value="'+(cr.target||'')+'" placeholder="Obj." class="target-input" oninput="CFG.customRatios['+ci+'].target=this.value;saveConfig();">'
+      +'<input type="text" value="'+cr.label+'" placeholder="Nom du ratio" style="flex:1 1 auto;min-width:120px;" oninput="CFG.customRatios['+ci+'].label=this.value;saveConfig();">'
+      +'<select title="Au moins (≥) ou au plus (≤)" style="font-size:.85rem;flex:0 0 56px;width:56px;min-width:0;" onchange="crSetNeg('+ci+',this.value)"><option value="">≥</option><option value="neg"'+(/^\s*(<|≤|max|moins)/i.test(cr.target||'')?' selected':'')+'>≤</option></select>'+'<input type="text" value="'+(cr.target||'')+'" placeholder="Obj." class="target-input" oninput="CFG.customRatios['+ci+'].target=this.value;saveConfig();">'
       +'<input type="number" value="'+(cr.minVolume||'')+'" placeholder="Vol.min" min="0" class="minvol-input" oninput="CFG.customRatios['+ci+'].minVolume=this.value;saveConfig();">'
       +'<button class="btn-xs red" style="margin:0;" onclick="removeCustomRatio('+ci+')">✕</button></div>'
       +'<div style="display:flex;gap:8px;">'
