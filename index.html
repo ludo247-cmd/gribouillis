@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v265</title>
+<title>Gribouillis EPS v266</title>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
 /* ── THÈME SOMBRE UNIQUEMENT ── */
@@ -1109,6 +1109,12 @@ body.nav-off.nav-peek #nav-handle{display:none;}
 .asp-rpop li{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
 .asp-rpop li span.l{flex:1 1 160px;}
 .grp-subs{margin-top:6px;font-size:.74rem;color:#fbbf24;}
+.asp-pal .sb-pal-list .asp-g{padding:5px 9px!important;font-size:.78rem!important;max-width:260px;display:inline-flex;align-items:center;gap:4px;}
+.asp-g .gl{display:inline-block;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:bottom;}
+.asp-pal .sb-pal-list .asp-g .gx{width:18px;height:18px;font-size:.7rem;padding:0;line-height:18px;}
+.asp-pal .sb-pal-list .asp-g small{background:rgba(0,0,0,.28);border-radius:999px;padding:0 6px;margin-left:2px;}
+.asp-at .asp-g{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;vertical-align:bottom;}
+.asp-at .asp-g.wait{opacity:.6;border-style:dashed;}
 .fit-vid{display:block;max-width:100%;max-height:calc(100vh - 170px);margin:8px auto;border-radius:10px;background:#000;}
 .pres-vids h5{margin:12px 0 2px;font-size:.9rem;color:#93c5fd;}
 .ok-list{margin:0;padding:0;list-style:none;}
@@ -21390,7 +21396,7 @@ let ASP_RL=null;
 function aspRolesAll(s){const key=s.id+'|'+JSON.stringify(s.asp.blocks.map(b=>[b.id,b.dur,(b.ats||[]).map(a=>[a.id,a.groups,a.exos])]))+'|'+(COMPO.roster||[]).length+'|'+JSON.stringify((s.asp&&s.asp.roleSet)||{});if(ASP_RL&&ASP_RL.k===key)return ASP_RL.v;
   const T=aspTimes(s),out={},load={};
   (s.asp.blocks||[]).forEach(b=>{if(b.kind!=='bloc')return;const tm=T[b.id];if(!tm)return;const pres=aspPresent(s,tm.a);const playing={};const mem={};
-    (b.ats||[]).forEach(a=>{mem[a.id]=aspAtMembers(s,a).filter(n=>pres.indexOf(n)>=0);mem[a.id].forEach(n=>playing[n]=1);});
+    (b.ats||[]).forEach(a=>{mem[a.id]=aspAtPlaying(s,a).filter(n=>pres.indexOf(n)>=0);mem[a.id].forEach(n=>playing[n]=1);});
     const used={};out[b.id]={};
     (b.ats||[]).forEach(a=>{const R=[];aspAtRoleLabels(a).forEach(l=>{
         const avail=pres.filter(n=>!used[n]);const holders=avail.filter(n=>aspHasRole(n,l));
@@ -21653,6 +21659,35 @@ aspRolesPop=(function(o){return function(bid,aid){o.apply(this,arguments);try{co
 function libSportRank(x){try{const cur=(typeof CFG!=='undefined'&&CFG.apsa)||'football';const k=libSportKeyOf(x);if(k)return k===cur?0:2;
   const oe=String(x&&x.oe||'');if(!oe)return 1;const R=Object.keys(REMED_CONTENT||{}).map(r=>REMED_CONTENT[r]).find(r=>r&&r.custom&&(r.oe||[]).some(o=>o.id===oe));
   if(R){const sp=R.sport||R.apsa||'';return (!sp||sp===cur)?0:2;}return 1;}catch(e){return 1;}}
+
+// ══════════════════════════════════════════════════════════════════════
+// v266 — « Faire les équipes » : toutes les équipes vont dans la FPS, avec
+// un nom clair (ex. « Jaune garçons Le 1000 buts 1 ») ; au-delà de 2
+// équipes, les autres attendent et peuvent arbitrer / observer ;
+// étiquettes de groupes compactes dans le bandeau
+// ══════════════════════════════════════════════════════════════════════
+const EQ_SING=['Rouge','Bleu','Jaune','Vert','Orange','Violet'];
+function aspAtIsFps(a){return (a.exos||[]).some(e=>{const i=aspExInfo(e);return i&&i.kind==='fps';});}
+function aspAtPlaying(s,a){if(aspAtIsFps(a)&&(a.groups||[]).length>2){const set={};a.groups.slice(0,2).forEach(id=>{const g=aspChip(s,id);(g&&g.members||[]).forEach(n=>{set[n]=1;});});return Object.keys(set);}return aspAtMembers(s,a);}
+(function(){const ot=genTeamsRun;genTeamsRun=function(){const c=GEN_UI.ctx;if(!c)return ot.apply(this,arguments);const s=getActiveSeance();const bid=c.bid,aid=c.aid;
+    const pop=GEN_UI.mixte?'mixte':(GEN_UI.pop==='F'?'filles':(GEN_UI.pop==='M'?'garçons':'tous'));const fps=String(c.lab.split(' · ').slice(1).join(' · ')||'FPS');
+    const prev=(s.decoupages||[]).filter(d=>d.fps===fps).length;const num=prev+1;
+    const r=ot.apply(this,arguments);
+    try{const s2=getActiveSeance();const d=(s2.decoupages||[]).find(x=>x.id===s2.activeDecoup);
+      (s2.groupes||[]).forEach((g,k)=>{g.label=(EQ_SING[k]||('Équipe '+(k+1)))+' '+pop+' '+fps+' '+num;});
+      if(d){d.fps=fps;d.noTag=true;d.label=fps+' · '+pop+' · '+(s2.groupes||[]).length+' équipes ('+num+')';d.groupes=JSON.parse(JSON.stringify(s2.groupes));}
+      const a=aspAt(s2,bid,aid);if(a)a.groups=(s2.groupes||[]).map(g=>g.id);
+      saveSeances();renderSeanceTab();try{toast2('⚖️ '+(s2.groupes||[]).length+' équipes mises dans « '+fps+' »'+((s2.groupes||[]).length>2?' — au-delà de 2, les équipes attendent (arbitrage, observation)':''));}catch(e){}}catch(e){console.warn('eqname',e);}
+    return r;};})();
+(function(){const o=seanceGroupChips;seanceGroupChips=function(s){const L=o.apply(this,arguments);try{s=s||getActiveSeance();const D=((s&&s.decoupages)||[]).filter(d=>d.noTag);if(!D.length)return L;
+  const orig={};D.forEach(d=>(d.groupes||[]).forEach(g=>{orig[g.id]=g.label;}));const act=(s.groupes||[]);act.forEach(g=>{if(orig[g.id]!=null)orig[g.id]=g.label;});
+  return L.map(g=>orig[g.id]!=null?Object.assign({},g,{label:orig[g.id]}):g);}catch(e){return L;}};})();
+(function(){const op=aspPalHtml;aspPalHtml=function(s){let h=op.apply(this,arguments);if(ASP_UI.tab!=='grp')return h;try{const t=document.createElement('template');t.innerHTML=h;
+  t.content.querySelectorAll('.sb-pal-list .asp-g').forEach(x=>{const tn=[...x.childNodes].find(n=>n.nodeType===3&&n.textContent.trim());if(!tn)return;const sp=document.createElement('span');sp.className='gl';sp.textContent=tn.textContent.trim();x.title=sp.textContent;x.replaceChild(sp,tn);});
+  return t.innerHTML;}catch(e){return h;}};})();
+(function(){const oa=aspAtHtml;aspAtHtml=function(s,b,a,i){let h=oa.apply(this,arguments);try{if(aspAtIsFps(a)&&(a.groups||[]).length>2){const t=document.createElement('template');t.innerHTML=h;
+  const G=[...t.content.querySelectorAll('.asp-g')];G.forEach((x,k)=>{x.title=x.textContent;if(k>=2){x.classList.add('wait');x.textContent='⏸ '+x.textContent;}});h=t.innerHTML;}
+  else{h=h.replace(/(<span class="asp-g"[^>]*?)(>)([^<]*)(<\/span>)/g,(m,a1,a2,txt,a4)=>a1.indexOf('title=')>=0?m:a1+' title="'+txt.replace(/"/g,'&quot;')+'"'+a2+txt+a4);}}catch(e){}return h;};})();
 </script>
 </body>
 </html>
