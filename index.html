@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v268</title>
+<title>Gribouillis EPS v269</title>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
 /* ── THÈME SOMBRE UNIQUEMENT ── */
@@ -1117,6 +1117,9 @@ body.nav-off.nav-peek #nav-handle{display:none;}
 .asp-at .asp-g.wait{opacity:.6;border-style:dashed;}
 .asp-at .at-h{cursor:grab;display:inline-block;padding:1px 6px;border-radius:6px;user-select:none;-webkit-user-select:none;touch-action:none;}
 .asp-at .at-h:hover{background:#1e293b;color:#e2e8f0;}
+.crit-neg{flex:0 0 auto;min-width:30px;border:1px solid #475569;background:#1e293b;color:#cbd5e1;border-radius:6px;padding:4px 6px;font-weight:800;cursor:pointer;}
+.crit-neg.on{background:#b91c1c;border-color:#f87171;color:#fff;}
+.cr-quick{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0;}
 .fit-vid{display:block;max-width:100%;max-height:calc(100vh - 170px);margin:8px auto;border-radius:10px;background:#000;}
 .pres-vids h5{margin:12px 0 2px;font-size:.9rem;color:#93c5fd;}
 .ok-list{margin:0;padding:0;list-style:none;}
@@ -4174,6 +4177,7 @@ function renderDialogEditor(){
     const palOpts=PALETTE.map((p,pi)=>'<option value="'+pi+'"'+(btn._pal===pi?' selected':'')+'>'+p.name+'</option>').join('');
     // Catégories globales fixes (comportement historique, inchangé).
     let secOpts=['','shot','goal','zm'].map(v=>'<option value="'+v+'"'+((btn.secondary||'')===(v)?' selected':'')+'>'+(v===''?'Aucun':v==='shot'?'+ Tirs globaux':v==='goal'?'+ Buts':'+ Accès ZM')+'</option>').join('');
+    secOpts+='<optgroup label="Zone (mode boutons seuls)">'+Object.keys(ZONE_SEC).map(v=>'<option value="'+v+'"'+(btn.secondary===v?' selected':'')+'>+ '+ZONE_SEC[v]+'</option>').join('')+'</optgroup>';
     // LIEN DYNAMIQUE INTER-BOUTONS : en plus des catégories globales
     // ci-dessus, la liste propose maintenant TOUS LES AUTRES boutons
     // configurés dans le préréglage actif (jamais soi-même). Choisir l'un
@@ -4307,7 +4311,7 @@ function renderCustomRatios(){
     div.innerHTML='<div style="display:flex;gap:7px;align-items:center;margin-bottom:8px;">'
       +'<input type="checkbox" '+(cr.show?'checked':'')+' style="width:16px;height:16px;accent-color:var(--accent);" onchange="CFG.customRatios['+ci+'].show=this.checked;saveConfig();">'
       +'<input type="text" value="'+cr.label+'" placeholder="Nom" style="flex:1;" oninput="CFG.customRatios['+ci+'].label=this.value;saveConfig();">'
-      +'<input type="text" value="'+(cr.target||'')+'" placeholder="Obj." class="target-input" oninput="CFG.customRatios['+ci+'].target=this.value;saveConfig();">'
+      +'<select title="Au moins (≥) ou au plus (≤)" style="font-size:.75rem;" onchange="crSetNeg('+ci+',this.value)"><option value="">≥</option><option value="neg"'+(/^\s*(<|≤|max|moins)/i.test(cr.target||'')?' selected':'')+'>≤</option></select>'+'<input type="text" value="'+(cr.target||'')+'" placeholder="Obj." class="target-input" oninput="CFG.customRatios['+ci+'].target=this.value;saveConfig();">'
       +'<input type="number" value="'+(cr.minVolume||'')+'" placeholder="Vol.min" min="0" class="minvol-input" oninput="CFG.customRatios['+ci+'].minVolume=this.value;saveConfig();">'
       +'<button class="btn-xs red" style="margin:0;" onclick="removeCustomRatio('+ci+')">✕</button></div>'
       +'<div style="display:flex;gap:8px;">'
@@ -4340,6 +4344,7 @@ function getCRValue(key,s){
 function getCustomRatioValue(cr,s){
   const num=(cr.numCriteria||[]).reduce((a,k)=>a+getCRValue(k,s),0);
   const den=(cr.denCriteria||[]).reduce((a,k)=>a+getCRValue(k,s),0);
+  if(!(cr.denCriteria||[]).length&&(cr.numCriteria||[]).length)return{num,den:num,pct:num,count:true};
   return{num,den,pct:den>0?Math.round(num/den*100):0};
 }
 function addCustomRatio(){CFG.customRatios.push({label:'Ratio '+(CFG.customRatios.length+1),show:true,numCriteria:[],denCriteria:[],target:'',minVolume:''});saveConfig();renderCustomRatios();}
@@ -4365,7 +4370,7 @@ function renderArchiveTeamStats(t){
     (rc.customRatios||[]).forEach(cr=>{
       if(!cr.show)return;
       const rv=getCustomRatioValue(cr,s);
-      html+='<div class="as">'+cr.label+': <strong>'+rv.pct+'%</strong></div>';
+      html+='<div class="as">'+cr.label+': <strong>'+rv.pct+(rv.count?'':'%')+'</strong></div>';
     });
     if(rc.showRZ)html+='<div class="as">Récup B/M/H: <strong>'+(s.rzBas||0)+'/'+(s.rzMed||0)+'/'+(s.rzHaut||0)+'</strong></div>';
     if(rc.showPertes)html+='<div class="as">Pertes B/M/H: <strong>'+(s.perteBas||0)+'/'+(s.perteMed||0)+'/'+(s.perteHaut||0)+'</strong></div>';
@@ -6283,6 +6288,7 @@ function applyGlobalAction(btn,btnIdx,ti,a){
   if(btn.secondary==='shot'&&!isShotGlobal){s.tirs++;if(a.isZM)s.tirsZM++;}
   if(btn.secondary==='goal'&&!btn.isGoal)s.buts++;
   if(btn.secondary==='zm'&&!a.isZM)s.zmIn++;
+  if(a.simple&&ZONE_SEC[btn.secondary])s[btn.secondary]=(s[btn.secondary]||0)+1;
   if(!Array.isArray(s.custom))s.custom=[];
   while(s.custom.length<getTeamDialogBtns(ti).length)s.custom.push(0);
   s.custom[btnIdx]=(s.custom[btnIdx]||0)+1;
@@ -10832,8 +10838,8 @@ function computeRemedMacroObjectives(ti){
     if(!cr||!cr.show)return;
     const rv=getCustomRatioValue(cr,s)||{num:0,den:0,pct:0};
     const obj=cr.target?evalObjective(cr.target,cr.minVolume,rv.pct||0,rv.den||0):null;
-    if(obj)out.push({id:'custom:'+(cr.label||''),label:cr.label,state:obj.state,actualPct:obj.actualPct,targetNum:obj.targetNum,volume:rv.den||0});
-    else out.push({id:'custom:'+(cr.label||''),label:cr.label,state:'info',actualPct:rv.pct||0,volume:rv.den||0});
+    if(obj)out.push({id:'custom:'+(cr.label||''),label:cr.label,state:obj.state,actualPct:obj.actualPct,targetNum:obj.targetNum,volume:rv.den||0,unit:rv.count?'':'%',neg:obj.neg});
+    else out.push({id:'custom:'+(cr.label||''),label:cr.label,state:'info',actualPct:rv.pct||0,volume:rv.den||0,unit:rv.count?'':'%'});
   });
   return out;
 }
@@ -11253,7 +11259,7 @@ function exoScoresOf(cpPath,exo){
 }
 function exoValidatedIn(exo,scores,participant){
   if(!exo||!exo.criteres||!exo.criteres.length)return false;
-  return exo.criteres.every(c=>{const sc=(scores&&scores[c.collectif?'__equipe__':participant])||{};return sc[c.id]!=null&&Number(sc[c.id])>=Number(c.cible);});
+  return exo.criteres.every(c=>{const sc=(scores&&scores[c.collectif?'__equipe__':participant])||{};return sc[c.id]!=null&&critOk(c,sc[c.id]);});
 }
 // Liste modifiable des participants (séance si ouverte, sinon bibliothèque)
 // + fonction de sauvegarde correspondante.
@@ -11403,7 +11409,7 @@ function setExoScore(path,i,participant,critId,value){
 }
 function exoIsValidated(exo,participant){
   if(!exo.criteres||!exo.criteres.length)return false;
-  return exo.criteres.every(c=>{const sc=(exo.scores&&exo.scores[c.collectif?'__equipe__':participant])||{};return sc[c.id]!=null&&Number(sc[c.id])>=Number(c.cible);});
+  return exo.criteres.every(c=>{const sc=(exo.scores&&exo.scores[c.collectif?'__equipe__':participant])||{};return sc[c.id]!=null&&critOk(c,sc[c.id]);});
 }
 function renderExoCard(path,i,exo){
   let h='<div class="remed-exo-card">';
@@ -11435,7 +11441,7 @@ function renderExoCard(path,i,exo){
     (exo.criteres||[]).forEach(c=>{
       h+='<div style="display:flex;gap:6px;align-items:center;margin-bottom:4px;">'
         +'<input class="remed-edit-field" style="flex:2;margin-top:0;" placeholder="Ex : passes réussies" value="'+esc(c.label)+'" onchange="setExoCritereField(\''+path+'\','+i+',\''+c.id+'\',\'label\',this.value)">'
-        +'<input class="remed-edit-field" type="number" style="flex:0 0 64px;margin-top:0;" value="'+c.cible+'" onchange="setExoCritereField(\''+path+'\','+i+',\''+c.id+'\',\'cible\',this.value)">'
+        +'<input class="remed-edit-field" type="number" style="flex:0 0 64px;margin-top:0;" value="'+c.cible+'" onchange="setExoCritereField(\''+path+'\','+i+',\''+c.id+'\',\'cible\',this.value)">'+critNegBtn(c,'exo',path,i,c.id)
         +'<label style="font-size:.66rem;white-space:nowrap;"><input type="checkbox"'+(c.collectif?' checked':'')+' onchange="setExoCritereField(\''+path+'\','+i+',\''+c.id+'\',\'collectif\',this.checked)"> 👥 équipe</label>'
         +'<button type="button" class="btn-xs red" onclick="removeExoCritere(\''+path+'\','+i+',\''+c.id+'\')">✕</button>'
         +'</div>';
@@ -11547,7 +11553,7 @@ function renderRemedTree(){
       html+='<div class="remed-chip-row">';
       withTarget.forEach(o=>{
         const cls=o.state==='ok'?'ok':(o.state==='miss'?'miss':'pending');
-        const txt=o.state==='pending'?('⏳ '+o.label+' : volume insuffisant'):(o.state==='ok'?('✅ '+o.label+' : '+o.actualPct+'%'):('🎯 '+o.label+' : '+o.actualPct+'% (visé '+o.targetNum+'%)'));
+        const txt=o.state==='pending'?('⏳ '+o.label+' : volume insuffisant'):(o.state==='ok'?('✅ '+o.label+' : '+o.actualPct+objU(o)):('🎯 '+o.label+' : '+o.actualPct+objU(o)+' (visé '+objT(o)+')'));
         html+='<div class="obj-badge '+cls+'" style="flex:1 1 150px;">'+esc(txt)+'</div>';
       });
       html+='</div>';
@@ -11555,7 +11561,7 @@ function renderRemedTree(){
     if(infoOnly.length){
       html+='<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:'+(withTarget.length?'6px':'0')+';">';
       infoOnly.forEach(o=>{
-        html+='<span style="font-size:.66rem;color:var(--dim);background:var(--panel);border:1px solid var(--border);border-radius:5px;padding:2px 7px;">'+esc(o.label)+' : '+o.actualPct+'%</span>';
+        html+='<span style="font-size:.66rem;color:var(--dim);background:var(--panel);border:1px solid var(--border);border-radius:5px;padding:2px 7px;">'+esc(o.label)+' : '+o.actualPct+objU(o)+'</span>';
       });
       html+='</div>';
     }
@@ -11849,7 +11855,7 @@ function updateUI(){
   getTeamCustomRatios(curT).forEach((cr,ci)=>{
     if(!cr.show)return;
     const rv=getCustomRatioValue(cr,s);
-    setTxt('rp-cr'+ci,rv.pct+'%');setTxt('rv-cr'+ci,rv.num+'/'+rv.den);
+    setTxt('rp-cr'+ci,rv.count?String(rv.num):rv.pct+'%');setTxt('rv-cr'+ci,rv.count?(cr.target?'objectif '+cr.target:'nombre'):rv.num+'/'+rv.den);
   });
   if(getTeamRatioFlag(curT,'showRZ')){
     setTxt('rv-rz-b',s.rzBas);setTxt('rv-rz-m',s.rzMed);setTxt('rv-rz-h',s.rzHaut);
@@ -12335,7 +12341,7 @@ function renderMatchAnalysisHtml(s,student,beforeKey){
     objs.forEach(o=>{
       const c=col[o.state]||col.info;const w=Math.max(2,Math.min(100,Math.round(o.actualPct||0)));
       const ico=o.state==='ok'?'✅':(o.state==='miss'?'🎯':(o.state==='pending'?'⏳':'ℹ️'));
-      h+='<div style="margin:6px 0;"><div style="display:flex;justify-content:space-between;font-size:.74rem;"><span>'+ico+' '+esc(String(o.label))+'</span><b style="color:'+c+';">'+esc(String(o.actualPct))+'%'+(o.targetNum?' <span style="font-weight:400;color:var(--dim2);">(visé '+esc(String(o.targetNum))+'%)</span>':'')+'</b></div>'
+      h+='<div style="margin:6px 0;"><div style="display:flex;justify-content:space-between;font-size:.74rem;"><span>'+ico+' '+esc(String(o.label))+'</span><b style="color:'+c+';">'+esc(String(o.actualPct))+objU(o)+(o.targetNum?' <span style="font-weight:400;color:var(--dim2);">(visé '+esc(objT(o))+')</span>':'')+'</b></div>'
         +'<div style="position:relative;height:12px;background:var(--border);border-radius:6px;overflow:visible;"><div style="width:'+w+'%;height:100%;background:'+c+';border-radius:6px;"></div>'+(o.targetNum?'<div style="position:absolute;left:'+Math.min(99,o.targetNum)+'%;top:-3px;width:3px;height:18px;background:var(--text);border-radius:2px;"></div>':'')+'</div></div>';
     });
     const miss=withT.filter(o=>o.state==='miss');
@@ -12613,7 +12619,7 @@ function setWarmupScoreQuiet(i,participant,critId,inputEl){
 function warmupIsValidated(ph,participant){
   if(!ph.criteres||!ph.criteres.length)return false;
   const sc=(ph.scores&&ph.scores[participant])||{};
-  return ph.criteres.every(c=>sc[c.id]!=null&&Number(sc[c.id])>=Number(c.cible));
+  return ph.criteres.every(c=>sc[c.id]!=null&&critOk(c,sc[c.id]));
 }
 function renderWarmupPhaseCard(i,ph){
   let h='<div class="remed-exo-card"><div style="text-align:right;"><button type="button" class="btn-xs" style="background:#0f766e;color:#fff;" onclick="libSaveWarm('+i+')">📚 Ranger</button> <button type="button" class="btn-xs red" title="Supprimer cette phase" onclick="removeWarmupPhase('+i+')">🗑</button></div>';
@@ -12647,7 +12653,7 @@ function renderWarmupPhaseCard(i,ph){
   (ph.criteres||[]).forEach(c=>{
     h+='<div style="display:flex;gap:6px;align-items:center;margin-bottom:4px;">'
       +'<input class="remed-edit-field" style="flex:2;margin-top:0;" placeholder="Ex : gainage tenu (sec)" value="'+esc(c.label)+'" onchange="setWarmupCritereField('+i+',\''+c.id+'\',\'label\',this.value)">'
-      +'<input class="remed-edit-field" type="number" style="flex:0 0 64px;margin-top:0;" value="'+c.cible+'" onchange="setWarmupCritereField('+i+',\''+c.id+'\',\'cible\',this.value)">'
+      +'<input class="remed-edit-field" type="number" style="flex:0 0 64px;margin-top:0;" value="'+c.cible+'" onchange="setWarmupCritereField('+i+',\''+c.id+'\',\'cible\',this.value)">'+critNegBtn(c,'warm',i,c.id)
       +'<button type="button" class="btn-xs red" onclick="removeWarmupCritere('+i+',\''+c.id+'\')">✕</button>'
       +'</div>';
   });
@@ -12832,7 +12838,7 @@ function renderEleveWarmupPhase(i,ph,secLbl,secIco){
   if(ph.audio)h+='<audio src="'+ph.audio+'" controls style="width:100%;margin-top:8px;display:block;"></audio>';
   const crits=ph.criteres||[];
   if(crits.length){
-    h+='<div class="sel-crit">🎯 Pour réussir : '+crits.map(c=>esc(String(c.label||'score'))+' ≥ '+esc(String(c.cible))).join(' · ')+'</div>';
+    h+='<div class="sel-crit">🎯 Pour réussir : '+crits.map(c=>esc(String(c.label||'score'))+critSym(c)+esc(String(c.cible))).join(' · ')+'</div>';
     let who=(ph.participants||[]).slice();
     if(!who.length){try{who=withGroupMembers(seanceParticipantPool());}catch(e){who=[];}} // v177 : aucun élève coché = toute la séance
     if(who.length){
@@ -13009,7 +13015,7 @@ function renderEleveExo(cpPath,exo){
   if(exo.anim)h+=animEleveHtml(exo.anim);
   const crits=exo.criteres||[];
   if(crits.length){
-    h+='<div class="sel-crit">🎯 Pour réussir : '+crits.map(c=>esc(String(c.label||'score'))+' ≥ '+esc(String(c.cible))+(c.collectif?' (équipe)':'')).join(' · ')+'</div>';
+    h+='<div class="sel-crit">🎯 Pour réussir : '+crits.map(c=>esc(String(c.label||'score'))+critSym(c)+esc(String(c.cible))+(c.collectif?' (équipe)':'')).join(' · ')+'</div>';
     const hasCol=crits.some(c=>c.collectif),parts=exoParticipantsOf(cpPath,exo);
     if(hasCol||parts.length)h+=exoScoreRowsHtml(cpPath,exo,false);
     else h+='<div class="sel-dim">Ton enseignant n\'a pas encore indiqué qui fait cette situation.</div>';
@@ -13256,7 +13262,7 @@ function bilanRows(s){
     const note=(s.exoData[k]||{}).note;if(note)R.push(base.concat(['Classe','Note élève',note,'','']));
     (exo.criteres||[]).forEach(c=>{
       const names=c.collectif?['__equipe__']:parts;
-      names.forEach(n=>{const v=scs[n]&&scs[n][c.id];R.push(base.concat([n==='__equipe__'?'Équipe':n,c.label||'',v==null?'':v,c.cible,v==null?'':(Number(v)>=Number(c.cible)?'Réussi':'Pas encore')]));});
+      names.forEach(n=>{const v=scs[n]&&scs[n][c.id];R.push(base.concat([n==='__equipe__'?'Équipe':n,c.label||'',v==null?'':v,c.cible,v==null?'':(critOk(c,v)?'Réussi':'Pas encore')]));});
     });
   });
   if(s.fin&&s.fin.next)R.push(['Semaine prochaine','','','Classe','',s.fin.next,'','']);
@@ -13501,7 +13507,7 @@ function libSaveItem(kind,src,cpPath){
   const s=getActiveSeance();if(!s||!src)return;
   const c=libCtx(s);
   const a=libLoad();
-  const item={id:'lib-'+Date.now()+'-'+Math.floor(Math.random()*1000),kind:kind,titre:src.titre||'Sans titre',desc:src.desc||'',image:src.image||null,video:src.video||null,anim:src.anim||null,criteres:(src.criteres||[]).map(x=>({label:x.label||x.titre||String(x),cible:x.cible||1,collectif:!!x.collectif})) ,apsa:c.apsa,oe:c.oe,oeLab:c.oeLab,cp:cpPath||'',date:Date.now()};
+  const item={id:'lib-'+Date.now()+'-'+Math.floor(Math.random()*1000),kind:kind,titre:src.titre||'Sans titre',desc:src.desc||'',image:src.image||null,video:src.video||null,anim:src.anim||null,criteres:(src.criteres||[]).map(x=>({label:x.label||x.titre||String(x),cible:x.cible||1,collectif:!!x.collectif,neg:!!x.neg})) ,apsa:c.apsa,oe:c.oe,oeLab:c.oeLab,cp:cpPath||'',date:Date.now()};
   if(src.terrain)item.terrain=src.terrain;
   if(Array.isArray(src.paliers)&&src.paliers.length)item.paliers=JSON.parse(JSON.stringify(src.paliers));
   if(src.wtype)item.wtype=src.wtype;if(src.sub)item.sub=src.sub;item.tags=(src.wtype?['échauffement']:[]);
@@ -13547,7 +13553,7 @@ function libInsert(id,tgtCp){
     if(!tgt)tgt=remedDefaultCp(s);
     if(!tgt){alert('Aucun contenu disponible pour ranger cette situation.');return;}
     const cp=getCpByPath(tgt);if(!Array.isArray(cp.exercices))cp.exercices=[];
-    const nx={id:newExoId(),terrain:it.terrain||'',titre:it.titre,desc:it.desc,image:it.image||null,video:it.video||null,anim:it.anim||null,participants:[],criteres:(it.criteres||[]).map((x,q)=>({id:'crit-'+Date.now()+'-'+q,label:x.label,cible:x.cible||1,collectif:!!x.collectif})),scores:{}};
+    const nx={id:newExoId(),terrain:it.terrain||'',titre:it.titre,desc:it.desc,image:it.image||null,video:it.video||null,anim:it.anim||null,participants:[],criteres:(it.criteres||[]).map((x,q)=>({id:'crit-'+Date.now()+'-'+q,label:x.label,cible:x.cible||1,collectif:!!x.collectif,neg:!!x.neg})),scores:{}};
     if((it.roles||[]).length)nx.roles=it.roles.map((l,q)=>({id:'r-'+Date.now().toString(36)+q,label:l}));
     if(Array.isArray(it.paliers)&&it.paliers.length)nx.paliers=JSON.parse(JSON.stringify(it.paliers));
     if((it.cpAlso||[]).length&&it.cp===tgt)nx.cpAlso=it.cpAlso.slice();
@@ -13775,7 +13781,7 @@ const EXO_ROLE_SUGG=['Responsable de la situation','Arbitre','Observateur','Jour
 function exoCollectifOk(exo,scs){
   const col=(exo.criteres||[]).filter(c=>c.collectif);if(!col.length)return false;
   const sc=(scs&&scs.__equipe__)||{};
-  return col.every(c=>sc[c.id]!=null&&Number(sc[c.id])>=Number(c.cible));
+  return col.every(c=>sc[c.id]!=null&&critOk(c,sc[c.id]));
 }
 function exoScoreRowsHtml(cpPath,exo,teacher){
   const crits=exo.criteres||[];const scs=exoScoresOf(cpPath,exo);const parts=exoParticipantsOf(cpPath,exo);
@@ -13926,7 +13932,7 @@ function libcRender(){
     h+='<label class="remed-edit-label">🔥 Phase(s) de l\'échauffement <small style="font-weight:400;">(une ou plusieurs)</small></label><div class="remed-chip-row">'+WARM_TYPES.filter(t=>!/^(ex|x2|x3)$/.test(t.id)).map(t=>'<div class="remed-chip'+(wtList(f).indexOf(t.id)>=0?' selected':'')+'" style="flex:0 1 auto;padding:5px 10px;font-size:.74rem;" onclick="wtToggle(\''+t.id+'\')">'+t.ico+' '+esc(t.t)+'</div>').join('')+'</div>';
     if(f.wtype==='p2')h+='<label class="remed-edit-label">Type</label><div class="remed-chip-row">'+WARM_SUBS.filter(x=>x[0]).map(x=>'<div class="remed-chip'+(f.sub===x[0]?' selected':'')+'" style="flex:0 1 auto;padding:5px 10px;font-size:.74rem;" onclick="libcSet(\'sub\',\''+(f.sub===x[0]?'':x[0])+'\');libcRender()">'+x[1]+'</div>').join('')+'</div>';
     h+='<label class="remed-edit-label">🏷 Mes tags (ex : gainage)</label><div class="remed-chip-row">'+libAllTags().map(t=>'<div class="remed-chip'+(f.tags.indexOf(t)>=0?' selected':'')+'" style="flex:0 1 auto;padding:5px 10px;font-size:.74rem;" onclick="libcTagToggle(\''+esc(t).replace(/'/g,"\\'")+'\')">#'+esc(t)+'</div>').join('')+'<div class="remed-chip" style="flex:0 1 auto;padding:5px 10px;font-size:.74rem;" onclick="libcTagAdd()">＋ tag</div></div>';
-    if(f.crits.length){h+='<label class="remed-edit-label">🎯 Critères de réussite</label>';f.crits.forEach((c,i)=>{h+='<div style="display:flex;gap:6px;align-items:center;margin-bottom:4px;"><input class="remed-edit-field" style="flex:2;margin-top:0;" placeholder="Ex : secondes tenues" value="'+esc(c.label)+'" oninput="libcCrit('+i+',\'label\',this.value)"><input class="remed-edit-field" type="number" style="flex:0 0 64px;margin-top:0;" value="'+c.cible+'" oninput="libcCrit('+i+',\'cible\',this.value)"><button type="button" class="btn-xs red" onclick="libcCritDel('+i+')">✕</button></div>';});}
+    if(f.crits.length){h+='<label class="remed-edit-label">🎯 Critères de réussite</label>';f.crits.forEach((c,i)=>{h+='<div style="display:flex;gap:6px;align-items:center;margin-bottom:4px;"><input class="remed-edit-field" style="flex:2;margin-top:0;" placeholder="Ex : secondes tenues" value="'+esc(c.label)+'" oninput="libcCrit('+i+',\'label\',this.value)"><input class="remed-edit-field" type="number" style="flex:0 0 64px;margin-top:0;" value="'+c.cible+'" oninput="libcCrit('+i+',\'cible\',this.value)">'+critNegBtn(c,'libc',i)+'<button type="button" class="btn-xs red" onclick="libcCritDel('+i+')">✕</button></div>';});}
     h+='<button type="button" class="btn-xs" style="background:#334155;color:#fff;margin-top:6px;" onclick="libcCritAdd(false)">🎯 + Ajouter un critère de réussite</button>';
   }else if(k==='oe'){
     h+=selRef(true);
@@ -13979,7 +13985,7 @@ function libcRender(){
     h+=libcPrincipesHtml(f); // v190 : principes d'action (projets AS) reliables
     h+='<label class="remed-edit-label">🏷 Mes tags (ex : gainage)</label><div class="remed-chip-row">'+libAllTags().map(t=>'<div class="remed-chip'+(f.tags.indexOf(t)>=0?' selected':'')+'" style="flex:0 1 auto;padding:5px 10px;font-size:.74rem;" onclick="libcTagToggle(\''+esc(t).replace(/'/g,"\\'")+'\')">#'+esc(t)+'</div>').join('')+'<div class="remed-chip" style="flex:0 1 auto;padding:5px 10px;font-size:.74rem;" onclick="libcTagAdd()">＋ tag</div></div>';
     h+='<label class="remed-edit-label">🎯 Critères de réussite</label>';
-    f.crits.forEach((c,i)=>{h+='<div style="display:flex;gap:6px;align-items:center;margin-bottom:4px;"><input class="remed-edit-field" style="flex:2;margin-top:0;" placeholder="Ex : ballons conservés" value="'+esc(c.label)+'" oninput="libcCrit('+i+',\'label\',this.value)"><input class="remed-edit-field" type="number" style="flex:0 0 60px;margin-top:0;" value="'+esc(String(c.cible))+'" oninput="libcCrit('+i+',\'cible\',parseFloat(this.value)||0)"><label style="font-size:.66rem;white-space:nowrap;"><input type="checkbox"'+(c.collectif?' checked':'')+' onchange="libcCrit('+i+',\'collectif\',this.checked)"> 👥 équipe</label><button type="button" class="btn-xs red" onclick="libcCritDel('+i+')">✕</button></div>';});
+    f.crits.forEach((c,i)=>{h+='<div style="display:flex;gap:6px;align-items:center;margin-bottom:4px;"><input class="remed-edit-field" style="flex:2;margin-top:0;" placeholder="Ex : ballons conservés" value="'+esc(c.label)+'" oninput="libcCrit('+i+',\'label\',this.value)"><input class="remed-edit-field" type="number" style="flex:0 0 60px;margin-top:0;" value="'+esc(String(c.cible))+'" oninput="libcCrit('+i+',\'cible\',parseFloat(this.value)||0)">'+critNegBtn(c,'libc',i)+'<label style="font-size:.66rem;white-space:nowrap;"><input type="checkbox"'+(c.collectif?' checked':'')+' onchange="libcCrit('+i+',\'collectif\',this.checked)"> 👥 équipe</label><button type="button" class="btn-xs red" onclick="libcCritDel('+i+')">✕</button></div>';});
     h+='<div style="display:flex;gap:6px;flex-wrap:wrap;"><button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="libcCritAdd(false)">+ Critère individuel</button><button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="libcCritAdd(true)">+ Critère collectif</button></div>';
     h+='<label class="remed-edit-label">👥 Nombre de joueurs nécessaires (minimum)</label><input class="remed-edit-field" type="number" min="0" max="40" style="max-width:120px;" placeholder="Ex : 6" value="'+esc(String(f.minJ||''))+'" oninput="libcSet(\'minJ\',this.value)">';
     h+='<label class="remed-edit-label">🎭 Rôles</label><div class="remed-chip-row">'+EXO_ROLE_SUGG.concat(f.roles.filter(x=>EXO_ROLE_SUGG.indexOf(x)<0)).map(l=>'<div class="remed-chip'+(f.roles.indexOf(l)>=0?' selected':'')+'" style="flex:0 1 auto;padding:4px 9px;font-size:.72rem;" data-l="'+esc(l)+'" onclick="libcRoleToggle(this.dataset.l)">'+esc(l)+'</div>').join('')+'<div class="remed-chip" style="flex:0 1 auto;padding:4px 9px;font-size:.72rem;" onclick="libcRoleAdd()">+ Autre</div></div>';
@@ -14007,7 +14013,7 @@ function libcSave(){
   if(k==='warm'){
     if(!f.titre.trim()){alert('Donne un titre.');return;}
     const r=REMED_CONTENT[f.ref];
-    const item={id:'lib-'+Date.now()+'-'+Math.floor(Math.random()*1000),kind:'phase',titre:f.titre.trim(),desc:f.desc||'',image:f.image||null,video:(f.video||'').trim()||null,criteres:f.crits.filter(c=>String(c.label||'').trim()).map(c=>({label:c.label.trim(),cible:Number(c.cible)||1,collectif:false})),apsa:r?(r.label||''):'',oe:'',oeLab:'',cp:'',wtype:f.wtype||'p3',sub:(f.wtype==='p2'?f.sub:'')||'',tags:['échauffement'].concat(f.tags||[]),date:Date.now()};
+    const item={id:'lib-'+Date.now()+'-'+Math.floor(Math.random()*1000),kind:'phase',titre:f.titre.trim(),desc:f.desc||'',image:f.image||null,video:(f.video||'').trim()||null,criteres:f.crits.filter(c=>String(c.label||'').trim()).map(c=>({label:c.label.trim(),cible:Number(c.cible)||1,collectif:false,neg:!!c.neg})),apsa:r?(r.label||''):'',oe:'',oeLab:'',cp:'',wtype:f.wtype||'p3',sub:(f.wtype==='p2'?f.sub:'')||'',tags:['échauffement'].concat(f.tags||[]),date:Date.now()};
     if(f.anim)item.anim=f.anim;
     const a=libLoad();
     if(L.editId){const k0=a.findIndex(x=>x.id===L.editId);if(k0>=0){item.id=a[k0].id;if(a[k0].image&&!item.image)item.image=a[k0].image;a[k0]=item;}else a.push(item);}else a.push(item);
@@ -14015,7 +14021,7 @@ function libcSave(){
   }
   if(!f.titre.trim()){alert('Donne un titre.');return;}
   f.oe=(f.oes&&f.oes[0])||f.oe||'';const r=REMED_CONTENT[f.ref];const oe=r&&(r.oe||[]).find(o=>o.id===f.oe);
-  const crits=f.crits.filter(c=>String(c.label||'').trim()).map(c=>({label:c.label.trim(),cible:Number(c.cible)||1,collectif:!!c.collectif}));
+  const crits=f.crits.filter(c=>String(c.label||'').trim()).map(c=>({label:c.label.trim(),cible:Number(c.cible)||1,collectif:!!c.collectif,neg:!!c.neg}));
   const item={id:'lib-'+Date.now()+'-'+Math.floor(Math.random()*1000),kind:k==='match'?'match':'remed',titre:f.titre.trim(),objectif:String(f.objectif||'').trim(),minJ:+f.minJ||0,desc:(k==='match'?f.format:f.desc)||'',image:f.image||null,video:f.video.trim()||null,criteres:crits,roles:f.roles.slice(),apsa:r?(r.label||''):'',oe:oe?oe.id:'',oeLab:oe?(oe.short||oe.label||''):'',cp:f.cps[0]||'',oeAlso:(f.oes||[]).filter(x=>x!==(oe?oe.id:'')),cpAlso:f.cps.slice(1),tags:(f.tags||[]).slice(),date:Date.now()};
   if(k==='remed'&&f.cps[0]&&exoAsCp(f.cps[0])){
     const rg=f.regles.filter(x=>x.split('#')[0]===f.cps[0]);
@@ -14057,12 +14063,12 @@ function libEdit(id){
   const it=libLoad().find(x=>x.id===id);if(!it||(it.kind!=='remed'&&it.kind!=='match'&&it.kind!=='phase'))return;
   if(it.kind==='phase'){
     const r0=libcRefs().find(x=>(x.label||'')===it.apsa);
-    LIBC={kind:'warm',editId:id,openK:{},f:{oes:[],tags:(it.tags||[]).filter(t=>t!=='échauffement'),mode:(r0&&r0.custom)?'ref':'apsa',titre:it.titre||'',desc:it.desc||'',video:it.video||'',anim:it.anim||null,image:it.image||null,ref:r0?r0.id:'',oe:'',cps:[],regles:[],crits:(it.criteres||[]).map(c=>({label:c.label||'',cible:c.cible||1,collectif:false})),roles:[],format:'',points:'',regs:'',aide:'',phase:'',short:'',label:'',principes:'',newLabel:'',wtype:it.wtype||'p3',sub:it.sub||''}};
+    LIBC={kind:'warm',editId:id,openK:{},f:{oes:[],tags:(it.tags||[]).filter(t=>t!=='échauffement'),mode:(r0&&r0.custom)?'ref':'apsa',titre:it.titre||'',desc:it.desc||'',video:it.video||'',anim:it.anim||null,image:it.image||null,ref:r0?r0.id:'',oe:'',cps:[],regles:[],crits:(it.criteres||[]).map(c=>({label:c.label||'',cible:c.cible||1,collectif:false,neg:!!c.neg})),roles:[],format:'',points:'',regs:'',aide:'',phase:'',short:'',label:'',principes:'',newLabel:'',wtype:it.wtype||'p3',sub:it.sub||''}};
     libcRender();return;
   }
   const r=libcRefs().find(x=>(x.label||'')===it.apsa);
   const cfg=it.cfg||{};
-  LIBC={kind:it.kind==='match'?'match':'remed',editId:id,openK:{},f:{objectif:String(it.objectif||''),minJ:it.minJ?String(it.minJ):'',oes:[it.oe].concat(it.oeAlso||[]).filter(Boolean),tags:(it.tags||[]).slice(),mode:(r&&r.custom)?'ref':'apsa',titre:it.titre||'',desc:it.desc||'',video:it.video||'',anim:it.anim||null,image:it.image||null,ref:r?r.id:'',oe:it.oe||'',cps:[it.cp].concat(it.cpAlso||[]).filter(Boolean),regles:[],crits:(it.criteres||[]).map(c=>({label:c.label||'',cible:c.cible||1,collectif:!!c.collectif})),roles:(it.roles||[]).slice(),profile:it.profile||cfg.profile||'',terrain:it.terrain||cfg.terrain||'',aslinks:(it.principes||[]).slice(),format:it.desc||cfg.format||'',points:(cfg.points||[]).join('\n'),regs:(cfg.emblematiques||[]).join('\n'),aide:(cfg.etayage||[]).join('\n'),phase:'',short:'',label:'',principes:'',newLabel:''}};
+  LIBC={kind:it.kind==='match'?'match':'remed',editId:id,openK:{},f:{objectif:String(it.objectif||''),minJ:it.minJ?String(it.minJ):'',oes:[it.oe].concat(it.oeAlso||[]).filter(Boolean),tags:(it.tags||[]).slice(),mode:(r&&r.custom)?'ref':'apsa',titre:it.titre||'',desc:it.desc||'',video:it.video||'',anim:it.anim||null,image:it.image||null,ref:r?r.id:'',oe:it.oe||'',cps:[it.cp].concat(it.cpAlso||[]).filter(Boolean),regles:[],crits:(it.criteres||[]).map(c=>({label:c.label||'',cible:c.cible||1,collectif:!!c.collectif,neg:!!c.neg})),roles:(it.roles||[]).slice(),profile:it.profile||cfg.profile||'',terrain:it.terrain||cfg.terrain||'',aslinks:(it.principes||[]).slice(),format:it.desc||cfg.format||'',points:(cfg.points||[]).join('\n'),regs:(cfg.emblematiques||[]).join('\n'),aide:(cfg.etayage||[]).join('\n'),phase:'',short:'',label:'',principes:'',newLabel:''}};
   libcRender();
 }
 function libSaveMatchFromSeance(key){
@@ -14078,7 +14084,7 @@ function matchRoleToggle(key,l){const c=matchCfgEdit(key);if(!c)return;if(!Array
 function matchRoleAdd(key){askTextDlg('Nom du rôle','',v=>{const c=matchCfgEdit(key);if(!c)return;if(!Array.isArray(c.roles))c.roles=[];if(c.roles.indexOf(v)<0)c.roles.push(v);saveSeances();renderSeanceTab();},'Ex : Photographe');}
 function matchCritRolesHtml(key,c){
   let h='<details style="margin-top:8px;"><summary style="cursor:pointer;font-size:.78rem;">🎯 Réussite &amp; 🎭 rôles'+(((c.criteres||[]).length||(c.roles||[]).length)?' ('+((c.criteres||[]).length+(c.roles||[]).length)+')':'')+'</summary>';
-  (c.criteres||[]).forEach((x,i)=>{h+='<div style="display:flex;gap:6px;align-items:center;margin:4px 0;"><input class="remed-edit-field" style="flex:2;margin:0;" placeholder="Ex : points marqués" value="'+esc(x.label||'')+'" onchange="matchCritSet(\''+key+'\','+i+',\'label\',this.value)"><input class="remed-edit-field" type="number" style="flex:0 0 58px;margin:0;" value="'+esc(String(x.cible||1))+'" onchange="matchCritSet(\''+key+'\','+i+',\'cible\',parseFloat(this.value)||0)"><label style="font-size:.66rem;white-space:nowrap;"><input type="checkbox"'+(x.collectif?' checked':'')+' onchange="matchCritSet(\''+key+'\','+i+',\'collectif\',this.checked)"> 👥</label><button type="button" class="btn-xs red" onclick="matchCritDel(\''+key+'\','+i+')">✕</button></div>'+(x.collectif?fpsCritRatioSelHtml(key,i):'');});
+  (c.criteres||[]).forEach((x,i)=>{h+='<div style="display:flex;gap:6px;align-items:center;margin:4px 0;"><input class="remed-edit-field" style="flex:2;margin:0;" placeholder="Ex : points marqués" value="'+esc(x.label||'')+'" onchange="matchCritSet(\''+key+'\','+i+',\'label\',this.value)"><input class="remed-edit-field" type="number" style="flex:0 0 58px;margin:0;" value="'+esc(String(x.cible||1))+'" onchange="matchCritSet(\''+key+'\','+i+',\'cible\',parseFloat(this.value)||0)">'+critNegBtn(x,'match',key,i)+'<label style="font-size:.66rem;white-space:nowrap;"><input type="checkbox"'+(x.collectif?' checked':'')+' onchange="matchCritSet(\''+key+'\','+i+',\'collectif\',this.checked)"> 👥</label><button type="button" class="btn-xs red" onclick="matchCritDel(\''+key+'\','+i+')">✕</button></div>'+(x.collectif?fpsCritRatioSelHtml(key,i):'');});
   h+='<div style="display:flex;gap:6px;flex-wrap:wrap;margin:4px 0;"><button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="matchCritAdd(\''+key+'\',false)">+ Critère individuel</button><button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="matchCritAdd(\''+key+'\',true)">+ Critère collectif</button></div>';
   const roles=c.roles||[];
   h+='<div class="remed-chip-row" style="margin-top:6px;">'+EXO_ROLE_SUGG.concat(roles.filter(x=>EXO_ROLE_SUGG.indexOf(x)<0)).map(l=>'<div class="remed-chip'+(roles.indexOf(l)>=0?' selected':'')+'" style="flex:0 1 auto;padding:4px 9px;font-size:.72rem;" data-l="'+esc(l)+'" onclick="matchRoleToggle(\''+key+'\',this.dataset.l)">'+esc(l)+'</div>').join('')+'<div class="remed-chip" style="flex:0 1 auto;padding:4px 9px;font-size:.72rem;" onclick="matchRoleAdd(\''+key+'\')">+ Autre</div></div></details>';
@@ -15601,7 +15607,7 @@ function eleveMatchCfgHtml(s,key){
     +(c.format?'<div class="fps-el-format">'+esc(c.format)+'</div>':'')
     +terrainLineHtml(c.terrain,true)
     +L('Comment on marque',c.points,'🏅')+L('Les règles du match',c.emblematiques,'📌')+L('Pour nous aider',c.etayage,'🪜')
-    +L('Pour réussir',(c.criteres||[]).map(x=>x.label+(x.cible?' ≥ '+x.cible:'')+(x.collectif?' (équipe)':'')).concat(fpsProfileObjectives(s,c).map(o=>o.label+' ≥ '+o.target+' % (équipe)')),'🎯')+L('Les rôles',c.roles,'🎭')
+    +L('Pour réussir',(c.criteres||[]).map(x=>x.label+(x.cible?critSym(x)+x.cible:'')+(x.collectif?' (équipe)':'')).concat(fpsProfileObjectives(s,c).map(o=>o.label+' ≥ '+o.target+' % (équipe)')),'🎯')+L('Les rôles',c.roles,'🎭')
     +'</div>';
 }
 // ══════════════════════════════════════════════════════════════════════
@@ -16749,7 +16755,7 @@ function buildDualBilan(){
       if(!cr.show)return;
       const rv=getCustomRatioValue(cr,s);
       const c2=document.createElement('div');c2.className='dmr';
-      c2.innerHTML='<span class="dpct" style="color:#e879f9">'+rv.pct+'%</span><span class="dlbl">'+cr.label+'</span><span class="draw2">'+rv.num+'/'+rv.den+'</span>';
+      c2.innerHTML='<span class="dpct" style="color:#e879f9">'+(rv.count?rv.num:rv.pct+'%')+'</span><span class="dlbl">'+cr.label+'</span><span class="draw2">'+(rv.count?(cr.target||'nombre'):rv.num+'/'+rv.den)+'</span>';
       ratDiv.appendChild(c2);
     });
     if(getTeamRatioFlag(ti,'showRZ')){
@@ -16944,7 +16950,7 @@ function appendStatTiles(container, ti){
     if(!cr||!cr.show)return;
     const rv=getCustomRatioValue(cr,s)||{num:0,den:0,pct:0};
     const card=document.createElement('div');card.className='brat';card.style.background='rgba(100,20,100,.5)';
-    card.innerHTML='<span class="bpct" style="color:#e879f9;">'+(rv.pct||0)+'%</span><span class="blbl">'+cr.label+'</span><span class="braw">'+(rv.num||0)+' / '+(rv.den||0)+'</span>';
+    card.innerHTML='<span class="bpct" style="color:#e879f9;">'+(rv.count?(rv.num||0):(rv.pct||0)+'%')+'</span><span class="blbl">'+cr.label+'</span><span class="braw">'+(rv.count?(cr.target?'objectif '+cr.target:'nombre'):(rv.num||0)+' / '+(rv.den||0))+'</span>';
     container.appendChild(card);
   });
   // Récupérations et Pertes sont deux blocs indépendants, chacun contrôlé
@@ -16989,17 +16995,23 @@ function buildBilanRatios(ti){
 // cible ("Objectif") saisie dans le profil, en tenant compte du volume
 // minimal ("Vol.min") requis avant de juger l'objectif significatif.
 // Renvoie null si aucune cible n'est définie pour ce ratio (= pas de badge).
+const ZONE_SEC={perteBas:'Perte zone basse',perteMed:'Perte zone médiane',perteHaut:'Perte zone haute',rzBas:'Récup. zone basse',rzMed:'Récup. zone médiane',rzHaut:'Récup. zone haute'};
+function objU(o){return (o&&o.unit!=null)?o.unit:'%';}
+function objT(o){return (o&&o.neg?'≤ ':'')+o.targetNum+objU(o);}
+function critOk(c,v){if(v==null||v==='')return false;return c&&c.neg?Number(v)<=Number(c.cible):Number(v)>=Number(c.cible);}
+function critSym(c){return c&&c.neg?' ≤ ':' ≥ ';}
 function evalObjective(targetStr,minVolStr,actualPct,volume){
   const t=(targetStr||'').toString().trim();
   if(!t)return null;
+  const neg=/^\s*(<|≤|max|moins)/i.test(t);
   const targetNum=parseFloat(t.replace(',','.').replace(/[^0-9.\-]/g,''));
   if(isNaN(targetNum))return null;
   const minVol=minVolStr?(parseInt(minVolStr,10)||0):0;
   if(minVol>0&&(volume||0)<minVol){
-    return{state:'pending',targetNum,minVol,volume:volume||0};
+    return{state:'pending',targetNum,minVol,volume:volume||0,neg};
   }
-  const reached=(actualPct||0)>=targetNum;
-  return{state:reached?'ok':'miss',targetNum,minVol,volume:volume||0,actualPct:actualPct||0};
+  const reached=neg?(actualPct||0)<=targetNum:(actualPct||0)>=targetNum;
+  return{state:reached?'ok':'miss',targetNum,minVol,volume:volume||0,actualPct:actualPct||0,neg};
 }
 function objBadgeHTML(label,obj){
   if(!obj)return'';
@@ -17007,9 +17019,9 @@ function objBadgeHTML(label,obj){
     return'<div class="obj-badge pending">⏳ '+label+' : volume insuffisant ('+obj.volume+'/'+obj.minVol+')</div>';
   }
   if(obj.state==='ok'){
-    return'<div class="obj-badge ok">✅ Objectif '+label+' atteint ('+obj.actualPct+'%)</div>';
+    return'<div class="obj-badge ok">✅ Objectif '+label+' atteint ('+obj.actualPct+objU(obj)+')</div>';
   }
-  return'<div class="obj-badge miss">🎯 '+label+' : '+obj.actualPct+'% (visé '+obj.targetNum+'%)</div>';
+  return'<div class="obj-badge miss">🎯 '+label+' : '+obj.actualPct+objU(obj)+' (visé '+objT(obj)+')</div>';
 }
 // Construit les badges d'objectifs de l'équipe ti dans le conteneur fourni.
 // Réutilisable aussi bien pour le Bilan simple (#obj-badges) que pour chaque
@@ -17036,7 +17048,7 @@ function buildObjectiveBadges(ti,container){
     if(!cr||!cr.show||!cr.target)return;
     const rv=getCustomRatioValue(cr,s)||{num:0,den:0,pct:0};
     const obj=evalObjective(cr.target,cr.minVolume,rv.pct||0,rv.den||0);
-    if(!obj)return;
+    if(!obj)return;if(rv.count)obj.unit='';
     any=true;
     container.insertAdjacentHTML('beforeend',objBadgeHTML(cr.label,obj));
   });
@@ -17644,7 +17656,7 @@ function sbExoModal(k,from){
     +(ex.image?'<img src="'+ex.image+'" style="max-width:100%;border-radius:8px;margin-top:8px;display:block;" alt="">':'')
     +(ex.video?'<video src="'+ex.video+'" controls playsinline style="max-width:100%;border-radius:8px;margin-top:8px;display:block;"></video>':'')
     +(ex.anim?animCardHtml(ex.anim):'')
-    +((ex.criteres||[]).length?'<div class="sel-crit">🎯 Pour réussir : '+ex.criteres.map(c=>esc(String(c.label||'score'))+(c.cible!==''&&c.cible!=null?' ≥ '+esc(String(c.cible)):'')).join(' · ')+'</div>':'')
+    +((ex.criteres||[]).length?'<div class="sel-crit">🎯 Pour réussir : '+ex.criteres.map(c=>esc(String(c.label||'score'))+(c.cible!==''&&c.cible!=null?critSym(c)+esc(String(c.cible)):'')).join(' · ')+'</div>':'')
     +'<div class="sb-meta" style="margin-top:12px;">Placer dans :</div><div class="sbx-place">'
     +rem.map(x=>{const ats=parAteliers(s,x.key);return ats.map((a,i)=>{const on=((s.stepExos||{})[a.key]||[]).indexOf(k)>=0;return '<button type="button" class="btn-xs" style="background:'+(on?col:'#334155')+';color:#fff;" data-s="'+a.key+'" data-k="'+esc(k)+'" onclick="sbPlace(this.dataset.s,this.dataset.k)">'+(on?'✓ ':'')+'🧭 '+esc(seanceStepDef(x.key).label)+seanceStepNum(s,x.key)+(ats.length>1?' · '+String.fromCharCode(65+i):'')+'</button>';}).join('');}).join('')
     +'<button type="button" class="btn-xs" style="background:#15803d;color:#fff;" data-k="'+esc(k)+'" onclick="sbPlaceNew(this.dataset.k)">＋ Nouvelle étape d\'entraînement</button></div>'
@@ -21728,6 +21740,39 @@ function aspLateWarmAt(s,b,tm,arr){try{const T=aspTimes(s);const L=(s.asp.blocks
 (function(){const o=aspElPagedHtml;aspElPagedHtml=function(s){ASP_JW=null;let h=o.apply(this,arguments);try{const J=ASP_JW;if(!J)return h;const t=document.createElement('template');t.innerHTML=h;
   const st=t.content.querySelector('.ael-step[data-b="'+J.b+'"][data-a="'+J.a+'"]');if(st){const h3=st.querySelector('h3');const d=document.createElement('div');d.className='ael-note';d.style.borderColor='#f97316';d.textContent='🔥 Tu arrives à '+J.t+' : va t\'échauffer avec ce groupe, qui commence son échauffement.';(h3||st).insertAdjacentElement('afterend',d);}
   return t.innerHTML;}catch(e){return h;}};})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v269 — Importer un code : coller OU choisir un fichier ; critères de
+// réussite négatifs (≤) ; boutons de pertes / récupérations par zone en
+// mode boutons seuls ; objectifs en nombre (sans dénominateur)
+// ══════════════════════════════════════════════════════════════════════
+function critNegBtn(c,kind){const args=[].slice.call(arguments,2);const on=!!(c&&c.neg);
+  return '<button type="button" class="crit-neg'+(on?' on':'')+'" title="'+(on?'Critère négatif : réussi si on fait AU PLUS la cible (ex. moins de 5 pertes)':'Réussi si on fait AU MOINS la cible — clic pour un critère négatif (au plus)')+'" data-k="'+kind+'" data-a="'+esc(JSON.stringify(args))+'" data-v="'+(on?1:0)+'" onclick="critNegToggle(this)">'+(on?'≤':'≥')+'</button>';}
+function critNegToggle(b){let A=[];try{A=JSON.parse(b.dataset.a||'[]');}catch(e){}const nv=b.dataset.v!=='1';const k=b.dataset.k;
+  try{if(k==='libc'){const c=LIBC&&LIBC.f.crits[A[0]];if(c){c.neg=nv;libcRender();}}
+    else if(k==='match'){matchCritSet(A[0],A[1],'neg',nv);renderSeanceTab();}
+    else if(k==='exo'){setExoCritereField(A[0],A[1],A[2],'neg',nv);}
+    else if(k==='warm'){setWarmupCritereField(A[0],A[1],'neg',nv);}}catch(e){console.warn('critNeg',e);}
+  b.dataset.v=nv?'1':'0';b.textContent=nv?'≤':'≥';b.classList.toggle('on',nv);}
+function crSetNeg(ci,v){const cr=CFG.customRatios[ci];if(!cr)return;const t=String(cr.target||'').replace(/^\s*(<=?|≤|max|moins( de)?)\s*/i,'');cr.target=(v==='neg'?'≤':'')+t;saveConfig();renderCustomRatios();}
+function crQuickZones(kind){const K=kind==='perte'?[['perteBas','Pertes zone basse'],['perteMed','Pertes zone médiane'],['perteHaut','Pertes zone haute']]:[['rzBas','Récup. zone basse'],['rzMed','Récup. zone médiane'],['rzHaut','Récup. zone haute']];
+  K.forEach(x=>{if(!CFG.customRatios.some(c=>c&&c.label===x[1]))CFG.customRatios.push({label:x[1],show:true,numCriteria:[x[0]],denCriteria:[],target:kind==='perte'?'≤':'',minVolume:''});});saveConfig();renderCustomRatios();
+  try{toast2('3 objectifs ajoutés : écris la cible de chacun (ex. 5)');}catch(e){}}
+(function(){try{const orc=renderCustomRatios;renderCustomRatios=function(){orc.apply(this,arguments);try{const el2=E('custom-ratios-list');if(!el2||isRacket())return;const d=document.createElement('div');d.className='cr-quick';
+    d.innerHTML='<button type="button" class="btn-xs" style="background:#0f766e;color:#fff;" onclick="crQuickZones(\'recup\')">＋ Récupérations par zone (B / M / H)</button><button type="button" class="btn-xs" style="background:#b91c1c;color:#fff;" onclick="crQuickZones(\'perte\')">＋ Pertes par zone (B / M / H)</button><span style="font-size:.68rem;color:var(--dim2);align-self:center;">Sans dénominateur = on compte (ex. 5 récupérations). « ≤ » = au plus (ex. moins de 5 pertes).</span>';el2.appendChild(d);}catch(e){}};}catch(e){}})();
+try{[['📉 Perte zone basse','#991b1b','perteBas',true],['📉 Perte zone médiane','#b91c1c','perteMed',true],['📉 Perte zone haute','#dc2626','perteHaut',true],['📈 Récup. zone basse','#1d4ed8','rzBas',false],['📈 Récup. zone médiane','#2563eb','rzMed',false],['📈 Récup. zone haute','#3b82f6','rzHaut',false]].forEach(x=>{
+  if(!EXTRA_BTNS.some(b=>b.label===x[0]))EXTRA_BTNS.push({label:x[0],color:x[1],isShot:false,isGoal:false,switchTeam:x[3],secondary:x[2],pts:0,newPoss:x[3]});});}catch(e){}
+// ── importer : coller ou choisir un fichier ──
+libImportAsk=function(){const OV=['lib','imp','ov'].join('-');const o0=E(OV);if(o0)o0.remove();const o=document.createElement('div');o.id=OV;o.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px;';
+  o.innerHTML='<'+'div style="background:var(--card,#16212e);border:1px solid var(--border,#334);border-radius:12px;padding:16px;width:100%;max-width:520px;"><'+'div style="font-weight:700;margin-bottom:8px;">📥 Importer un code</'+'div>'
+    +'<button type="button" class="btn-xs" style="background:#1d4ed8;color:#fff;padding:10px 14px;width:100%;margin-bottom:8px;" data-a="file">📁 Choisir un fichier (.json ou .txt)</button>'
+    +'<'+'div style="font-size:.75rem;color:var(--dim2);margin:4px 0;">… ou colle le code ici :</'+'div><textarea rows="4" style="width:100%;box-sizing:border-box;font-size:.8rem;" placeholder="{&quot;gribouillis&quot;:&quot;lib&quot;,…}"></textarea>'
+    +'<input type="file" accept=".json,.txt,application/json,text/plain" style="display:none">'
+    +'<'+'div style="display:flex;gap:8px;margin-top:10px;justify-content:flex-end;"><button type="button" class="btn-xs" style="background:#334155;color:#fff;" data-a="x">Annuler</button><button type="button" class="btn-xs green" data-a="ok">Importer</button></'+'div></'+'div>';
+  document.body.appendChild(o);const ta=o.querySelector('textarea'),fi=o.querySelector('input[type=file]');
+  const go=t=>{t=String(t||'').trim();if(!t)return;if(!libImportParse(t)){alert('Ce texte n\'est pas un code Gribouillis.');return;}o.remove();libImportText(t);};
+  o.querySelector('[data-a=file]').onclick=()=>fi.click();fi.onchange=()=>{const f=fi.files&&fi.files[0];if(!f)return;const r=new FileReader();r.onload=()=>go(r.result);r.readAsText(f);};
+  o.querySelector('[data-a=ok]').onclick=()=>go(ta.value);o.querySelector('[data-a=x]').onclick=()=>o.remove();setTimeout(()=>ta.focus(),30);};
 </script>
 </body>
 </html>
