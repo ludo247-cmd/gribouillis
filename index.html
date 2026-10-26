@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v267</title>
+<title>Gribouillis EPS v268</title>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
 /* ── THÈME SOMBRE UNIQUEMENT ── */
@@ -20889,8 +20889,8 @@ function aspEleveHtml(s){const me=elMeGet(s);const LATE={arr:me?aspLateArr(s,me)
     if(b.kind==='objectif'){n++;let w='';try{const px=elProxy(s);const sd=seanceSportDef(px);if(sd&&sd.custom)w='<'+'div class="sel-box as-wheel-el"><'+'div class="sel-dim">Les phases en couleur sont celles qu\'on travaille aujourd\'hui. Touche une autre phase pour voir ses vidéos.</'+'div><'+'div class="wheel-wrap"><'+'div class="wheel-col">'+wheelSvg(px,sd,'eleve')+'</'+'div><'+'div class="wheel-cards">'+wheelCardsHtml(px,sd,true,ELEVE_WHEEL_PEEK)+'</'+'div><svg class="wheel-links" aria-hidden="true"></svg></'+'div></'+'div>'+presVideosHtml(px,sd);}catch(e){}
       h+='<'+'div class="ael-step" data-b="'+esc(b.id)+'"><h3><span class="t">'+n+' · '+hmFmt(tm.a)+'</span>📋 Notre projet de jeu</h3>'+(w||'<'+'div class="cc-dim">Écoute la présentation de ton enseignant.</'+'div>')+'</'+'div>';return;}
     if(b.kind==='bilan'){if(me&&LATE.arr!=null&&!LATE.done){LATE.done=1;n++;h+=aspExpressStep(s,n,LATE.arr===-1?'à ton arrivée':hmFmt(LATE.arr));}n++;h+='<'+'div class="ael-step" data-b="'+esc(b.id)+'"><h3><span class="t">'+n+' · '+hmFmt(tm.a)+'</span>🏁 Bilan</h3>'+aspEleveBilanHtml(s)+'</'+'div>';return;}
-    if(me&&LATE.arr!=null){if(LATE.arr!==-1&&tm.b<=LATE.arr)return;if(!LATE.done){LATE.done=1;n++;h+=aspExpressStep(s,n,LATE.arr===-1?'à ton arrivée':hmFmt(LATE.arr));}}
-    const A2=all?(b.ats||[]).filter(x=>(x.exos||[]).length||(x.groups||[]).length):aspMyAts(s,b,me);A2.forEach(a=>{if(LATE.done&&(a.exos||[]).length&&(a.exos||[]).every(e=>e.k==='warm'))return;n++;
+    let JW=null;if(me&&LATE.arr!=null){if(LATE.arr!==-1&&tm.b<=LATE.arr)return;if(LATE.pjw){if(LATE.pjw.b===b){JW=LATE.pjw.a;LATE.pjw=null;}}else if(!LATE.done){LATE.done=1;const W=LATE.arr!==-1?aspLateWarmAt(s,b,tm,LATE.arr):null;if(W&&W.b!==b){LATE.pjw=W;return;}if(W)JW=W.a;else{n++;h+=aspExpressStep(s,n,LATE.arr===-1?'à ton arrivée':hmFmt(LATE.arr));}}}if(JW)ASP_JW={b:b.id,a:JW.id,t:hmFmt(LATE.arr)};
+    const A2=JW?[JW]:(all?(b.ats||[]).filter(x=>(x.exos||[]).length||(x.groups||[]).length):aspMyAts(s,b,me));A2.forEach(a=>{if(a!==JW&&LATE.done&&(a.exos||[]).length&&(a.exos||[]).every(e=>e.k==='warm'))return;n++;
     const mates=aspAtMembers(s,a).filter(x=>x!==me);const gl=(a.groups||[]).map(id=>(aspChip(s,id)||{}).label).filter(Boolean);
     h+='<'+'div class="ael-step" data-b="'+esc(b.id)+'" data-a="'+esc(a.id)+'"><h3><span class="t">'+n+' · '+hmFmt(tm.a)+'</span>'+esc(((a.exos||[]).map(e=>(aspExInfo(e)||{}).titre).filter(Boolean).join(' → '))||'À suivre')+'</h3>'
       +(gl.length?'<'+'div class="ael-with">👥 '+esc(gl.join(' + '))+(mates.length&&mates.length<=14&&(a.groups||[]).some(id=>!/^pop-/.test(id))?' — avec '+mates.map(esc).join(', '):'')+'</'+'div>':'')
@@ -21711,6 +21711,23 @@ function aspMoveAt(p,drop){const s=aspS();if(!s)return;const q=p.slice(3).split(
   try{const oc=sbCanDrop;sbCanDrop=function(p,drop){if(String(p).indexOf('at:')===0){const dt=String(drop).split(':')[0];return ['asb','asp','asa','asg'].indexOf(dt)>=0;}return oc.apply(this,arguments);};}catch(e){}
   try{const od=sbDo;sbDo=function(p,drop){if(String(p).indexOf('at:')===0){aspMoveAt(p,drop);return;}return od.apply(this,arguments);};}catch(e){}
 })();
+
+// ══════════════════════════════════════════════════════════════════════
+// v268 — Élève en retard : s'il arrive pendant un échauffement d'un autre
+// groupe (ex. garçons de 17h35 avec les filles qui commencent), il rejoint
+// cet échauffement ; l'échauffement express ne sert qu'aux autres
+// ══════════════════════════════════════════════════════════════════════
+let ASP_JW=null;
+function aspAtIsWarm(a){const E=(a.exos||[]).map(aspExInfo).filter(Boolean);return E.length&&E.some(i=>i.kind==='warm'||i.kind==='phase');}
+function aspLateWarmAt(s,b,tm,arr){try{const T=aspTimes(s);const L=(s.asp.blocks||[]).filter(x=>x.kind==='bloc');const i=L.indexOf(b);
+  const pick=bb=>{const W=(bb.ats||[]).filter(aspAtIsWarm);if(!W.length)return null;const sx=grpSexe((ELEVE_ME&&ELEVE_ME.n)||'');return W.find(a=>aspAtMembers(s,a).some(n=>grpSexe(n)===sx))||W[0];};
+  if(tm.a<=arr&&arr<tm.b){const a=pick(b);if(a)return {b:b,a:a};}
+  const nx=L[i+1];const tn=nx&&T[nx.id];if(nx&&tn&&tn.a>=arr&&tn.a-arr<=10){const a=pick(nx);if(a)return {b:nx,a:a};}
+  if(tm.a>arr&&tm.a-arr<=10){const a=pick(b);if(a)return {b:b,a:a};}
+  return null;}catch(e){return null;}}
+(function(){const o=aspElPagedHtml;aspElPagedHtml=function(s){ASP_JW=null;let h=o.apply(this,arguments);try{const J=ASP_JW;if(!J)return h;const t=document.createElement('template');t.innerHTML=h;
+  const st=t.content.querySelector('.ael-step[data-b="'+J.b+'"][data-a="'+J.a+'"]');if(st){const h3=st.querySelector('h3');const d=document.createElement('div');d.className='ael-note';d.style.borderColor='#f97316';d.textContent='🔥 Tu arrives à '+J.t+' : va t\'échauffer avec ce groupe, qui commence son échauffement.';(h3||st).insertAdjacentElement('afterend',d);}
+  return t.innerHTML;}catch(e){return h;}};})();
 </script>
 </body>
 </html>
