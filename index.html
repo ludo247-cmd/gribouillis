@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v264</title>
+<title>Gribouillis EPS v265</title>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
 /* ── THÈME SOMBRE UNIQUEMENT ── */
@@ -13704,7 +13704,7 @@ function renderLibPickList(){
   const hidden=allK.length-list.length;
   const score=x=>(LIB_PICK.wt&&(x.wtype===LIB_PICK.wt||(x.wtypes||[]).indexOf(LIB_PICK.wt)>=0)?8:0)+(LIB_PICK.cp&&x.cp===LIB_PICK.cp?4:0)+(c.oe&&x.oe===c.oe?2:0)+(c.apsa&&x.apsa===c.apsa?1:0);
   const rel=x=>LIB_PICK.kind==='remed'?libPickRel(x):0;
-  list.sort((a,b)=>rel(b)-rel(a)||(b.stars||0)-(a.stars||0)||score(b)-score(a)||(b.date||0)-(a.date||0));
+  list.sort((a,b)=>rel(b)-rel(a)||libSportRank(a)-libSportRank(b)||(b.stars||0)-(a.stars||0)||score(b)-score(a)||(b.date||0)-(a.date||0));
   const wider=(hidden>0&&(LIB_PICK.foe||LIB_PICK.fcp))?'<div style="font-size:.68rem;color:var(--dim2);margin:2px 0 4px;">'+hidden+' autre'+(hidden>1?'s':'')+' situation'+(hidden>1?'s':'')+' hors filtres · <a href="#" onclick="LIB_PICK.foe=\'\';LIB_PICK.fcp=\'\';renderLibPick();return false;" style="color:#93c5fd;">tout afficher</a></div>':'';
   if(!list.length){host.innerHTML=wider+'<p style="font-size:.74rem;color:var(--dim);">'+(libLoad().some(x=>kinds.indexOf(x.kind)>=0)?'Aucun résultat avec ces filtres.':'Rien de rangé pour l\'instant : utilise « 📚 Ranger » sur une '+(LIB_PICK.kind==='remed'?'situation':'phase d\'échauffement')+'.')+'</p>';return;}
   let lastRel=-1;
@@ -13738,7 +13738,7 @@ function renderLibTab(){
     +'<input class="remed-edit-field" style="margin-top:0;" placeholder="🔍 mot-clé" value="'+esc(LIB_UI.q)+'" onchange="libSet(\'q\',this.value)"></div>';
   if(!list.length)h+='<p style="font-size:.74rem;color:var(--dim2);margin-top:10px;">'+(all.length?'Aucun résultat avec ces filtres.':'Bibliothèque vide pour l\'instant.')+'</p>';
   h+='<'+'div class="lib-mos">';LIB_CARDS={};
-  list.map((x,i)=>[x,i]).sort((a,b)=>(b[0].stars||0)-(a[0].stars||0)||b[1]-a[1]).map(a=>a[0]).forEach(x=>{ // v194 : les mieux notées en haut
+  list.map((x,i)=>[x,i]).sort((a,b)=>libSportRank(a[0])-libSportRank(b[0])||(b[0].stars||0)-(a[0].stars||0)||b[1]-a[1]).map(a=>a[0]).forEach(x=>{ // v194 : les mieux notées en haut
     const inner=x.kind==='seance'&&x.tpl?((x.tpl.steps||[]).filter(b=>b==='match'||b==='remediation').map(b=>b==='match'?'⚽':'🧭').join(' ')+(x.tpl.phases&&x.tpl.phases.length?' · 🔥 '+x.tpl.phases.length+' phase'+(x.tpl.phases.length>1?'s':''):'')+((x.tpl.keepExos||[]).length?' · ⭐ '+x.tpl.keepExos.length+' situation'+(x.tpl.keepExos.length>1?'s':''):'')):'';
     const phs=(x.kind==='warm'?x.phases:(x.kind==='seance'&&x.tpl?x.tpl.phases:null))||[];
     const card='<div class="remed-exo-card" style="margin-top:8px;"><div class="remed-exo-title">'+(LIB_ICO[x.kind]||'')+' '+esc(x.titre)+'</div>'+(x.kind!=='seance'?starsHtml(x.stars,'libSetStars',x.id):'')
@@ -21646,6 +21646,13 @@ aspRolesPop=(function(o){return function(bid,aid){o.apply(this,arguments);try{co
     const t=document.createElement('template');t.innerHTML=h;G.forEach(g=>{const inp=[...t.content.querySelectorAll('input[onchange]')].find(x=>x.getAttribute('onchange').indexOf("renameSeanceGroup('"+g.id+"'")===0);const card=inp&&inp.closest('.grp-card');if(!card)return;
       const d=document.createElement('div');d.className='grp-subs';d.textContent='🔁 Remplaçants : '+g.subs.map(x=>x.n+' ('+x.w+')').join(', ');card.appendChild(d);});h=t.innerHTML;}catch(e){}return h;};})();
 (function(){const orb=renderSeanceGroupsBlock;renderSeanceGroupsBlock=function(s){let h=orb.apply(this,arguments);try{const c=GEN_UI.ctx;if(c&&c.subs&&c.subs.length)h=h.replace('Les équipes iront directement dans l\'atelier.','Les équipes iront directement dans l\'atelier. 🔁 '+c.subs.length+' remplaçant'+(c.subs.length>1?'s':'')+' (pas encore arrivés ou absents) seront répartis dans les équipes.');}catch(e){}return h;};})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v265 — Bibliothèque : les situations du sport en cours passent en premier
+// ══════════════════════════════════════════════════════════════════════
+function libSportRank(x){try{const cur=(typeof CFG!=='undefined'&&CFG.apsa)||'football';const k=libSportKeyOf(x);if(k)return k===cur?0:2;
+  const oe=String(x&&x.oe||'');if(!oe)return 1;const R=Object.keys(REMED_CONTENT||{}).map(r=>REMED_CONTENT[r]).find(r=>r&&r.custom&&(r.oe||[]).some(o=>o.id===oe));
+  if(R){const sp=R.sport||R.apsa||'';return (!sp||sp===cur)?0:2;}return 1;}catch(e){return 1;}}
 </script>
 </body>
 </html>
