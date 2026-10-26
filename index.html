@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v266</title>
+<title>Gribouillis EPS v267</title>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
 /* ── THÈME SOMBRE UNIQUEMENT ── */
@@ -1115,6 +1115,8 @@ body.nav-off.nav-peek #nav-handle{display:none;}
 .asp-pal .sb-pal-list .asp-g small{background:rgba(0,0,0,.28);border-radius:999px;padding:0 6px;margin-left:2px;}
 .asp-at .asp-g{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;vertical-align:bottom;}
 .asp-at .asp-g.wait{opacity:.6;border-style:dashed;}
+.asp-at .at-h{cursor:grab;display:inline-block;padding:1px 6px;border-radius:6px;user-select:none;-webkit-user-select:none;touch-action:none;}
+.asp-at .at-h:hover{background:#1e293b;color:#e2e8f0;}
 .fit-vid{display:block;max-width:100%;max-height:calc(100vh - 170px);margin:8px auto;border-radius:10px;background:#000;}
 .pres-vids h5{margin:12px 0 2px;font-size:.9rem;color:#93c5fd;}
 .ok-list{margin:0;padding:0;list-style:none;}
@@ -20736,7 +20738,7 @@ function aspAlerts(s,b,tm){if(b.kind!=='bloc')return '';const cnt={};(b.ats||[])
   (b.ats||[]).forEach((a,i)=>{const n=aspAtMembers(s,a).filter(x=>pres.indexOf(x)>=0).length;(a.exos||[]).forEach(e=>{const inf=aspExInfo(e);if(inf&&inf.minJ&&(a.groups||[]).length&&n<inf.minJ)h+='<'+'div class="asp-warn">⚠ Atelier '+String.fromCharCode(65+i)+' : '+n+' présents pour '+inf.minJ+' minimum</'+'div>';});});
   return h;}
 function aspAtHtml(s,b,a,i){const bi=esc(b.id),ai=esc(a.id);
-  let h='<'+'div class="asp-at" data-drop="asa:'+bi+':'+ai+'">'+((b.ats||[]).length>1?'<'+'div class="lab">ATELIER '+String.fromCharCode(65+i)+'</'+'div>':'');
+  let h='<'+'div class="asp-at" data-drop="asa:'+bi+':'+ai+'"><'+'div class="lab at-h" data-drag="at:'+bi+':'+ai+'" title="Glisser pour déplacer tout l\'atelier (groupes, exercices, rôles) vers un autre bloc">⠿ ATELIER '+String.fromCharCode(65+i)+'</'+'div>';
   h+=(a.groups||[]).map(gid=>{const g=aspChip(s,gid);if(!g)return '';return '<span class="asp-g" style="--gc:'+esc(g.color||'#475569')+'" data-drag="ag:'+bi+':'+ai+':'+esc(gid)+'" title="Glisser vers un autre atelier · double-clic pour retirer" ondblclick="aspDelGroup(\''+bi+'\',\''+ai+'\',\''+esc(gid)+'\')">'+esc(String(g.label))+'</span>';}).join('');
   h+=(a.exos||[]).map((e,k)=>{const inf=aspExInfo(e);return '<'+'div class="asp-ex" data-drag="ae:'+bi+':'+ai+':'+k+'"><span class="th">'+aspThumb(inf)+'</span><span class="n">'+esc(inf?String(inf.titre):'(supprimé)')+'</span><button type="button" onclick="aspDelEx(\''+bi+'\',\''+ai+'\','+k+')" aria-label="Retirer">✕</button></'+'div>';}).join('');
   if(!(a.groups||[]).length&&!(a.exos||[]).length)h+='<'+'div class="asp-empty">Glissez un groupe et un exercice ici</'+'div>';
@@ -21688,6 +21690,27 @@ function aspAtPlaying(s,a){if(aspAtIsFps(a)&&(a.groups||[]).length>2){const set=
 (function(){const oa=aspAtHtml;aspAtHtml=function(s,b,a,i){let h=oa.apply(this,arguments);try{if(aspAtIsFps(a)&&(a.groups||[]).length>2){const t=document.createElement('template');t.innerHTML=h;
   const G=[...t.content.querySelectorAll('.asp-g')];G.forEach((x,k)=>{x.title=x.textContent;if(k>=2){x.classList.add('wait');x.textContent='⏸ '+x.textContent;}});h=t.innerHTML;}
   else{h=h.replace(/(<span class="asp-g"[^>]*?)(>)([^<]*)(<\/span>)/g,(m,a1,a2,txt,a4)=>a1.indexOf('title=')>=0?m:a1+' title="'+txt.replace(/"/g,'&quot;')+'"'+a2+txt+a4);}}catch(e){}return h;};})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v267 — Glisser-déposer un atelier entier (groupes, exercices, rôles choisis)
+// ══════════════════════════════════════════════════════════════════════
+function aspMoveAt(p,drop){const s=aspS();if(!s)return;const q=p.slice(3).split(':');const sb=aspB(s,q[0]);if(!sb)return;const ai=(sb.ats||[]).findIndex(a=>a.id===q[1]);if(ai<0)return;
+  const dt=drop.slice(0,drop.indexOf(':')),dv=drop.slice(drop.indexOf(':')+1);const L=s.asp.blocks;let tb=null,pos=-1;
+  if(dt==='asb'||dt==='asp'){tb=aspB(s,dv);}
+  else if(dt==='asa'){const d=dv.split(':');tb=aspB(s,d[0]);if(tb)pos=(tb.ats||[]).findIndex(a=>a.id===d[1]);}
+  else if(dt==='asg'){const bi=L.findIndex(b=>b.kind==='bilan');tb={id:aspNid(),kind:'bloc',dur:sb.dur||20,ats:[]};L.splice(bi<0?L.length:bi,0,tb);}
+  if(!tb||tb.kind!=='bloc')return;if(tb===sb&&(pos<0||pos===ai))return;
+  if(tb!==sb&&(tb.ats||[]).filter(a=>(a.groups||[]).length||(a.exos||[]).length).length>=6){toast2('Ce bloc a déjà 6 ateliers.');return;}
+  const at=sb.ats.splice(ai,1)[0];
+  if(tb===sb){if(pos>ai)pos--;tb.ats.splice(Math.max(0,pos),0,at);}
+  else{tb.ats=(tb.ats||[]).filter(a=>(a.groups||[]).length||(a.exos||[]).length);if(pos>=0&&pos<=tb.ats.length)tb.ats.splice(pos,0,at);else tb.ats.push(at);
+    if(!sb.ats.length)sb.ats.push({id:aspNid('a'),groups:[],exos:[]});
+    try{const RS=s.asp.roleSet;if(RS&&RS[sb.id]&&RS[sb.id][at.id]){RS[tb.id]=RS[tb.id]||{};RS[tb.id][at.id]=RS[sb.id][at.id];delete RS[sb.id][at.id];}}catch(e){}}
+  saveSeances();renderSeanceTab();try{toast2('Atelier déplacé');}catch(e){}}
+(function(){
+  try{const oc=sbCanDrop;sbCanDrop=function(p,drop){if(String(p).indexOf('at:')===0){const dt=String(drop).split(':')[0];return ['asb','asp','asa','asg'].indexOf(dt)>=0;}return oc.apply(this,arguments);};}catch(e){}
+  try{const od=sbDo;sbDo=function(p,drop){if(String(p).indexOf('at:')===0){aspMoveAt(p,drop);return;}return od.apply(this,arguments);};}catch(e){}
+})();
 </script>
 </body>
 </html>
