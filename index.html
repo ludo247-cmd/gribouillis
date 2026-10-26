@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v263</title>
+<title>Gribouillis EPS v264</title>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
 /* ── THÈME SOMBRE UNIQUEMENT ── */
@@ -1104,6 +1104,11 @@ body.nav-off.nav-peek .sidenav{display:flex!important;position:fixed;left:0;top:
 #nav-handle{display:none;position:fixed;left:0;top:50%;transform:translateY(-50%);z-index:99979;width:22px;height:72px;border:0;border-radius:0 12px 12px 0;background:rgba(37,99,235,.85);color:#fff;font-size:1rem;font-weight:800;cursor:pointer;box-shadow:2px 0 10px rgba(0,0,0,.4);padding:0;}
 body.nav-off:not(.mode-eleve) #nav-handle{display:block;}
 body.nav-off.nav-peek #nav-handle{display:none;}
+.ael-paged .wheel-col{max-width:var(--wh,none);}
+.asp-rpop select{font-size:.95rem;padding:3px 6px;max-width:60%;}
+.asp-rpop li{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.asp-rpop li span.l{flex:1 1 160px;}
+.grp-subs{margin-top:6px;font-size:.74rem;color:#fbbf24;}
 .fit-vid{display:block;max-width:100%;max-height:calc(100vh - 170px);margin:8px auto;border-radius:10px;background:#000;}
 .pres-vids h5{margin:12px 0 2px;font-size:.9rem;color:#93c5fd;}
 .ok-list{margin:0;padding:0;list-style:none;}
@@ -15178,7 +15183,7 @@ function drawWheelLinks(){
     const br=box.getBoundingClientRect();if(!br.width){svg.innerHTML='';return;}
     let anch={},col={};try{anch=JSON.parse(wsvg.dataset.anch||'{}');col=JSON.parse(wsvg.dataset.col||'{}');}catch(e){}
     const wr=wsvg.getBoundingClientRect();const sc=wr.width/400;
-    svg.setAttribute('width',br.width);svg.setAttribute('height',br.height);svg.setAttribute('viewBox','0 0 '+br.width+' '+br.height);
+    const zf=(box.offsetWidth&&br.width)?br.width/box.offsetWidth:1;svg.setAttribute('width',br.width/zf);svg.setAttribute('height',br.height/zf);svg.setAttribute('viewBox','0 0 '+br.width+' '+br.height);
     let out='<defs>';
     Object.keys(col).forEach((k,i)=>{out+='<marker id="wl-ah-'+i+'" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="'+col[k]+'"/></marker>';});
     out+='</defs>';const keys=Object.keys(col);
@@ -16442,7 +16447,7 @@ function drawLinkDiagrams(){
     const svg=box.querySelector('.ldg-svg');if(!svg)return;
     const br=box.getBoundingClientRect();if(!br.width){svg.innerHTML='';return;}
     let links=[];try{links=JSON.parse(box.dataset.links||'[]');}catch(e){}
-    svg.setAttribute('width',br.width);svg.setAttribute('height',br.height);svg.setAttribute('viewBox','0 0 '+br.width+' '+br.height);
+    const zf=(box.offsetWidth&&br.width)?br.width/box.offsetWidth:1;svg.setAttribute('width',br.width/zf);svg.setAttribute('height',br.height/zf);svg.setAttribute('viewBox','0 0 '+br.width+' '+br.height);
     const DASH={solid:'',bold:'',dashed:'8 5',dotted:'2 4',dashdot:'9 4 2 4'};
     let out='<defs><marker id="ldg-ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c084fc"/></marker><marker id="ldg-ah-b" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#94a3b8"/></marker></defs>';
     const cnt={},seen={};links.forEach(l=>{cnt[l[1]]=(cnt[l[1]]||0)+1;});
@@ -20875,7 +20880,7 @@ function aspEleveHtml(s){const me=elMeGet(s);const LATE={arr:me?aspLateArr(s,me)
   let n=0;(s.asp.blocks||[]).forEach(b=>{const tm=T[b.id];
     if(b.kind==='objectif'){n++;let w='';try{const px=elProxy(s);const sd=seanceSportDef(px);if(sd&&sd.custom)w='<'+'div class="sel-box as-wheel-el"><'+'div class="sel-dim">Les phases en couleur sont celles qu\'on travaille aujourd\'hui. Touche une autre phase pour voir ses vidéos.</'+'div><'+'div class="wheel-wrap"><'+'div class="wheel-col">'+wheelSvg(px,sd,'eleve')+'</'+'div><'+'div class="wheel-cards">'+wheelCardsHtml(px,sd,true,ELEVE_WHEEL_PEEK)+'</'+'div><svg class="wheel-links" aria-hidden="true"></svg></'+'div></'+'div>'+presVideosHtml(px,sd);}catch(e){}
       h+='<'+'div class="ael-step" data-b="'+esc(b.id)+'"><h3><span class="t">'+n+' · '+hmFmt(tm.a)+'</span>📋 Notre projet de jeu</h3>'+(w||'<'+'div class="cc-dim">Écoute la présentation de ton enseignant.</'+'div>')+'</'+'div>';return;}
-    if(b.kind==='bilan'){if(me&&LATE.arr!=null&&!LATE.done){LATE.done=1;n++;h+=aspExpressStep(s,n,LATE.arr===-1?'à ton arrivée':hmFmt(LATE.arr));}n++;h+='<'+'div class="ael-step" data-b="'+esc(b.id)+'"><h3><span class="t">'+n+' · '+hmFmt(tm.a)+'</span>🏁 Bilan</h3></'+'div>';return;}
+    if(b.kind==='bilan'){if(me&&LATE.arr!=null&&!LATE.done){LATE.done=1;n++;h+=aspExpressStep(s,n,LATE.arr===-1?'à ton arrivée':hmFmt(LATE.arr));}n++;h+='<'+'div class="ael-step" data-b="'+esc(b.id)+'"><h3><span class="t">'+n+' · '+hmFmt(tm.a)+'</span>🏁 Bilan</h3>'+aspEleveBilanHtml(s)+'</'+'div>';return;}
     if(me&&LATE.arr!=null){if(LATE.arr!==-1&&tm.b<=LATE.arr)return;if(!LATE.done){LATE.done=1;n++;h+=aspExpressStep(s,n,LATE.arr===-1?'à ton arrivée':hmFmt(LATE.arr));}}
     const A2=all?(b.ats||[]).filter(x=>(x.exos||[]).length||(x.groups||[]).length):aspMyAts(s,b,me);A2.forEach(a=>{if(LATE.done&&(a.exos||[]).length&&(a.exos||[]).every(e=>e.k==='warm'))return;n++;
     const mates=aspAtMembers(s,a).filter(x=>x!==me);const gl=(a.groups||[]).map(id=>(aspChip(s,id)||{}).label).filter(Boolean);
@@ -21382,7 +21387,7 @@ function aspAtRoleLabels(a){const out=[];(a.exos||[]).forEach(e=>{const inf=aspE
 function aspRoleKey(l){const t=stripAccents(String(l||'')).toLowerCase();if(/arbit/.test(t))return 'arbit';if(/observ/.test(t))return 'observ';if(/respons/.test(t))return 'respons';if(/coach|capit/.test(t))return 'coach';return t.slice(0,6);}
 function aspHasRole(n,l){const r=rosterOf(n);if(!r)return false;const k=aspRoleKey(l);return (r.roles||[]).some(x=>aspRoleKey(x)===k);}
 let ASP_RL=null;
-function aspRolesAll(s){const key=s.id+'|'+JSON.stringify(s.asp.blocks.map(b=>[b.id,b.dur,(b.ats||[]).map(a=>[a.id,a.groups,a.exos])]))+'|'+(COMPO.roster||[]).length;if(ASP_RL&&ASP_RL.k===key)return ASP_RL.v;
+function aspRolesAll(s){const key=s.id+'|'+JSON.stringify(s.asp.blocks.map(b=>[b.id,b.dur,(b.ats||[]).map(a=>[a.id,a.groups,a.exos])]))+'|'+(COMPO.roster||[]).length+'|'+JSON.stringify((s.asp&&s.asp.roleSet)||{});if(ASP_RL&&ASP_RL.k===key)return ASP_RL.v;
   const T=aspTimes(s),out={},load={};
   (s.asp.blocks||[]).forEach(b=>{if(b.kind!=='bloc')return;const tm=T[b.id];if(!tm)return;const pres=aspPresent(s,tm.a);const playing={};const mem={};
     (b.ats||[]).forEach(a=>{mem[a.id]=aspAtMembers(s,a).filter(n=>pres.indexOf(n)>=0);mem[a.id].forEach(n=>playing[n]=1);});
@@ -21602,6 +21607,45 @@ function aspRolesPop(bid,aid){const s=getActiveSeance();if(!s||!s.asp)return;con
   document.addEventListener('click',e=>{if(!document.body.classList.contains('nav-peek'))return;const t=e.target;if(t.closest&&t.closest('#nav-handle'))return;if(t.closest&&t.closest('.sidenav')&&!t.closest('.snav-btn'))return;setTimeout(()=>document.body.classList.remove('nav-peek'),0);},true);
   try{const ot=toggleFullscreen;toggleFullscreen=function(){const de=document.documentElement;if(!(de.requestFullscreen||de.webkitRequestFullscreen)){window.__navManual=!document.body.classList.contains('nav-off');document.body.classList.toggle('nav-off',window.__navManual);document.body.classList.remove('nav-peek');try{toast2(window.__navManual?'Menu masqué : la poignée ❯ à gauche le fait revenir':'Menu affiché');}catch(e){}return;}return ot.apply(this,arguments);};}catch(e){}
 })();
+
+// ══════════════════════════════════════════════════════════════════════
+// v264 — Flèches de la roue justes même quand l'écran est réduit ; bilan
+// élève de retour ; rôles modifiables ; « Faire les équipes » : absents et
+// élèves pas encore arrivés en remplaçants
+// ══════════════════════════════════════════════════════════════════════
+function aspEleveBilanHtml(s){try{const st=(s.steps||[]).find(x=>seanceStepBase(x.key)==='fin');if(!st)return '';return renderEleveStepFin(s,st);}catch(e){console.warn('bilan élève',e);return '';}}
+// écran du projet : réduire la roue avant de réduire tout l'écran
+(function(){const of=aspElFit;aspElFit=function(){const P=document.querySelector('.ael-pages');const st=P&&P.querySelector('.ael-step.ael-cur');
+  if(!st||!st.querySelector('.wheel-wrap'))return of.apply(this,arguments);
+  st.style.zoom='';st.classList.remove('ael-scroll');st.style.removeProperty('--wh');const over=()=>st.scrollHeight>st.clientHeight+1;
+  const col=st.querySelector('.wheel-col');let w=col?col.getBoundingClientRect().width:0;
+  while(over()&&w>230){w-=30;st.style.setProperty('--wh',Math.round(w)+'px');}
+  if(over())return of.apply(this,arguments);try{drawRemedDiagrams();}catch(e){}};})();
+// ── rôles choisis à la main ──
+function aspRoleSetGet(s){if(!s.asp.roleSet)s.asp.roleSet={};return s.asp.roleSet;}
+(function(){const orl=aspRolesAll;aspRolesAll=function(s){const out=orl.apply(this,arguments);if(out.__ov)return out;out.__ov=1;try{const RS=(s.asp&&s.asp.roleSet)||{};
+  Object.keys(RS).forEach(bid=>Object.keys(RS[bid]||{}).forEach(aid=>{const R=out[bid]&&out[bid][aid];if(!R)return;const o=RS[bid][aid]||{};R.forEach(r=>{if(Object.prototype.hasOwnProperty.call(o,r.role)){r.name=o[r.role]||null;r.manual=true;}});}));}catch(e){console.warn('roleSet',e);}return out;};})();
+function aspRoleChoose(bid,aid,role,v){const s=getActiveSeance();if(!s||!s.asp)return;const RS=aspRoleSetGet(s);RS[bid]=RS[bid]||{};RS[bid][aid]=RS[bid][aid]||{};
+  if(v==='__auto')delete RS[bid][aid][role];else RS[bid][aid][role]=v==='__none'?'':v;saveSeances();renderSeanceTab();aspRolesPop(bid,aid);}
+aspRolesPop=(function(o){return function(bid,aid){o.apply(this,arguments);try{const s=getActiveSeance();const b=(s.asp.blocks||[]).find(x=>x.id===bid);const a=b&&(b.ats||[]).find(x=>x.id===aid);if(!a)return;
+  const R=aspRolesOf(s,b,a);const T=aspTimes(s)[bid];const pres=aspPresent(s,T?T.a:0).slice().sort((x,y)=>String(x).localeCompare(String(y),'fr'));
+  const ul=document.querySelector('.asp-rpop ul');if(!ul)return;
+  ul.innerHTML=R.map(r=>{const enc=encodeURIComponent(r.role);return '<li class="'+(r.name?'':'no')+'"><span class="l">'+aspRoleIco(r.role)+' '+esc(r.role)+(r.manual?' <small style="color:#93c5fd;">(choisi)</small>':'')+'</span><select data-r="'+esc(enc)+'" onchange="aspRoleChoose(\''+esc(bid)+'\',\''+esc(aid)+'\',decodeURIComponent(this.dataset.r),this.value)">'
+    +'<option value="__auto">🎲 automatique</option><option value="__none"'+(r.manual&&!r.name?' selected':'')+'>— personne —</option>'+pres.map(n=>'<option value="'+esc(n)+'"'+(r.name===n?' selected':'')+'>'+esc(n)+'</option>').join('')+'</select></li>';}).join('');
+  const sel=[...ul.querySelectorAll('select')];sel.forEach((x,i)=>{if(!R[i].manual&&R[i].name){const op=[...x.options].find(o=>o.value===R[i].name);if(op){x.value='__auto';const auto=x.options[0];auto.textContent='🎲 automatique : '+R[i].name;}}});}catch(e){console.warn('rpop',e);}};})(aspRolesPop);
+// ── équipes : absents et pas encore arrivés en remplaçants ──
+(function(){const om=aspMakeTeams;aspMakeTeams=function(bid,aid){om.apply(this,arguments);try{const c=GEN_UI.ctx;if(!c)return;const s=getActiveSeance();const a=aspAt(s,bid,aid);const T=aspTimes(s)[bid];
+    const all=aspAtMembers(s,a);const pres=aspPresent(s,T?T.a:0);const late=all.filter(n=>pres.indexOf(n)<0);
+    const pop=GEN_UI.mixte?'all':GEN_UI.pop;const abs=(COMPO.roster||[]).filter(r=>r&&r.absent&&r.name!=null&&(pop==='all'||grpSexe(r.name)===pop)).map(r=>r.name);
+    c.subs=late.map(n=>({n:n,w:'arrive '+hmFmt(aspArr(s,n))})).concat(abs.filter(n=>late.indexOf(n)<0).map(n=>({n:n,w:'absent'})));renderSeanceTab();}catch(e){console.warn('subs',e);}};})();
+(function(){const ot=genTeamsRun;genTeamsRun=function(){const c=GEN_UI.ctx;const subs=c&&c.subs;const r=ot.apply(this,arguments);try{if(!c||!subs||!subs.length)return r;const s=getActiveSeance();
+    const ids=s.groupes.map(g=>g.id);if(!ids.length)return r;s.groupes.forEach(g=>{g.subs=[];});
+    subs.forEach((x,i)=>{const g=s.groupes.slice().sort((p,q)=>((p.members||[]).length+p.subs.length)-((q.members||[]).length+q.subs.length))[0];g.subs.push(x);if(x.w!=='absent'&&g.members.indexOf(x.n)<0)g.members.push(x.n);});
+    try{syncDecoup(s);}catch(e){}saveSeances();renderSeanceTab();}catch(e){console.warn('subs2',e);}return r;};})();
+(function(){const orb=renderSeanceGroupsBlock;renderSeanceGroupsBlock=function(s){let h=orb.apply(this,arguments);try{const G=(s.groupes||[]).filter(g=>(g.subs||[]).length);if(!G.length)return h;
+    const t=document.createElement('template');t.innerHTML=h;G.forEach(g=>{const inp=[...t.content.querySelectorAll('input[onchange]')].find(x=>x.getAttribute('onchange').indexOf("renameSeanceGroup('"+g.id+"'")===0);const card=inp&&inp.closest('.grp-card');if(!card)return;
+      const d=document.createElement('div');d.className='grp-subs';d.textContent='🔁 Remplaçants : '+g.subs.map(x=>x.n+' ('+x.w+')').join(', ');card.appendChild(d);});h=t.innerHTML;}catch(e){}return h;};})();
+(function(){const orb=renderSeanceGroupsBlock;renderSeanceGroupsBlock=function(s){let h=orb.apply(this,arguments);try{const c=GEN_UI.ctx;if(c&&c.subs&&c.subs.length)h=h.replace('Les équipes iront directement dans l\'atelier.','Les équipes iront directement dans l\'atelier. 🔁 '+c.subs.length+' remplaçant'+(c.subs.length>1?'s':'')+' (pas encore arrivés ou absents) seront répartis dans les équipes.');}catch(e){}return h;};})();
 </script>
 </body>
 </html>
