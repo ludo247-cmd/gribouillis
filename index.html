@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v292</title>
+<title>Gribouillis EPS v293</title>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
 /* ── THÈME SOMBRE UNIQUEMENT ── */
@@ -1182,6 +1182,9 @@ body.nav-off.nav-peek #nav-handle{display:none;}
 .seq-bar i{flex:1;height:9px;border-radius:3px;background:#334155;}
 .seq-bar i.d{background:#22c55e;}.seq-bar i.c{background:#f59e0b;}.seq-bar i.n{outline:2px solid #60a5fa;}
 .seq-leg{font-size:.68rem;color:var(--dim2);}
+.seq-bar i.p{background:#15803d;opacity:.55;}
+.seq-nr{margin-top:8px;}.seq-nr .row2{display:flex;align-items:center;gap:8px;padding:5px 8px;border-bottom:1px solid #1e293b;font-size:.82rem;}
+.seq-nr .row2 .n{width:26px;font-weight:800;color:#93c5fd;}.seq-nr .row2.p{opacity:.6;}.seq-nr .row2.nx{background:rgba(96,165,250,.12);border-radius:6px;}
 .fit-vid{display:block;max-width:100%;max-height:calc(100vh - 170px);margin:8px auto;border-radius:10px;background:#000;}
 .pres-vids h5{margin:12px 0 2px;font-size:.9rem;color:#93c5fd;}
 .ok-list{margin:0;padding:0;list-style:none;}
@@ -18497,7 +18500,7 @@ function renderSeqTab(){
     +(isAS&&refs.length>1?'<span style="margin-left:8px;">Projet :</span><span class="seq-tog">'+refs.map(r=>'<button type="button" class="'+(q.ref===r.id?'on':'')+'" onclick="seqSet(\''+qi+'\',\'ref\',\''+esc(r.id)+'\')">'+esc(r.label)+'</button>').join('')+'</span>':'')+'</div>';
   h+=(()=>{try{return seqGsRowHtml(q);}catch(e){return '';}})();
   h+=(()=>{try{return isAS?pjEdAllHtml():'';}catch(e){console.warn('pjEd',e);return '';}})();
-  if(!sd)h+='<div class="cc-warn">Nomenclature introuvable.</div>';
+  if(!sd)h+=seqNoRefHtml(q);
   else{h+='<div class="row"><span>'+(isAS?'Phases travaillées (chaque phase a son orientation et ses principes) :':'Objet(s) d\'enseignement (1 ou 2) :')+'</span></div><div class="remed-chip-row">'+(sd.oe||[]).map(o=>'<div class="remed-chip'+((q.oeIds||[]).indexOf(o.id)>=0?' selected':'')+'" data-oe="1" style="flex:0 1 auto;padding:6px 10px;font-size:.74rem;--oe:'+OE_COLORS[(sd.oe||[]).indexOf(o)%OE_COLORS.length]+';" onclick="seqToggleOe(\''+qi+'\',\''+esc(o.id)+'\')">'+(isAS&&refPhaseLabel(sd,o.phase)?'<b style="display:block;">'+esc(refPhaseLabel(sd,o.phase))+'</b>':'')+esc(o.short||o.label)+'</div>').join('')+'</div>';
     const rows=seqRows(q);
     if(!rows.length)h+='<div class="cc-dim">'+(isAS?'Choisissez au moins une phase (avec des principes renseignés) pour voir ses principes d\'action.':'Choisissez au moins un objet pour voir ses contenus prioritaires.')+'</div>';
@@ -22293,18 +22296,21 @@ function calImportShow(D){const L=clsData().list;const OV=['cal','imp','ov'].joi
 function edtSlotApsa(c,j){const P=edtProg(c);if(!P.length)return edtApsaOf(c);const t=edtToday();const mine=P.filter(p=>p.j==null||+p.j===j);
   const cur=mine.find(p=>(!p.du||p.du<=t)&&(!p.au||p.au>=t));if(cur)return cur.apsa;const nx=mine.find(p=>p.du&&p.du>t);return nx?nx.apsa:'';}
 function seqPrepFor(c){if(!c||!Array.isArray(c.prog)||!c.prog.length)return 0;const C=REMED_CONTENT||{};let n=0;const A=[];
-  c.prog.forEach(p=>{if(p&&p.apsa&&C[p.apsa]&&!C[p.apsa].custom&&A.indexOf(p.apsa)<0)A.push(p.apsa);});
+  c.prog.forEach(p=>{if(p&&p.apsa&&A.indexOf(p.apsa)<0)A.push(p.apsa);});
   const all=seqAll();
   A.forEach(ap=>{const cyc=c.prog.filter(p=>p.apsa===ap);const du=cyc.map(p=>p.du).sort()[0],au=cyc.map(p=>p.au).sort().slice(-1)[0];
     let q=all.find(x=>x.classeId===c.id&&x.sport===ap&&x.auto);
-    if(!q){const nbJ=Object.keys(c.jours||{}).filter(k=>c.jours[k]&&c.jours[k].apsa===ap).length||6;
+    const dates=Object.keys(c.jours||{}).filter(k=>c.jours[k]&&c.jours[k].apsa===ap).sort();
+    if(!q){const nbJ=dates.length||6;
       q={id:'seq-'+Date.now().toString(36)+Math.floor(Math.random()*1e4),classeId:c.id,nom:(calSportName(ap).charAt(0).toUpperCase()+calSportName(ap).slice(1))+' — '+c.nom,sport:ap,ref:'',oeIds:[],nb:Math.max(1,Math.min(20,nbJ)),cols:[],createdAt:Date.now(),auto:1,du:du,au:au};
       seqEnsureCols(q);all.push(q);n++;}
-    cyc.forEach(p=>{if(!p.seqId)p.seqId=q.id;});});
-  if(n)seqSaveAll(all);return n;}
+    if(!q.dates||!q.dates.length){q.dates=dates.slice(0,20);n+=0.001;}
+    cyc.forEach(p=>{if(!p.seqId)p.seqId=q.id;});
+    try{if(seqLinkSeances(c,q))n+=0.001;}catch(e){}});
+  if(n)seqSaveAll(all);return Math.floor(n);}
 function seqPrepAll(){const d=clsData();let n=0;d.list.forEach(c=>{n+=seqPrepFor(c);});clsSave(d);return n;}
 (function(){const oi=calImportShow;calImportShow=function(D){oi.apply(this,arguments);try{const o=document.getElementById(['cal','imp','ov'].join('-'));const b=o&&o.querySelector('[data-a=ok]');if(b){const f=b.onclick;b.onclick=function(){f.apply(this,arguments);try{const n=seqPrepAll();if(n)toast2('🗓 Calendrier importé · '+n+' séquence(s) préparée(s)');}catch(e){}};}}catch(e){}};})();
-setTimeout(()=>{try{if(localStorage.getItem('grib_seqprep_v1'))return;const n=seqPrepAll();localStorage.setItem('grib_seqprep_v1','1');if(n){try{renderClassesConsole();}catch(e){}}}catch(e){console.warn('seqPrep',e);}},2200);
+setTimeout(()=>{try{const n=seqPrepAll();localStorage.setItem('grib_seqprep_v1','1');if(n){try{renderClassesConsole();}catch(e){}}}catch(e){console.warn('seqPrep',e);}},2200);
 // carte de la classe : séquence(s) avec barre d'avancement
 seqClassLine=function(c){const L=seqOfClass(c);if(!L.length)return '';const t=edtToday();
   const curAp=(()=>{try{const P=edtProg(c);const cur=P.find(p=>(!p.du||p.du<=t)&&(!p.au||p.au>=t));const nx=P.find(p=>p.du&&p.du>t);return (cur||nx||{}).apsa||'';}catch(e){return '';}})();
@@ -22313,8 +22319,8 @@ seqClassLine=function(c){const L=seqOfClass(c);if(!L.length)return '';const t=ed
   const one=(cy&&cy.seqId&&L.find(q=>q.id===cy.seqId))||(cy?null:S[0]);
   if(!one){const nx=S.find(q=>q.du&&q.du>t);return '<div class="cc-line" style="color:var(--dim2);">🗓️ '+esc(calSportName(cy.apsa))+' : pas de séquence (pas encore de référentiel)'+(nx?' · ensuite <b>'+esc(nx.nom)+'</b> dès le '+edtFrDate(nx.du):'')+'</div>';}
   return [one].map(q=>{seqEnsureCols(q);const p=seqProgress(q);let nxt=-1;let bar='';
-    for(let k=0;k<q.nb;k++){const s=seqSeance(q,k);const cl=s?(s.status==='done'?'d':'c'):'';if(!s&&nxt<0)nxt=k;bar+='<i class="'+cl+(k===nxt?' n':'')+'" title="Séance '+(k+1)+(s?(s.status==='done'?' · faite':' · en cours'):'')+'"></i>';}
-    return '<div class="cc-line">🗓️ <b>'+esc(q.nom)+'</b> · '+(p.done+p.cur)+'/'+q.nb+(q.du?' <span class="seq-leg">· '+edtFrDate(q.du)+' → '+edtFrDate(q.au)+'</span>':'')+'</div><'+'div class="seq-bar" title="Vert = faite · orange = en cours · contour bleu = la prochaine">'+bar+'</'+'div>';}).join('');};
+    let fait=0;for(let k=0;k<q.nb;k++){const s=seqSeance(q,k);const dk=(q.dates||[])[k];const past=!s&&dk&&dk<t;const cl=s?(s.status==='done'||(dk&&dk<t)?'d':'c'):(past?'p':'');if(s&&(s.status==='done'||(dk&&dk<t))||past)fait++;if(!s&&!past&&nxt<0)nxt=k;bar+='<i class="'+cl+(k===nxt?' n':'')+'" title="Séance '+(k+1)+(dk?' · '+edtFrDate(dk):'')+(s?(s.status==='done'?' · faite':' · en cours'):(past?' · passée':''))+'"></i>';}
+    return '<div class="cc-line">🗓️ <b>'+esc(q.nom)+'</b> · '+fait+'/'+q.nb+(q.du?' <span class="seq-leg">· '+edtFrDate(q.du)+' → '+edtFrDate(q.au)+'</span>':'')+'</div><'+'div class="seq-bar" title="Vert = faite · orange = en cours · contour bleu = la prochaine">'+bar+'</'+'div>';}).join('');};
 
 // ══════════════════════════════════════════════════════════════════════
 // v291 — HANDBALL (cahier CEDREPS n°19, p. 296-317) : profils d'observation
@@ -22369,6 +22375,24 @@ function hbSeed(){try{if(!Array.isArray(CFG.savedPresets))CFG.savedPresets=[];co
     if(!it.profile){it.profile=fp;if(it.cfg)it.cfg.profile=fp;lch=true;}});
   if(lch)libSave(L);if(ch){saveConfig();try{renderSavedPresets();}catch(e){}}}catch(e){console.warn('hbSeed',e);}}
 setTimeout(hbSeed,2400);
+
+// ══════════════════════════════════════════════════════════════════════
+// v293 — séquences : aussi pour les APSA sans référentiel (calendrier des
+// séances) ; les séances déjà faites depuis la rentrée sont rattachées ;
+// les cours passés du calendrier comptent dans l'avancement
+// ══════════════════════════════════════════════════════════════════════
+function seqLinkSeances(c,q){let ch=false;if(!q.du||!q.au)return false;seqEnsureCols(q);const used={};seqAll().forEach(x=>(x.cols||[]).forEach(col=>{if(col&&col.seanceId)used[col.seanceId]=1;}));
+  (q.cols||[]).forEach(col=>{if(col&&col.seanceId)used[col.seanceId]=1;});
+  const S=clsSeancesOf(c).filter(s=>s&&!used[s.id]&&(!s.seqId||s.seqId===q.id)&&String(s.date||'')>=q.du&&String(s.date||'')<=q.au&&(edtSeanceSport(s)===q.sport||s.sport===q.sport)).sort((a,b)=>String(a.date).localeCompare(String(b.date)));
+  S.forEach(s=>{let k=-1;if(q.dates&&q.dates.length){k=q.dates.indexOf(s.date);if(k>=0&&q.cols[k]&&q.cols[k].seanceId)k=-1;}if(k<0)k=q.cols.findIndex((col,i)=>i<q.nb&&col&&!col.seanceId);if(k<0)return;
+    q.cols[k].seanceId=s.id;s.seqId=q.id;s.seqIdx=k;ch=true;});
+  if(ch){try{saveSeances();}catch(e){}}return ch;}
+function seqNoRefHtml(q){const t=edtToday();const D=q.dates||[];let nx=-1;
+  let h='<'+'div class="cc-warn" style="border-color:#334155;color:#cbd5e1;">'+esc(calSportName(q.sport))+' : pas encore de référentiel dans l\'appli (objets, contenus, observation). La séquence sert ici de calendrier de tes séances.</'+'div><'+'div class="seq-nr">';
+  for(let k=0;k<q.nb;k++){const s=seqSeance(q,k);const dk=D[k];const past=dk&&dk<t;if(!past&&!s&&nx<0)nx=k;
+    h+='<'+'div class="row2'+(past?' p':'')+(k===nx?' nx':'')+'"><span class="n">'+(k+1)+'</span><span style="flex:1;">'+(dk?esc(seanceDateFr(dk)):'date à fixer')+'</span>'
+      +(s?'<button type="button" class="btn-xs" style="background:#1d4ed8;color:#fff;" onclick="seqOpenSeance(\''+esc(q.id)+'\','+k+')">▶ Ouvrir la séance</button>':(past?'<span class="cc-dim">✓ passée</span>':(k===nx?'<span class="cc-dim">prochaine</span>':'')))+'</'+'div>';}
+  return h+'</'+'div>';}
 </script>
 </body>
 </html>
