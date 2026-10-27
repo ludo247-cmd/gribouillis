@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v278</title>
+<title>Gribouillis EPS v279</title>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
 /* ── THÈME SOMBRE UNIQUEMENT ── */
@@ -13997,7 +13997,7 @@ function libcRender(){
     h+=libcLangHtml()+(LIBC.el?area('objectifEl','🎯 Objectif — 🧒 version élève',f.objectif?'Prof : '+f.objectif:'Avec les mots des élèves',2):area('objectif','🎯 Objectif','Ex : conserver le ballon pour progresser vers la cible',2));
     h+=(k==='match'?(LIBC.el?inp('formatEl','Format — 🧒 version élève',f.format?'Prof : '+f.format:''):inp('format','Format','Ex : 5c5, 2 × 4 min')):(LIBC.el?area('descEl','Description — 🧒 version élève',f.desc?'Prof : '+f.desc:'Avec les mots des élèves',3):area('desc','Description','Dispositif, consignes…',3)));
     if(k==='match')h+=area('points','Comment on marque (un par ligne)','',2)+area('regs','Règles du match (une par ligne)','',2)+area('aide','Pour aider (une par ligne)','',2);
-    if(k==='match')h+=fpsProfileSelectHtml(null,f.profile||'','libcSet(\'profile\',this.value);libcRender();')+fpsObjPanelHtml(null,f.profile||'','l:')+libcObsModeHtml(f); // v187 / v199
+    if(k==='match')h+=fpsProfileSelectHtml(null,f.profile||'','libcSet(\'profile\',this.value);libcRender();')+fpsObjPanelHtml(null,f.profile||'','l:')+'<button type="button" class="btn-xs" style="background:#7c3aed;color:#fff;margin-top:6px;" onclick="libcFpsProfile()">⚙️ Créer / mettre à jour le profil spécial de cette FPS (boutons seuls)</button>'+libcObsModeHtml(f); // v187 / v199
     h+=libcPhotoHtml();
     h+=animField(f.anim,'LIBC.f.anim=J?{name:animName(J),json:J}:null;libcRender()');
     h+='<label class="remed-edit-label">Lien vidéo (facultatif)</label><input class="remed-edit-field" placeholder="https://…" value="'+esc(f.video||'')+'" oninput="libcSet(\'video\',this.value)" onchange="libcSet(\'video\',this.value);libcRender()">'+(f.video?'<video src="'+esc(f.video)+'" controls playsinline style="max-width:100%;max-height:200px;border-radius:8px;margin-top:6px;display:block;"></video>':'')+'<div style="margin-top:4px;"><button type="button" class="btn-xs" style="background:#1e3a8a;color:#fff;" onclick="libcVideoGh()">📂 Choisir dans GitHub</button></div>';
@@ -20942,7 +20942,7 @@ function aspEleveExHtml(s,e){const inf=aspExInfo(e);if(!inf)return '';let h='<'+
     if(x.video)h+='<video src="'+esc(String(x.video))+'" controls playsinline preload="metadata"></video>';
     if(x.image)h+='<img src="'+x.image+'" alt="">';
     if(x.anim)h+=animEleveHtml(x.anim);
-    if(inf.kind!=='fps'&&(x.criteres||[]).length)h+='<'+'div class="sel-crit">🎯 '+x.criteres.map(c=>esc(String(c.label||c))).join(' · ')+'</'+'div>';}catch(err){console.warn(err);}
+    if((x.criteres||[]).length)h+='<'+'div class="sel-crit">🎯 '+x.criteres.map(c=>esc(String(c.label||c))).join(' · ')+'</'+'div>';}catch(err){console.warn(err);}
   return h+'</'+'div>';}
 function aspEleveHtml(s){const me=elMeGet(s);const LATE={arr:me?aspLateArr(s,me):null,done:0};const all=!me&&!aspRoster().length;
   if(!me&&!all){const N=aspRoster().slice().sort((a,b)=>String(a).localeCompare(String(b),'fr'));
@@ -22078,6 +22078,48 @@ function aspObsModeSet(bid,aid,v){const s=aspS();const a=s&&aspAt(s,bid,aid);if(
     const v=a.obsMode||'';const o=(k,t)=>'<option value="'+k+'"'+(v===k?' selected':'')+'>'+t+'</option>';
     const sel='<label class="asp-obsm" title="Comment ce match sera observé (l\'observateur peut encore changer sur l\'écran d\'observation)">👁 <select onclick="event.stopPropagation()" onchange="aspObsModeSet(\''+esc(b.id)+'\',\''+esc(a.id)+'\',this.value)">'+o('',def==='simple'?'Boutons seuls (situation)':def==='draw'?'Gribouillage (situation)':'Comme les réglages')+o('simple','✋ Boutons seuls')+o('draw','✏️ Gribouillage')+'</select></label>';
     const j=h.lastIndexOf('</'+'div>');if(j>0)h=h.slice(0,j)+sel+h.slice(j);}}catch(e){}return h;};})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v279 — un profil d'observation propre à chaque FPS (en plus des profils
+// rattachés aux objets d'enseignement) : boutons = façons de marquer de la
+// FPS, mode boutons seuls, un compteur par façon de marquer, critères de
+// réussite de la FPS = objectifs chiffrés de ces compteurs
+// ══════════════════════════════════════════════════════════════════════
+function fpsSportKey(it){try{const C=REMED_CONTENT||{};const k=Object.keys(C).find(k=>C[k]&&(C[k].label===it.apsa||k===it.apsa));if(k&&!C[k].custom)return k;}catch(e){}
+  const P=CFG.savedPresets||[];const op=P.find(p=>p&&p.meta&&p.meta.oeId===it.oe);if(op&&op.apsaKey)return op.apsaKey;return 'football';}
+function fpsPointBtns(points){const out=[];(points||[]).forEach(l=>{l=String(l||'');if((l.match(/=/g)||[]).length!==1)return;const m=/^(.*?)=\s*(\d+)/.exec(l);if(!m)return;
+    let lab=m[1].trim().replace(/[.:;,]+$/,'');if(!lab)return;const goal=/^\s*but\b/i.test(lab);const short=lab.length>34?lab.slice(0,33)+'…':lab;
+    out.push({label:(goal?'⚽ ':'⭐ ')+short,color:goal?'#b45309':'#7c3aed',isShot:goal,isGoal:goal,switchTeam:goal,secondary:null,pts:+m[2]||0,newPoss:goal,fps:1});});return out;}
+function fpsWords(t){return stripAccents(String(t||'')).toLowerCase().split(/[^a-z0-9]+/).filter(w=>w&&(/^\d+$/.test(w)||w.length>2)&&['dans','les','des','une','par','pour','avec','sur'].indexOf(w)<0).map(w=>{if(/^\d+$/.test(w))return w;w=w.replace(/s$/,'');if(/^pert/.test(w))w='perd';if(w==='seul')w='indi';return w.slice(0,4);});}
+function fpsProfileBuild(it){const key=fpsSportKey(it);if(isRacket(key))return null;const P=CFG.savedPresets||[];
+  const base=P.find(p=>p&&!p.generic&&!(p.meta&&p.meta.fpsId)&&p.meta&&p.meta.oeId===it.oe)||P.find(p=>p&&p.generic&&p.apsaKey===key)||genericProfileDef(key);
+  const p=JSON.parse(JSON.stringify(base));delete p.generic;p.name='FPS · '+String(it.titre||'Sans titre').trim();p.apsaKey=key;p.apsa=APSA_ICONS[key]||p.apsa||'⚽';
+  p.meta=Object.assign({},base.meta||{},{fpsId:it.id||'',oeId:it.oe||(base.meta&&base.meta.oeId)||''});p.obsSimple=true;
+  const pts=fpsPointBtns((it.cfg&&it.cfg.points)||it.points||[]);const B0=(p.dialogBtns||[]).slice();const dropG=pts.some(b=>b.isGoal);let B=B0.filter(b=>!(dropG&&b.isGoal));
+  pts.forEach(b=>{if(!B.some(x=>x.label===b.label))B.push(b);});p.dialogBtns=B;const bi=b=>'btn_'+B.indexOf(b);
+  const newG=B.filter(b=>b.fps&&b.isGoal);const remap=k=>{const m=/^btn_(\d+)$/.exec(k);if(!m)return [k];const ob=B0[+m[1]];if(!ob)return [];const j=B.indexOf(ob);if(j>=0)return ['btn_'+j];if(!ob.isGoal)return [];const W=fpsWords(ob.label);let bb=null,sc=0;newG.forEach(g=>{const n=fpsWords(g.label).filter(w=>W.indexOf(w)>=0&&w!=='but').length;if(n>sc){sc=n;bb=g;}});return bb?[bi(bb)]:newG.map(bi);};
+  const R=(p.customRatios||[]).filter(r=>!r.fps).map(r=>Object.assign({},r,{numCriteria:[].concat(...(r.numCriteria||[]).map(remap)),denCriteria:[].concat(...(r.denCriteria||[]).map(remap))}));
+  const inB=pts.map(b=>B.find(x=>x.label===b.label)).filter(Boolean);
+  inB.forEach(b=>R.push({label:b.label.replace(/^[⚽⭐]\s*/,''),show:true,numCriteria:[bi(b)],denCriteria:[],target:'',minVolume:'',fps:1}));
+  (it.criteres||[]).forEach(c=>{if(!c||!c.label)return;const W=fpsWords(c.label);let best=null,sc=0;inB.concat(B.filter(b=>inB.indexOf(b)<0)).forEach(b=>{const n=fpsWords(b.label).filter(w=>W.indexOf(w)>=0).length;if(n>sc){sc=n;best=b;}});
+    const num=best?[bi(best)]:(inB.length?inB.map(bi):B.filter(b=>b.isGoal).map(bi));if(!num.length)return;
+    const t=(c.neg?'≤':'')+(c.cible!=null&&c.cible!==''?c.cible:'');const ex=best&&R.find(r=>r.fps&&r.numCriteria.length===1&&r.numCriteria[0]===bi(best)&&!r.target);
+    if(ex&&!(R.some(r=>r.label===c.label))){ex.label=String(c.label);ex.target=t;}else R.push({label:String(c.label),show:true,numCriteria:num,denCriteria:[],target:t,minVolume:'',fps:1});});
+  p.customRatios=R;return p;}
+function fpsProfileEnsure(it,link){const p=fpsProfileBuild(it);if(!p)return null;if(!CFG.savedPresets)CFG.savedPresets=[];
+  const i=CFG.savedPresets.findIndex(x=>x&&(x.name===p.name||(x.meta&&x.meta.fpsId&&x.meta.fpsId===it.id)));if(i>=0)CFG.savedPresets[i]=p;else CFG.savedPresets.push(p);
+  if(link){it.profile=p.name;if(it.cfg)it.cfg.profile=p.name;if(!it.obsMode)it.obsMode='simple';}return p;}
+function libcFpsProfile(){if(!LIBC||LIBC.kind!=='match')return;const f=LIBC.f;if(!String(f.titre||'').trim()){alert('Donne d\'abord un nom à la FPS.');return;}
+  const it={id:LIBC.editId||'',titre:f.titre,oe:(f.oes||[])[0]||f.oe||'',apsa:(REMED_CONTENT[f.ref]&&REMED_CONTENT[f.ref].label)||f.ref||'',criteres:(f.crits||[]).map(c=>({label:c.label,cible:c.cible,neg:!!c.neg})),cfg:{points:libcLines(f.points)}};
+  const p=fpsProfileEnsure(it,false);if(!p){alert('Profil spécial non disponible pour ce sport.');return;}f.profile=p.name;f.obsMode='simple';saveConfig();try{renderSavedPresets();}catch(e){}libcRender();
+  try{toast2('⚙️ Profil « '+p.name+' » prêt : '+p.dialogBtns.length+' boutons, '+p.customRatios.filter(r=>r.fps).length+' compteurs, boutons seuls');}catch(e){}}
+// appliquer un profil de FPS = passer en boutons seuls
+(function(){const oa=applyNamedPreset;applyNamedPreset=function(i){const r=oa.apply(this,arguments);try{const p=(CFG.savedPresets||[])[i];if(p&&p.obsSimple!=null){CFG.obsSimple=!!p.obsSimple;saveConfig();try{obsSimpleRefresh(true);}catch(e){}}}catch(e){}return r;};})();
+// une fois : un profil spécial pour chaque FPS existante (football, hand, basket)
+setTimeout(()=>{try{if(localStorage.getItem('grib_fpsprof_v1'))return;try{seedCedrepsFps();}catch(e){}const L=libLoad();let n=0;const P=CFG.savedPresets||[];
+  L.filter(x=>x&&x.kind==='match').forEach(it=>{const cur=it.profile||(it.cfg&&it.cfg.profile)||'';const curP=P.find(p=>p&&p.name===cur);const free=!cur||(curP&&curP.meta&&curP.meta.oeId&&!curP.meta.fpsId)||(curP&&curP.generic);
+    const p=fpsProfileEnsure(it,free);if(p)n++;});
+  if(n){libSave(L);saveConfig();try{renderSavedPresets();}catch(e){}}localStorage.setItem('grib_fpsprof_v1','1');}catch(e){console.warn('fps profils',e);}},1800);
 </script>
 </body>
 </html>
