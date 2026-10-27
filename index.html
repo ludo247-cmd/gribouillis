@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v276</title>
+<title>Gribouillis EPS v277</title>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
 /* ── THÈME SOMBRE UNIQUEMENT ── */
@@ -1159,6 +1159,16 @@ body.nav-off.nav-peek #nav-handle{display:none;}
 .trn-mode button{border:1px solid #475569;background:#1e293b;color:#e2e8f0;border-radius:9px;padding:8px 12px;font-weight:700;cursor:pointer;}
 .trn-mode button.on{background:#2563eb;border-color:#60a5fa;color:#fff;}
 @media (max-width:600px){.ael-team .pl{gap:4px;padding:5px;}.ael-team .pl button{padding:3px 8px;font-size:.84rem;}.ael-team h5{font-size:.85rem;padding:4px 8px;}.ael-roles{font-size:.82rem;gap:4px;}.ael-teams{gap:6px;}}
+.sel-obj{margin:4px 0 6px;padding:6px 10px;border-left:4px solid #22c55e;background:rgba(34,197,94,.12);border-radius:8px;font-size:1rem;}
+.sel-rules{margin:6px 0;font-size:.95rem;}.sel-rules ul{margin:2px 0 0;padding-left:20px;}
+.libc-lang{display:flex;gap:6px;margin:8px 0 2px;}.libc-lang button{border:1px solid #475569;background:#1e293b;color:#e2e8f0;border-radius:8px;padding:5px 10px;font-size:.8rem;font-weight:700;cursor:pointer;}.libc-lang button.on{background:#0f766e;border-color:#2dd4bf;color:#fff;}
+.asp-sel{position:relative;}.asp-sel>summary{cursor:pointer;list-style:none;border:1px solid #475569;border-radius:8px;padding:6px 10px;background:#1e293b;font-size:.8rem;font-weight:700;}
+.asp-sel[open]>summary{border-color:#60a5fa;}
+.asp-sel .box{position:absolute;z-index:50;left:0;top:calc(100% + 4px);width:min(560px,92vw);max-height:340px;overflow:auto;background:#0f172a;border:1px solid #475569;border-radius:10px;padding:8px;box-shadow:0 10px 30px rgba(0,0,0,.5);}
+.asp-sel .acts{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;}.asp-sel .acts button{font-size:.75rem;border:0;border-radius:7px;padding:5px 9px;background:#334155;color:#fff;cursor:pointer;}
+.asp-sel label{display:flex !important;justify-content:flex-start !important;text-align:left !important;width:100%;box-sizing:border-box;gap:7px;align-items:flex-start;padding:3px 4px;margin:0;border-radius:6px;font-size:.8rem;cursor:pointer;}.asp-sel label:hover{background:#1e293b;}
+.asp-sel label.o{font-weight:800;color:#93c5fd;margin-top:6px;}.asp-sel label.m{padding-left:18px;font-weight:700;color:#cbd5e1;}.asp-sel label.c{padding-left:34px;color:#e2e8f0;}
+.asp-sel label input{margin:2px 0 0 !important;flex:0 0 auto !important;width:16px !important;height:16px;}.asp-sel label span{flex:1 1 auto;text-align:left;}.asp-sel .pj{font-size:.7rem;color:#94a3b8;margin:6px 0 0;text-transform:uppercase;letter-spacing:.04em;}
 .fit-vid{display:block;max-width:100%;max-height:calc(100vh - 170px);margin:8px auto;border-radius:10px;background:#000;}
 .pres-vids h5{margin:12px 0 2px;font-size:.9rem;color:#93c5fd;}
 .ok-list{margin:0;padding:0;list-style:none;}
@@ -13982,8 +13992,8 @@ function libcRender(){
   }else{
     h+=selRef(false);
     h+=inp('titre',k==='match'?'Nom de la FPS':'Nom de la situation',k==='match'?'Ex : Le 1000 buts':'Ex : Jeu des 3 passes');
-    h+=area('objectif','🎯 Objectif','Ex : conserver le ballon pour progresser vers la cible',2);
-    h+=(k==='match'?inp('format','Format','Ex : 5c5, 2 × 4 min'):area('desc','Description','Dispositif, consignes…',3));
+    h+=libcLangHtml()+(LIBC.el?area('objectifEl','🎯 Objectif — 🧒 version élève',f.objectif?'Prof : '+f.objectif:'Avec les mots des élèves',2):area('objectif','🎯 Objectif','Ex : conserver le ballon pour progresser vers la cible',2));
+    h+=(k==='match'?(LIBC.el?inp('formatEl','Format — 🧒 version élève',f.format?'Prof : '+f.format:''):inp('format','Format','Ex : 5c5, 2 × 4 min')):(LIBC.el?area('descEl','Description — 🧒 version élève',f.desc?'Prof : '+f.desc:'Avec les mots des élèves',3):area('desc','Description','Dispositif, consignes…',3)));
     if(k==='match')h+=area('points','Comment on marque (un par ligne)','',2)+area('regs','Règles du match (une par ligne)','',2)+area('aide','Pour aider (une par ligne)','',2);
     if(k==='match')h+=fpsProfileSelectHtml(null,f.profile||'','libcSet(\'profile\',this.value);libcRender();')+fpsObjPanelHtml(null,f.profile||'','l:')+libcObsModeHtml(f); // v187 / v199
     h+=libcPhotoHtml();
@@ -14070,6 +14080,7 @@ function libcSave(){
   item.principes=(f.aslinks||[]).slice(); // v190
   f.regles.forEach(x=>{const cp=getCpByPath(x.split('#')[0]);const rr=cp&&(cp.regles||[]).find(y=>y.id===x.split('#')[1]);if(rr&&rr.label!==item.regleLabel)item.regleAlsoLabels.push(rr.label);});
   if(f.anim)item.anim=f.anim;
+  item.objectifEl=String(f.objectifEl||'').trim();item.descEl=String((k==='match'?f.formatEl:f.descEl)||'').trim();
   item.terrain=f.terrain||''; // v185
   if(k==='match')item.profile=f.profile||''; // v187
   if(k==='match')item.obsMode=f.obsMode||'';
@@ -14108,7 +14119,7 @@ function libEdit(id){
   }
   const r=libcRefs().find(x=>(x.label||'')===it.apsa);
   const cfg=it.cfg||{};
-  LIBC={kind:it.kind==='match'?'match':'remed',editId:id,openK:{},f:{objectif:String(it.objectif||''),minJ:it.minJ?String(it.minJ):'',oes:[it.oe].concat(it.oeAlso||[]).filter(Boolean),tags:(it.tags||[]).slice(),mode:(r&&r.custom)?'ref':'apsa',titre:it.titre||'',desc:it.desc||'',video:it.video||'',anim:it.anim||null,image:it.image||null,ref:r?r.id:'',oe:it.oe||'',cps:[it.cp].concat(it.cpAlso||[]).filter(Boolean),regles:[],crits:(it.criteres||[]).map(c=>({label:c.label||'',cible:c.cible||1,collectif:!!c.collectif,neg:!!c.neg})),roles:(it.roles||[]).slice(),profile:it.profile||cfg.profile||'',obsMode:it.obsMode||'',terrain:it.terrain||cfg.terrain||'',aslinks:(it.principes||[]).slice(),format:it.desc||cfg.format||'',points:(cfg.points||[]).join('\n'),regs:(cfg.emblematiques||[]).join('\n'),aide:(cfg.etayage||[]).join('\n'),phase:'',short:'',label:'',principes:'',newLabel:''}};
+  LIBC={kind:it.kind==='match'?'match':'remed',editId:id,openK:{},f:{objectif:String(it.objectif||''),objectifEl:String(it.objectifEl||''),descEl:it.kind==='match'?'':String(it.descEl||''),formatEl:it.kind==='match'?String(it.descEl||''):'',minJ:it.minJ?String(it.minJ):'',oes:[it.oe].concat(it.oeAlso||[]).filter(Boolean),tags:(it.tags||[]).slice(),mode:(r&&r.custom)?'ref':'apsa',titre:it.titre||'',desc:it.desc||'',video:it.video||'',anim:it.anim||null,image:it.image||null,ref:r?r.id:'',oe:it.oe||'',cps:[it.cp].concat(it.cpAlso||[]).filter(Boolean),regles:[],crits:(it.criteres||[]).map(c=>({label:c.label||'',cible:c.cible||1,collectif:!!c.collectif,neg:!!c.neg})),roles:(it.roles||[]).slice(),profile:it.profile||cfg.profile||'',obsMode:it.obsMode||'',terrain:it.terrain||cfg.terrain||'',aslinks:(it.principes||[]).slice(),format:it.desc||cfg.format||'',points:(cfg.points||[]).join('\n'),regs:(cfg.emblematiques||[]).join('\n'),aide:(cfg.etayage||[]).join('\n'),phase:'',short:'',label:'',principes:'',newLabel:''}};
   libcRender();
 }
 function libSaveMatchFromSeance(key){
@@ -20809,7 +20820,7 @@ function hmFmt(m){if(m==null)return '';const h=Math.floor(m/60),mm=m%60;return h
 function aspRefShort(ref){const l=String((REMED_CONTENT[ref]||{}).label||'');const m=/gar[cç]ons?|filles?/i.exec(l);return m?m[0][0].toUpperCase()+m[0].slice(1).toLowerCase():l;}
 function aspProjs(s){const P=[s];try{const p=pjProxy(s);if(p)P.push(p);}catch(e){}return P;}
 // situations : « séance » = principes choisis (●/◐) des orientations de la séance ; « tous » = tous les principes des deux projets
-function aspExoData(s){const tous=ASP_UI.mode==='tous';const rows=[],seen={},paths={};let anyOe=false;
+function aspExoData(s){const tous=true;const rows=[],seen={},paths={};let anyOe=false;
   aspProjs(s).forEach(px=>{const ids=[px.oeId].concat(px.oeExtra||[]).filter(Boolean);if(ids.length)anyOe=true;if(!tous&&!ids.length)return;
     let P=[];try{P=seanceAllCpPaths(px,tous?null:ids,false);}catch(e){}
     let pick=tous?P:P.filter(p=>cpFocusOf(s,p)>=2);if(!tous&&!pick.length)pick=P;
@@ -20819,8 +20830,8 @@ function aspExoData(s){const tous=ASP_UI.mode==='tous';const rows=[],seen={},pat
   return {rows:rows,libs:libs,paths:paths,anyOe:anyOe};}
 function aspExoFiltered(s,D){const q=stripAccents(String(ASP_UI.q||'')).toLowerCase().trim();const cp=ASP_UI.cp||'';const mn=SB_UI.min||0;
   const okT=(t,d)=>!q||stripAccents(String((t||'')+' '+(d||''))).toLowerCase().indexOf(q)>=0;
-  const R=D.rows.filter(r=>okT(r.exo.titre,r.exo.desc)&&(!cp||r.cpPath===cp)&&(!mn||(r.exo.stars||0)>=mn));
-  const L=D.libs.filter(x=>okT(x.titre,x.desc)&&(!cp||[x.cp].concat(x.cpAlso||[]).indexOf(cp)>=0)&&(!mn||(x.stars||0)>=mn));
+  const R=D.rows.filter(r=>okT(r.exo.titre,r.exo.desc)&&aspSelOk(s,[r.cpPath],[])&&(!mn||(r.exo.stars||0)>=mn));
+  const L=D.libs.filter(x=>okT(x.titre,x.desc)&&aspSelOk(s,[x.cp].concat(x.cpAlso||[],x.principes||[]).filter(Boolean),[x.oe].concat(x.oeAlso||[]).filter(Boolean))&&(!mn||(x.stars||0)>=mn));
   return {R:R,L:L};}
 function aspExoListHtml(s,D){D=D||aspExoData(s);const X=aspExoFiltered(s,D);
   const h=X.R.map(r=>sbVigHtml(s,r,null).replace('<'+'div class="sb-vt">','<'+'div class="sb-vt">'+(r.pj?'<span class="asp-vt-p">'+esc(r.pj)+'</span>':''))).join('')+X.L.map(sbLibVigHtml).join('');
@@ -20844,9 +20855,9 @@ function aspPalHtml(s){const t=ASP_UI.tab;
   else if(t==='exo'){const D=aspExoData(s);const tous=ASP_UI.mode==='tous';
     const opts={};D.rows.forEach(r=>{if(!opts[r.cpPath])opts[r.cpPath]=r.pj;});D.libs.forEach(x=>[x.cp].concat(x.cpAlso||[]).forEach(c=>{if(c&&getCpByPath(c)&&!opts[c])opts[c]=D.paths[c]||'';}));
     if(ASP_UI.cp&&!opts[ASP_UI.cp])ASP_UI.cp='';
-    h+='<'+'div class="sb-filt"><span class="asp-mode"><button type="button" class="'+(tous?'':'on')+'" onclick="ASP_UI.mode=\'seance\';ASP_UI.cp=\'\';renderSeanceTab()">🎯 Principes de la séance</button><button type="button" class="'+(tous?'on':'')+'" onclick="ASP_UI.mode=\'tous\';renderSeanceTab()">🔓 Tous les principes</button></span>'
+    h+='<'+'div class="sb-filt">'
       +'<input type="search" placeholder="🔍 rechercher une situation" value="'+esc(ASP_UI.q||'')+'" oninput="ASP_UI.q=this.value;aspPalRefresh()">'
-      +'<select aria-label="Principe" onchange="ASP_UI.cp=this.value;aspPalRefresh()"><option value="">Tous ces principes</option>'+Object.keys(opts).map(p=>'<option value="'+esc(p)+'"'+(ASP_UI.cp===p?' selected':'')+'>'+(opts[p]?esc(opts[p])+' · ':'')+esc(String(libCpLabel(p)).slice(0,60))+'</option>').join('')+'</select>'
+      +aspSelHtml(s)
       +aspTagSelHtml()
       
       +'</'+'div>'
@@ -20925,7 +20936,7 @@ function aspMyGroups(s,me){const D=s.decoupages||[];const niv=id=>D.some(d=>/niv
 function aspEleveExHtml(s,e){const inf=aspExInfo(e);if(!inf)return '';let h='<'+'div class="ael-ex"><h4 style="margin:0 0 4px;">'+inf.ico+' '+esc(String(inf.titre))+'</h4>';
   try{if(inf.kind==='warm')return h+renderEleveStepEchauffementV2(s,{status:'x'})+'</'+'div>';
     if(inf.kind==='exo')return h+renderEleveExo(inf.cpPath,inf.src)+'</'+'div>';
-    const x=inf.src;if(x.desc)h+='<'+'div class="sel-text">'+esc(String(x.desc))+'</'+'div>';
+    const x=inf.src;const ob=x.objectifEl||x.objectif;if(ob)h+='<'+'div class="sel-obj">🎯 <b>Objectif :</b> '+esc(String(ob))+'</'+'div>';const ds=x.descEl||x.desc;if(ds)h+='<'+'div class="sel-text">'+esc(String(ds))+'</'+'div>';if(inf.kind==='fps'){const C=x.cfg||{};if((C.points||[]).length)h+='<'+'div class="sel-rules"><b>⚽ Comment on marque</b><ul>'+C.points.map(p=>'<li>'+esc(String(p))+'</li>').join('')+'</ul></'+'div>';if((C.emblematiques||[]).length)h+='<'+'div class="sel-rules"><b>📏 Règles</b><ul>'+C.emblematiques.map(p=>'<li>'+esc(String(p))+'</li>').join('')+'</ul></'+'div>';}
     if(x.video)h+='<video src="'+esc(String(x.video))+'" controls playsinline preload="metadata"></video>';
     if(x.image)h+='<img src="'+x.image+'" alt="">';
     if(x.anim)h+=animEleveHtml(x.anim);
@@ -22015,6 +22026,34 @@ function aspTeamsBalance(s){const G=(s.groupes||[]);if(G.length<2)return;const l
     const L=lateOf(G[hi]).filter(n=>G[hi].members.indexOf(n)>=0);if(!L.length)break;const n=L[L.length-1];
     G[hi].members.splice(G[hi].members.indexOf(n),1);G[lo].members.push(n);const k=(G[hi].subs||[]).findIndex(x=>x&&x.n===n);if(k>=0){const x=G[hi].subs.splice(k,1)[0];(G[lo].subs=G[lo].subs||[]).push(x);}}}
 (function(){const ot=genTeamsRun;genTeamsRun=function(){const c=GEN_UI.ctx;const r=ot.apply(this,arguments);try{if(c){const s=getActiveSeance();aspTeamsBalance(s);try{syncDecoup(s);}catch(e){}try{ASP_RL=null;ASP_CC=null;}catch(e){}saveSeances();renderSeanceTab();}}catch(e){console.warn('équilibre',e);}return r;};})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v277 — palette « Situations » : une grande liste (objets d'enseignement,
+// sous-objets, principes), dans l'ordre, plusieurs choix possibles, présélection
+// = principes de la séance ; langage prof / élève dans la fiche situation / FPS
+// ══════════════════════════════════════════════════════════════════════
+function aspSelTree(s){const out=[];const seen={};aspProjs(s).forEach(px=>{let sd=null;try{sd=seanceSportDef(px);}catch(e){}if(!sd)return;const ref=seanceRefId(px);if(seen[ref])return;seen[ref]=1;
+  const G={pj:aspRefShort(px.referentiel)||'',items:[]};(sd.oe||[]).forEach(o=>{const ko='o:'+ref+'|'+o.id;G.items.push({k:ko,lv:'o',lab:String(o.label||o.titre||o.id)});
+    (o.micro||[]).forEach(m=>{const km='m:'+ref+'|'+o.id+'|'+m.id;const cps=(m.cps||[]);G.items.push({k:km,lv:'m',lab:String(m.label||m.titre||m.id)});
+      cps.forEach(c=>{G.items.push({k:'c:'+remedCpPath(ref,o.id,m.id,c.id),lv:'c',lab:String(c.label||c.id)});});});});out.push(G);});return out;}
+function aspSelDefault(s){const K=[];aspProjs(s).forEach(px=>{const ids=[px.oeId].concat(px.oeExtra||[]).filter(Boolean);if(!ids.length)return;let P=[];try{P=seanceAllCpPaths(px,ids,false);}catch(e){}
+  const pick=P.filter(p=>cpFocusOf(s,p)>=2);if(pick.length)pick.forEach(p=>K.push('c:'+p));else ids.forEach(id=>K.push('o:'+seanceRefId(px)+'|'+id));});return K;}
+function aspSelGet(s){if(!s.asp)return [];if(!Array.isArray(s.asp.palSel))s.asp.palSel=aspSelDefault(s);return s.asp.palSel;}
+function aspSelOk(s,paths,oes){const S=aspSelGet(s);if(!S.length)return true;
+  return S.some(k=>{const v=k.slice(2);if(k[0]==='c')return paths.indexOf(v)>=0;
+    if(k[0]==='m')return paths.some(p=>p.indexOf(v+'|')===0);
+    if(k[0]==='o'){const oe=v.split('|')[1];return paths.some(p=>p.indexOf(v+'|')===0||p.split('|')[1]===oe)||oes.indexOf(oe)>=0;}return false;});}
+function aspSelSum(s){const S=aspSelGet(s);if(!S.length)return '🎯 Tous les principes';const T=aspSelTree(s);const lab={};T.forEach(G=>G.items.forEach(i=>{lab[i.k]=i.lab;}));
+  const L=S.map(k=>lab[k]).filter(Boolean);return '🎯 '+(L.length===1?String(L[0]).slice(0,40):S.length+' choix')+' ▾';}
+function aspSelHtml(s){const S=aspSelGet(s);const T=aspSelTree(s);
+  let h='<details class="asp-sel"'+(ASP_UI.selOpen?' open':'')+' ontoggle="ASP_UI.selOpen=this.open"><summary>'+esc(aspSelSum(s))+'</summary><'+'div class="box"><'+'div class="acts"><button type="button" onclick="aspSelSet(\'seance\')">🎯 Ceux de la séance</button><button type="button" onclick="aspSelSet(\'none\')">🔓 Tout voir (aucun filtre)</button></'+'div>';
+  T.forEach(G=>{if(T.length>1&&G.pj)h+='<'+'div class="pj">'+esc(G.pj)+'</'+'div>';G.items.forEach(i=>{h+='<label class="'+i.lv+'"><input type="checkbox" data-k="'+esc(i.k)+'"'+(S.indexOf(i.k)>=0?' checked':'')+' onchange="aspSelTog(this)"><span>'+esc(i.lab)+'</span></label>';});});
+  if(!T.length)h+='<span class="cc-dim">Choisis d\'abord le projet / référentiel de la séance.</span>';
+  return h+'</'+'div></details>';}
+function aspSelTog(el){const s=getActiveSeance();if(!s||!s.asp)return;const S=aspSelGet(s);const k=el.dataset.k;const i=S.indexOf(k);if(el.checked&&i<0)S.push(k);if(!el.checked&&i>=0)S.splice(i,1);saveSeances();
+  const d=el.closest('.asp-sel');if(d){const sm=d.querySelector('summary');if(sm)sm.textContent=aspSelSum(s);}aspPalRefresh();}
+function aspSelSet(m){const s=getActiveSeance();if(!s||!s.asp)return;s.asp.palSel=m==='seance'?aspSelDefault(s):[];saveSeances();ASP_UI.selOpen=true;renderSeanceTab();}
+function libcLangHtml(){const el=!!(LIBC&&LIBC.el);return '<'+'div class="libc-lang"><button type="button" class="'+(el?'':'on')+'" onclick="LIBC.el=false;libcRender()">👩‍🏫 Langage prof</button><button type="button" class="'+(el?'on':'')+'" onclick="LIBC.el=true;libcRender()">🧒 Langage élève</button></'+'div>';}
 </script>
 </body>
 </html>
