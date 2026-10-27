@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v294</title>
+<title>Gribouillis EPS v295</title>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
 /* ── THÈME SOMBRE UNIQUEMENT ── */
@@ -1221,6 +1221,8 @@ body.nav-off.nav-peek #nav-handle{display:none;}
 .evl-sync{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:.78rem;margin-top:8px;}
 .evl-sync input{flex:0 1 220px;}
 @media (max-width:640px){.evl-deg{grid-template-columns:1fr 1fr;}.cad-comp{grid-template-columns:1fr;}}
+.seq-pick select{font-size:.85rem;padding:5px 8px;border-radius:8px;background:#0f172a;color:#e2e8f0;border:1px solid #334155;}
+.seq-pick label{display:flex;gap:6px;align-items:center;}
 .fit-vid{display:block;max-width:100%;max-height:calc(100vh - 170px);margin:8px auto;border-radius:10px;background:#000;}
 .pres-vids h5{margin:12px 0 2px;font-size:.9rem;color:#93c5fd;}
 .ok-list{margin:0;padding:0;list-style:none;}
@@ -18532,8 +18534,7 @@ function renderSeqTab(){
   seqEnsureCols(q);const sd=seqSd(q);const refs=listReferentiels();const isAS=!!(q.ref&&sd&&sd.custom);const qi=esc(q.id);
   h+='<div class="seq-ed"><div class="row"><button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="SEQ_UI.open=\'\';renderSeqTab()">← Toutes les séquences</button><input value="'+esc(q.nom)+'" style="flex:1 1 220px;font-weight:700;" onchange="seqSet(\''+qi+'\',\'nom\',this.value)" aria-label="Nom de la séquence">'
     +'<label>Séances prévues <select onchange="seqSet(\''+qi+'\',\'nb\',this.value)">'+Array.from({length:20},(_,i)=>i+1).map(n=>'<option'+(n===q.nb?' selected':'')+'>'+n+'</option>').join('')+'</select></label></div>'
-    +'<div class="row"><span>Nomenclature :</span><span class="seq-tog"><button type="button" class="'+(!isAS?'on':'')+'" onclick="seqNomen(\''+qi+'\',false)">📘 CEDREPS</button><button type="button" class="'+(isAS?'on':'')+'" onclick="seqNomen(\''+qi+'\',true)">🏟️ Projet de jeu AS</button></span>'+(!isAS?seqSportPickHtml(q):'')
-    +(isAS&&refs.length>1?'<span style="margin-left:8px;">Projet :</span><span class="seq-tog">'+refs.map(r=>'<button type="button" class="'+(q.ref===r.id?'on':'')+'" onclick="seqSet(\''+qi+'\',\'ref\',\''+esc(r.id)+'\')">'+esc(r.label)+'</button>').join('')+'</span>':'')+'</div>';
+    +seqPickRowHtml(q,isAS,refs);
   h+=(()=>{try{return seqGsRowHtml(q);}catch(e){return '';}})();
   h+=(()=>{try{return isAS?pjEdAllHtml():'';}catch(e){console.warn('pjEd',e);return '';}})();
   if(!sd)h+=seqNoRefHtml(q);
@@ -18776,7 +18777,7 @@ function seqSetSport(id,k){
   const q=seqGet(id);if(!q||q.sport===k)return;
   const n=(q.cols||[]).filter(c=>c.seanceId).length;
   const go=()=>{seqUpdate(id,x=>{x.sport=k;x.ref='';x.oeIds=[];(x.cols||[]).forEach(c=>{if(!c.seanceId)c.focus={};});});renderSeqTab();};
-  if(n)confirmDlg('Cette séquence a déjà '+n+' séance'+(n>1?'s':'')+' : elles gardent leur sport. Passer la suite en '+SEQ_SPORT_NAMES[k]+' ?',go);else go();
+  if(n)confirmDlg('Cette séquence a déjà '+n+' séance'+(n>1?'s':'')+' : elles gardent leur sport. Passer la suite en '+(SEQ_SPORT_NAMES[k]||calSportName(k))+' ?',go);else go();
 }
 function seanceFormSport(k){
   const keep={};['seance-date-input','seance-classe-free','seance-cat-free','seance-equipe-free'].forEach(i=>{const e=E(i);if(e)keep[i]=e.value;});
@@ -22474,6 +22475,8 @@ function cadSit(q,k){const sp=q.sport||'';const P=cadP(k)[k.ca]||{};
 function cadDefDom(k){const n=k.niv==='lycee'?[0,k.ca==='CA1'||k.ca==='CA5'?1:2]:[0,k.ca==='CA1'||k.ca==='CA5'?3:2];return n;}
 function cadEnsure(q){const c=clsActive();if(!q.cadre||typeof q.cadre!=='object')q.cadre={};const k=q.cadre;
   if(!k.niv)k.niv=cadNiv(c&&c.nom);
+  if(k.sp&&k.sp!==q.sport){const nca=CAD_CA[q.sport];if(nca&&cadP(k)[nca]&&nca!==k.ca){k.ca=nca;k.att=null;k.dom=null;k.comp={};}else if(k.comp){k.att=null;delete k.comp.sit;}}
+  k.sp=q.sport;
   if(!k.ca||!cadP(k)[k.ca]){let ca=CAD_CA[q.sport]||'CA4';if(!cadP(k)[ca])ca=cadCaList(k)[0]||'CA1';k.ca=ca;}
   if(!Array.isArray(k.dom))k.dom=cadDefDom(k);
   if(!Array.isArray(k.att))k.att=cadAtt(k).map((t,i)=>(q.sport==='demi-fond'&&/combin/i.test(t))?-1:i).filter(i=>i>=0);
@@ -22542,9 +22545,9 @@ function evlHtml(q){const k=q.cadre;const qi=esc(q.id);const D='<'+'div',X='</'+
   if(!cr.length){h+=D+' class="cc-dim" style="margin:6px 0;">Le référentiel est construit à partir des attendus cochés dans le cadre (un critère par attendu, 4 degrés de maîtrise, points répartis 12 moteur / 4 méthodologique / 4 social). Tout reste modifiable.'+X
     +'<button type="button" class="btn-xs" style="background:#7c3aed;color:#fff;padding:8px 14px;" onclick="evlGen(\''+qi+'\')">⚙ Générer le référentiel</button>'+X+'</details>'+X;return h;}
   h+=D+' class="sub">Référentiel · '+EVL_DEG.map((d,i)=>EVL_AB[i]+' = '+d).join(' · ')+' · points du critère × degré / 4'+X;
-  h+=cr.map(c=>{const ci=esc(c.id);return D+' class="evl-crit">'+D+' class="hd"><b>'+esc(c.src)+'</b><select onchange="evlCset(\''+qi+'\',\''+ci+'\',\'comp\',this.value)">'+['mot','met','soc'].map(x=>'<option value="'+x+'"'+(x===c.comp?' selected':'')+'>'+CAD_CL[x]+'</option>').join('')+'</select>'
+  h+=cr.map(c=>{const ci=esc(c.id);return D+' class="evl-crit">'+D+' class="hd"><b>'+esc(evlSrcLab(k,c))+'</b><select onchange="evlCset(\''+qi+'\',\''+ci+'\',\'comp\',this.value)">'+['mot','met','soc'].map(x=>'<option value="'+x+'"'+(x===c.comp?' selected':'')+'>'+CAD_CL[x]+'</option>').join('')+'</select>'
     +'<textarea onchange="evlCset(\''+qi+'\',\''+ci+'\',\'lab\',this.value)" aria-label="Critère">'+esc(c.lab)+'</textarea><label>/ <input type="number" min="0" step="0.5" value="'+esc(String(c.pts))+'" onchange="evlCset(\''+qi+'\',\''+ci+'\',\'pts\',this.value)"></label>'
-    +'<button type="button" class="btn-xs red" onclick="evlDel(\''+qi+'\',\''+ci+'\')" title="Supprimer ce critère">🗑</button>'+X
+    +'<button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="evlDup(\''+qi+'\',\''+ci+'\')" title="Ajouter un autre critère évaluable pour '+esc(c.src)+' (les points de '+esc(c.src)+' sont partagés)">＋ critère '+esc(c.src)+'</button><button type="button" class="btn-xs red" onclick="evlDel(\''+qi+'\',\''+ci+'\')" title="Supprimer ce critère">🗑</button>'+X
     +D+' class="evl-deg">'+[0,1,2,3].map(j=>D+' class="d'+(j+1)+'"><label>'+EVL_AB[j]+' · '+EVL_DEG[j]+' ('+evlFr((+c.pts||0)*(j+1)/4)+' pt)</label><textarea onchange="evlCset(\''+qi+'\',\''+ci+'\',\'deg\',this.value,'+j+')">'+esc(c.deg[j]||'')+'</textarea>'+X).join('')+X+X;}).join('');
   h+=D+' style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;"><b style="font-size:.8rem;">Total : /'+evlFr(tot)+'</b>'+(Math.abs(tot-20)>0.01?'<span class="cc-dim">(pas sur 20)</span>':'')+'<span style="flex:1;"></span>'
     +'<button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="evlAdd(\''+qi+'\')">＋ Critère</button>'
@@ -22552,7 +22555,7 @@ function evlHtml(q){const k=q.cadre;const qi=esc(q.id);const D='<'+'div',X='</'+
   const L=evlNames(k);CAD_UI.names=L;
   h+=D+' class="sub">Grille de la classe — touchez une case : — → I → F → S → TS'+X;
   if(!L.length)h+=D+' class="cc-dim">Aucun élève : la liste vient de la classe (⚙ Classes).'+X;
-  else h+=D+' class="evl-gw"><table class="evl-g"><thead><tr><th>Élève</th>'+cr.map(c=>'<th title="'+esc(c.lab)+'">'+esc(c.src)+'<br>/'+evlFr(+c.pts||0)+'</th>').join('')+'<th>Note<br>/'+evlFr(tot)+'</th></tr></thead><tbody>'
+  else h+=D+' class="evl-gw"><table class="evl-g"><thead><tr><th>Élève</th>'+cr.map(c=>'<th title="'+esc(c.lab)+'">'+esc(evlSrcLab(k,c))+'<br>/'+evlFr(+c.pts||0)+'</th>').join('')+'<th>Note<br>/'+evlFr(tot)+'</th></tr></thead><tbody>'
     +L.map((n,ni)=>{const N=k.ev.notes[n]||{};const t=evlNote(k,n);return '<tr><td class="n">'+esc(n)+'</td>'+cr.map(c=>{const d=+N[c.id]||0;return '<td><button type="button" class="d'+d+'" onclick="evlCyc(\''+qi+'\','+ni+',\''+esc(c.id)+'\')" title="'+esc(d?EVL_DEG[d-1]:'Non évalué')+'">'+(d?EVL_AB[d-1]:'—')+'</button></td>';}).join('')+'<td class="t">'+(t.g?evlFr(t.p):'')+'</td></tr>';}).join('')+'</tbody></table>'+X;
   h+=D+' style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;"><button type="button" class="btn-xs" style="background:#1d4ed8;color:#fff;" onclick="evlPrint(\''+qi+'\',0)">🖨 Fiche d\'évaluation élève (vierge)</button>'
     +(L.length?'<button type="button" class="btn-xs" style="background:#1d4ed8;color:#fff;" onclick="evlPrint(\''+qi+'\',1)">🖨 Fiches remplies de toute la classe</button>':'')+X;
@@ -22567,7 +22570,7 @@ function evlCopyScript(){const g=gsCfg();const t=gsScript(g.cle||'',g.feuille||'
 function evlOpenQ(){const id=(typeof SEQ_UI!=='undefined'&&SEQ_UI.open)||'';const q=id?seqGet(id):null;if(!q)return null;cadEnsure(q);return q;}
 function evlRefresh(){const b=E('evl-box');const q=evlOpenQ();if(!b||!q)return;const w=document.createElement('div');w.innerHTML=evlHtml(q);if(w.firstChild)b.replaceWith(w.firstChild);}
 function evlSchedule(id){clearTimeout(CAD_UI.t);CAD_UI.t=setTimeout(()=>evlPush(id,false),1500);}
-function evlHead(q){const k=q.cadre;return ['Prénom','G/F'].concat(k.ev.crit.map(c=>'['+c.id+'] '+c.src+' · '+String(c.lab||'').slice(0,40)+' /'+evlFr(+c.pts||0)),['[NOTE] Note /'+evlFr(evlTot(k))]);}
+function evlHead(q){const k=q.cadre;return ['Prénom','G/F'].concat(k.ev.crit.map(c=>'['+c.id+'] '+evlSrcLab(k,c)+' · '+String(c.lab||'').slice(0,40)+' /'+evlFr(+c.pts||0)),['[NOTE] Note /'+evlFr(evlTot(k))]);}
 function evlRow(q,n){const k=q.cadre;const N=k.ev.notes[n]||{};const t=evlNote(k,n);return [n,evlGf(n)||null].concat(k.ev.crit.map(c=>{const d=+N[c.id]||0;return d?EVL_AB[d-1]:'';}),[t.g?t.p:'']);}
 async function evlPush(id,all){const q=seqGet(id);if(!q)return;cadEnsure(q);const url=evlUrl(q);if(!url||CAD_UI.busy){if(CAD_UI.busy)evlSchedule(id);return;}
   const k=q.cadre;if(!k.ev.crit.length)return;const pend=CAD_UI.pend[id]||{};const names=all?evlNames(k):Object.keys(pend);if(!names.length&&!all)return;
@@ -22616,19 +22619,41 @@ function evlPrint(id,filled){const q=seqGet(id);if(!q)return;cadEnsure(q);const 
     return D+' class="pg"><h1>Fiche d\'évaluation · '+esc(q.nom)+'</h1>'+D+' class="id"><span>Élève : <b>'+(n?esc(n):'……………………………')+'</b></span><span>Classe : <b>'+esc(c?c.nom:'')+'</b></span><span>Date : ……………</span>'+X
       +D+' class="cp"><b>Compétence :</b> '+esc(cadCompTxt(q,k))+X
       +'<table><thead><tr><th>Critère</th>'+EVL_DEG.map(d=>'<th>'+esc(d)+'</th>').join('')+'<th>Points</th></tr></thead><tbody>'
-      +k.ev.crit.map(cr=>{const d=+N[cr.id]||0;return '<tr><td class="c"><b>'+esc(cr.src)+'</b> · '+esc(CAD_CL[cr.comp]||'')+'<br>'+esc(cr.lab)+'<br><i>/'+evlFr(+cr.pts||0)+'</i></td>'+[0,1,2,3].map(j=>'<td class="'+(d===j+1?'on':'')+'">'+(d===j+1?'✔ ':'☐ ')+esc(cr.deg[j]||'')+'<br><i>'+evlFr((+cr.pts||0)*(j+1)/4)+' pt</i></td>').join('')+'<td class="pt">'+(d?evlFr((+cr.pts||0)*d/4):'')+'</td></tr>';}).join('')
+      +k.ev.crit.map(cr=>{const d=+N[cr.id]||0;return '<tr><td class="c"><b>'+esc(evlSrcLab(k,cr))+'</b> · '+esc(CAD_CL[cr.comp]||'')+'<br>'+esc(cr.lab)+'<br><i>/'+evlFr(+cr.pts||0)+'</i></td>'+[0,1,2,3].map(j=>'<td class="'+(d===j+1?'on':'')+'">'+(d===j+1?'✔ ':'☐ ')+esc(cr.deg[j]||'')+'<br><i>'+evlFr((+cr.pts||0)*(j+1)/4)+' pt</i></td>').join('')+'<td class="pt">'+(d?evlFr((+cr.pts||0)*d/4):'')+'</td></tr>';}).join('')
       +'<tr><td colspan="5" style="text-align:right;"><b>Note</b></td><td class="pt"><b>'+(t.g?evlFr(t.p):'')+' / '+evlFr(tot)+'</b></td></tr></tbody></table>'+X;};
   const html='<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Fiche d\'évaluation · '+esc(q.nom)+'</title><style>body{font-family:Arial,sans-serif;margin:0;color:#111;}.pg{padding:14mm 12mm;page-break-after:always;}h1{font-size:16px;margin:0 0 8px;}.id{display:flex;gap:24px;font-size:13px;margin-bottom:8px;}.cp{font-size:12px;border:1px solid #999;padding:6px;margin-bottom:8px;}table{border-collapse:collapse;width:100%;font-size:11px;}th,td{border:1px solid #777;padding:4px;vertical-align:top;}th{background:#eee;}td.c{width:26%;}td.on{background:#d9f99d;font-weight:bold;}td.pt{text-align:center;width:7%;}i{color:#555;}@media print{.pg{padding:8mm;}}</style></head><body>'+names.map(page).join('')+'<script>setTimeout(function(){print();},400);<\/script></body></html>';
   try{const u=URL.createObjectURL(new Blob([html],{type:'text/html'}));const w=window.open(u,'_blank');if(!w){const a=document.createElement('a');a.href=u;a.download='fiche_evaluation.html';document.body.appendChild(a);a.click();a.remove();}}catch(e){console.warn('evlPrint',e);}}
 function cadInject(){const host=E('seq-console');if(!host)return;const q0=evlOpenQ();if(!q0)return;const sd=seqSd(q0);if(q0.ref&&sd&&sd.custom)return;
   const ed=host.querySelector('.seq-ed');if(!ed)return;
-  const raw=seqGet(q0.id);if(raw&&!raw.cadre)seqUpdate(q0.id,x=>{cadEnsure(x);});
+  const raw=seqGet(q0.id);if(raw&&(!raw.cadre||raw.cadre.sp!==raw.sport))seqUpdate(q0.id,x=>{cadEnsure(x);});
   const q=evlOpenQ();const w=document.createElement('div');w.innerHTML=cadHtml(q);const cad=w.firstChild;
   const gs=ed.querySelector('.seq-gs');if(gs&&gs.parentNode===ed)gs.after(cad);else{const rows=ed.querySelectorAll(':scope > .row');const last=rows[1]||rows[0];if(last)last.after(cad);else ed.prepend(cad);}
   const w2=document.createElement('div');w2.innerHTML=evlHtml(q);ed.appendChild(w2.firstChild);
   if(CAD_UI.ev)setTimeout(()=>evlPull(q.id,true),300);}
 renderSeqTab=(function(o){return function(){const r=o.apply(this,arguments);try{cadInject();}catch(e){console.warn('cadInject',e);}return r;};})(renderSeqTab);
 setInterval(()=>{try{if(document.visibilityState!=='visible'||!CAD_UI.ev||!E('evl-box'))return;const q=evlOpenQ();if(q&&evlUrl(q))evlPull(q.id,true);}catch(e){}},20000);
+
+// ══════════════════════════════════════════════════════════════════════
+// v295 — séquence : menus APSA + nomenclature ; plusieurs critères par attendu
+// ══════════════════════════════════════════════════════════════════════
+// Nomenclatures disponibles (on en ajoutera d'autres ici)
+const SEQ_NOMENS=[
+  {id:'cedreps',lab:'📘 CEDREPS',ok:q=>!!(REMED_CONTENT&&REMED_CONTENT[q.sport]&&!REMED_CONTENT[q.sport].custom)},
+  {id:'as',lab:'🏟️ Projet de jeu AS',ok:()=>listReferentiels().length>0}];
+function seqPickRowHtml(q,isAS,refs){const qi=esc(q.id);const cur=isAS?'as':'cedreps';
+  const A=EDT_APSA.slice();if(q.sport&&A.indexOf(q.sport)<0)A.unshift(q.sport);
+  let h='<'+'div class="row seq-pick"><label>APSA <select onchange="seqSetSport(\''+qi+'\',this.value)" aria-label="APSA de la séquence">'
+    +A.map(k=>'<option value="'+esc(k)+'"'+(k===q.sport?' selected':'')+'>'+(APSA_ICONS[k]||'')+' '+esc(calSportName(k))+'</option>').join('')+'</select></label>'
+    +'<label>Nomenclature <select onchange="seqNomen(\''+qi+'\',this.value===\'as\')" aria-label="Nomenclature">'
+    +SEQ_NOMENS.map(n=>{const ok=n.ok(q);return '<option value="'+n.id+'"'+(n.id===cur?' selected':'')+(ok||n.id===cur?'':' disabled')+'>'+esc(n.lab)+(ok?'':' (pas encore pour cette APSA)')+'</option>';}).join('')+'</select></label>';
+  if(isAS&&refs.length>1)h+='<label>Projet <select onchange="seqSet(\''+qi+'\',\'ref\',this.value)">'+refs.map(r=>'<option value="'+esc(r.id)+'"'+(q.ref===r.id?' selected':'')+'>'+esc(r.label)+'</option>').join('')+'</select></label>';
+  return h+'</'+'div>';}
+function evlSrcLab(k,c){const same=k.ev.crit.filter(x=>x.src===c.src);if(same.length<2)return c.src;return c.src+String.fromCharCode(97+same.indexOf(c));}
+function evlDup(id,cid){cadMut(id,k=>{const i=k.ev.crit.findIndex(x=>x.id===cid);if(i<0)return;const c=k.ev.crit[i];
+  const grp=k.ev.crit.filter(x=>x.src===c.src);const tot=grp.reduce((a,x)=>a+(+x.pts||0),0);k.ev.n++;
+  const nc={id:'C'+k.ev.n,src:c.src,comp:c.comp,lab:'',pts:0,deg:(EVL_TXT[c.comp]||EVL_TXT.mot).slice()};
+  let j=i;k.ev.crit.forEach((x,ix)=>{if(x.src===c.src)j=ix;});k.ev.crit.splice(j+1,0,nc);
+  const g2=grp.concat([nc]);const each=Math.floor(tot/g2.length*2)/2;g2.forEach(x=>x.pts=each);g2[0].pts=evlR(g2[0].pts+tot-each*g2.length);});}
 </script>
 </body>
 </html>
