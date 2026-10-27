@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v286</title>
+<title>Gribouillis EPS v287</title>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
 /* ── THÈME SOMBRE UNIQUEMENT ── */
@@ -22218,7 +22218,7 @@ function pubShow(s){s=s||getActiveSeance();if(!s||!s.pub)return;const p=s.pub;co
     +'<'+'div style="display:flex;gap:8px;flex-wrap:wrap;"><button type="button" class="btn-xs green" data-a="copy">📋 Copier le message pour Teams</button><button type="button" class="btn-xs" style="background:#334155;color:#fff;" data-a="open">👀 Tester le lien</button><button type="button" class="btn-xs red" data-a="del">🗑 Retirer la séance en ligne</button><button type="button" class="btn-xs" style="background:#334155;color:#fff;" data-a="x">Fermer</button></'+'div>'
     +'<'+'div class="cc-dim" style="margin-top:8px;font-size:.75rem;">Tu as modifié la séance ? Re-clique sur « 🔗 Lien + code » : le lien reste le même.</'+'div></'+'div>';
   document.body.appendChild(o);pubWatch(o,p.url);
-  o.querySelector('[data-a=copy]').onclick=async()=>{const t=pubMsg(s);try{await navigator.clipboard.writeText(t);toast2('📋 Message copié : colle-le dans Teams');}catch(e){prompt('Copie ce message :',t);}};
+  o.querySelector('[data-a=copy]').onclick=async()=>{const t=pubMsg(s);const lab='Séance '+String(s.classe||'')+' du '+seanceDateFr(s.date);const html='📲 <a href="'+esc(p.url)+'">'+esc(lab)+'</a> — code : <b>'+esc(p.code)+'</b> (à taper à l\'ouverture)';try{if(window.ClipboardItem&&navigator.clipboard.write){await navigator.clipboard.write([new ClipboardItem({'text/html':new Blob([html],{type:'text/html'}),'text/plain':new Blob([t],{type:'text/plain'})})]);toast2('📋 Copié : colle dans Teams, le lien s\'affiche « '+lab+' »');}else{await navigator.clipboard.writeText(t);toast2('📋 Message copié : colle-le dans Teams');}}catch(e){try{await navigator.clipboard.writeText(t);toast2('📋 Message copié');}catch(e2){prompt('Copie ce message :',t);}}};
   o.querySelector('[data-a=open]').onclick=()=>{try{window.open(p.url,'_blank');}catch(e){}};
   o.querySelector('[data-a=x]').onclick=()=>o.remove();
   o.querySelector('[data-a=del]').onclick=async()=>{if(!confirm('Retirer cette séance du site ? Le lien ne marchera plus.'))return;try{await pubDelete(s);o.remove();toast2('🗑 Séance retirée du site');}catch(e){alert('Échec : '+e.message);}};}
