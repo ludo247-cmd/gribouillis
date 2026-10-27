@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v271</title>
+<title>Gribouillis EPS v272</title>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
 /* ── THÈME SOMBRE UNIQUEMENT ── */
@@ -1139,6 +1139,15 @@ body.nav-off.nav-peek #nav-handle{display:none;}
 .trn-m .vs .t{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--tc,#475569);color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.6);}
 .trn-m .rest{font-size:.75rem;color:#94a3b8;}
 .trn-m button{border:0;border-radius:9px;padding:9px 12px;background:#15803d;color:#fff;font-weight:800;cursor:pointer;}
+.ael-res{border:1px solid #334155;border-radius:12px;padding:8px 10px;margin:8px 0;background:rgba(15,23,42,.45);}
+.ael-res h5{margin:0 0 6px;font-size:.95rem;}
+.ael-res .r{display:flex;align-items:center;gap:8px;margin:5px 0;flex-wrap:wrap;}
+.ael-res .r .l{flex:1 1 180px;font-size:.92rem;}
+.ael-res .r input{width:84px;font-size:1.05rem;padding:6px 8px;border-radius:8px;}
+.ael-res .r .ok{font-size:1.2rem;min-width:26px;}
+.ael-res textarea,.ael-res input{background:#0f172a;color:#e2e8f0;border:1px solid #475569;}
+.ael-res textarea{width:100%;box-sizing:border-box;font-size:.9rem;border-radius:8px;padding:6px 8px;font-family:inherit;}
+.res-ov table{border-collapse:collapse;width:100%;font-size:.85rem;}.res-ov td,.res-ov th{border:1px solid #334155;padding:4px 6px;text-align:center;}.res-ov td:first-child,.res-ov th:first-child{text-align:left;}
 .fit-vid{display:block;max-width:100%;max-height:calc(100vh - 170px);margin:8px auto;border-radius:10px;background:#000;}
 .pres-vids h5{margin:12px 0 2px;font-size:.9rem;color:#93c5fd;}
 .ok-list{margin:0;padding:0;list-style:none;}
@@ -20765,7 +20774,7 @@ function aspLabel(s,b){if(b.kind==='objectif')return '📋 Objectif';if(b.kind==
 function aspAlerts(s,b,tm){if(b.kind!=='bloc')return '';const cnt={};(b.ats||[]).forEach(a=>aspAtMembers(s,a).forEach(n=>{cnt[n]=(cnt[n]||0)+1;}));
   const pres=aspPresent(s,tm.a);const none=pres.filter(n=>!cnt[n]);const two=Object.keys(cnt).filter(n=>cnt[n]>1);let h='';
   if(none.length)h+='<'+'div class="asp-warn">⚠ '+none.length+' sans rien de prévu'+(none.length<=4?' : '+none.map(esc).join(', '):'')+'</'+'div>';
-  if(two.length)h+='<'+'div class="asp-warn">⚠ '+two.length+' dans 2 ateliers'+(two.length<=4?' : '+two.map(esc).join(', '):'')+'</'+'div>';
+  if(two.length)h+='<'+'div class="asp-warn" style="border-color:#0ea5e9;color:#7dd3fc;">🔁 '+two.length+' font 2 ateliers à la suite (temps partagé)'+(two.length<=4?' : '+two.map(esc).join(', '):'')+'</'+'div>';
   (b.ats||[]).forEach((a,i)=>{const n=aspAtMembers(s,a).filter(x=>pres.indexOf(x)>=0).length;(a.exos||[]).forEach(e=>{const inf=aspExInfo(e);if(inf&&inf.minJ&&(a.groups||[]).length&&n<inf.minJ)h+='<'+'div class="asp-warn">⚠ Atelier '+String.fromCharCode(65+i)+' : '+n+' présents pour '+inf.minJ+' minimum</'+'div>';});});
   return h;}
 function aspAtHtml(s,b,a,i){const bi=esc(b.id),ai=esc(a.id);
@@ -20921,9 +20930,9 @@ function aspEleveHtml(s){const me=elMeGet(s);const LATE={arr:me?aspLateArr(s,me)
       h+='<'+'div class="ael-step" data-b="'+esc(b.id)+'"><h3><span class="t">'+n+' · '+hmFmt(tm.a)+'</span>📋 Notre projet de jeu</h3>'+(w||'<'+'div class="cc-dim">Écoute la présentation de ton enseignant.</'+'div>')+'</'+'div>';return;}
     if(b.kind==='bilan'){if(me&&LATE.arr!=null&&!LATE.done){LATE.done=1;n++;h+=aspExpressStep(s,n,LATE.arr===-1?'à ton arrivée':hmFmt(LATE.arr));}n++;h+='<'+'div class="ael-step" data-b="'+esc(b.id)+'"><h3><span class="t">'+n+' · '+hmFmt(tm.a)+'</span>🏁 Bilan</h3>'+aspEleveBilanHtml(s)+'</'+'div>';return;}
     let JW=null;if(me&&LATE.arr!=null){if(LATE.arr!==-1&&tm.b<=LATE.arr)return;if(LATE.pjw){if(LATE.pjw.b===b){JW=LATE.pjw.a;LATE.pjw=null;}}else if(!LATE.done){LATE.done=1;const W=LATE.arr!==-1?aspLateWarmAt(s,b,tm,LATE.arr):null;if(W&&W.b!==b){LATE.pjw=W;return;}if(W)JW=W.a;else{n++;h+=aspExpressStep(s,n,LATE.arr===-1?'à ton arrivée':hmFmt(LATE.arr));}}}if(JW)ASP_JW={b:b.id,a:JW.id,t:hmFmt(LATE.arr)};
-    const A2=JW?[JW]:(all?(b.ats||[]).filter(x=>(x.exos||[]).length||(x.groups||[]).length):aspMyAts(s,b,me));A2.forEach(a=>{if(a!==JW&&LATE.done&&(a.exos||[]).length&&(a.exos||[]).every(e=>e.k==='warm'))return;n++;
+    const A2=JW?[JW]:(all?(b.ats||[]).filter(x=>(x.exos||[]).length||(x.groups||[]).length):aspMyAts(s,b,me));A2.forEach((a,ai)=>{if(a!==JW&&LATE.done&&(a.exos||[]).length&&(a.exos||[]).every(e=>e.k==='warm'))return;n++;
     const mates=aspAtMembers(s,a).filter(x=>x!==me);const gl=(a.groups||[]).map(id=>(aspChip(s,id)||{}).label).filter(Boolean);
-    h+='<'+'div class="ael-step" data-b="'+esc(b.id)+'" data-a="'+esc(a.id)+'"><h3><span class="t">'+n+' · '+hmFmt(tm.a)+'</span>'+esc(((a.exos||[]).map(e=>(aspExInfo(e)||{}).titre).filter(Boolean).join(' → '))||'À suivre')+'</h3>'
+    h+='<'+'div class="ael-step" data-b="'+esc(b.id)+'" data-a="'+esc(a.id)+'"><h3><span class="t">'+n+' · '+hmFmt(tm.a+((!all&&!JW&&A2.length>1)?Math.round(ai*(tm.b-tm.a)/A2.length):0))+'</span>'+esc(((a.exos||[]).map(e=>(aspExInfo(e)||{}).titre).filter(Boolean).join(' → '))||'À suivre')+((!all&&!JW&&A2.length>1)?' <small style="color:#94a3b8;font-weight:600;">· atelier '+(ai+1)+'/'+A2.length+'</small>':'')+'</h3>'
       +(gl.length?'<'+'div class="ael-with">👥 '+esc(gl.join(' + '))+(mates.length&&mates.length<=14&&(a.groups||[]).some(id=>!/^pop-/.test(id))?' — avec '+mates.map(esc).join(', '):'')+'</'+'div>':'')
       +((a.exos||[]).length?(a.exos||[]).map(e=>aspEleveExHtml(s,e)).join(''):'<'+'div class="cc-dim">Ton enseignant te donnera la consigne.</'+'div>')+'</'+'div>';});});
   return h;}
@@ -21441,7 +21450,7 @@ function aspRolesOf(s,b,a){try{return ((aspRolesAll(s)[b.id]||{})[a.id])||[];}ca
 function aspRolesAtHtml(s,b,a,me){const R=aspRolesOf(s,b,a);if(!R.length)return '';
   return '<'+'div class="asp-roles">'+R.map(r=>'<span class="'+(!r.name?'no':(me&&r.name===me?'me':''))+'">'+aspRoleIco(r.role)+' '+esc(r.role)+' : '+(r.name?esc(r.name):'personne de libre')+'</span>').join('')+'</'+'div>';}
 function aspMyAts(s,b,me){const A=(b.ats||[]).filter(x=>aspAtMembers(s,x).indexOf(me)>=0);
-  const R=(b.ats||[]).find(x=>aspRolesOf(s,b,x).some(r=>r.name===me));if(R)return [R];return A.slice(0,1);}
+  const R=(b.ats||[]).find(x=>aspRolesOf(s,b,x).some(r=>r.name===me));if(R&&A.indexOf(R)<0)return [R];return A;}
 function aspEleveObserve(bid,aid){if(GRIB_EXPORT_MODE)return;try{document.body.classList.add('eleve-hors-seance');}catch(e){}aspObserve(bid,aid);}
 // ── élève : rôles + bouton observation sur chaque écran d'atelier ──
 (function(){const o=aspElPagedHtml;aspElPagedHtml=function(s){let h=o.apply(this,arguments);if(h.indexOf('data-a=')<0)return h;const me=elMeGet(s);
@@ -21846,6 +21855,43 @@ function trnShow(bid,aid,eleve){const s=aspS();if(!s)return;const a=aspAt(s,bid,
     return oo.apply(this,arguments);};
   const oe=aspEleveObserve;aspEleveObserve=function(bid,aid){const s=aspS();const a=s&&aspAt(s,bid,aid);
     if(a&&!ASP_PAIR&&!GRIB_EXPORT_MODE&&aspAtIsFps(a)&&aspTeamIds(s,a).length>=3){trnShow(bid,aid,true);return;}return oe.apply(this,arguments);};})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v272 — même groupe dans 2 ateliers d'un bloc = les 2 à la suite (mode
+// élève : un écran par atelier, temps partagé) ; l'élève écrit son résultat
+// ══════════════════════════════════════════════════════════════════════
+function aspExKey(e){return (e&&e.k||'')+':'+(e&&(e.id||e.key)||'');}
+function aspResStore(s,k){s.asp.res=s.asp.res||{};return s.asp.res[k]=s.asp.res[k]||{};}
+function aspResHtml(s,b,a,e,me){const inf=aspExInfo(e);if(!inf||inf.kind==='warm'||inf.kind==='fps'||!me)return '';const k=b.id+'|'+a.id+'|'+aspExKey(e);
+  const mine=((s.asp.res||{})[k]||{})[me]||{};const C=((inf.src&&inf.src.criteres)||[]).filter(c=>c&&(c.label||c.cible!=null));
+  let h='<'+'div class="ael-res" data-k="'+esc(k)+'"><h5>📝 Mon résultat · '+esc(String(inf.titre))+'</h5>';
+  if(C.length)C.forEach((c,ci)=>{const v=mine[ci];const has=v!=null&&v!=='';const ok=has&&critOk(c,v);
+    h+='<'+'div class="r"><span class="l">'+esc(String(c.label||'Critère'))+(c.cible!=null&&c.cible!==''?' <b>('+critSym(c).trim()+' '+esc(String(c.cible))+')</b>':'')+'</span><input type="number" inputmode="decimal" data-c="'+ci+'" value="'+(has?esc(String(v)):'')+'" onchange="aspResSet(this)"><span class="ok">'+(has?(ok?'✅':'❌'):'')+'</span></'+'div>';});
+  else{const v=mine.score;h+='<'+'div class="r"><span class="l">Mon score</span><input type="number" inputmode="decimal" data-c="score" value="'+(v!=null?esc(String(v)):'')+'" onchange="aspResSet(this)"></'+'div>';}
+  h+='<textarea rows="2" data-c="note" placeholder="Une remarque ? (facultatif)" onchange="aspResSet(this)">'+esc(String(mine.note||''))+'</textarea>';
+  return h+'</'+'div>';}
+function aspResSet(el){const s=getActiveSeance();if(!s||!s.asp)return;const me=elMeGet(s);if(!me)return;const box=el.closest('.ael-res');const k=box&&box.dataset.k;if(!k)return;
+  const st=aspResStore(s,k);const m=st[me]=st[me]||{};const c=el.dataset.c;const v=el.value;
+  if(v===''||v==null)delete m[c];else m[c]=(c==='note')?v:(isNaN(parseFloat(v))?v:parseFloat(v));m.t=Date.now();saveSeances();
+  if(c!=='note'&&c!=='score'){const [bid,aid,...ek]=k.split('|');const a=aspAt(s,bid,aid);const e=a&&(a.exos||[]).find(x=>aspExKey(x)===ek.join('|'));const inf=e&&aspExInfo(e);const cr=inf&&((inf.src&&inf.src.criteres)||[]).filter(c=>c&&(c.label||c.cible!=null))[+c];
+    const okEl=el.parentNode.querySelector('.ok');if(okEl&&cr)okEl.textContent=(v===''?'':(critOk(cr,v)?'✅':'❌'));}
+  try{toast2('✔ Résultat enregistré');}catch(e){}}
+(function(){const o=aspElPagedHtml;aspElPagedHtml=function(s){let h=o.apply(this,arguments);if(h.indexOf('data-a=')<0)return h;const me=elMeGet(s);if(!me)return h;
+  const t=document.createElement('template');t.innerHTML=h;
+  t.content.querySelectorAll('.ael-step[data-a]').forEach(st=>{const b=(s.asp.blocks||[]).find(x=>x.id===st.dataset.b);const a=b&&(b.ats||[]).find(x=>x.id===st.dataset.a);if(!a)return;
+    const ex=st.querySelectorAll('.ael-ex');(a.exos||[]).forEach((e,i)=>{const rh=aspResHtml(s,b,a,e,me);if(!rh)return;const tgt=ex[i]||ex[ex.length-1];if(tgt)tgt.insertAdjacentHTML('afterend',rh);else st.insertAdjacentHTML('beforeend',rh);});});
+  return t.innerHTML;};})();
+// ── enseignant : voir les résultats écrits par les élèves ──
+function aspResCount(s,b,a){const R=(s.asp&&s.asp.res)||{};let n=0;(a.exos||[]).forEach(e=>{const r=R[b.id+'|'+a.id+'|'+aspExKey(e)];if(r)n+=Object.keys(r).length;});return n;}
+function aspResShow(bid,aid){const s=aspS();if(!s)return;const b=aspB(s,bid),a=aspAt(s,bid,aid);if(!b||!a)return;const R=(s.asp.res)||{};
+  const o=document.createElement('div');o.className='trn-ov res-ov';o.onclick=e=>{if(e.target===o)o.remove();};let h='<'+'div class="trn-box"><h3 style="margin:0 0 6px;">📝 Résultats des élèves</h3>';
+  (a.exos||[]).forEach(e=>{const inf=aspExInfo(e);if(!inf)return;const r=R[b.id+'|'+a.id+'|'+aspExKey(e)]||{};const N=Object.keys(r).sort((x,y)=>x.localeCompare(y,'fr'));if(!N.length)return;
+    const C=((inf.src&&inf.src.criteres)||[]).filter(c=>c&&(c.label||c.cible!=null));
+    h+='<h4 style="margin:10px 0 4px;">'+esc(String(inf.titre))+'</h4><table><tr><th>Élève</th>'+(C.length?C.map(c=>'<th>'+esc(String(c.label||''))+(c.cible!=null?'<br><small>'+critSym(c).trim()+' '+esc(String(c.cible))+'</small>':'')+'</th>').join(''):'<th>Score</th>')+'<th>Remarque</th></tr>';
+    N.forEach(n=>{const m=r[n];h+='<tr><td>'+esc(n)+'</td>'+(C.length?C.map((c,ci)=>{const v=m[ci];return '<td>'+(v!=null?esc(String(v))+' '+(critOk(c,v)?'✅':'❌'):'—')+'</td>';}).join(''):'<td>'+(m.score!=null?esc(String(m.score)):'—')+'</td>')+'<td style="text-align:left;">'+esc(String(m.note||''))+'</td></tr>';});
+    h+='</table>';});
+  h+='<'+'div style="text-align:right;margin-top:10px;"><button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="this.closest(\'.trn-ov\').remove()">Fermer</button></'+'div></'+'div>';o.innerHTML=h;document.body.appendChild(o);}
+(function(){const oa=aspAtHtml;aspAtHtml=function(s,b,a,i){let h=oa.apply(this,arguments);try{const n=aspResCount(s,b,a);if(n){const j=h.lastIndexOf('</'+'div>');if(j>0)h=h.slice(0,j)+'<button type="button" class="obs" style="background:#0e7490;margin-left:4px;" onclick="aspResShow(\''+esc(b.id)+'\',\''+esc(a.id)+'\')">📝 Résultats ('+n+')</button>'+h.slice(j);}}catch(e){}return h;};})();
 </script>
 </body>
 </html>
