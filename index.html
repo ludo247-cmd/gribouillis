@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v287</title>
+<title>Gribouillis EPS v288</title>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
 /* ── THÈME SOMBRE UNIQUEMENT ── */
@@ -1174,6 +1174,10 @@ body.nav-off.nav-peek #nav-handle{display:none;}
 .ael-with .ael-rl{display:inline;margin-left:8px;}
 .ael-with .ael-rl span{display:inline-block;margin:2px 4px 2px 0;padding:2px 9px;border:1px solid #475569;border-radius:999px;font-size:.88rem;color:#e2e8f0;}
 .ael-with .ael-rl span.me{background:#facc15;color:#111;border-color:#facc15;font-weight:800;}
+.qj-prof{margin-top:8px;}.qj-prof .t{font-size:.75rem;color:var(--dim2);margin:6px 0 4px;}
+.qj-prof .row{display:flex;flex-wrap:wrap;gap:6px;}
+.qj-prof button{border:1px solid #475569;background:#1e293b;color:#e2e8f0;border-radius:999px;padding:6px 12px;font-size:.82rem;cursor:pointer;}
+.qj-prof button.on{background:#15803d;border-color:#4ade80;color:#fff;font-weight:800;}
 .fit-vid{display:block;max-width:100%;max-height:calc(100vh - 170px);margin:8px auto;border-radius:10px;background:#000;}
 .pres-vids h5{margin:12px 0 2px;font-size:.9rem;color:#93c5fd;}
 .ok-list{margin:0;padding:0;list-style:none;}
@@ -19239,7 +19243,7 @@ function qjTabsAvail(){
   const c=clsActive();const L=[];
   if(c&&c.gs&&c.gs.url&&calSport(c)===CFG.apsa)L.push(['cal','📅 Calendrier']);
   let D=null;try{D=clbData();}catch(e){}
-  if(D&&D.clubs.length>=2)L.push(['clubs','🏟️ Clubs']);
+  if(D&&D.clubs.length>=2&&c&&calSport(c)===CFG.apsa)L.push(['clubs','🏟️ Clubs']);
   L.push(['compo','🧩 Composition']);L.push(['libre','✏️ Libres']);
   return L;
 }
@@ -19259,7 +19263,7 @@ function qjRender(){
   ['cal','clubs','compo','libre'].forEach(k=>{const p=E('qj-p-'+k);if(p)p.classList.toggle('on',k===t);});
   // ligne repliée : Planning d'un autre sport
   const ln=E('qj-line');
-  if(ln){if(c&&c.gs&&c.gs.url&&calSport(c)!==CFG.apsa){const sp=calSport(c);
+  if(ln){if(false&&c&&c.gs&&c.gs.url&&calSport(c)!==CFG.apsa){const sp=calSport(c);
       ln.innerHTML='<div class="qj-l"><span>📅 Planning '+esc(calSportName(sp))+' de '+esc(c.nom)+'</span><span style="flex:1"></span><button type="button" class="btn-xs" style="background:#1d4ed8;color:#fff;" onclick="qjGoSport(\''+sp+'\')">'+(APSA_ICONS[sp]||'')+' Passer en '+esc(calSportName(sp))+'</button></div>';}
     else ln.innerHTML='';}
   if(t==='clubs'){try{renderClubsTab('qj-p-clubs');}catch(e){}}
@@ -22232,6 +22236,18 @@ function pubWatch(o,url){let n=0;const st=o.querySelector('.pub-st');const tick=
     if(ok===null&&n>2){st.style.color='#94a3b8';st.textContent='Vérification impossible depuis ici : teste le lien dans 2 à 3 minutes avec « 👀 Tester le lien ».';return;}
     if(n>=40){st.style.color='#fca5a5';st.textContent='⚠ Toujours pas en ligne après 7 minutes : regarde l\'onglet « Actions » du dépôt sur GitHub (déploiement GitHub Pages).';return;}
     setTimeout(tick,10000);};setTimeout(tick,4000);}
+
+// ══════════════════════════════════════════════════════════════════════
+// v288 — onglet Match : les profils d'observation (FPS et objets) choisis
+// directement sous « Qui joue ? », sans passer par « Avancé »
+// ══════════════════════════════════════════════════════════════════════
+function qjProfHtml(){const P=CFG.savedPresets||[];const cur=CFG.activePresetIndexT1;const ok=p=>p&&p.name&&(!p.apsaKey||p.apsaKey===CFG.apsa);
+  const F=[],O=[];P.forEach((p,i)=>{if(!ok(p))return;(p.meta&&p.meta.fpsId?F:O).push(i);});if(!F.length&&!O.length)return '';
+  const b=i=>{const p=P[i];return '<button type="button" class="'+(i===cur?'on':'')+'" onclick="qjProfPick('+i+')" title="'+esc(p.name)+'">'+(i===cur?'✔ ':'')+esc(String(p.name).replace(/^FPS · /,''))+(p.obsSimple?' ✋':'')+'</button>';};
+  return '<'+'div class="qj-prof">'+(F.length?'<'+'div class="t">⚽ Profil d\'une FPS (boutons et critères de la situation)</'+'div><'+'div class="row">'+F.map(b).join('')+'</'+'div>':'')
+    +(O.length?'<'+'div class="t">🎯 Profil d\'un objet d\'enseignement / autre</'+'div><'+'div class="row">'+O.map(b).join('')+'</'+'div>':'')+'</'+'div>';}
+function qjProfPick(i){try{applyNamedPreset(i);}catch(e){console.warn(e);}try{qjStatus();}catch(e){}try{toast2('⭐ Profil : '+((CFG.savedPresets[i]||{}).name||''));}catch(e){}}
+(function(){const o=qjStatus;qjStatus=function(){const r=o.apply(this,arguments);try{const el=E('qj-status');if(el&&el.innerHTML){const h=qjProfHtml();if(h)el.insertAdjacentHTML('beforeend',h);}}catch(e){console.warn('qjProf',e);}return r;};})();
 </script>
 </body>
 </html>
