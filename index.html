@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v288</title>
+<title>Gribouillis EPS v289</title>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
 /* ── THÈME SOMBRE UNIQUEMENT ── */
@@ -19362,7 +19362,8 @@ function edtApsaOf(c,iso){const p=edtCycleAt(c,iso);return p?p.apsa:(c&&c.apsa)|
 function edtClassColor(c){const L=clsData().list;const i=L.findIndex(x=>x.id===c.id);const P=['#3b82f6','#f97316','#22c55e','#a855f7','#eab308','#ef4444','#14b8a6','#ec4899'];return P[(i<0?0:i)%P.length];}
 // créneau en cours (15 min avant le début → fin)
 function edtNow(when){const d=when||new Date();const j=d.getDay(),m=d.getHours()*60+d.getMinutes();let best=null;
-  clsData().list.forEach(c=>edtSlots(c).forEach(x=>{if(+x.j!==j)return;const a=edtMin(x.h1),b=edtMin(x.h2);if(m>=a-15&&m<=b&&(!best||a<best.a))best={c,x,a,b};}));
+  const iso=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  clsData().list.forEach(c=>edtSlots(c).forEach(x=>{if(+x.j!==j)return;if(c.jours&&typeof c.jours==='object'&&Object.keys(c.jours).length&&!c.jours[iso])return;const a=edtMin(x.h1),b=edtMin(x.h2);if(m>=a-15&&m<=b&&(!best||a<best.a))best={c,x,a,b};}));
   return best;}
 function edtCardLines(c){
   const S=edtSlots(c).slice().sort((a,b)=>(+a.j-+b.j)||(edtMin(a.h1)-edtMin(b.h1)));const P=edtProg(c);let h='';
@@ -19399,7 +19400,7 @@ function edtDelCycle(i){edtMut(c=>{if(c.prog)c.prog.splice(i,1);});}
 function edtRender(){
   const {c}=edtCls();if(!c){edtClose();return;}
   let ov=E('edt'+'-ov');if(!ov){ov=document.createElement('div');ov.id=['edt','ov'].join('-');ov.className='lib-pick-ov';ov.onclick=e=>{if(e.target===ov)edtClose();};document.body.appendChild(ov);}
-  const sp=['football','handball','basketball','volley','badminton'];
+  const sp=EDT_APSA.slice();(c.prog||[]).forEach(p=>{if(p&&p.apsa&&sp.indexOf(p.apsa)<0)sp.push(p.apsa);});
   let h='<'+'div class="lib-pick-box" style="max-width:560px;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;"><b style="flex:1;">🗓 '+esc(c.nom)+' — horaires &amp; programmation</b><button type="button" class="btn-xs green" onclick="edtClose()">✓ Fini</button></div>';
   h+='<div class="edt-h">🕘 Créneaux dans mon emploi du temps</div><div class="cc-dim">Chaque semaine. À l\'ouverture de l\'app pendant un créneau (dès 15 min avant), la classe et sa séance s\'ouvrent toutes seules.</div>';
   (c.edt||[]).forEach((x,i)=>{h+='<div class="edt-row"><select aria-label="Jour" onchange="edtSetSlot('+i+',\'j\',this.value)">'+[1,2,3,4,5,6,0].map(j=>'<option value="'+j+'"'+(+x.j===j?' selected':'')+'>'+EDT_JOURS_L[j]+'</option>').join('')+'</select>'
@@ -19408,7 +19409,7 @@ function edtRender(){
   h+='<button type="button" class="btn-xs" style="background:#1d4ed8;color:#fff;margin-top:8px;" onclick="edtAddSlot()">＋ Ajouter un créneau</button>';
   h+='<div class="edt-h">📆 Programmation des APSA</div><div class="cc-dim">Un cycle par APSA, avec ses dates. L\'APSA du cycle en cours est choisie automatiquement.</div>';
   (c.prog||[]).forEach((p,i)=>{h+='<div class="edt-row"><select aria-label="APSA" onchange="edtSetCycle('+i+',\'apsa\',this.value)">'+sp.map(k=>'<option value="'+k+'"'+(p.apsa===k?' selected':'')+'>'+(APSA_ICONS[k]||'')+' '+esc(calSportName(k))+'</option>').join('')+'</select>'
-    +'<span class="cc-dim">du</span><input type="date" aria-label="Début du cycle" value="'+esc(p.du||'')+'" onchange="edtSetCycle('+i+',\'du\',this.value)"><span class="cc-dim">au</span><input type="date" aria-label="Fin du cycle" value="'+esc(p.au||'')+'" onchange="edtSetCycle('+i+',\'au\',this.value)">'
+    +(p.j!=null?'<span class="cc-dim" title="Créneau de ce cycle">'+EDT_JOURS[+p.j]+'</span>':'')+'<span class="cc-dim">du</span><input type="date" aria-label="Début du cycle" value="'+esc(p.du||'')+'" onchange="edtSetCycle('+i+',\'du\',this.value)"><span class="cc-dim">au</span><input type="date" aria-label="Fin du cycle" value="'+esc(p.au||'')+'" onchange="edtSetCycle('+i+',\'au\',this.value)">'
     +'<button type="button" class="btn-xs red" onclick="edtDelCycle('+i+')" aria-label="Supprimer le cycle">✕</button>'
     +(()=>{const L=seqOfClass(c);if(!L.length)return '';return '<span class="cc-dim">séquence</span><select aria-label="Séquence du cycle" onchange="edtSetCycle('+i+',\'seqId\',this.value)"><option value="">— la plus récente de cette APSA —</option>'+L.map(q=>'<option value="'+esc(q.id)+'"'+(p.seqId===q.id?' selected':'')+'>'+esc(q.nom)+(q.gs&&q.gs.url?' 📊':'')+'</option>').join('')+'</select>';})()
     +'</div>';});
@@ -22248,6 +22249,37 @@ function qjProfHtml(){const P=CFG.savedPresets||[];const cur=CFG.activePresetInd
     +(O.length?'<'+'div class="t">🎯 Profil d\'un objet d\'enseignement / autre</'+'div><'+'div class="row">'+O.map(b).join('')+'</'+'div>':'')+'</'+'div>';}
 function qjProfPick(i){try{applyNamedPreset(i);}catch(e){console.warn(e);}try{qjStatus();}catch(e){}try{toast2('⭐ Profil : '+((CFG.savedPresets[i]||{}).name||''));}catch(e){}}
 (function(){const o=qjStatus;qjStatus=function(){const r=o.apply(this,arguments);try{const el=E('qj-status');if(el&&el.innerHTML){const h=qjProfHtml();if(h)el.insertAdjacentHTML('beforeend',h);}}catch(e){console.warn('qjProf',e);}return r;};})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v289 — programmation annuelle : toutes les APSA, un cycle par créneau
+// (p.j = jour), jours de cours réels (c.jours) pour les semaines alternées,
+// import d'un code « calendrier » ; seules les APSA du CA4 changent le sport
+// des outils d'observation
+// ══════════════════════════════════════════════════════════════════════
+const EDT_CA4=['football','handball','basketball','volley','badminton'];
+const EDT_APSA=['football','handball','basketball','volley','badminton','demi-fond','combiné','gymnastique','danse','natation','boxe','tennis de table','cross training','jeux collectifs','acrosport','course d\'orientation'];
+(function(){const oc=edtCycleAt;edtCycleAt=function(c,iso){iso=iso||edtToday();const P=edtProg(c).filter(p=>(!p.du||p.du<=iso)&&(!p.au||p.au>=iso));if(!P.length)return null;
+    if(!P.some(p=>p.j!=null))return P[0];let wd=new Date(iso+'T12:00:00').getDay();const jr=c&&c.jours&&c.jours[iso];if(jr&&jr.j!=null)wd=+jr.j;
+    return P.find(p=>p.j!=null&&+p.j===wd)||P.find(p=>p.j==null)||P.slice().sort((a,b)=>String(a.du).localeCompare(String(b.du)))[0];};
+  const oa=edtApsaOf;edtApsaOf=function(c,iso){const a=oa.apply(this,arguments);if(!a||EDT_CA4.indexOf(a)>=0)return a;return (c&&EDT_CA4.indexOf(c.apsa)>=0)?c.apsa:'';};})();
+// ── import d'un code « calendrier » ──
+(function(){const op=libImportParse;libImportParse=function(t){try{const d=JSON.parse(String(t||'').trim());if(d&&d.gribouillis==='cal'&&Array.isArray(d.classes))return d.classes.length?[{kind:'cal'}]:null;}catch(e){}return op.apply(this,arguments);};
+  const ot=libImportText;libImportText=function(t){try{const d=JSON.parse(String(t||'').trim());if(d&&d.gribouillis==='cal'&&Array.isArray(d.classes)){calImportShow(d);return 1;}}catch(e){}return ot.apply(this,arguments);};})();
+function calImportGuess(L,nom){const n=clsNorm(nom);let c=L.find(x=>clsNorm(x.nom)===n);if(c)return c.id;
+  c=L.find(x=>clsNorm(x.nom).replace(/\s+/g,'')===n.replace(/\s+/g,''));if(c)return c.id;if(n.length>=3){c=L.find(x=>clsNorm(x.nom).indexOf(n)===0);if(c)return c.id;}return '';}
+function calImportShow(D){const L=clsData().list;const OV=['cal','imp','ov'].join('-');const o0=E(OV);if(o0)o0.remove();
+  const o=document.createElement('div');o.id=OV;o.className='trn-ov';o.onclick=e=>{if(e.target===o)o.remove();};
+  let h='<'+'div class="trn-box"><h3 style="margin:0 0 6px;">🗓 Importer le calendrier</h3><'+'div class="cc-dim" style="margin-bottom:8px;">Pour chaque classe : ses créneaux, ses cycles d\'APSA et ses jours de cours. Ça <b>remplace</b> les horaires et la programmation de la classe choisie (élèves, séances et séquences ne bougent pas).</'+'div>';
+  D.classes.forEach((k,i)=>{const g=calImportGuess(L,k.nom);const nC=(k.prog||[]).length,nJ=Object.keys(k.jours||{}).length;
+    h+='<'+'div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:6px 0;padding:6px;border:1px solid #334155;border-radius:8px;"><b style="min-width:60px;">'+esc(k.nom)+'</b><span class="cc-dim" style="flex:1;">'+(k.edt||[]).map(x=>EDT_JOURS[+x.j]+' '+edtFmtH(x.h1)).join(', ')+' · '+nC+' cycles · '+nJ+' cours</span>'
+      +'<select data-i="'+i+'"><option value="">— ne pas importer —</option>'+L.map(c=>'<option value="'+esc(c.id)+'"'+(g===c.id?' selected':'')+'>'+esc(c.nom)+'</option>').join('')+'<option value="__new__"'+(!g?' selected':'')+'>➕ Créer la classe « '+esc(k.nom)+' »</option></select></'+'div>';});
+  h+='<'+'div style="display:flex;gap:8px;justify-content:flex-end;margin-top:10px;"><button type="button" class="btn-xs" style="background:#334155;color:#fff;" data-a="x">Annuler</button><button type="button" class="btn-xs green" data-a="ok">✓ Importer</button></'+'div></'+'div>';
+  o.innerHTML=h;document.body.appendChild(o);o.querySelector('[data-a=x]').onclick=()=>o.remove();
+  o.querySelector('[data-a=ok]').onclick=()=>{const d=clsData();let n=0;
+    o.querySelectorAll('select[data-i]').forEach(sel=>{const k=D.classes[+sel.dataset.i];let id=sel.value;if(!id)return;let c;
+      if(id==='__new__'){c={id:'cl-'+Date.now().toString(36)+n,nom:k.nom,gs:{url:'',feuille:''},csv:'',maj:0};d.list.push(c);}else c=d.list.find(x=>x.id===id);if(!c)return;
+      c.edt=JSON.parse(JSON.stringify(k.edt||[]));c.prog=JSON.parse(JSON.stringify(k.prog||[]));c.jours=JSON.parse(JSON.stringify(k.jours||{}));n++;});
+    clsSave(d);o.remove();try{renderClassBar();}catch(e){}try{renderClassesConsole();}catch(e){}try{toast2('🗓 Calendrier importé pour '+n+' classe'+(n>1?'s':''));}catch(e){}};}
 </script>
 </body>
 </html>
