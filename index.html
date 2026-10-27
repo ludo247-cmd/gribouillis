@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v275</title>
+<title>Gribouillis EPS v276</title>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
 /* ── THÈME SOMBRE UNIQUEMENT ── */
@@ -1153,6 +1153,12 @@ body.nav-off.nav-peek #nav-handle{display:none;}
 .ael-2c>.r .ael-obs{margin-top:0;}
 .ael-2c>.r video,.ael-2c>.r img,.ael-2c>.r .anim-inline{display:block;margin:8px auto 0;max-width:100%;}
 @media (max-width:819px){.ael-2c{display:block;}}
+.ael-team .pl button.cap{border:2px solid #facc15;font-weight:800;}
+.ael-team .pl button i{font-style:normal;font-size:.68rem;font-weight:800;color:#facc15;margin-left:4px;vertical-align:super;}
+.trn-mode{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:6px 0 8px;font-size:.85rem;}
+.trn-mode button{border:1px solid #475569;background:#1e293b;color:#e2e8f0;border-radius:9px;padding:8px 12px;font-weight:700;cursor:pointer;}
+.trn-mode button.on{background:#2563eb;border-color:#60a5fa;color:#fff;}
+@media (max-width:600px){.ael-team .pl{gap:4px;padding:5px;}.ael-team .pl button{padding:3px 8px;font-size:.84rem;}.ael-team h5{font-size:.85rem;padding:4px 8px;}.ael-roles{font-size:.82rem;gap:4px;}.ael-teams{gap:6px;}}
 .fit-vid{display:block;max-width:100%;max-height:calc(100vh - 170px);margin:8px auto;border-radius:10px;background:#000;}
 .pres-vids h5{margin:12px 0 2px;font-size:.9rem;color:#93c5fd;}
 .ok-list{margin:0;padding:0;list-style:none;}
@@ -21816,11 +21822,11 @@ libImportAsk=function(){const OV=['lib','imp','ov'].join('-');const o0=E(OV);if(
 let ASP_TSEL=null,ASP_PAIR=null;
 function aspTeamIds(s,a){return (a.groups||[]).filter(id=>{if(/^pop-/.test(id))return false;const g=aspChip(s,id);return g&&!g.base&&(g.members||[]).length;});}
 function aspTeamsHtml(s,b,a,me){const ids=aspTeamIds(s,a);if(ids.length<2)return '';let pres=null;try{const tm=aspTimes(s)[b.id];if(tm)pres=aspPresent(s,tm.a);}catch(e){}
-  const k=b.id+'|'+a.id;let h='<'+'div class="ael-teams" data-k="'+esc(k)+'">';
+  const k=b.id+'|'+a.id;let h='<'+'div class="ael-teams" data-k="'+esc(k)+'">';const CAP=aspCaptains(s,b,a);
   ids.forEach(id=>{const g=aspChip(s,id);const subs=(g.subs||[]).map(n=>typeof n==='string'?n:(n&&n.name)||'').filter(n=>n&&(g.members||[]).indexOf(n)<0);
-    h+='<'+'div class="ael-team" style="--tc:'+esc(g.color||'#475569')+'"><h5>'+esc(String(g.label))+' · '+(g.members||[]).length+'</h5><'+'div class="pl">'
-      +(g.members||[]).map(n=>{let c=[];try{if(grpSexe(n)==='F')c.push('f');}catch(e){}if(pres&&pres.indexOf(n)<0)c.push('out');if(n===me)c.push('me');if(ASP_TSEL&&ASP_TSEL.k===k&&ASP_TSEL.n===n)c.push('sel');
-        return '<button type="button" class="'+c.join(' ')+'" data-g="'+esc(id)+'" data-n="'+esc(n)+'" onclick="aspTeamPick(this)">'+esc(n)+'</button>';}).join('')
+    h+='<'+'div class="ael-team" style="--tc:'+esc(g.color||'#475569')+'"><h5 title="'+esc(String(g.label))+'">'+esc(aspTeamShort(s,ids,g))+' · '+(g.members||[]).length+'</h5><'+'div class="pl">'
+      +(g.members||[]).map(n=>{let c=[];try{if(grpSexe(n)==='F')c.push('f');}catch(e){}if(pres&&pres.indexOf(n)<0)c.push('out');if(n===me)c.push('me');if(CAP[n])c.push('cap');if(ASP_TSEL&&ASP_TSEL.k===k&&ASP_TSEL.n===n)c.push('sel');
+        return '<button type="button" class="'+c.join(' ')+'" data-g="'+esc(id)+'" data-n="'+esc(n)+'" onclick="aspTeamPick(this)">'+esc(n)+(CAP[n]?'<i>cap</i>':'')+'</button>';}).join('')
       +'</'+'div>'+(subs.length?'<'+'div class="sub">Remplaçants : '+subs.map(esc).join(', ')+'</'+'div>':'')+'</'+'div>';});
   return h+'</'+'div><'+'div class="ael-teams-hint">↔ Pour échanger deux joueurs : touche un joueur, puis un joueur d\'une autre équipe.</'+'div>';}
 function aspGroupObjs(s,id){const L=[];const add=g=>{if(g&&g.id===id&&L.indexOf(g)<0)L.push(g);};(s.groupes||[]).forEach(add);(s.decoupages||[]).forEach(d=>(d.groupes||[]).forEach(add));return L;}
@@ -21846,7 +21852,7 @@ function trnState(s,bid,aid){s.asp.tourn=s.asp.tourn||{};const k=bid+':'+aid;ret
 function trnShow(bid,aid,eleve){const s=aspS();if(!s)return;const a=aspAt(s,bid,aid);if(!a)return;const ids=aspTeamIds(s,a);const G=ids.map(id=>aspChip(s,id));const st=trnState(s,bid,aid);
   const OV=['trn','ov'].join('-');const o0=E(OV);if(o0)o0.remove();const o=document.createElement('div');o.id=OV;o.className='trn-ov';o.onclick=e=>{if(e.target===o)o.remove();};
   const tg=g=>'<span class="t" style="--tc:'+esc(g.color||'#475569')+'">'+esc(String(g.label))+'</span>';
-  let h='<'+'div class="trn-box"><h3 style="margin:0 0 4px;">🏆 Tournoi · '+G.length+' équipes</h3><'+'div class="cc-dim" style="margin-bottom:6px;">Chaque équipe rencontre toutes les autres. L\'équipe au repos arbitre et observe. Touche ▶ pour lancer un match.</'+'div>';
+  let h='<'+'div class="trn-box"><h3 style="margin:0 0 4px;">'+(G.length>2?'🏆 Tournoi · '+G.length+' équipes':'⚽ Match')+'</h3>'+trnModeHtml(s,a)+'<'+'div class="cc-dim" style="margin-bottom:6px;">'+(G.length>2?'Chaque équipe rencontre toutes les autres. L\'équipe au repos arbitre et observe. Touche ▶ pour lancer un match.':'Choisis le mode d\'observation puis touche ▶ Match.')+'</'+'div>';
   trnPairs(G.length).forEach((p,i)=>{const key=p[0]+'-'+p[1];const rest=G.filter((g,x)=>x!==p[0]&&x!==p[1]);const dn=!!st.done[ids[p[0]]+'~'+ids[p[1]]];
     h+='<'+'div class="trn-m'+(dn?' done':'')+'"><b>'+(i+1)+'</b><'+'div class="vs">'+tg(G[p[0]])+' contre '+tg(G[p[1]])+(rest.length?'<'+'div class="rest">Au repos / arbitrage : '+rest.map(g=>esc(String(g.label))).join(', ')+'</'+'div>':'')+'</'+'div>'
       +'<button type="button" data-i="'+p[0]+'" data-j="'+p[1]+'">'+(dn?'✓ Rejouer':'▶ Match')+'</button></'+'div>';});
@@ -21856,11 +21862,11 @@ function trnShow(bid,aid,eleve){const s=aspS();if(!s)return;const a=aspAt(s,bid,
     try{if(eleve)aspEleveObserve(bid,aid);else aspObserve(bid,aid);}finally{ASP_PAIR=null;}});
   o.querySelector('[data-x=reset]').onclick=()=>{st.done={};saveSeances();trnShow(bid,aid,eleve);};o.querySelector('[data-x=close]').onclick=()=>o.remove();}
 (function(){const oo=aspObserve;aspObserve=function(bid,aid){const s=aspS();const a=s&&aspAt(s,bid,aid);
-    if(a&&!ASP_PAIR&&aspAtIsFps(a)&&aspTeamIds(s,a).length>=3){trnShow(bid,aid,false);return;}
+    if(a&&!ASP_PAIR&&aspAtIsFps(a)&&aspTeamIds(s,a).length>=2){trnShow(bid,aid,false);return;}
     if(a&&ASP_PAIR){const g0=a.groups;a.groups=ASP_PAIR.concat((g0||[]).filter(id=>ASP_PAIR.indexOf(id)<0));try{return oo.apply(this,arguments);}finally{a.groups=g0;}}
     return oo.apply(this,arguments);};
   const oe=aspEleveObserve;aspEleveObserve=function(bid,aid){const s=aspS();const a=s&&aspAt(s,bid,aid);
-    if(a&&!ASP_PAIR&&!GRIB_EXPORT_MODE&&aspAtIsFps(a)&&aspTeamIds(s,a).length>=3){trnShow(bid,aid,true);return;}return oe.apply(this,arguments);};})();
+    if(a&&!ASP_PAIR&&!GRIB_EXPORT_MODE&&aspAtIsFps(a)&&aspTeamIds(s,a).length>=2){trnShow(bid,aid,true);return;}return oe.apply(this,arguments);};})();
 
 // ══════════════════════════════════════════════════════════════════════
 // v272 — même groupe dans 2 ateliers d'un bloc = les 2 à la suite (mode
@@ -21937,7 +21943,7 @@ function aspResShow(bid,aid){const s=aspS();if(!s)return;const b=aspB(s,bid),a=a
 function libcObsModeHtml(f){const v=f.obsMode||'';const o=(k,t)=>'<option value="'+k+'"'+(v===k?' selected':'')+'>'+t+'</option>';
   return '<label class="remed-edit-label" style="display:block;margin-top:6px;">👁 Mode d\'observation de ce match<select class="remed-edit-field" onchange="LIBC.f.obsMode=this.value">'+o('','Comme dans les réglages')+o('simple','✋ Boutons seuls')+o('draw','✏️ Gribouillage (tracer sur le terrain)')+'</select></label>';}
 (function(){const oo=aspObserve;aspObserve=function(bid,aid){const r=oo.apply(this,arguments);try{const s=aspS();const a=s&&aspAt(s,bid,aid);if(!a||document.getElementById(['trn','ov'].join('-')))return r;
-    const fx=(a.exos||[]).map(aspExInfo).find(i=>i&&i.kind==='fps');const m=fx&&fx.src&&fx.src.obsMode;
+    const fx=(a.exos||[]).map(aspExInfo).find(i=>i&&i.kind==='fps');const m=a.obsMode||(fx&&fx.src&&fx.src.obsMode);
     if(m==='simple'||m==='draw'){CFG.obsSimple=(m==='simple');try{saveConfig();}catch(e){}try{obsSimpleRefresh(true);}catch(e){}}}catch(e){console.warn('obsMode',e);}return r;};})();
 
 // ══════════════════════════════════════════════════════════════════════
@@ -21974,6 +21980,41 @@ function libcObsModeHtml(f){const v=f.obsMode||'';const o=(k,t)=>'<option value=
       if(over())st.classList.add('ael-scroll');}
     try{drawRemedDiagrams();}catch(e){}try{drawWheelLinks();}catch(e){}return;}
   return of.apply(this,arguments);};})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v276 — capitaines d'équipe (à la place des responsables, mode élève),
+// mode d'observation choisi au lancement du match, équipes équilibrées en
+// nombre de présents (les retardataires complètent ensuite)
+// ══════════════════════════════════════════════════════════════════════
+function aspCaptains(s,b,a){const out={};try{aspRolesOf(s,b,a).forEach(r=>{if(r.name&&aspRoleKey(r.role)==='respons'&&/\(.+\)\s*$/.test(r.role))out[r.name]=1;});}catch(e){}return out;}
+function aspTeamShort(s,ids,g){const L=String(g.label||'');const w=L.split(/\s+/)[0];if(!w)return L;const same=ids.filter(id=>{const x=aspChip(s,id);return x&&String(x.label||'').split(/\s+/)[0]===w;}).length;return same>1?L:w;}
+function trnModeHtml(s,a){let cur=a.obsMode;if(!cur){try{const fx=(a.exos||[]).map(aspExInfo).find(i=>i&&i.kind==='fps');cur=fx&&fx.src&&fx.src.obsMode;}catch(e){}}if(!cur)cur=CFG.obsSimple?'simple':'draw';
+  return '<'+'div class="trn-mode"><span>Observation :</span><button type="button" data-m="simple" class="'+(cur==='simple'?'on':'')+'">✋ Boutons seuls</button><button type="button" data-m="draw" class="'+(cur==='draw'?'on':'')+'">✏️ Gribouillage</button></'+'div>';}
+document.addEventListener('click',e=>{const bt=e.target.closest&&e.target.closest('.trn-mode button[data-m]');if(!bt)return;const ov=bt.closest('.trn-ov');const box=bt.parentNode;
+  box.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===bt));const st=ov&&ov.__ctx;if(st){const s=aspS();const a=s&&aspAt(s,st.bid,st.aid);if(a){a.obsMode=bt.dataset.m;saveSeances();}}},true);
+(function(){const ot=trnShow;trnShow=function(bid,aid,eleve){const r=ot.apply(this,arguments);try{const o=document.getElementById(['trn','ov'].join('-'));if(o){o.__ctx={bid:bid,aid:aid};
+    const s=aspS();const a=s&&aspAt(s,bid,aid);if(a&&!a.obsMode){const b=o.querySelector('.trn-mode button.on');if(b)a.obsMode=b.dataset.m;}}}catch(e){}return r;};})();
+// mode élève : pas de « responsable de la situation » ; le capitaine est entouré dans son équipe
+(function(){const o=aspElPagedHtml;aspElPagedHtml=function(s){let h=o.apply(this,arguments);if(h.indexOf('data-a=')<0)return h;const me=elMeGet(s);
+  const t=document.createElement('template');t.innerHTML=h;
+  t.content.querySelectorAll('.ael-step[data-a]').forEach(st=>{const b=(s.asp.blocks||[]).find(x=>x.id===st.dataset.b);const a=b&&(b.ats||[]).find(x=>x.id===st.dataset.a);if(!a)return;
+    const box=st.querySelector('.ael-roles');if(box){const R=aspRolesOf(s,b,a);const keep=R.filter(r=>aspRoleKey(r.role)!=='respons');const mine=keep.filter(r=>r.name&&r.name===me);
+      const cap=R.find(r=>aspRoleKey(r.role)==='respons'&&r.name===me&&/\((.+)\)\s*$/.test(r.role));let capT='';if(cap){const m=/\((.+)\)\s*$/.exec(cap.role);capT=m?m[1]:'';const ids=aspTeamIds(s,a);const g=ids.map(id=>aspChip(s,id)).find(x=>x&&x.label===capT);if(g)capT=aspTeamShort(s,ids,g);}
+      const html=(mine.length||cap?'<span class="me">⭐ '+(cap?'Tu es capitaine'+(capT?' ('+esc(capT)+')':''):'')+(cap&&mine.length?' + ':'')+(mine.length?'Ton rôle : '+mine.map(r=>aspRoleIco(r.role)+' '+esc(r.role)).join(' + '):'')+'</span>':'')
+        +keep.filter(r=>r.name!==me).map(r=>'<span>'+aspRoleIco(r.role)+' '+esc(r.role)+' : '+(r.name?esc(r.name):'—')+'</span>').join('');
+      if(html)box.innerHTML=html;else box.remove();}
+    if(st.querySelector('.ael-teams')){const w=st.querySelector('.ael-with');if(w)w.remove();}});
+  return t.innerHTML;};})();
+// équipes : même nombre de présents dans chaque équipe, puis les retardataires complètent
+function aspTeamsBalance(s){const G=(s.groupes||[]);if(G.length<2)return;const lateOf=g=>(g.subs||[]).filter(x=>x&&x.w!=='absent').map(x=>x.n);
+  const presOf=g=>{const L=lateOf(g);return (g.members||[]).filter(n=>L.indexOf(n)<0);};let guard=60;
+  while(guard--){const P=G.map(presOf);let hi=0,lo=0;P.forEach((p,i)=>{if(p.length>P[hi].length)hi=i;if(p.length<P[lo].length)lo=i;});if(P[hi].length-P[lo].length<=1)break;
+    const n=P[hi][P[hi].length-1];const A=G[hi].members;A.splice(A.indexOf(n),1);G[lo].members.push(n);
+    if(G[hi].leader===n)G[hi].leader=null;}
+  guard=60;while(guard--){const T=G.map(g=>(g.members||[]).length);let hi=0,lo=0;T.forEach((t,i)=>{if(t>T[hi])hi=i;if(t<T[lo])lo=i;});if(T[hi]-T[lo]<=1)break;
+    const L=lateOf(G[hi]).filter(n=>G[hi].members.indexOf(n)>=0);if(!L.length)break;const n=L[L.length-1];
+    G[hi].members.splice(G[hi].members.indexOf(n),1);G[lo].members.push(n);const k=(G[hi].subs||[]).findIndex(x=>x&&x.n===n);if(k>=0){const x=G[hi].subs.splice(k,1)[0];(G[lo].subs=G[lo].subs||[]).push(x);}}}
+(function(){const ot=genTeamsRun;genTeamsRun=function(){const c=GEN_UI.ctx;const r=ot.apply(this,arguments);try{if(c){const s=getActiveSeance();aspTeamsBalance(s);try{syncDecoup(s);}catch(e){}try{ASP_RL=null;ASP_CC=null;}catch(e){}saveSeances();renderSeanceTab();}}catch(e){console.warn('équilibre',e);}return r;};})();
 </script>
 </body>
 </html>
