@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v281</title>
+<title>Gribouillis EPS v282</title>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
 /* ── THÈME SOMBRE UNIQUEMENT ── */
@@ -22088,7 +22088,7 @@ function aspObsModeSet(bid,aid,v){const s=aspS();const a=s&&aspAt(s,bid,aid);if(
 // FPS, mode boutons seuls, un compteur par façon de marquer, critères de
 // réussite de la FPS = objectifs chiffrés de ces compteurs
 // ══════════════════════════════════════════════════════════════════════
-function fpsSportKey(it){try{const C=REMED_CONTENT||{};const k=Object.keys(C).find(k=>C[k]&&(C[k].label===it.apsa||k===it.apsa));if(k&&!C[k].custom)return k;}catch(e){}
+function fpsSportKey(it){try{const C=REMED_CONTENT||{};const ko=Object.keys(C).find(k=>C[k]&&!C[k].custom&&(C[k].oe||[]).some(o=>o&&o.id===it.oe));if(ko)return ko;const mp=/^(volley|badminton|basket|basketball|hand|handball|football)/.exec(String(it.oe||''));if(mp)return {basket:'basketball',hand:'handball'}[mp[1]]||mp[1];const k=Object.keys(C).find(k=>C[k]&&(C[k].label===it.apsa||k===it.apsa));if(k&&!C[k].custom)return k;}catch(e){}
   const P=CFG.savedPresets||[];const op=P.find(p=>p&&p.meta&&p.meta.oeId===it.oe);if(op&&op.apsaKey)return op.apsaKey;return 'football';}
 function fpsPointBtns(points){const out=[];(points||[]).forEach(l=>{l=String(l||'');if((l.match(/=/g)||[]).length!==1)return;const m=/^(.*?)=\s*(\d+)/.exec(l);if(!m)return;
     let lab=m[1].trim().replace(/[.:;,]+$/,'');if(!lab)return;const goal=/^\s*but\b/i.test(lab);const short=lab.length>34?lab.slice(0,33)+'…':lab;
@@ -22149,6 +22149,14 @@ function exportStripSeance(sc){if(sc.asp){delete sc.asp.res;delete sc.asp.tourn;
   delete sc.finTeams;delete sc.fin;delete sc.eleveChoix;delete sc.indivEval;delete sc.recapTeams;
   if(sc.exoData&&typeof sc.exoData==='object')Object.keys(sc.exoData).forEach(k=>{const e=sc.exoData[k];if(e&&typeof e==='object'){delete e.scores;delete e.note;}});
   (sc.clips||[]).forEach(c=>{if(c)delete c.comments;});}
+
+// v282 — correctif : pas de profil spécial « foot » pour les FPS de volley /
+// badminton créées par erreur en v279 ; on remet leur profil d'origine
+setTimeout(()=>{try{if(localStorage.getItem('grib_fpsprof_fix1'))return;const L=libLoad();const P=CFG.savedPresets||[];let ch=false;
+  L.filter(x=>x&&x.kind==='match').forEach(it=>{const k=fpsSportKey(it);if(!isRacket(k))return;const nm='FPS · '+String(it.titre||'Sans titre').trim();
+    const i=P.findIndex(p=>p&&p.name===nm&&p.meta&&p.meta.fpsId===it.id);if(i>=0){P.splice(i,1);ch=true;}
+    if(it.profile===nm||(it.cfg&&it.cfg.profile===nm)){const op=P.find(p=>p&&!p.generic&&p.meta&&p.meta.oeId===it.oe&&!p.meta.fpsId);const v=op?op.name:'';it.profile=v;if(it.cfg)it.cfg.profile=v;if(it.obsMode==='simple')it.obsMode='';ch=true;}});
+  if(ch){libSave(L);saveConfig();try{renderSavedPresets();}catch(e){}}localStorage.setItem('grib_fpsprof_fix1','1');}catch(e){console.warn('fps fix',e);}},2600);
 </script>
 </body>
 </html>
