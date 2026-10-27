@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v282</title>
+<title>Gribouillis EPS v283</title>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
 /* ── THÈME SOMBRE UNIQUEMENT ── */
@@ -21931,7 +21931,7 @@ function aspResShow(bid,aid){const s=aspS();if(!s)return;const b=aspB(s,bid),a=a
   const M=[...st.querySelectorAll('.ael-ex video,.ael-ex img,.ael-ex .anim-inline')].filter(m=>!m.closest('.wheel-wrap')&&!(m.parentElement&&m.parentElement.closest('.anim-inline'))&&m.getBoundingClientRect().height>0);
   if(M.length!==1)return;const m=M[0];const r=aspElRatio(m);if(!r)return;const H=st.clientHeight;if(!H)return;
   st.style.zoom='';st.classList.remove('ael-scroll');
-  const ex=m.closest('.ael-ex');try{const h4=ex&&ex.querySelector('h4');if(h4&&m.parentElement===ex)ex.insertBefore(m,h4.nextSibling);}catch(e){}st.querySelectorAll('.ael-res').forEach(x=>{x.style.display='flow-root';x.style.overflow='hidden';});const sr=st.getBoundingClientRect();const top=(ex?ex.getBoundingClientRect().top:m.getBoundingClientRect().top)-sr.top+st.scrollTop;
+  const ex=m.closest('.ael-ex');try{const h4=ex&&ex.querySelector('h4');if(m.parentElement===ex)ex.insertBefore(m,h4?h4.nextSibling:ex.firstChild);}catch(e){}st.querySelectorAll('.ael-res,.ael-ex .sel-obj,.ael-ex .sel-text,.ael-ex .sel-crit').forEach(x=>{x.style.display='flow-root';x.style.overflow='hidden';});const sr=st.getBoundingClientRect();const top=(ex?ex.getBoundingClientRect().top:m.getBoundingClientRect().top)-sr.top+st.scrollTop;
   const maxW=Math.floor(st.clientWidth*.66);let h=Math.floor(Math.min(H-top-40,maxW/r));if(h<H*.35)h=Math.floor(Math.min(H*.6,maxW/r));
   const set=hh=>{m.style.float='right';m.style.margin='0 0 8px 16px';m.style.maxWidth='none';m.style.maxHeight='none';m.style.height=hh+'px';m.style.width=(m.tagName==='DIV'?Math.floor(hh*r):maxW)+'px';m.style.objectFit='contain';if(m.tagName==='DIV')m.style.aspectRatio='auto';};
   set(h);const over=()=>st.scrollHeight>st.clientHeight+1;
