@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v273</title>
+<title>Gribouillis EPS v274</title>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
 /* ── THÈME SOMBRE UNIQUEMENT ── */
@@ -13974,7 +13974,7 @@ function libcRender(){
     h+=area('objectif','🎯 Objectif','Ex : conserver le ballon pour progresser vers la cible',2);
     h+=(k==='match'?inp('format','Format','Ex : 5c5, 2 × 4 min'):area('desc','Description','Dispositif, consignes…',3));
     if(k==='match')h+=area('points','Comment on marque (un par ligne)','',2)+area('regs','Règles du match (une par ligne)','',2)+area('aide','Pour aider (une par ligne)','',2);
-    if(k==='match')h+=fpsProfileSelectHtml(null,f.profile||'','libcSet(\'profile\',this.value);libcRender();')+fpsObjPanelHtml(null,f.profile||'','l:'); // v187 / v199
+    if(k==='match')h+=fpsProfileSelectHtml(null,f.profile||'','libcSet(\'profile\',this.value);libcRender();')+fpsObjPanelHtml(null,f.profile||'','l:')+libcObsModeHtml(f); // v187 / v199
     h+=libcPhotoHtml();
     h+=animField(f.anim,'LIBC.f.anim=J?{name:animName(J),json:J}:null;libcRender()');
     h+='<label class="remed-edit-label">Lien vidéo (facultatif)</label><input class="remed-edit-field" placeholder="https://…" value="'+esc(f.video||'')+'" oninput="libcSet(\'video\',this.value)" onchange="libcSet(\'video\',this.value);libcRender()">'+(f.video?'<video src="'+esc(f.video)+'" controls playsinline style="max-width:100%;max-height:200px;border-radius:8px;margin-top:6px;display:block;"></video>':'')+'<div style="margin-top:4px;"><button type="button" class="btn-xs" style="background:#1e3a8a;color:#fff;" onclick="libcVideoGh()">📂 Choisir dans GitHub</button></div>';
@@ -14061,6 +14061,7 @@ function libcSave(){
   if(f.anim)item.anim=f.anim;
   item.terrain=f.terrain||''; // v185
   if(k==='match')item.profile=f.profile||''; // v187
+  if(k==='match')item.obsMode=f.obsMode||'';
   if(k==='match')item.cfg={profile:f.profile||'',terrain:f.terrain||'',nom:f.titre.trim(),format:f.format.trim(),points:libcLines(f.points),emblematiques:libcLines(f.regs),etayage:libcLines(f.aide),groupes:[],criteres:crits,roles:f.roles.slice()};
   if(item.cfg){item.cfg.video=item.video||null;item.cfg.anim=item.anim||null;item.cfg.image=item.image||null;}
   const a=libLoad();
@@ -14096,7 +14097,7 @@ function libEdit(id){
   }
   const r=libcRefs().find(x=>(x.label||'')===it.apsa);
   const cfg=it.cfg||{};
-  LIBC={kind:it.kind==='match'?'match':'remed',editId:id,openK:{},f:{objectif:String(it.objectif||''),minJ:it.minJ?String(it.minJ):'',oes:[it.oe].concat(it.oeAlso||[]).filter(Boolean),tags:(it.tags||[]).slice(),mode:(r&&r.custom)?'ref':'apsa',titre:it.titre||'',desc:it.desc||'',video:it.video||'',anim:it.anim||null,image:it.image||null,ref:r?r.id:'',oe:it.oe||'',cps:[it.cp].concat(it.cpAlso||[]).filter(Boolean),regles:[],crits:(it.criteres||[]).map(c=>({label:c.label||'',cible:c.cible||1,collectif:!!c.collectif,neg:!!c.neg})),roles:(it.roles||[]).slice(),profile:it.profile||cfg.profile||'',terrain:it.terrain||cfg.terrain||'',aslinks:(it.principes||[]).slice(),format:it.desc||cfg.format||'',points:(cfg.points||[]).join('\n'),regs:(cfg.emblematiques||[]).join('\n'),aide:(cfg.etayage||[]).join('\n'),phase:'',short:'',label:'',principes:'',newLabel:''}};
+  LIBC={kind:it.kind==='match'?'match':'remed',editId:id,openK:{},f:{objectif:String(it.objectif||''),minJ:it.minJ?String(it.minJ):'',oes:[it.oe].concat(it.oeAlso||[]).filter(Boolean),tags:(it.tags||[]).slice(),mode:(r&&r.custom)?'ref':'apsa',titre:it.titre||'',desc:it.desc||'',video:it.video||'',anim:it.anim||null,image:it.image||null,ref:r?r.id:'',oe:it.oe||'',cps:[it.cp].concat(it.cpAlso||[]).filter(Boolean),regles:[],crits:(it.criteres||[]).map(c=>({label:c.label||'',cible:c.cible||1,collectif:!!c.collectif,neg:!!c.neg})),roles:(it.roles||[]).slice(),profile:it.profile||cfg.profile||'',obsMode:it.obsMode||'',terrain:it.terrain||cfg.terrain||'',aslinks:(it.principes||[]).slice(),format:it.desc||cfg.format||'',points:(cfg.points||[]).join('\n'),regs:(cfg.emblematiques||[]).join('\n'),aide:(cfg.etayage||[]).join('\n'),phase:'',short:'',label:'',principes:'',newLabel:''}};
   libcRender();
 }
 function libSaveMatchFromSeance(key){
@@ -17036,7 +17037,7 @@ function evalObjective(targetStr,minVolStr,actualPct,volume){
   if(isNaN(targetNum))return null;
   const minVol=minVolStr?(parseInt(minVolStr,10)||0):0;
   if(minVol>0&&(volume||0)<minVol){
-    return{state:'pending',targetNum,minVol,volume:volume||0,neg};
+    return{state:'pending',targetNum,minVol,volume:volume||0,neg,actualPct:actualPct||0};
   }
   const reached=neg?(actualPct||0)<=targetNum:(actualPct||0)>=targetNum;
   return{state:reached?'ok':'miss',targetNum,minVol,volume:volume||0,actualPct:actualPct||0,neg};
@@ -21901,16 +21902,38 @@ function aspResShow(bid,aid){const s=aspS();if(!s)return;const b=aspB(s,bid),a=a
 (function(){const of=aspElFit;aspElFit=function(){of.apply(this,arguments);try{
   const P=document.querySelector('.ael-pages');const st=P&&P.querySelector('.ael-step.ael-cur');if(!st||st.clientWidth<820)return;
   const M=[...st.querySelectorAll('.ael-ex video,.ael-ex img,.ael-ex .anim-inline')].filter(m=>!m.closest('.wheel-wrap')&&!(m.parentElement&&m.parentElement.closest('.anim-inline'))&&m.getBoundingClientRect().height>0);
-  if(M.length!==1)return;const m=M[0];const r=aspElRatio(m);if(!r)return;const H=st.clientHeight;if(!H||m.getBoundingClientRect().height>=H*.6)return;
+  if(M.length!==1)return;const m=M[0];const r=aspElRatio(m);if(!r)return;const H=st.clientHeight;if(!H)return;
   st.style.zoom='';st.classList.remove('ael-scroll');
   const ex=m.closest('.ael-ex');try{const h4=ex&&ex.querySelector('h4');if(h4&&m.parentElement===ex)ex.insertBefore(m,h4.nextSibling);}catch(e){}st.querySelectorAll('.ael-res').forEach(x=>{x.style.display='flow-root';x.style.overflow='hidden';});const sr=st.getBoundingClientRect();const top=(ex?ex.getBoundingClientRect().top:m.getBoundingClientRect().top)-sr.top+st.scrollTop;
-  const maxW=Math.floor(st.clientWidth*.55);let h=Math.floor(Math.min(H-top-40,maxW/r));if(h<H*.35)h=Math.floor(Math.min(H*.6,maxW/r));
-  const set=hh=>{m.style.float='right';m.style.margin='0 0 8px 16px';m.style.maxWidth='none';m.style.maxHeight='none';m.style.height=hh+'px';m.style.width=Math.floor(hh*r)+'px';if(m.tagName==='DIV')m.style.aspectRatio='auto';};
+  const maxW=Math.floor(st.clientWidth*.66);let h=Math.floor(Math.min(H-top-40,maxW/r));if(h<H*.35)h=Math.floor(Math.min(H*.6,maxW/r));
+  const set=hh=>{m.style.float='right';m.style.margin='0 0 8px 16px';m.style.maxWidth='none';m.style.maxHeight='none';m.style.height=hh+'px';m.style.width=(m.tagName==='DIV'?Math.floor(hh*r):maxW)+'px';m.style.objectFit='contain';if(m.tagName==='DIV')m.style.aspectRatio='auto';};
   set(h);const over=()=>st.scrollHeight>st.clientHeight+1;
   while(over()&&h>H*.4){h=Math.floor(h*.93);set(h);}
   let z=1;while(over()&&z>.6){z=Math.round((z-.05)*100)/100;st.style.zoom=z;}
   if(over()){st.style.zoom='';st.classList.add('ael-scroll');}
 }catch(e){console.warn('fit2',e);}};})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v274 — bilan élève (AS) : les équipes du dernier match joué ; rôles pris
+// seulement dans le groupe de l'atelier ; mode d'observation par situation
+// ══════════════════════════════════════════════════════════════════════
+(function(){const of=finTeamLabels;finTeamLabels=function(s){try{if(s&&s.asp){const M=seanceMatches(s);const m=M[M.length-1];const T=((m&&m.a&&m.a.teams)||[]).map(t=>String(t&&t.name||'')).filter(Boolean);return T.length>=2?T:[];}}catch(e){}return of.apply(this,arguments);};
+  const ob=renderEleveStepFin;renderEleveStepFin=function(s,st){try{if(s&&s.asp&&!finCurTeam(s)){const me=elMeGet(s);const L=finTeamLabels(s);if(me&&L.length){const t=L.find(l=>{const g=aspChips(s).find(x=>stripAccents(String(x.label)).toLowerCase()===stripAccents(l).toLowerCase());return g&&(g.members||[]).indexOf(me)>=0;});if(t)SEANCE_FIN_TEAM=t;}}}catch(e){}return ob.apply(this,arguments);};})();
+// rôles : uniquement des élèves de l'atelier (pas de garçon observateur d'une situation filles)
+(function(){const oa=aspRolesAll;aspRolesAll=function(s){const v=oa.apply(this,arguments);try{if(v.__grp)return v;v.__grp=1;const T=aspTimes(s);
+  (s.asp.blocks||[]).forEach(b=>{const tm=T[b.id];if(!tm||!v[b.id])return;const pres=aspPresent(s,tm.a);const set=(s.asp.roleSet||{})[b.id]||{};
+    const used={};(b.ats||[]).forEach(a=>(v[b.id][a.id]||[]).forEach(r=>{if(r.name)used[r.name]=(used[r.name]||0)+1;}));
+    (b.ats||[]).forEach(a=>{const R=v[b.id][a.id];if(!R)return;const M=aspAtMembers(s,a).filter(n=>pres.indexOf(n)>=0);if(!M.length)return;const play=aspAtPlaying(s,a);const man=set[a.id]||{};
+      R.forEach(r=>{if(!r.name||M.indexOf(r.name)>=0||man[r.role])return;used[r.name]--;
+        const free=M.filter(n=>!used[n]);const pick=L=>L.slice().sort((x,y)=>String(x).localeCompare(String(y),'fr'))[0];
+        const n=pick(free.filter(x=>aspHasRole(x,r.role)&&play.indexOf(x)<0))||pick(free.filter(x=>play.indexOf(x)<0))||pick(free.filter(x=>aspHasRole(x,r.role)))||pick(free)||null;
+        r.name=n;if(n)used[n]=(used[n]||0)+1;});});});}catch(e){console.warn('rôles groupe',e);}return v;};})();
+// mode d'observation choisi dans la situation (match)
+function libcObsModeHtml(f){const v=f.obsMode||'';const o=(k,t)=>'<option value="'+k+'"'+(v===k?' selected':'')+'>'+t+'</option>';
+  return '<label class="remed-edit-label" style="display:block;margin-top:6px;">👁 Mode d\'observation de ce match<select class="remed-edit-field" onchange="LIBC.f.obsMode=this.value">'+o('','Comme dans les réglages')+o('simple','✋ Boutons seuls')+o('draw','✏️ Gribouillage (tracer sur le terrain)')+'</select></label>';}
+(function(){const oo=aspObserve;aspObserve=function(bid,aid){const r=oo.apply(this,arguments);try{const s=aspS();const a=s&&aspAt(s,bid,aid);if(!a||document.getElementById(['trn','ov'].join('-')))return r;
+    const fx=(a.exos||[]).map(aspExInfo).find(i=>i&&i.kind==='fps');const m=fx&&fx.src&&fx.src.obsMode;
+    if(m==='simple'||m==='draw'){CFG.obsSimple=(m==='simple');try{saveConfig();}catch(e){}try{obsSimpleRefresh(true);}catch(e){}}}catch(e){console.warn('obsMode',e);}return r;};})();
 </script>
 </body>
 </html>
