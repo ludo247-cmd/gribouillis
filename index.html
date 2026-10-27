@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v289</title>
+<title>Gribouillis EPS v291</title>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
 /* ── THÈME SOMBRE UNIQUEMENT ── */
@@ -1178,6 +1178,10 @@ body.nav-off.nav-peek #nav-handle{display:none;}
 .qj-prof .row{display:flex;flex-wrap:wrap;gap:6px;}
 .qj-prof button{border:1px solid #475569;background:#1e293b;color:#e2e8f0;border-radius:999px;padding:6px 12px;font-size:.82rem;cursor:pointer;}
 .qj-prof button.on{background:#15803d;border-color:#4ade80;color:#fff;font-weight:800;}
+.seq-bar{display:flex;gap:2px;margin:3px 0 6px;max-width:320px;}
+.seq-bar i{flex:1;height:9px;border-radius:3px;background:#334155;}
+.seq-bar i.d{background:#22c55e;}.seq-bar i.c{background:#f59e0b;}.seq-bar i.n{outline:2px solid #60a5fa;}
+.seq-leg{font-size:.68rem;color:var(--dim2);}
 .fit-vid{display:block;max-width:100%;max-height:calc(100vh - 170px);margin:8px auto;border-radius:10px;background:#000;}
 .pres-vids h5{margin:12px 0 2px;font-size:.9rem;color:#93c5fd;}
 .ok-list{margin:0;padding:0;list-style:none;}
@@ -19380,7 +19384,7 @@ function edtWeekHtml(){
   let h='<div class="card"><div class="card-title"><span class="ico">🗓</span>Mon emploi du temps</div><div class="edt-week">';
   [1,2,3,4,5,6].forEach(j=>{const S=[];L.forEach(c=>edtSlots(c).forEach(x=>{if(+x.j===j)S.push({c,x});}));
     if(!S.length&&j===6)return;S.sort((a,b)=>edtMin(a.x.h1)-edtMin(b.x.h1));
-    h+='<div class="edt-day'+(j===tj?' today':'')+'"><h5>'+EDT_JOURS_L[j]+'</h5>'+(S.length?S.map(o=>{const ap=edtApsaOf(o.c);const isNow=now&&now.c.id===o.c.id&&+now.x.j===+o.x.j&&now.x.h1===o.x.h1;
+    h+='<div class="edt-day'+(j===tj?' today':'')+'"><h5>'+EDT_JOURS_L[j]+'</h5>'+(S.length?S.map(o=>{const ap=edtSlotApsa(o.c,+o.x.j);const isNow=now&&now.c.id===o.c.id&&+now.x.j===+o.x.j&&now.x.h1===o.x.h1;
       return '<button type="button" class="edt-slot'+(isNow?' now':'')+'" style="--c:'+edtClassColor(o.c)+'" onclick="edtGoSlot(\''+esc(o.c.id)+'\')"><b>'+esc(o.c.nom)+'</b>'+edtFmtH(o.x.h1)+'–'+edtFmtH(o.x.h2)+(ap?' · '+(APSA_ICONS[ap]||'')+' '+esc(calSportName(ap)):'')+(isNow?' · maintenant':'')+'</button>';}).join(''):'<span class="cc-dim">—</span>')+'</div>';});
   return h+'</div></div>';
 }
@@ -22261,7 +22265,7 @@ const EDT_APSA=['football','handball','basketball','volley','badminton','demi-fo
 (function(){const oc=edtCycleAt;edtCycleAt=function(c,iso){iso=iso||edtToday();const P=edtProg(c).filter(p=>(!p.du||p.du<=iso)&&(!p.au||p.au>=iso));if(!P.length)return null;
     if(!P.some(p=>p.j!=null))return P[0];let wd=new Date(iso+'T12:00:00').getDay();const jr=c&&c.jours&&c.jours[iso];if(jr&&jr.j!=null)wd=+jr.j;
     return P.find(p=>p.j!=null&&+p.j===wd)||P.find(p=>p.j==null)||P.slice().sort((a,b)=>String(a.du).localeCompare(String(b.du)))[0];};
-  const oa=edtApsaOf;edtApsaOf=function(c,iso){const a=oa.apply(this,arguments);if(!a||EDT_CA4.indexOf(a)>=0)return a;return (c&&EDT_CA4.indexOf(c.apsa)>=0)?c.apsa:'';};})();
+  const oa=edtApsaOf;edtApsaOf=function(c,iso){const a=oa.apply(this,arguments);if(!a||EDT_CA4.indexOf(a)>=0)return a;return '';};})();
 // ── import d'un code « calendrier » ──
 (function(){const op=libImportParse;libImportParse=function(t){try{const d=JSON.parse(String(t||'').trim());if(d&&d.gribouillis==='cal'&&Array.isArray(d.classes))return d.classes.length?[{kind:'cal'}]:null;}catch(e){}return op.apply(this,arguments);};
   const ot=libImportText;libImportText=function(t){try{const d=JSON.parse(String(t||'').trim());if(d&&d.gribouillis==='cal'&&Array.isArray(d.classes)){calImportShow(d);return 1;}}catch(e){}return ot.apply(this,arguments);};})();
@@ -22280,6 +22284,88 @@ function calImportShow(D){const L=clsData().list;const OV=['cal','imp','ov'].joi
       if(id==='__new__'){c={id:'cl-'+Date.now().toString(36)+n,nom:k.nom,gs:{url:'',feuille:''},csv:'',maj:0};d.list.push(c);}else c=d.list.find(x=>x.id===id);if(!c)return;
       c.edt=JSON.parse(JSON.stringify(k.edt||[]));c.prog=JSON.parse(JSON.stringify(k.prog||[]));c.jours=JSON.parse(JSON.stringify(k.jours||{}));n++;});
     clsSave(d);o.remove();try{renderClassBar();}catch(e){}try{renderClassesConsole();}catch(e){}try{toast2('🗓 Calendrier importé pour '+n+' classe'+(n>1?'s':''));}catch(e){}};}
+
+// ══════════════════════════════════════════════════════════════════════
+// v290 — emploi du temps : l'APSA du créneau (en cours ou à venir) ;
+// une séquence préparée pour chaque cycle d'APSA qui a un référentiel ;
+// petite barre d'avancement de la séquence sur la carte de la classe
+// ══════════════════════════════════════════════════════════════════════
+function edtSlotApsa(c,j){const P=edtProg(c);if(!P.length)return edtApsaOf(c);const t=edtToday();const mine=P.filter(p=>p.j==null||+p.j===j);
+  const cur=mine.find(p=>(!p.du||p.du<=t)&&(!p.au||p.au>=t));if(cur)return cur.apsa;const nx=mine.find(p=>p.du&&p.du>t);return nx?nx.apsa:'';}
+function seqPrepFor(c){if(!c||!Array.isArray(c.prog)||!c.prog.length)return 0;const C=REMED_CONTENT||{};let n=0;const A=[];
+  c.prog.forEach(p=>{if(p&&p.apsa&&C[p.apsa]&&!C[p.apsa].custom&&A.indexOf(p.apsa)<0)A.push(p.apsa);});
+  const all=seqAll();
+  A.forEach(ap=>{const cyc=c.prog.filter(p=>p.apsa===ap);const du=cyc.map(p=>p.du).sort()[0],au=cyc.map(p=>p.au).sort().slice(-1)[0];
+    let q=all.find(x=>x.classeId===c.id&&x.sport===ap&&x.auto);
+    if(!q){const nbJ=Object.keys(c.jours||{}).filter(k=>c.jours[k]&&c.jours[k].apsa===ap).length||6;
+      q={id:'seq-'+Date.now().toString(36)+Math.floor(Math.random()*1e4),classeId:c.id,nom:(calSportName(ap).charAt(0).toUpperCase()+calSportName(ap).slice(1))+' — '+c.nom,sport:ap,ref:'',oeIds:[],nb:Math.max(1,Math.min(20,nbJ)),cols:[],createdAt:Date.now(),auto:1,du:du,au:au};
+      seqEnsureCols(q);all.push(q);n++;}
+    cyc.forEach(p=>{if(!p.seqId)p.seqId=q.id;});});
+  if(n)seqSaveAll(all);return n;}
+function seqPrepAll(){const d=clsData();let n=0;d.list.forEach(c=>{n+=seqPrepFor(c);});clsSave(d);return n;}
+(function(){const oi=calImportShow;calImportShow=function(D){oi.apply(this,arguments);try{const o=document.getElementById(['cal','imp','ov'].join('-'));const b=o&&o.querySelector('[data-a=ok]');if(b){const f=b.onclick;b.onclick=function(){f.apply(this,arguments);try{const n=seqPrepAll();if(n)toast2('🗓 Calendrier importé · '+n+' séquence(s) préparée(s)');}catch(e){}};}}catch(e){}};})();
+setTimeout(()=>{try{if(localStorage.getItem('grib_seqprep_v1'))return;const n=seqPrepAll();localStorage.setItem('grib_seqprep_v1','1');if(n){try{renderClassesConsole();}catch(e){}}}catch(e){console.warn('seqPrep',e);}},2200);
+// carte de la classe : séquence(s) avec barre d'avancement
+seqClassLine=function(c){const L=seqOfClass(c);if(!L.length)return '';const t=edtToday();
+  const curAp=(()=>{try{const P=edtProg(c);const cur=P.find(p=>(!p.du||p.du<=t)&&(!p.au||p.au>=t));const nx=P.find(p=>p.du&&p.du>t);return (cur||nx||{}).apsa||'';}catch(e){return '';}})();
+  const S=L.slice().sort((a,b)=>((b.sport===curAp)-(a.sport===curAp))||(String(a.du||'9').localeCompare(String(b.du||'9'))));
+  return S.slice(0,3).map(q=>{seqEnsureCols(q);const p=seqProgress(q);let nxt=-1;let bar='';
+    for(let k=0;k<q.nb;k++){const s=seqSeance(q,k);const cl=s?(s.status==='done'?'d':'c'):'';if(!s&&nxt<0)nxt=k;bar+='<i class="'+cl+(k===nxt?' n':'')+'" title="Séance '+(k+1)+(s?(s.status==='done'?' · faite':' · en cours'):'')+'"></i>';}
+    return '<div class="cc-line">🗓️ Séquence <b>'+esc(q.nom)+'</b> · '+p.done+(p.cur?' (+'+p.cur+' en cours)':'')+'/'+q.nb+' séance'+(q.nb>1?'s':'')+(q.du?' <span class="seq-leg">· '+edtFrDate(q.du)+' → '+edtFrDate(q.au)+'</span>':'')+'</div><'+'div class="seq-bar">'+bar+'</'+'div>';}).join('');};
+
+// ══════════════════════════════════════════════════════════════════════
+// v291 — HANDBALL (cahier CEDREPS n°19, p. 296-317) : profils d'observation
+// rattachés aux 3 objets d'enseignement (fils rouges macro chiffrés) et une
+// FPS par objet dans la Biblio, avec son profil spécial (boutons seuls)
+// ══════════════════════════════════════════════════════════════════════
+const HB_B=(l,c,o)=>Object.assign({label:l,color:c,isShot:false,isGoal:false,switchTeam:false,secondary:null,pts:0,newPoss:false},o||{});
+const HB_BASE=()=>[HB_B('✅ Conservée','#16a34a'),HB_B('❌ Perdue','#dc2626',{switchTeam:true,newPoss:true}),HB_B('🤾 Tir','#c05621',{isShot:true,switchTeam:true,newPoss:true}),HB_B('🤾 But !','#b45309',{isShot:true,isGoal:true,switchTeam:true,pts:1,newPoss:true})];
+const HB_DEFS=[
+ {oe:'handball-a',name:'HB Niv 1 - Jouer en mouvement',
+  macro:"Fils rouges macro (p. 296) : entrées en possession suivies des 3 pas « presque systématiquement » ; 100 % des attaquants / défenseurs dans leur espace au moment du tir ; chaque joueur tire au moins 2 fois en 5 min.",
+  extra:[HB_B('🏃 Entrée avec 3 pas','#0891b2'),HB_B('👥 Tous dans l\'espace au tir','#7c3aed')],
+  ratios:[['3 pas à l\'entrée en possession / Poss.',['btn_4'],['poss'],''],['Tous dans l\'espace au tir / Tirs',['btn_5'],['tirs'],'100']],
+  fps:{titre:'Tous en mouvement avec 3 pas, 1 dribble, 3 pas',objectif:'Jouer en mouvement pour participer à la progression vers le tir',
+   format:'4 à 5 min · 3 contre 3 (4 max), équipes hétérogènes, doublettes attaquant/défenseur · terrain 40 × 10 m (demi-terrain de hand en long) · cible : gros plots à renverser derrière une zone de 3 m · espaces de progression (attaque) / de repli (défense) devant chaque zone',
+   points:['Plot renversé = 1 pt','Toute l\'équipe dans son espace de progression ou de repli au moment du tir = 1 pt'],
+   regs:['Défense homme à homme « légère » en doublettes','Souplesse sur le marcher (4 ou 5 pas au début) et la tenue de balle (3 à 5 s)','Non-contact selon l\'engagement des élèves','Tireur protégé : interdit de le toucher ou le gêner quand il s\'arrête sans défenseur entre la zone et lui'],
+   aide:['4 arbitres : marcher, reprise de dribble, zone, touche','2 observateurs sur la touche, face à l\'espace de progression / repli','Score visible : plot déquillé et coupelle sur le côté'],
+   crits:[{label:'Tirs par joueur en 5 min',cible:2},{label:'Tous dans l\'espace au moment du tir (%)',cible:100}],roles:['Arbitre','Observateur'],src:'p. 296-302'}},
+ {oe:'handball-b',name:'HB Niv 2 - Avancement sécurisé',
+  macro:"Fils rouges macro (p. 303) : valeur moyenne de la balle au tir cadré ; passes / dribbles trop risqués sur le nombre de possessions ; tirs en situation favorable (SFT) sur possessions : 80 % en contre-attaque.",
+  extra:[HB_B('⚠️ Passe/dribble trop risqué','#9a3412',{switchTeam:true,newPoss:true}),HB_B('🎯 Tir en SFT','#0f766e',{isShot:true,switchTeam:true,newPoss:true})],
+  ratios:[['Passes/dribbles trop risqués / Poss.',['btn_4'],['poss'],''],['Tirs en SFT / Poss.',['btn_5'],['poss'],'80']],
+  fps:{titre:'Gagne-terrain : la balle à 10 points',objectif:'Faire avancer la balle de façon sécurisée, fluide et rapide',
+   format:'5 min · 4 + GB contre 4 + GB, tournoi de 4 ou 5 équipes · tout terrain · buts découpés en espace central et espaces latéraux (cordelettes) · réserve de ballons près de chaque but',
+   points:['But (dans un espace latéral, GB surpassé) : la balle vaut 10 pts moins 1 pt par passe','Passe ou dribble trop risqué : -10 pts pour le joueur (la 1re de chacun ne compte pas)','Gagne l\'équipe au meilleur score : points positifs moins malus'],
+   regs:['Relance du GB seulement à un joueur dans ses 9 m','Contact interdit','Rotations obligatoires des postes centraux, latéraux et du GB à chaque mi-temps'],
+   aide:['Une équipe juge et crie : elle décompte la valeur de la balle et annonce les malus','2 arbitres et 2 élèves à la table de marque (un par équipe)','Après une perte trop risquée : temps mort très court où l\'élève dit pourquoi'],
+   crits:[{label:'Tirs en SFT / possessions en contre-attaque (%)',cible:80}],roles:['Arbitre','Juge-crieur','Table de marque'],src:'p. 303-309'}},
+ {oe:'handball-c',name:'HB Niv 3 - Bascule du rapport de force',
+  macro:"Fils rouges macro (p. 310) — observables dans la situation d'extra-balle : tirs en situation favorable en 3 passes maximum (80 % très bonne maîtrise / 60 % satisfaisante / 40 % fragile / 20 % insuffisante) ; buts sur extra-balle / extra-balles gagnées ; passages en force en points malus.",
+  extra:[HB_B('⭐ Extra-balle gagnée','#7c3aed'),HB_B('🎯 TSF en 3 passes max','#0f766e',{isShot:true,switchTeam:true,newPoss:true}),HB_B('🤾⭐ But sur extra-balle','#15803d',{isShot:true,isGoal:true,switchTeam:true,pts:4,newPoss:true}),HB_B('⛔ Passage en force','#991b1b',{switchTeam:true,newPoss:true})],
+  ratios:[['TSF en 3 passes / Extra-balles',['btn_5'],['btn_4'],'60'],['Buts sur extra-balle / Extra-balles',['btn_6'],['btn_4'],'60'],['Passages en force (malus)',['btn_7'],[],'']],
+  fps:{titre:'Manœuvre d\'accès au tir : l\'extra-balle',objectif:'Faire basculer le rapport de force sur une défense replacée par l\'addition des actions de fixation',
+   format:'6 min · 3 + GB contre 3 + GB (ou 4 contre 4), tournoi de 4 ou 5 équipes · terrain 20 × 10 m, zone de 4 m curviligne, mini-buts · 3 terrains sur la largeur d\'un terrain 40 × 20 m',
+   points:['But sur montée de balle ou récupération = 1 pt','But sur extra-balle = 4 pts','Extra-balle : gagnée si la montée de balle finit par un but sur relance du GB, en 3 passes maximum et sans dribble','But valable seulement en 1 contre 0, tireur qui retombe dans la zone'],
+   regs:['Défense homme à homme puis homme à homme étagée (joueurs numérotés en doublettes)','Contacts autorisés pour gêner, mais souples','3 pas, 1 dribble, 3 pas','Engagement du GB'],
+   aide:['Coachs-juges : accordent l\'extra-balle à haute voix, d\'accord avec ceux de l\'autre équipe','Juges-crieurs de la 3e équipe : annoncent le gain ou non de l\'extra-balle','2 arbitres et 2 élèves à la table (points sur montée de balle et sur extra-balle)'],
+   crits:[{label:'TSF en 3 passes max (%)',cible:60},{label:'Buts sur extra-balle / extra-balles gagnées (%)',cible:60}],roles:['Arbitre','Coach-juge','Juge-crieur','Table de marque'],src:'p. 310-316'}}];
+function hbSeed(){try{if(!Array.isArray(CFG.savedPresets))CFG.savedPresets=[];const P=CFG.savedPresets;let ch=false;const L=libLoad();let lch=false;const lab=(REMED_CONTENT&&REMED_CONTENT.handball&&REMED_CONTENT.handball.label)||'Handball';
+  HB_DEFS.forEach(d=>{let p=P.find(x=>x&&x.apsaKey==='handball'&&x.name===d.name);
+    if(!p){const B=HB_BASE().concat(d.extra.map(x=>Object.assign({},x)));const oe=((REMED_CONTENT.handball||{}).oe||[]).find(o=>o.id===d.oe)||{};
+      p={name:d.name,apsa:'🤾',apsaKey:'handball',gameMode:'1eq',dialogBtns:B,customRatios:d.ratios.map(r=>({label:r[0],show:true,numCriteria:r[1],denCriteria:r[2],target:r[3],minVolume:''})),
+        r1:false,r2:true,r3:false,r4:false,r5:false,r6:false,showRZ:false,showPertes:false,meta:{oeId:d.oe,oeLabel:(oe.short||'')+' — '+(oe.label||''),macroHint:d.macro,src:'CEDREPS cahier 19 handball'}};
+      P.push(p);ch=true;}
+    const f=d.fps;const id='lib-cedreps-'+d.oe;if(!L.some(x=>x.id===id)){
+      L.push({id:id,kind:'match',titre:f.titre,objectif:f.objectif,desc:f.format,criteres:f.crits.map(c=>({label:c.label,cible:c.cible,collectif:true,neg:false})),roles:f.roles.slice(),apsa:lab,oe:d.oe,oeLab:'',cp:'',cpAlso:[],tags:['CEDREPS'],profile:'',obsMode:'simple',date:Date.now(),
+        cfg:{profile:'',nom:f.titre,format:f.format,terrain:'',points:f.points.slice(),emblematiques:f.regs.slice(),etayage:f.aide.concat(['Source : cahier CEDREPS n°19 handball, '+f.src]),groupes:[],criteres:[],roles:f.roles.slice()}});lch=true;}
+    const it=L.find(x=>x.id===id);const fp='FPS · '+it.titre;
+    if(!P.some(x=>x&&x.name===fp)){const q=JSON.parse(JSON.stringify(p));q.name=fp;q.obsSimple=true;q.meta=Object.assign({},q.meta,{fpsId:id});
+      P.push(q);ch=true;}
+    if(!it.profile){it.profile=fp;if(it.cfg)it.cfg.profile=fp;lch=true;}});
+  if(lch)libSave(L);if(ch){saveConfig();try{renderSavedPresets();}catch(e){}}}catch(e){console.warn('hbSeed',e);}}
+setTimeout(hbSeed,2400);
 </script>
 </body>
 </html>
