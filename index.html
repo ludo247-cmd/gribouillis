@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v280</title>
+<title>Gribouillis EPS v281</title>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
 /* ── THÈME SOMBRE UNIQUEMENT ── */
@@ -16088,11 +16088,11 @@ function exportSeanceEleve(){
   const keys={};
   const sc=JSON.parse(JSON.stringify(s));
   try{sc._pool=withGroupMembers(seanceParticipantPool(s));}catch(e){sc._pool=[];}
-  sc.matchArchiveIdxs=[];sc.recap='';sc.status='active';
+  sc.matchArchiveIdxs=[];sc.recap='';sc.status='active';try{exportStripSeance(sc);}catch(e){console.warn('export nettoyage',e);}
   keys['grib_seances_v1']=JSON.stringify([sc]);
   keys['grib_seance_state_v1']=JSON.stringify({activeId:sc.id,mode:'eleve'});
   try{const c=JSON.parse(raw('grib_cfg_v10')||'{}');c.savedPresets=(c.savedPresets||[]).filter(p=>p&&p.apsaKey===s.sport).slice(0,3);c.apsa=s.sport;keys['grib_cfg_v10']=JSON.stringify(c);}catch(e){}
-  try{const ed=JSON.parse(raw('grib_remed_edits_v1')||'{}');const o={};if(ed[s.sport])o[s.sport]=ed[s.sport];keys['grib_remed_edits_v1']=JSON.stringify(o);}catch(e){}
+  try{const ed=JSON.parse(raw('grib_remed_edits_v1')||'{}');const o={};if(ed[s.sport])o[s.sport]=ed[s.sport];try{exportStripScores(o);}catch(e){}keys['grib_remed_edits_v1']=JSON.stringify(o);}catch(e){}
   try{const ref=seanceRefId(s);const arr=JSON.parse(raw('grib_referentiels_v1')||'[]');keys['grib_referentiels_v1']=JSON.stringify((Array.isArray(arr)?arr:[]).filter(r=>r&&r.id===ref));keys['grib_ref_seeded_v1']=raw('grib_ref_seeded_v1')||'1';}catch(e){}
   ['grib_fps_v1','grib_arrows_v1'].forEach(k=>{const v=raw(k);if(v!=null)keys[k]=v;});
   try{if(typeof exportExtraKeys==='function')exportExtraKeys(s,keys,raw);}catch(e){console.warn('export AS',e);}
@@ -22138,6 +22138,17 @@ setTimeout(()=>{try{if(localStorage.getItem('grib_fpsprof_v1'))return;try{seedCe
     st.querySelectorAll('.ael-res').forEach(rb=>{if(!rb.querySelector('h5'))return;const ex2=rb.previousElementSibling;const sc=ex2&&ex2.classList&&ex2.classList.contains('ael-ex')?ex2.querySelector('.sel-crit'):null;if(sc)sc.remove();});
   });
   return t.innerHTML;};})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v281 — envoi aux élèves (RGPD) : le fichier ne contient plus les résultats,
+// remarques, bilans ou évaluations déjà saisis dans la séance
+// ══════════════════════════════════════════════════════════════════════
+function exportStripScores(o,d){if(!o||typeof o!=='object'||(d||0)>12)return;if(Array.isArray(o)){o.forEach(x=>exportStripScores(x,(d||0)+1));return;}
+  Object.keys(o).forEach(k=>{if(k==='scores'||k==='participantsScores'){delete o[k];return;}exportStripScores(o[k],(d||0)+1);});}
+function exportStripSeance(sc){if(sc.asp){delete sc.asp.res;delete sc.asp.tourn;}
+  delete sc.finTeams;delete sc.fin;delete sc.eleveChoix;delete sc.indivEval;delete sc.recapTeams;
+  if(sc.exoData&&typeof sc.exoData==='object')Object.keys(sc.exoData).forEach(k=>{const e=sc.exoData[k];if(e&&typeof e==='object'){delete e.scores;delete e.note;}});
+  (sc.clips||[]).forEach(c=>{if(c)delete c.comments;});}
 </script>
 </body>
 </html>
