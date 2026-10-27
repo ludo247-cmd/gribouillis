@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v283</title>
+<title>Gribouillis EPS v284</title>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
 /* ── THÈME SOMBRE UNIQUEMENT ── */
@@ -16093,7 +16093,7 @@ function exportSeanceEleve(){
   keys['grib_seance_state_v1']=JSON.stringify({activeId:sc.id,mode:'eleve'});
   try{const c=JSON.parse(raw('grib_cfg_v10')||'{}');c.savedPresets=(c.savedPresets||[]).filter(p=>p&&p.apsaKey===s.sport).slice(0,3);c.apsa=s.sport;keys['grib_cfg_v10']=JSON.stringify(c);}catch(e){}
   try{const ed=JSON.parse(raw('grib_remed_edits_v1')||'{}');const o={};if(ed[s.sport])o[s.sport]=ed[s.sport];try{exportStripScores(o);}catch(e){}keys['grib_remed_edits_v1']=JSON.stringify(o);}catch(e){}
-  try{const ref=seanceRefId(s);const arr=JSON.parse(raw('grib_referentiels_v1')||'[]');keys['grib_referentiels_v1']=JSON.stringify((Array.isArray(arr)?arr:[]).filter(r=>r&&r.id===ref));keys['grib_ref_seeded_v1']=raw('grib_ref_seeded_v1')||'1';}catch(e){}
+  try{const ref=seanceRefId(s);const arr=JSON.parse(raw('grib_referentiels_v1')||'[]');const ref2=(s.proj2&&s.proj2.referentiel)||'';keys['grib_referentiels_v1']=JSON.stringify((Array.isArray(arr)?arr:[]).filter(r=>r&&(r.id===ref||(ref2&&r.id===ref2))));keys['grib_ref_seeded_v1']=raw('grib_ref_seeded_v1')||'1';}catch(e){}
   ['grib_fps_v1','grib_arrows_v1'].forEach(k=>{const v=raw(k);if(v!=null)keys[k]=v;});
   try{if(typeof exportExtraKeys==='function')exportExtraKeys(s,keys,raw);}catch(e){console.warn('export AS',e);}
   const payload=JSON.stringify({v:1,keys:keys}).replace(/</g,'\\u003c');
@@ -22157,6 +22157,18 @@ setTimeout(()=>{try{if(localStorage.getItem('grib_fpsprof_fix1'))return;const L=
     const i=P.findIndex(p=>p&&p.name===nm&&p.meta&&p.meta.fpsId===it.id);if(i>=0){P.splice(i,1);ch=true;}
     if(it.profile===nm||(it.cfg&&it.cfg.profile===nm)){const op=P.find(p=>p&&!p.generic&&p.meta&&p.meta.oeId===it.oe&&!p.meta.fpsId);const v=op?op.name:'';it.profile=v;if(it.cfg)it.cfg.profile=v;if(it.obsMode==='simple')it.obsMode='';ch=true;}});
   if(ch){libSave(L);saveConfig();try{renderSavedPresets();}catch(e){}}localStorage.setItem('grib_fpsprof_fix1','1');}catch(e){console.warn('fps fix',e);}},2600);
+
+// ══════════════════════════════════════════════════════════════════════
+// v284 — auto-évaluation de fin (AS) : les fils rouges de l'objet
+// d'enseignement de la FPS jouée par l'équipe de l'élève (ex. garçons :
+// « Le 1000 buts » → OE 2) ; sinon ceux du projet de son groupe
+// ══════════════════════════════════════════════════════════════════════
+function aspMyFpsItem(s){const me=elMeGet(s);if(!me||!s.asp)return null;let it=null;
+  (s.asp.blocks||[]).forEach(b=>{if(b.kind!=='bloc')return;(b.ats||[]).forEach(a=>{if(!aspAtIsFps(a))return;if(aspAtMembers(s,a).indexOf(me)<0)return;const fx=(a.exos||[]).map(aspExInfo).find(i=>i&&i.kind==='fps');if(fx&&fx.src)it=fx.src;});});return it;}
+function aspMicrosOfOe(oeId){const out=[];try{const C=REMED_CONTENT||{};Object.keys(C).forEach(k=>{if(out.length)return;const o=(C[k].oe||[]).find(x=>x&&x.id===oeId);if(!o)return;
+  (o.micro||[]).forEach(m=>{if(!m.hidden&&(m.states||[]).length&&!out.some(x=>x.m.id===m.id))out.push({oe:o,m:m});});});}catch(e){}return out;}
+(function(){const om=seanceOeMicros;seanceOeMicros=function(s){try{if(s&&s.asp&&elMeGet(s)){const it=aspMyFpsItem(s);if(it){const ids=[it.oe].concat(it.oeAlso||[]).filter(Boolean);let L=[];ids.forEach(id=>aspMicrosOfOe(id).forEach(x=>{if(!L.some(y=>y.m.id===x.m.id))L.push(x);}));if(L.length)return L;}
+      const px=elProxy(s);if(px!==s){const r=om.call(this,px);if(r.length)return r;}}}catch(e){console.warn('fils rouges',e);}return om.apply(this,arguments);};})();
 </script>
 </body>
 </html>
