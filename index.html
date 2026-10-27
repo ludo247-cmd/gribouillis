@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v279</title>
+<title>Gribouillis EPS v280</title>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
 /* ── THÈME SOMBRE UNIQUEMENT ── */
@@ -1171,6 +1171,9 @@ body.nav-off.nav-peek #nav-handle{display:none;}
 .asp-sel label input{margin:2px 0 0 !important;flex:0 0 auto !important;width:16px !important;height:16px;}.asp-sel label span{flex:1 1 auto;text-align:left;}.asp-sel .pj{font-size:.7rem;color:#94a3b8;margin:6px 0 0;text-transform:uppercase;letter-spacing:.04em;}
 .asp-obsm{display:inline-flex;align-items:center;gap:4px;margin:4px 0 0 4px;font-size:.75rem;color:#cbd5e1;}
 .asp-obsm select{font-size:.75rem;padding:3px 6px;border-radius:7px;max-width:170px;}
+.ael-with .ael-rl{display:inline;margin-left:8px;}
+.ael-with .ael-rl span{display:inline-block;margin:2px 4px 2px 0;padding:2px 9px;border:1px solid #475569;border-radius:999px;font-size:.88rem;color:#e2e8f0;}
+.ael-with .ael-rl span.me{background:#facc15;color:#111;border-color:#facc15;font-weight:800;}
 .fit-vid{display:block;max-width:100%;max-height:calc(100vh - 170px);margin:8px auto;border-radius:10px;background:#000;}
 .pres-vids h5{margin:12px 0 2px;font-size:.9rem;color:#93c5fd;}
 .ok-list{margin:0;padding:0;list-style:none;}
@@ -21889,10 +21892,10 @@ function aspExKey(e){return (e&&e.k||'')+':'+(e&&(e.id||e.key)||'');}
 function aspResStore(s,k){s.asp.res=s.asp.res||{};return s.asp.res[k]=s.asp.res[k]||{};}
 function aspResHtml(s,b,a,e,me){const inf=aspExInfo(e);if(!inf||inf.kind==='warm'||inf.kind==='fps'||!me)return '';const k=b.id+'|'+a.id+'|'+aspExKey(e);
   const mine=((s.asp.res||{})[k]||{})[me]||{};const C=((inf.src&&inf.src.criteres)||[]).filter(c=>c&&(c.label||c.cible!=null));
-  let h='<'+'div class="ael-res" data-k="'+esc(k)+'"><h5>📝 Mon résultat · '+esc(String(inf.titre))+'</h5>';
+  let h='<'+'div class="ael-res" data-k="'+esc(k)+'">'+(C.length?'<h5>📝 Mon résultat'+((a.exos||[]).filter(x=>{const i=aspExInfo(x);return i&&i.kind!=='warm'&&i.kind!=='fps';}).length>1?' · '+esc(String(inf.titre)):'')+'</h5>':'');
   if(C.length)C.forEach((c,ci)=>{const v=mine[ci];const has=v!=null&&v!=='';const ok=has&&critOk(c,v);
     h+='<'+'div class="r"><span class="l">'+esc(String(c.label||'Critère'))+(c.cible!=null&&c.cible!==''?' <b>('+critSym(c).trim()+' '+esc(String(c.cible))+')</b>':'')+'</span><input type="number" inputmode="decimal" data-c="'+ci+'" value="'+(has?esc(String(v)):'')+'" onchange="aspResSet(this)"><span class="ok">'+(has?(ok?'✅':'❌'):'')+'</span></'+'div>';});
-  else{const v=mine.score;h+='<'+'div class="r"><span class="l">Mon score</span><input type="number" inputmode="decimal" data-c="score" value="'+(v!=null?esc(String(v)):'')+'" onchange="aspResSet(this)"></'+'div>';}
+  else{const v=mine.score;h+='<'+'div class="r"><span class="l"><b>📝 Mon score</b></span><input type="number" inputmode="decimal" data-c="score" value="'+(v!=null?esc(String(v)):'')+'" onchange="aspResSet(this)"></'+'div>';}
   h+='<textarea rows="2" data-c="note" placeholder="Une remarque ? (facultatif)" onchange="aspResSet(this)">'+esc(String(mine.note||''))+'</textarea>';
   return h+'</'+'div>';}
 function aspResSet(el){const s=getActiveSeance();if(!s||!s.asp)return;const me=elMeGet(s);if(!me)return;const box=el.closest('.ael-res');const k=box&&box.dataset.k;if(!k)return;
@@ -22120,6 +22123,21 @@ setTimeout(()=>{try{if(localStorage.getItem('grib_fpsprof_v1'))return;try{seedCe
   L.filter(x=>x&&x.kind==='match').forEach(it=>{const cur=it.profile||(it.cfg&&it.cfg.profile)||'';const curP=P.find(p=>p&&p.name===cur);const free=!cur||(curP&&curP.meta&&curP.meta.oeId&&!curP.meta.fpsId)||(curP&&curP.generic);
     const p=fpsProfileEnsure(it,free);if(p)n++;});
   if(n){libSave(L);saveConfig();try{renderSavedPresets();}catch(e){}}localStorage.setItem('grib_fpsprof_v1','1');}catch(e){console.warn('fps profils',e);}},1800);
+
+// ══════════════════════════════════════════════════════════════════════
+// v280 — mode élève plus compact : rôles sur la ligne du groupe, titre de
+// l'exercice pas répété quand il est déjà en haut de l'écran
+// ══════════════════════════════════════════════════════════════════════
+(function(){const o=aspElPagedHtml;aspElPagedHtml=function(s){let h=o.apply(this,arguments);if(h.indexOf('data-a=')<0)return h;
+  const t=document.createElement('template');t.innerHTML=h;
+  t.content.querySelectorAll('.ael-step[data-a]').forEach(st=>{const w=st.querySelector('.ael-with'),r=st.querySelector('.ael-roles');
+    if(w&&r){const d=document.createElement('span');d.className='ael-rl';while(r.firstChild)d.appendChild(r.firstChild);w.appendChild(d);r.remove();}
+    const ex=st.querySelectorAll('.ael-ex');const h3=st.querySelector('h3');
+    if(ex.length===1&&h3){const h4=ex[0].querySelector('h4');const tt=x=>stripAccents(String(x||'')).toLowerCase().replace(/[^a-z0-9]+/g,'');
+      if(h4){const t4=tt(h4.textContent),t3=tt(h3.textContent);if(t4&&t3.indexOf(t4)>=0)h4.remove();}}
+    st.querySelectorAll('.ael-res').forEach(rb=>{if(!rb.querySelector('h5'))return;const ex2=rb.previousElementSibling;const sc=ex2&&ex2.classList&&ex2.classList.contains('ael-ex')?ex2.querySelector('.sel-crit'):null;if(sc)sc.remove();});
+  });
+  return t.innerHTML;};})();
 </script>
 </body>
 </html>
