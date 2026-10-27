@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v285</title>
+<title>Gribouillis EPS v286</title>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
 /* ── THÈME SOMBRE UNIQUEMENT ── */
@@ -22213,17 +22213,25 @@ async function pubSeance(){const s=getActiveSeance();if(!s)return;const c=ghCfg(
 function pubMsg(s){const p=s.pub;return '📲 Séance '+String(s.classe||'')+' du '+seanceDateFr(s.date)+' : '+p.url+'\nCode : '+p.code+' (à taper à l\'ouverture)';}
 function pubShow(s){s=s||getActiveSeance();if(!s||!s.pub)return;const p=s.pub;const o0=document.getElementById(['pub','ov'].join('-'));if(o0)o0.remove();
   const o=document.createElement('div');o.id=['pub','ov'].join('-');o.className='trn-ov';o.onclick=e=>{if(e.target===o)o.remove();};
-  o.innerHTML='<'+'div class="trn-box"><h3 style="margin:0 0 6px;">🔗 Séance publiée pour les élèves</h3><'+'div class="cc-dim" style="margin-bottom:8px;">Lisible dans environ 1 minute (le temps que GitHub Pages se mette à jour). Sans le code, la page est illisible.</'+'div>'
+  o.innerHTML='<'+'div class="trn-box"><h3 style="margin:0 0 6px;">🔗 Séance publiée pour les élèves</h3><'+'div class="cc-dim" style="margin-bottom:8px;">Sans le code, la page est illisible.</'+'div><'+'div class="pub-st" style="font-weight:700;margin:0 0 8px;color:#fbbf24;">⏳ GitHub met le lien en ligne (1 à 5 minutes)… ne l\'envoie pas tout de suite.</'+'div>'
     +'<'+'div style="font-size:.85rem;word-break:break-all;background:#0f172a;border:1px solid #334155;border-radius:8px;padding:8px;">'+esc(p.url)+'</'+'div><'+'div style="font-size:1.4rem;font-weight:800;letter-spacing:.2em;margin:10px 0;">Code : '+esc(p.code)+'</'+'div>'
     +'<'+'div style="display:flex;gap:8px;flex-wrap:wrap;"><button type="button" class="btn-xs green" data-a="copy">📋 Copier le message pour Teams</button><button type="button" class="btn-xs" style="background:#334155;color:#fff;" data-a="open">👀 Tester le lien</button><button type="button" class="btn-xs red" data-a="del">🗑 Retirer la séance en ligne</button><button type="button" class="btn-xs" style="background:#334155;color:#fff;" data-a="x">Fermer</button></'+'div>'
     +'<'+'div class="cc-dim" style="margin-top:8px;font-size:.75rem;">Tu as modifié la séance ? Re-clique sur « 🔗 Lien + code » : le lien reste le même.</'+'div></'+'div>';
-  document.body.appendChild(o);
+  document.body.appendChild(o);pubWatch(o,p.url);
   o.querySelector('[data-a=copy]').onclick=async()=>{const t=pubMsg(s);try{await navigator.clipboard.writeText(t);toast2('📋 Message copié : colle-le dans Teams');}catch(e){prompt('Copie ce message :',t);}};
   o.querySelector('[data-a=open]').onclick=()=>{try{window.open(p.url,'_blank');}catch(e){}};
   o.querySelector('[data-a=x]').onclick=()=>o.remove();
   o.querySelector('[data-a=del]').onclick=async()=>{if(!confirm('Retirer cette séance du site ? Le lien ne marchera plus.'))return;try{await pubDelete(s);o.remove();toast2('🗑 Séance retirée du site');}catch(e){alert('Échec : '+e.message);}};}
 async function pubDelete(s){const c=ghCfg();const p=s.pub;if(!p)return;const ep='/repos/'+encodeURIComponent(c.owner)+'/'+encodeURIComponent(c.repo)+'/contents/seances/'+encodeURIComponent(p.id)+'.html';
   const ex=await ghApi('GET',ep+'?t='+Date.now());if(ex&&ex.sha)await ghApi('DELETE',ep,{message:'Séance élèves retirée',sha:ex.sha});delete s.pub;saveSeances();try{renderSeanceTab();}catch(e){}}
+
+// v286 — la fenêtre de publication vérifie toute seule quand le lien est en ligne
+function pubWatch(o,url){let n=0;const st=o.querySelector('.pub-st');const tick=async()=>{if(!document.body.contains(o))return;n++;let ok=false;
+    try{const r=await fetch(url+'?v='+Date.now(),{method:'GET',cache:'no-store'});ok=r.ok;}catch(e){ok=null;}
+    if(ok){st.style.color='#4ade80';st.textContent='✅ Le lien fonctionne : tu peux l\'envoyer aux élèves.';return;}
+    if(ok===null&&n>2){st.style.color='#94a3b8';st.textContent='Vérification impossible depuis ici : teste le lien dans 2 à 3 minutes avec « 👀 Tester le lien ».';return;}
+    if(n>=40){st.style.color='#fca5a5';st.textContent='⚠ Toujours pas en ligne après 7 minutes : regarde l\'onglet « Actions » du dépôt sur GitHub (déploiement GitHub Pages).';return;}
+    setTimeout(tick,10000);};setTimeout(tick,4000);}
 </script>
 </body>
 </html>
