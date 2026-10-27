@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v291</title>
+<title>Gribouillis EPS v292</title>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
 /* ── THÈME SOMBRE UNIQUEMENT ── */
@@ -22309,9 +22309,12 @@ setTimeout(()=>{try{if(localStorage.getItem('grib_seqprep_v1'))return;const n=se
 seqClassLine=function(c){const L=seqOfClass(c);if(!L.length)return '';const t=edtToday();
   const curAp=(()=>{try{const P=edtProg(c);const cur=P.find(p=>(!p.du||p.du<=t)&&(!p.au||p.au>=t));const nx=P.find(p=>p.du&&p.du>t);return (cur||nx||{}).apsa||'';}catch(e){return '';}})();
   const S=L.slice().sort((a,b)=>((b.sport===curAp)-(a.sport===curAp))||(String(a.du||'9').localeCompare(String(b.du||'9'))));
-  return S.slice(0,3).map(q=>{seqEnsureCols(q);const p=seqProgress(q);let nxt=-1;let bar='';
+  const cy=(()=>{try{const P=edtProg(c);return P.find(p=>(!p.du||p.du<=t)&&(!p.au||p.au>=t))||P.find(p=>p.du&&p.du>t)||null;}catch(e){return null;}})();
+  const one=(cy&&cy.seqId&&L.find(q=>q.id===cy.seqId))||(cy?null:S[0]);
+  if(!one){const nx=S.find(q=>q.du&&q.du>t);return '<div class="cc-line" style="color:var(--dim2);">🗓️ '+esc(calSportName(cy.apsa))+' : pas de séquence (pas encore de référentiel)'+(nx?' · ensuite <b>'+esc(nx.nom)+'</b> dès le '+edtFrDate(nx.du):'')+'</div>';}
+  return [one].map(q=>{seqEnsureCols(q);const p=seqProgress(q);let nxt=-1;let bar='';
     for(let k=0;k<q.nb;k++){const s=seqSeance(q,k);const cl=s?(s.status==='done'?'d':'c'):'';if(!s&&nxt<0)nxt=k;bar+='<i class="'+cl+(k===nxt?' n':'')+'" title="Séance '+(k+1)+(s?(s.status==='done'?' · faite':' · en cours'):'')+'"></i>';}
-    return '<div class="cc-line">🗓️ Séquence <b>'+esc(q.nom)+'</b> · '+p.done+(p.cur?' (+'+p.cur+' en cours)':'')+'/'+q.nb+' séance'+(q.nb>1?'s':'')+(q.du?' <span class="seq-leg">· '+edtFrDate(q.du)+' → '+edtFrDate(q.au)+'</span>':'')+'</div><'+'div class="seq-bar">'+bar+'</'+'div>';}).join('');};
+    return '<div class="cc-line">🗓️ <b>'+esc(q.nom)+'</b> · '+(p.done+p.cur)+'/'+q.nb+(q.du?' <span class="seq-leg">· '+edtFrDate(q.du)+' → '+edtFrDate(q.au)+'</span>':'')+'</div><'+'div class="seq-bar" title="Vert = faite · orange = en cours · contour bleu = la prochaine">'+bar+'</'+'div>';}).join('');};
 
 // ══════════════════════════════════════════════════════════════════════
 // v291 — HANDBALL (cahier CEDREPS n°19, p. 296-317) : profils d'observation
