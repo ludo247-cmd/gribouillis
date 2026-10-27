@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v274</title>
+<title>Gribouillis EPS v275</title>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
 /* ── THÈME SOMBRE UNIQUEMENT ── */
@@ -1148,6 +1148,11 @@ body.nav-off.nav-peek #nav-handle{display:none;}
 .ael-res textarea,.ael-res input{background:#0f172a;color:#e2e8f0;border:1px solid #475569;}
 .ael-res textarea{width:100%;box-sizing:border-box;font-size:.9rem;border-radius:8px;padding:6px 8px;font-family:inherit;}
 .res-ov table{border-collapse:collapse;width:100%;font-size:.85rem;}.res-ov td,.res-ov th{border:1px solid #334155;padding:4px 6px;text-align:center;}.res-ov td:first-child,.res-ov th:first-child{text-align:left;}
+.ael-2c{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:16px;align-items:start;}
+.ael-2c>.l .ael-teams{grid-template-columns:1fr;}
+.ael-2c>.r .ael-obs{margin-top:0;}
+.ael-2c>.r video,.ael-2c>.r img,.ael-2c>.r .anim-inline{display:block;margin:8px auto 0;max-width:100%;}
+@media (max-width:819px){.ael-2c{display:block;}}
 .fit-vid{display:block;max-width:100%;max-height:calc(100vh - 170px);margin:8px auto;border-radius:10px;background:#000;}
 .pres-vids h5{margin:12px 0 2px;font-size:.9rem;color:#93c5fd;}
 .ok-list{margin:0;padding:0;list-style:none;}
@@ -21917,7 +21922,7 @@ function aspResShow(bid,aid){const s=aspS();if(!s)return;const b=aspB(s,bid),a=a
 // v274 — bilan élève (AS) : les équipes du dernier match joué ; rôles pris
 // seulement dans le groupe de l'atelier ; mode d'observation par situation
 // ══════════════════════════════════════════════════════════════════════
-(function(){const of=finTeamLabels;finTeamLabels=function(s){try{if(s&&s.asp){const M=seanceMatches(s);const m=M[M.length-1];const T=((m&&m.a&&m.a.teams)||[]).map(t=>String(t&&t.name||'')).filter(Boolean);return T.length>=2?T:[];}}catch(e){}return of.apply(this,arguments);};
+(function(){const of=finTeamLabels;finTeamLabels=function(s){try{if(s&&s.asp){const M=seanceMatches(s);let m=M[M.length-1];try{const me=elMeGet(s);if(me){const C=aspChips(s).filter(g=>(g.members||[]).indexOf(me)>=0).map(g=>stripAccents(String(g.label)).toLowerCase());const mm=M.slice().reverse().find(x=>((x.a&&x.a.teams)||[]).some(t=>C.indexOf(stripAccents(String(t&&t.name||'')).toLowerCase())>=0));if(mm)m=mm;}}catch(e){}const T=((m&&m.a&&m.a.teams)||[]).map(t=>String(t&&t.name||'')).filter(Boolean);return T.length>=2?T:[];}}catch(e){}return of.apply(this,arguments);};
   const ob=renderEleveStepFin;renderEleveStepFin=function(s,st){try{if(s&&s.asp&&!finCurTeam(s)){const me=elMeGet(s);const L=finTeamLabels(s);if(me&&L.length){const t=L.find(l=>{const g=aspChips(s).find(x=>stripAccents(String(x.label)).toLowerCase()===stripAccents(l).toLowerCase());return g&&(g.members||[]).indexOf(me)>=0;});if(t)SEANCE_FIN_TEAM=t;}}}catch(e){}return ob.apply(this,arguments);};})();
 // rôles : uniquement des élèves de l'atelier (pas de garçon observateur d'une situation filles)
 (function(){const oa=aspRolesAll;aspRolesAll=function(s){const v=oa.apply(this,arguments);try{if(v.__grp)return v;v.__grp=1;const T=aspTimes(s);
@@ -21934,6 +21939,41 @@ function libcObsModeHtml(f){const v=f.obsMode||'';const o=(k,t)=>'<option value=
 (function(){const oo=aspObserve;aspObserve=function(bid,aid){const r=oo.apply(this,arguments);try{const s=aspS();const a=s&&aspAt(s,bid,aid);if(!a||document.getElementById(['trn','ov'].join('-')))return r;
     const fx=(a.exos||[]).map(aspExInfo).find(i=>i&&i.kind==='fps');const m=fx&&fx.src&&fx.src.obsMode;
     if(m==='simple'||m==='draw'){CFG.obsSimple=(m==='simple');try{saveConfig();}catch(e){}try{obsSimpleRefresh(true);}catch(e){}}}catch(e){console.warn('obsMode',e);}return r;};})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v275 — écran de match (élève) : à gauche les règles puis les équipes
+// empilées, à droite (2/3) le bouton du match au-dessus de la vidéo ;
+// écran du projet : la roue reprend toute la hauteur disponible
+// ══════════════════════════════════════════════════════════════════════
+(function(){const o=aspElPagedHtml;aspElPagedHtml=function(s){let h=o.apply(this,arguments);if(h.indexOf('ael-teams')<0)return h;
+  const t=document.createElement('template');t.innerHTML=h;
+  t.content.querySelectorAll('.ael-step[data-a]').forEach(st=>{const tm=st.querySelector('.ael-teams');if(!tm||st.querySelector('.ael-2c'))return;
+    const g=document.createElement('div');g.className='ael-2c';const L=document.createElement('div');L.className='l';const R=document.createElement('div');R.className='r';
+    const ex=[...st.querySelectorAll('.ael-ex')];const hint=tm.nextElementSibling&&tm.nextElementSibling.classList.contains('ael-teams-hint')?tm.nextElementSibling:null;const ob=st.querySelector('.ael-obs');
+    tm.parentNode.insertBefore(g,tm);
+    ex.forEach(x=>{x.querySelectorAll('video,img,.anim-inline').forEach(m=>{if(m.parentElement&&m.parentElement.closest('.anim-inline'))return;R.appendChild(m);});L.appendChild(x);});
+    L.appendChild(tm);if(hint)L.appendChild(hint);if(ob)R.insertBefore(ob,R.firstChild);
+    st.querySelectorAll('hr,.ael-sep').forEach(x=>{if(x.parentNode===st&&x.compareDocumentPosition(g)&2)x.remove();});
+    g.appendChild(L);g.appendChild(R);});
+  return t.innerHTML;};})();
+(function(){const of=aspElFit;aspElFit=function(){const P=document.querySelector('.ael-pages');const st=P&&P.querySelector('.ael-step.ael-cur');
+  const wide=st&&st.clientWidth>=820;
+  // écran de match en 2 colonnes
+  if(wide&&st.querySelector('.ael-2c')){st.style.zoom='';st.classList.remove('ael-scroll');const R=st.querySelector('.ael-2c>.r');
+    const M=[...R.querySelectorAll('video,img,.anim-inline')].filter(m=>!(m.parentElement&&m.parentElement.closest('.anim-inline')));
+    const H=st.clientHeight;const sr=st.getBoundingClientRect();
+    M.forEach(m=>{m.style.float='';m.style.maxHeight='none';const r=aspElRatio(m)||16/9;const top=m.getBoundingClientRect().top-sr.top+st.scrollTop;const w=R.clientWidth;
+      let hh=Math.floor(Math.min((H-top-14)/Math.max(1,M.length),w/r));hh=Math.max(160,hh);m.style.height=hh+'px';m.style.width=(m.tagName==='DIV'?Math.floor(hh*r)+'px':'100%');m.style.objectFit='contain';if(m.tagName==='DIV'){m.style.aspectRatio='auto';}});
+    if(st.scrollHeight>st.clientHeight+1)st.classList.add('ael-scroll');return;}
+  // écran du projet : roue à la hauteur disponible
+  if(wide&&st.querySelector('.wheel-wrap')){st.style.zoom='';st.classList.remove('ael-scroll');st.style.setProperty('--wh','none');
+    const sv=st.querySelector('.wheel-col .wheel-svg');const col=st.querySelector('.wheel-col');const wr=st.querySelector('.wheel-wrap');
+    if(sv&&col&&wr){const sr=st.getBoundingClientRect();const top=wr.getBoundingClientRect().top-sr.top+st.scrollTop;const H=st.clientHeight;
+      let w=Math.floor(Math.min(col.clientWidth,H-top-24));w=Math.max(280,w);sv.style.maxWidth=w+'px';
+      const over=()=>st.scrollHeight>st.clientHeight+1;const min=Math.max(280,Math.floor(w*.8));while(over()&&w>min){w-=20;sv.style.maxWidth=w+'px';}
+      if(over())st.classList.add('ael-scroll');}
+    try{drawRemedDiagrams();}catch(e){}try{drawWheelLinks();}catch(e){}return;}
+  return of.apply(this,arguments);};})();
 </script>
 </body>
 </html>
