@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v272</title>
+<title>Gribouillis EPS v273</title>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
 /* ── THÈME SOMBRE UNIQUEMENT ── */
@@ -21892,6 +21892,25 @@ function aspResShow(bid,aid){const s=aspS();if(!s)return;const b=aspB(s,bid),a=a
     h+='</table>';});
   h+='<'+'div style="text-align:right;margin-top:10px;"><button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="this.closest(\'.trn-ov\').remove()">Fermer</button></'+'div></'+'div>';o.innerHTML=h;document.body.appendChild(o);}
 (function(){const oa=aspAtHtml;aspAtHtml=function(s,b,a,i){let h=oa.apply(this,arguments);try{const n=aspResCount(s,b,a);if(n){const j=h.lastIndexOf('</'+'div>');if(j>0)h=h.slice(0,j)+'<button type="button" class="obs" style="background:#0e7490;margin-left:4px;" onclick="aspResShow(\''+esc(b.id)+'\',\''+esc(a.id)+'\')">📝 Résultats ('+n+')</button>'+h.slice(j);}}catch(e){}return h;};})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v273 — mode élève sur grand écran : la vidéo/l'image de l'exercice se
+// place à droite et prend toute la hauteur, au lieu d'être réduite à une
+// vignette quand le texte et « Mon résultat » prennent de la place
+// ══════════════════════════════════════════════════════════════════════
+(function(){const of=aspElFit;aspElFit=function(){of.apply(this,arguments);try{
+  const P=document.querySelector('.ael-pages');const st=P&&P.querySelector('.ael-step.ael-cur');if(!st||st.clientWidth<820)return;
+  const M=[...st.querySelectorAll('.ael-ex video,.ael-ex img,.ael-ex .anim-inline')].filter(m=>!m.closest('.wheel-wrap')&&!(m.parentElement&&m.parentElement.closest('.anim-inline'))&&m.getBoundingClientRect().height>0);
+  if(M.length!==1)return;const m=M[0];const r=aspElRatio(m);if(!r)return;const H=st.clientHeight;if(!H||m.getBoundingClientRect().height>=H*.6)return;
+  st.style.zoom='';st.classList.remove('ael-scroll');
+  const ex=m.closest('.ael-ex');try{const h4=ex&&ex.querySelector('h4');if(h4&&m.parentElement===ex)ex.insertBefore(m,h4.nextSibling);}catch(e){}st.querySelectorAll('.ael-res').forEach(x=>{x.style.display='flow-root';x.style.overflow='hidden';});const sr=st.getBoundingClientRect();const top=(ex?ex.getBoundingClientRect().top:m.getBoundingClientRect().top)-sr.top+st.scrollTop;
+  const maxW=Math.floor(st.clientWidth*.55);let h=Math.floor(Math.min(H-top-40,maxW/r));if(h<H*.35)h=Math.floor(Math.min(H*.6,maxW/r));
+  const set=hh=>{m.style.float='right';m.style.margin='0 0 8px 16px';m.style.maxWidth='none';m.style.maxHeight='none';m.style.height=hh+'px';m.style.width=Math.floor(hh*r)+'px';if(m.tagName==='DIV')m.style.aspectRatio='auto';};
+  set(h);const over=()=>st.scrollHeight>st.clientHeight+1;
+  while(over()&&h>H*.4){h=Math.floor(h*.93);set(h);}
+  let z=1;while(over()&&z>.6){z=Math.round((z-.05)*100)/100;st.style.zoom=z;}
+  if(over()){st.style.zoom='';st.classList.add('ael-scroll');}
+}catch(e){console.warn('fit2',e);}};})();
 </script>
 </body>
 </html>
