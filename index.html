@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v284</title>
+<title>Gribouillis EPS v285</title>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
 /* ── THÈME SOMBRE UNIQUEMENT ── */
@@ -16098,6 +16098,7 @@ function exportSeanceEleve(){
   try{if(typeof exportExtraKeys==='function')exportExtraKeys(s,keys,raw);}catch(e){console.warn('export AS',e);}
   const payload=JSON.stringify({v:1,keys:keys}).replace(/</g,'\\u003c');
   const html=(typeof gribSrcFull==='function'?gribSrcFull():GRIB_SRC_HTML).replace('<body>','<body><script>window.GRIB_EXPORT='+payload+';<\/script>');
+  if(window.__expCap){window.__expCap.html=html;return;}
   const mb=html.length/1048576;
   const name='Seance_'+String(s.classe||'classe').replace(/[^A-Za-z0-9_-]+/g,'-')+'_'+String(s.date||'').replace(/[^0-9-]/g,'')+'.html';
   try{
@@ -16686,7 +16687,7 @@ function renderSeanceTab(){
   host.innerHTML=
     '<div class="card">'
     +'<div class="card-title"><span class="ico">📅</span>'+esc(s.classe)+(s.categorie?' · '+esc(s.categorie):'')+(s.equipeLabel?' · '+esc(s.equipeLabel):'')+' · '+esc(s.date)+' · '+(APSA_ICONS[s.sport]||'')+'</div>'
-    +'<div style="margin:-4px 0 10px;display:flex;gap:6px;flex-wrap:wrap;"><button class="btn-xs" style="background:#7c3aed;color:#fff;" onclick="setSeanceMode(\'eleve\')">🧒 Passer en mode élève</button><button class="btn-xs" style="background:#1b2a4a;color:#fff;" onclick="printSeance()">🖨️ Imprimer la fiche</button><button class="btn-xs" style="background:#0f766e;color:#fff;" onclick="libSaveSeance()">📚 Enregistrer comme modèle</button><button class="btn-xs" style="background:#4f46e5;color:#fff;" onclick="exportSeanceEleve()">📤 Envoyer aux élèves</button><span style="flex:1;"></span><button class="btn-xs" style="background:#334155;color:#fff;" onclick="seanceFoldAll(\''+esc(sid)+'\',false)">▸ Tout replier</button><button class="btn-xs" style="background:#334155;color:#fff;" onclick="seanceFoldAll(\''+esc(sid)+'\',true)">▾ Tout déplier</button></div>'
+    +'<div style="margin:-4px 0 10px;display:flex;gap:6px;flex-wrap:wrap;"><button class="btn-xs" style="background:#7c3aed;color:#fff;" onclick="setSeanceMode(\'eleve\')">🧒 Passer en mode élève</button><button class="btn-xs" style="background:#1b2a4a;color:#fff;" onclick="printSeance()">🖨️ Imprimer la fiche</button><button class="btn-xs" style="background:#0f766e;color:#fff;" onclick="libSaveSeance()">📚 Enregistrer comme modèle</button><button class="btn-xs" style="background:#4f46e5;color:#fff;" onclick="exportSeanceEleve()">📤 Envoyer aux élèves</button><button class="btn-xs" style="background:#0e7490;color:#fff;" onclick="pubSeance()">🔗 Lien + code pour les élèves</button><span style="flex:1;"></span><button class="btn-xs" style="background:#334155;color:#fff;" onclick="seanceFoldAll(\''+esc(sid)+'\',false)">▸ Tout replier</button><button class="btn-xs" style="background:#334155;color:#fff;" onclick="seanceFoldAll(\''+esc(sid)+'\',true)">▾ Tout déplier</button></div>'
     +renderSeanceBuilder(s)
     +(()=>{try{const t=terrainSummary(s);return B('terrain','🗺 Terrains et matériel',t.sum,renderTerrainConsole(s),t.alert);}catch(e){console.warn('terrain:',e);return '';}})()
     +B('nomen','① Nomenclature',nomSum,renderSeanceNomenBlock(s),false)
@@ -16716,7 +16717,7 @@ function renderSeanceTab(){
       seanceClipsTeacherHtml(s)+'<div class="remed-step-title">⚽ Matchs réalisés</div>'+matchesHtml+seanceBilanHtml(s)
       +'<textarea id="seance-recap-input" rows="3" style="width:100%;background:#0f1923;border:1px solid var(--border);border-radius:8px;color:var(--text);padding:8px;font-size:.8rem;margin-top:8px;" placeholder="Notes de fin de séance (facultatif)">'+esc(s.recap)+'</textarea>'
       +(finReady?'<button class="btn-xs" style="background:#15803d;color:#fff;margin-top:8px;" onclick="finishSeance()">🏁 Terminer la séance</button>':''),finReady)
-    +'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;"><button class="btn-xs" style="background:#7c3aed;color:#fff;" onclick="setSeanceMode(\'eleve\');window.scrollTo(0,0);">🧒 Passer en mode élève</button><button class="btn-xs" style="background:#4f46e5;color:#fff;" onclick="exportSeanceEleve()">📤 Envoyer aux élèves</button>'
+    +'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;"><button class="btn-xs" style="background:#7c3aed;color:#fff;" onclick="setSeanceMode(\'eleve\');window.scrollTo(0,0);">🧒 Passer en mode élève</button><button class="btn-xs" style="background:#4f46e5;color:#fff;" onclick="exportSeanceEleve()">📤 Envoyer aux élèves</button><button class="btn-xs" style="background:#0e7490;color:#fff;" onclick="pubSeance()">🔗 Lien + code pour les élèves</button>'
     +'<button class="btn-xs" style="background:#334155;color:#fff;" onclick="closeSeanceView()">↩ Revenir à l\'historique (sans terminer)</button></div>'
     +'</div>';
   setTimeout(drawRemedDiagrams,0);
@@ -22145,7 +22146,7 @@ setTimeout(()=>{try{if(localStorage.getItem('grib_fpsprof_v1'))return;try{seedCe
 // ══════════════════════════════════════════════════════════════════════
 function exportStripScores(o,d){if(!o||typeof o!=='object'||(d||0)>12)return;if(Array.isArray(o)){o.forEach(x=>exportStripScores(x,(d||0)+1));return;}
   Object.keys(o).forEach(k=>{if(k==='scores'||k==='participantsScores'){delete o[k];return;}exportStripScores(o[k],(d||0)+1);});}
-function exportStripSeance(sc){if(sc.asp){delete sc.asp.res;delete sc.asp.tourn;}
+function exportStripSeance(sc){delete sc.pub;if(sc.asp){delete sc.asp.res;delete sc.asp.tourn;}
   delete sc.finTeams;delete sc.fin;delete sc.eleveChoix;delete sc.indivEval;delete sc.recapTeams;
   if(sc.exoData&&typeof sc.exoData==='object')Object.keys(sc.exoData).forEach(k=>{const e=sc.exoData[k];if(e&&typeof e==='object'){delete e.scores;delete e.note;}});
   (sc.clips||[]).forEach(c=>{if(c)delete c.comments;});}
@@ -22169,6 +22170,60 @@ function aspMicrosOfOe(oeId){const out=[];try{const C=REMED_CONTENT||{};Object.k
   (o.micro||[]).forEach(m=>{if(!m.hidden&&(m.states||[]).length&&!out.some(x=>x.m.id===m.id))out.push({oe:o,m:m});});});}catch(e){}return out;}
 (function(){const om=seanceOeMicros;seanceOeMicros=function(s){try{if(s&&s.asp&&elMeGet(s)){const it=aspMyFpsItem(s);if(it){const ids=[it.oe].concat(it.oeAlso||[]).filter(Boolean);let L=[];ids.forEach(id=>aspMicrosOfOe(id).forEach(x=>{if(!L.some(y=>y.m.id===x.m.id))L.push(x);}));if(L.length)return L;}
       const px=elProxy(s);if(px!==s){const r=om.call(this,px);if(r.length)return r;}}}catch(e){console.warn('fils rouges',e);}return om.apply(this,arguments);};})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v285 — PUBLIER POUR LES ÉLÈVES : lien + code. Le fichier élève (le même
+// que « Envoyer aux élèves ») est chiffré (AES-GCM, clé tirée du code par
+// PBKDF2) puis déposé sur GitHub Pages. Sans le code, rien n'est lisible.
+// ══════════════════════════════════════════════════════════════════════
+function pubB64(u8){let s='';const n=0x8000;for(let i=0;i<u8.length;i+=n)s+=String.fromCharCode.apply(null,u8.subarray(i,i+n));return btoa(s);}
+function pubCode(){const A='ABCDEFGHJKMNPQRSTUVWXYZ23456789';const r=crypto.getRandomValues(new Uint8Array(6));return [...r].map(x=>A[x%A.length]).join('');}
+function pubId(){const A='abcdefghijkmnpqrstuvwxyz23456789';const r=crypto.getRandomValues(new Uint8Array(12));return [...r].map(x=>A[x%A.length]).join('');}
+function pubNorm(c){return String(c||'').toUpperCase().replace(/[^A-Z0-9]/g,'');}
+async function pubEncrypt(text,code){const enc=new TextEncoder();const salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12));
+  const base=await crypto.subtle.importKey('raw',enc.encode(pubNorm(code)),'PBKDF2',false,['deriveKey']);
+  const key=await crypto.subtle.deriveKey({name:'PBKDF2',salt:salt,iterations:200000,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['encrypt']);
+  const ct=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv:iv},key,enc.encode(text)));return {s:pubB64(salt),i:pubB64(iv),c:pubB64(ct)};}
+function pubLoaderHtml(D,title){const J=JSON.stringify(D).replace(/</g,'\\u003c');
+  return '<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>'+title+'</title>'
+  +'<style>body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#0f172a;color:#e2e8f0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;padding:16px;box-sizing:border-box}'
+  +'.b{background:#16212e;border:1px solid #334155;border-radius:16px;padding:22px;width:100%;max-width:380px;text-align:center}h1{font-size:1.3rem;margin:0 0 6px}p{color:#94a3b8;font-size:.95rem;margin:0 0 14px}'
+  +'input{width:100%;box-sizing:border-box;font-size:1.6rem;letter-spacing:.25em;text-align:center;padding:12px;border-radius:12px;border:2px solid #475569;background:#0f172a;color:#fff;text-transform:uppercase}'
+  +'button{margin-top:12px;width:100%;font-size:1.1rem;font-weight:800;padding:14px;border:0;border-radius:12px;background:#15803d;color:#fff}#m{min-height:1.4em;margin-top:10px;color:#fca5a5;font-size:.95rem}</style></head><body>'
+  +'<'+'div class="b"><h1>🔒 Séance EPS</h1><p>Tape le code donné par ton enseignant.</p><input id="c" autocomplete="off" autocapitalize="characters" inputmode="text" maxlength="20"><button id="g" type="button">Ouvrir ma séance</button><'+'div id="m"></'+'div></'+'div>'
+  +'<script>const D='+J+';const u=s=>Uint8Array.from(atob(s),x=>x.charCodeAt(0));'
+  +'async function go(){const m=document.getElementById("m");const code=document.getElementById("c").value.toUpperCase().replace(/[^A-Z0-9]/g,"");if(!code){m.textContent="Écris le code.";return;}'
+  +'if(!(window.crypto&&crypto.subtle)){m.textContent="Ouvre ce lien dans Chrome ou Safari.";return;}m.style.color="#94a3b8";m.textContent="Ouverture…";'
+  +'try{const e=new TextEncoder();const b=await crypto.subtle.importKey("raw",e.encode(code),"PBKDF2",false,["deriveKey"]);const k=await crypto.subtle.deriveKey({name:"PBKDF2",salt:u(D.s),iterations:200000,hash:"SHA-256"},b,{name:"AES-GCM",length:256},false,["decrypt"]);'
+  +'const t=new TextDecoder().decode(await crypto.subtle.decrypt({name:"AES-GCM",iv:u(D.i)},k,u(D.c)));document.open();document.write(t);document.close();}'
+  +'catch(x){m.style.color="#fca5a5";m.textContent="Code incorrect. Réessaie.";}}'
+  +'document.getElementById("g").onclick=go;document.getElementById("c").addEventListener("keydown",e=>{if(e.key==="Enter")go();});<'+'/script></body></html>';}
+function pubUrl(id){const c=ghCfg();return 'https://'+c.owner+'.github.io/'+c.repo+'/seances/'+id+'.html';}
+async function pubSeance(){const s=getActiveSeance();if(!s)return;const c=ghCfg();
+  if(!c.token){alert('Pour publier un lien, il faut la connexion GitHub de l\'appli (Réglages › Profils › GitHub : jeton).');return;}
+  if(!(window.crypto&&crypto.subtle)){alert('Ce navigateur ne permet pas de chiffrer : ouvre l\'appli dans Chrome ou Edge.');return;}
+  const old=s.pub||null;let code=prompt('Code que tes élèves devront taper (6 caractères ou plus) :',(old&&old.code)||pubCode());if(code===null)return;code=pubNorm(code);
+  if(code.length<6){alert('Code trop court : 6 caractères minimum (lettres et chiffres).');return;}
+  const id=(old&&old.id)||pubId();try{toast2('🔐 Chiffrement et envoi…');}catch(e){}
+  try{window.__expCap={};exportSeanceEleve();const html=window.__expCap.html;window.__expCap=null;if(!html)throw new Error('fichier élève impossible à créer');
+    const D=await pubEncrypt(html,code);const page=pubLoaderHtml(D,'Séance EPS');
+    await ghPut(c.repo,'seances/'+id+'.html',new TextEncoder().encode(page),'Séance élèves (chiffrée)');
+    s.pub={id:id,code:code,url:pubUrl(id),date:Date.now()};saveSeances();pubShow(s);
+  }catch(e){window.__expCap=null;alert('Publication impossible : '+e.message);}}
+function pubMsg(s){const p=s.pub;return '📲 Séance '+String(s.classe||'')+' du '+seanceDateFr(s.date)+' : '+p.url+'\nCode : '+p.code+' (à taper à l\'ouverture)';}
+function pubShow(s){s=s||getActiveSeance();if(!s||!s.pub)return;const p=s.pub;const o0=document.getElementById(['pub','ov'].join('-'));if(o0)o0.remove();
+  const o=document.createElement('div');o.id=['pub','ov'].join('-');o.className='trn-ov';o.onclick=e=>{if(e.target===o)o.remove();};
+  o.innerHTML='<'+'div class="trn-box"><h3 style="margin:0 0 6px;">🔗 Séance publiée pour les élèves</h3><'+'div class="cc-dim" style="margin-bottom:8px;">Lisible dans environ 1 minute (le temps que GitHub Pages se mette à jour). Sans le code, la page est illisible.</'+'div>'
+    +'<'+'div style="font-size:.85rem;word-break:break-all;background:#0f172a;border:1px solid #334155;border-radius:8px;padding:8px;">'+esc(p.url)+'</'+'div><'+'div style="font-size:1.4rem;font-weight:800;letter-spacing:.2em;margin:10px 0;">Code : '+esc(p.code)+'</'+'div>'
+    +'<'+'div style="display:flex;gap:8px;flex-wrap:wrap;"><button type="button" class="btn-xs green" data-a="copy">📋 Copier le message pour Teams</button><button type="button" class="btn-xs" style="background:#334155;color:#fff;" data-a="open">👀 Tester le lien</button><button type="button" class="btn-xs red" data-a="del">🗑 Retirer la séance en ligne</button><button type="button" class="btn-xs" style="background:#334155;color:#fff;" data-a="x">Fermer</button></'+'div>'
+    +'<'+'div class="cc-dim" style="margin-top:8px;font-size:.75rem;">Tu as modifié la séance ? Re-clique sur « 🔗 Lien + code » : le lien reste le même.</'+'div></'+'div>';
+  document.body.appendChild(o);
+  o.querySelector('[data-a=copy]').onclick=async()=>{const t=pubMsg(s);try{await navigator.clipboard.writeText(t);toast2('📋 Message copié : colle-le dans Teams');}catch(e){prompt('Copie ce message :',t);}};
+  o.querySelector('[data-a=open]').onclick=()=>{try{window.open(p.url,'_blank');}catch(e){}};
+  o.querySelector('[data-a=x]').onclick=()=>o.remove();
+  o.querySelector('[data-a=del]').onclick=async()=>{if(!confirm('Retirer cette séance du site ? Le lien ne marchera plus.'))return;try{await pubDelete(s);o.remove();toast2('🗑 Séance retirée du site');}catch(e){alert('Échec : '+e.message);}};}
+async function pubDelete(s){const c=ghCfg();const p=s.pub;if(!p)return;const ep='/repos/'+encodeURIComponent(c.owner)+'/'+encodeURIComponent(c.repo)+'/contents/seances/'+encodeURIComponent(p.id)+'.html';
+  const ex=await ghApi('GET',ep+'?t='+Date.now());if(ex&&ex.sha)await ghApi('DELETE',ep,{message:'Séance élèves retirée',sha:ex.sha});delete s.pub;saveSeances();try{renderSeanceTab();}catch(e){}}
 </script>
 </body>
 </html>
