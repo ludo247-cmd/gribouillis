@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v301</title>
+<title>Gribouillis EPS v302</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -1303,6 +1303,17 @@ details.evl-crit[open]>summary{margin-bottom:6px;}
 .chp-row input[type=color]{width:36px !important;height:28px;padding:0 2px;flex:0 0 auto !important;}
 .asp-ex .ov{font-size:.62rem;font-weight:800;color:#fde68a;border:1px solid #a16207;border-radius:5px;padding:0 4px;margin-left:4px;white-space:nowrap;}
 .sit-ban{background:rgba(161,98,7,.18);border:1px solid #a16207;border-radius:8px;padding:6px 8px;font-size:.76rem;color:#fde68a;margin-bottom:8px;}
+.mt-chip{flex-shrink:0;background:#1e3a8a;color:#fff;border:1px solid #3b82f6;border-radius:10px;padding:8px 10px;font-weight:800;font-size:.85rem;cursor:pointer;white-space:nowrap;}
+.chrono{cursor:pointer;}
+#mt-ov{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9800;display:flex;align-items:center;justify-content:center;padding:12px;}
+#mt-ov .box{background:#0f172a;border:2px solid #3b82f6;border-radius:14px;padding:14px;max-width:420px;width:100%;color:#e2e8f0;}
+#mt-ov h3{margin:0 0 8px;font-size:1rem;}
+#mt-ov .big{font-family:monospace;font-size:2.4rem;font-weight:800;text-align:center;color:#f87171;margin:4px 0;}
+#mt-ov .row{display:flex;gap:6px;align-items:center;justify-content:center;flex-wrap:wrap;margin:8px 0;font-size:.85rem;}
+#mt-ov .row b{min-width:70px;text-align:center;font-size:1.1rem;}
+#mt-ov button{background:#334155;color:#fff;border:none;border-radius:9px;padding:10px 12px;font-weight:800;font-size:.95rem;cursor:pointer;min-width:52px;}
+#mt-ov button.p{background:#15803d;}#mt-ov button.m{background:#b91c1c;}
+#mt-ov .lab{font-size:.74rem;color:#94a3b8;text-align:center;margin-top:10px;}
 .fit-vid{display:block;max-width:100%;max-height:calc(100vh - 170px);margin:8px auto;border-radius:10px;background:#000;}
 .pres-vids h5{margin:12px 0 2px;font-size:.9rem;color:#93c5fd;}
 .ok-list{margin:0;padding:0;list-style:none;}
@@ -2129,6 +2140,7 @@ body:has(> #s-match:not(.hidden)) #eleve-return-bar{display:none!important;}
 </div>
 <div class="setup-footer">
   <div id="footer-preview" style="font-size:.76rem;color:var(--dim);flex-shrink:0;"></div>
+  <button type="button" id="mt-chip" class="mt-chip" onclick="mtOpen()" title="Temps de match : modifier avant ou pendant le match">⏱</button>
   <button class="btn-start" id="btn-start" onclick="startMatch()">⚽ DÉMARRER</button>
 </div>
 </div>
@@ -2214,6 +2226,7 @@ body:has(> #s-match:not(.hidden)) #eleve-return-bar{display:none!important;}
   </div>
   <div class="period-ind" id="period-ind"></div>
   <button class="btn-f" style="background:rgba(202,138,4,.9);" id="btn-pp" onclick="toggleChrono()">⏸ Pause</button>
+  <button class="btn-f" style="background:rgba(30,64,175,.92);" id="btn-mt" onclick="mtOpen()">⏱ Temps</button>
   <button class="btn-f" style="background:rgba(220,38,38,.85);" onclick="stopMatch()">⏹ STOP</button>
   <button class="btn-f" style="background:rgba(14,116,144,.92);display:none;" id="btn-endset" onclick="rkEndSet()">🏁 Fin de set</button>
   <button class="btn-f" style="background:rgba(127,29,29,.9);display:none;" id="btn-rkout" onclick="rkOutOfCourt()">🚫 Hors terrain</button>
@@ -23075,6 +23088,45 @@ function sitSaveLib(){const x=sitEntry();if(!x||!LIBC)return;const f=LIBC.f;cons
   delete x.e.ov;saveSeances();SIT=null;try{libRefresh();}catch(e){}renderSeanceTab();try{toast2('💾 Situation enregistrée dans la biblio');}catch(e){}}
 document.addEventListener('dblclick',ev=>{try{const el=ev.target&&ev.target.closest&&ev.target.closest('.asp-ex[data-drag^="ae:"]');if(!el||ev.target.closest('button'))return;
   const p=el.dataset.drag.split(':');if(p.length<4)return;ev.preventDefault();sitEdit(p[1],p[2],p[3]);}catch(x){console.warn('sit dbl',x);}});
+
+// ══════════════════════════════════════════════════════════════════════
+// v302 — temps de match modifiable à la volée : avant le match (bouton ⏱
+// à côté de DÉMARRER) et pendant (bouton ⏱ Temps ou toucher le chrono) :
+// temps restant ±30 s / ±1 min, durée des périodes, nombre de périodes.
+// ══════════════════════════════════════════════════════════════════════
+function mtInMatch(){const m=E('s-match');return !!(m&&m.style.display!=='none'&&getComputedStyle(m).display!=='none');}
+function mtSaveCfg(){try{localStorage.setItem('grib_cfg_v10',JSON.stringify(CFG));}catch(e){}try{if(E('nb-periods'))E('nb-periods').value=CFG.nbPeriods;if(E('period-dur'))E('period-dur').value=CFG.periodDur;if(E('chrono-countdown'))E('chrono-countdown').checked=!!CFG.countdownMode;}catch(e){}mtChip();}
+function mtChip(){const c=E('mt-chip');if(!c)return;c.textContent=CFG.countdownMode?'⏱ '+(CFG.nbPeriods||1)+'×'+String(CFG.periodDur||0).replace('.',',')+'\'':'⏱ chrono';}
+function mtRemaining(){const el=matchSec-(curPeriod-1)*totalPeriodSec;return totalPeriodSec-el;}
+function mtShow(){try{if(E('chrono-top'))E('chrono-top').innerText=CFG.countdownMode?fmt(mtRemaining()):fmt(matchSec);updatePeriodInd();const l=E('chrono-top-label');if(l&&CFG.countdownMode)l.textContent='P'+curPeriod;}catch(e){}}
+function mtAdj(d){if(!mtInMatch()||!CFG.countdownMode)return;const r=mtRemaining();if(r+d<1)d=1-r;
+  matchSec-=d;if(timerOn&&chronoAnchorMs!==null)chronoAnchorSec-=d;
+  if(d>0&&typeof finAudioStarted!=='undefined'&&finAudioStarted){try{[audioFinPeriode,audioFinMatch].forEach(a=>{try{a.pause();a.currentTime=0;}catch(e){}});}catch(e){}finAudioStarted=false;}
+  mtShow();mtRender();}
+function mtDur(d){let v=Math.max(0.5,Math.round(((+CFG.periodDur||1)+d)*2)/2);if(mtInMatch()){const el=matchSec-(curPeriod-1)*totalPeriodSec;const nt=Math.round(v*60);
+    const ns=(curPeriod-1)*nt+el;const delta=ns-matchSec;matchSec=ns;if(timerOn&&chronoAnchorMs!==null)chronoAnchorSec+=delta;totalPeriodSec=nt;}
+  CFG.periodDur=v;mtSaveCfg();mtShow();mtRender();}
+function mtNb(d){const min=mtInMatch()?curPeriod:1;CFG.nbPeriods=Math.max(min,Math.min(9,(+CFG.nbPeriods||1)+d));mtSaveCfg();mtShow();mtRender();}
+function mtCount(on){if(mtInMatch())return;CFG.countdownMode=!!on;mtSaveCfg();mtRender();}
+function mtEndPeriod(){if(!mtInMatch()||!CFG.countdownMode)return;mtAdj(1-mtRemaining());}
+function mtClose(){const o=E('mt-ov');if(o)o.remove();clearInterval(MT_T);}
+let MT_T=null;
+function mtOpen(){mtClose();const o=document.createElement('div');o.id='mt-ov';o.onclick=e=>{if(e.target===o)mtClose();};document.body.appendChild(o);mtRender();clearInterval(MT_T);MT_T=setInterval(()=>{if(!E('mt-ov')){clearInterval(MT_T);return;}const b=E('mt-big');if(b&&mtInMatch()&&CFG.countdownMode)b.textContent=fmt(mtRemaining());},500);}
+function mtRender(){const o=E('mt-ov');if(!o)return;const inM=mtInMatch();const cd=!!CFG.countdownMode;
+  let h='<div class="box"><div style="display:flex;align-items:center;"><h3 style="flex:1;">⏱ Temps de match'+(inM&&cd?' · période '+curPeriod+'/'+CFG.nbPeriods:'')+'</h3><button type="button" onclick="mtClose()" style="min-width:0;padding:6px 10px;">✕</button></div>';
+  if(inM&&cd){h+='<div class="big" id="mt-big">'+fmt(mtRemaining())+'</div><div class="lab" style="margin-top:0;">temps restant de la période</div>'
+    +'<div class="row"><button type="button" class="m" onclick="mtAdj(-60)">−1\'</button><button type="button" class="m" onclick="mtAdj(-30)">−30\'\'</button><button type="button" class="p" onclick="mtAdj(30)">+30\'\'</button><button type="button" class="p" onclick="mtAdj(60)">+1\'</button></div>'
+    +'<div class="row"><button type="button" onclick="mtEndPeriod()">⏭ Finir la période maintenant</button></div>';}
+  if(!inM)h+='<div class="row"><button type="button" class="'+(cd?'p':'')+'" onclick="mtCount(true)">Compte à rebours</button><button type="button" class="'+(!cd?'p':'')+'" onclick="mtCount(false)">Chrono libre</button></div>';
+  if(cd)h+='<div class="lab">Durée d\'une période</div><div class="row"><button type="button" class="m" onclick="mtDur(-1)">−1\'</button><button type="button" class="m" onclick="mtDur(-0.5)">−30\'\'</button><b>'+String(CFG.periodDur).replace('.',',')+' min</b><button type="button" class="p" onclick="mtDur(0.5)">+30\'\'</button><button type="button" class="p" onclick="mtDur(1)">+1\'</button></div>'
+    +'<div class="lab">Nombre de périodes</div><div class="row"><button type="button" class="m" onclick="mtNb(-1)">−</button><b>'+CFG.nbPeriods+'</b><button type="button" class="p" onclick="mtNb(1)">+</button></div>';
+  else h+='<div class="lab">En chrono libre, le temps monte et le match s\'arrête avec ⏹ STOP.</div>';
+  h+='<div class="lab">'+(inM?'Valable pour ce match et les suivants (le profil d\'observation n\'est pas modifié).':'Valable pour les prochains matchs (le profil d\'observation n\'est pas modifié).')+'</div></div>';
+  o.innerHTML=h;}
+document.addEventListener('click',e=>{try{if(e.target.closest&&e.target.closest('#s-match .chrono'))mtOpen();}catch(x){}});
+updateAPSAUI=(function(f){return function(){const r=f.apply(this,arguments);try{mtChip();}catch(e){}return r;};})(updateAPSAUI);
+try{mtChip();}catch(e){}
+setInterval(()=>{try{mtChip();}catch(e){}},3000);
 </script>
 </body>
 </html>
