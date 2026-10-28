@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v306</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v307</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v306</title>
+<title>Gribouillis EPS v307</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -1351,6 +1351,10 @@ details.evl-crit[open]>summary{margin-bottom:6px;}
 .ep-chips{display:flex;flex-wrap:wrap;gap:4px;}
 .ep-d{display:flex;gap:6px;align-items:flex-start;font-size:.74rem;margin:3px 0;}
 .ep-d select{font-size:.72rem;}
+#sync-badge{position:fixed;left:6px;bottom:6px;z-index:40;font-size:.7rem;background:rgba(2,6,23,.85);border:1px solid #334155;color:#cbd5e1;border-radius:8px;padding:3px 7px;cursor:pointer;}
+body.mode-eleve #sync-badge{display:none;}
+#sync-ban{position:fixed;left:50%;transform:translateX(-50%);top:8px;z-index:99990;background:#1e3a8a;color:#fff;border:1px solid #60a5fa;border-radius:12px;padding:8px 12px;font-size:.82rem;box-shadow:0 6px 18px rgba(0,0,0,.5);display:flex;gap:8px;align-items:center;max-width:94vw;}
+#sync-ban button{background:#15803d;color:#fff;border:none;border-radius:8px;padding:6px 10px;font-weight:800;cursor:pointer;}
 .fit-vid{display:block;max-width:100%;max-height:calc(100vh - 170px);margin:8px auto;border-radius:10px;background:#000;}
 .pres-vids h5{margin:12px 0 2px;font-size:.9rem;color:#93c5fd;}
 .ok-list{margin:0;padding:0;list-style:none;}
@@ -1849,6 +1853,8 @@ body:has(> #s-match:not(.hidden)) #eleve-return-bar{display:none!important;}
         <div class="form-row" style="margin-top:6px;"><div><label>Dossier des vidéos :</label><input type="text" id="gh-folder" onchange="ghSaveForm()" placeholder="videos"></div><div><label>Dépôt de sauvegarde (privé) :</label><input type="text" id="gh-brepo" onchange="ghSaveForm()" placeholder="gribouillis-sauvegardes"></div></div>
         <div style="margin-top:6px;"><label>Jeton d'accès GitHub (reste sur cet appareil, jamais exporté) :</label><input type="password" id="gh-token" onchange="ghSaveForm()" placeholder="github_pat_…" style="width:100%;"></div>
         <label style="display:flex;gap:6px;align-items:center;margin-top:6px;font-size:.76rem;"><input type="checkbox" id="gh-auto" onchange="ghSaveForm()"> Sauvegarde cloud automatique en fin de match / de séance</label>
+        <label style="display:flex;gap:6px;align-items:center;margin-top:6px;font-size:.78rem;font-weight:700;"><input type="checkbox" id="gh-sync" onchange="syncToggle(this.checked)"> 🔄 Synchronisation automatique entre mes appareils (toujours la dernière version)</label>
+        <div id="sync-status" style="font-size:.72rem;color:var(--dim);margin-top:2px;"></div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
           <button class="btn-xs green" onclick="ghBackupNow()">☁️ Sauvegarder dans le cloud</button>
           <button class="btn-xs" style="background:#b45309;color:#fff;" onclick="ghRestorePick()">⬇️ Restaurer depuis le cloud</button>
@@ -23537,6 +23543,77 @@ async function suiviPushAll(){const g=gsCfg();const msg=t=>{const m=E('suivi-msg
   msg('✅ '+nC+' résultat'+(nC>1?'s':'')+' d\'évaluation et '+nT+' test'+(nT>1?'s':'')+' envoyés'+(errs.length?' · ⚠️ '+errs.length+' souci(s)':''));if(errs.length)console.warn('suivi',errs);}
 // bouton dans l'évaluation de la séquence
 evlHtml=(function(f){return function(q){let h=f.apply(this,arguments);try{if(gsCfg().suivi&&q&&q.cadre&&q.cadre.ev&&q.cadre.ev.crit.length){h=h.replace('🖨 Fiche d\'évaluation élève (vierge)</button>','🖨 Fiche d\'évaluation élève (vierge)</button><button type="button" class="btn-xs" style="background:#0f766e;color:#fff;" onclick="suiviPushAll()" title="Envoie les résultats de toutes les séquences et les tests dans le fichier de suivi pluriannuel">📈 Suivi pluriannuel</button>');}}catch(e){}return h;};})(evlHtml);
+
+// ══════════════════════════════════════════════════════════════════════
+// v307 — synchronisation automatique entre appareils (dépôt GitHub privé de
+// sauvegarde) : chaque donnée modifiée est envoyée seule (sync/k_<clé>.json)
+// avec un index des dates de modification (sync/index.json) ; au démarrage
+// et régulièrement, l'app récupère ce qui est plus récent ailleurs.
+// La plus récente des deux versions d'une même donnée l'emporte.
+// ══════════════════════════════════════════════════════════════════════
+const SYNC={applying:false,busy:false,t:null,lastPull:0,state:'',remoteNewer:false,dev:''};
+const SYNC_META='grib_sync_meta';
+function syncKeys(){return (GRIB_BACKUP_KEYS||[]).slice();}
+function syncOn(){try{if(typeof GRIB_EXPORT_MODE!=='undefined'&&GRIB_EXPORT_MODE)return false;const c=ghCfg();return !!c.token&&c.sync!==false;}catch(e){return false;}}
+const _lsSet=Storage.prototype.setItem,_lsGet=Storage.prototype.getItem;
+function syncMeta(){try{const m=JSON.parse(_lsGet.call(localStorage,SYNC_META)||'null');if(m&&typeof m==='object'){if(!m.mt)m.mt={};if(!m.dirty)m.dirty={};return m;}}catch(e){}return null;}
+function syncMetaSave(m){try{_lsSet.call(localStorage,SYNC_META,JSON.stringify(m));}catch(e){}}
+function syncDev(){let d='';try{d=_lsGet.call(localStorage,'grib_device_id')||'';if(!d){d='dev-'+Math.random().toString(36).slice(2,10);_lsSet.call(localStorage,'grib_device_id',d);}}catch(e){}return d;}
+Storage.prototype.setItem=function(k,v){let ch=false;try{if(this===window.localStorage&&!SYNC.applying&&syncKeys().indexOf(k)>=0){ch=_lsGet.call(this,k)!==String(v);}}catch(e){}
+  const r=_lsSet.call(this,k,v);if(ch){try{const m=syncMeta();if(m){m.mt[k]=Date.now();m.dirty[k]=1;syncMetaSave(m);syncSchedule();}}catch(e){}}return r;};
+function syncBadge(t,tip){SYNC.state=t;let b=E('sync-badge');if(!syncOn()){if(b)b.remove();return;}if(!b){b=document.createElement('div');b.id='sync-badge';b.onclick=()=>syncNow(true);document.body.appendChild(b);}b.textContent=t;b.title=(tip||'')+' — toucher pour synchroniser maintenant';const st=E('sync-status');if(st)st.textContent=t+(tip?' · '+tip:'');}
+function syncPath(k){return 'sync/k_'+k.replace(/[^A-Za-z0-9_.-]/g,'_')+'.json';}
+async function syncRaw(path){const c=ghCfg();const r=await fetch('https://api.github.com/repos/'+encodeURIComponent(c.owner)+'/'+encodeURIComponent(c.brepo)+'/contents/'+path+'?t='+Date.now(),{cache:'no-store',headers:{'Authorization':'Bearer '+c.token,'Accept':'application/vnd.github.raw+json'}});
+  if(r.status===404)return null;if(!r.ok)throw new Error('GitHub '+r.status);return await r.text();}
+async function syncIndex(){const t=await syncRaw('sync/index.json');if(t==null)return null;try{const o=JSON.parse(t);if(o&&o.mt)return o;}catch(e){}return null;}
+function syncInMatch(){const m=E('s-match');return !!(m&&getComputedStyle(m).display!=='none');}
+function syncSchedule(){if(!syncOn())return;clearTimeout(SYNC.t);SYNC.t=setTimeout(()=>{if(syncInMatch()){syncSchedule();return;}syncNow(false);},25000);syncBadge('☁️ modifs à envoyer','');}
+// récupérer les données plus récentes du cloud ; renvoie le nombre de données appliquées
+async function syncPull(idx){const m=syncMeta();if(!m)return 0;idx=idx||await syncIndex();if(!idx)return 0;let n=0;
+  for(const k of Object.keys(idx.mt)){if(syncKeys().indexOf(k)<0)continue;const rt=+idx.mt[k]||0,lt=+m.mt[k]||0;if(rt<=lt)continue;
+    const v=await syncRaw(syncPath(k));if(v==null)continue;if(_lsGet.call(localStorage,k)!==v){SYNC.applying=true;try{_lsSet.call(localStorage,k,v);n++;}catch(e){console.warn('sync apply',k,e);}SYNC.applying=false;}
+    m.mt[k]=rt;delete m.dirty[k];}
+  syncMetaSave(m);return n;}
+// envoyer les données modifiées ici
+async function syncPush(){const m=syncMeta();if(!m)return 0;const c=ghCfg();const keys=Object.keys(m.dirty).filter(k=>syncKeys().indexOf(k)>=0);if(!keys.length)return 0;
+  const idx=(await syncIndex())||{v:1,mt:{}};let n=0;
+  for(const k of keys){const rt=+idx.mt[k]||0,lt=+m.mt[k]||0;if(rt>lt)continue; // une version plus récente existe ailleurs : elle sera récupérée
+    const v=_lsGet.call(localStorage,k);if(v==null)continue;await ghPut(c.brepo,syncPath(k),new TextEncoder().encode(v),'sync '+k);idx.mt[k]=lt;delete m.dirty[k];n++;}
+  if(n){for(let t=0;t<3;t++){try{const cur=(await syncIndex())||{v:1,mt:{}};Object.keys(idx.mt).forEach(k=>{if((+idx.mt[k]||0)>(+cur.mt[k]||0))cur.mt[k]=idx.mt[k];});cur.at=Date.now();cur.device=SYNC.dev;
+      await ghPut(c.brepo,'sync/index.json',new TextEncoder().encode(JSON.stringify(cur)),'sync index');break;}catch(e){if(t===2)throw e;await new Promise(r=>setTimeout(r,800));}}}
+  syncMetaSave(m);return n;}
+function syncBanner(){if(E('sync-ban'))return;const b=document.createElement('div');b.id='sync-ban';b.innerHTML='🔄 Des données plus récentes sont arrivées d\'un autre appareil.<button type="button">Recharger maintenant</button><span style="cursor:pointer;opacity:.7;" title="Plus tard">✕</span>';
+  b.querySelector('button').onclick=()=>location.reload();b.querySelector('span').onclick=()=>b.remove();document.body.appendChild(b);}
+async function syncNow(manual){if(!syncOn()||SYNC.busy)return;SYNC.busy=true;try{syncBadge('☁️ synchro…','');
+    const idx=await syncIndex();const got=await syncPull(idx);const sent=await syncPush();SYNC.lastPull=Date.now();
+    const t=new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+    if(got){syncBadge('☁️ nouvelles données','arrivées à '+t);if(!syncInMatch()&&!document.querySelector('.lib-pick-ov,#libc-ov,#mt-ov'))syncBanner();else syncBanner();}
+    else syncBadge('☁️ à jour',(sent?sent+' envoi'+(sent>1?'s':'')+' · ':'')+'vérifié à '+t);}
+  catch(e){console.warn('sync',e);syncBadge('⚠️ synchro',e.message);if(manual)alert('Synchronisation impossible : '+e.message);}
+  finally{SYNC.busy=false;}}
+async function syncFirst(){const c=ghCfg();const idx=await syncIndex();const now=Date.now();
+  const initLocal=()=>{const m={mt:{},dirty:{}};syncKeys().forEach(k=>{if(_lsGet.call(localStorage,k)!=null){m.mt[k]=now;m.dirty[k]=1;}});syncMetaSave(m);};
+  if(!idx){initLocal();await syncNow(false);return;}
+  const when=idx.at?new Date(+idx.at).toLocaleString('fr-FR'):'?';
+  await new Promise(res=>{const o=document.createElement('div');o.id='sync-first';o.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:99999;display:flex;align-items:center;justify-content:center;padding:14px;';
+    o.innerHTML='<div style="background:#0f172a;border:2px solid #3b82f6;border-radius:14px;padding:16px;max-width:440px;color:#e2e8f0;font-size:.88rem;"><b style="font-size:1rem;">🔄 Synchronisation entre tes appareils</b><p>Le cloud contient des données envoyées le <b>'+esc(when)+'</b>. Lesquelles veux-tu garder sur cet appareil ?</p>'
+      +'<button type="button" data-a="cloud" style="display:block;width:100%;margin:6px 0;padding:10px;border:none;border-radius:9px;background:#15803d;color:#fff;font-weight:800;">⬇️ Les données du cloud (recommandé)</button>'
+      +'<button type="button" data-a="local" style="display:block;width:100%;margin:6px 0;padding:10px;border:none;border-radius:9px;background:#334155;color:#fff;font-weight:800;">📱 Celles de cet appareil (elles remplaceront le cloud)</button>'
+      +'<button type="button" data-a="later" style="display:block;width:100%;margin:6px 0;padding:8px;border:none;border-radius:9px;background:transparent;color:#94a3b8;">Plus tard</button></div>';
+    o.querySelectorAll('button').forEach(b=>b.onclick=async()=>{const a=b.dataset.a;o.remove();
+      if(a==='cloud'){syncMetaSave({mt:{},dirty:{}});const n=await syncPull(idx);if(n){location.reload();return;}await syncNow(false);}
+      else if(a==='local'){initLocal();await syncNow(false);}
+      res();});document.body.appendChild(o);});}
+function syncToggle(on){const c=ghCfg();c.sync=!!on;try{localStorage.setItem(GH_KEY,JSON.stringify(c));}catch(e){}if(on)syncStart();else syncBadge('','');}
+async function syncStart(){if(!syncOn())return;SYNC.dev=syncDev();const cb=E('gh-sync');if(cb)cb.checked=true;
+  try{if(!syncMeta()){await syncFirst();return;}
+    // au démarrage : récupérer d'abord, puis recharger une fois si quelque chose a changé
+    const n=await syncPull();if(n){let once=false;try{once=sessionStorage.getItem('grib_sync_reload')==='1';}catch(e){}if(!once){try{sessionStorage.setItem('grib_sync_reload','1');}catch(e){}location.reload();return;}}
+    try{sessionStorage.removeItem('grib_sync_reload');}catch(e){}await syncNow(false);}catch(e){console.warn('syncStart',e);syncBadge('⚠️ synchro',e.message);}}
+setTimeout(()=>{try{const cb=E('gh-sync');if(cb)cb.checked=syncOn();syncStart();}catch(e){}},1200);
+setInterval(()=>{try{if(syncOn()&&document.visibilityState==='visible'&&Date.now()-SYNC.lastPull>60000)syncNow(false);}catch(e){}},15000);
+document.addEventListener('visibilitychange',()=>{try{if(!syncOn())return;const m=syncMeta();if(document.visibilityState==='hidden'){if(m&&Object.keys(m.dirty).length&&!syncInMatch())syncNow(false);}else if(Date.now()-SYNC.lastPull>20000)syncNow(false);}catch(e){}});
+stopMatch=(function(f){return function(){const r=f.apply(this,arguments);try{if(syncOn())setTimeout(()=>syncNow(false),5000);}catch(e){}return r;};})(stopMatch);
 </script>
 </body>
 </html>
