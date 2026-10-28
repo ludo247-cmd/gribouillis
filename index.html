@@ -4,8 +4,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v297</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2215%22%20fill%3D%22%230b0b0c%22/%3E%3Cpath%20d%3D%22M44%2021C39.5%2015%2032.5%2013.5%2026.5%2015.5C17.5%2019%2013.5%2029%2016.5%2038C19.5%2047%2030%2051.5%2038.5%2048C43%2046%2045.5%2042.5%2046%2038H33%22%20fill%3D%22none%22%20stroke%3D%22%23e11d2e%22%20stroke-width%3D%226.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%3Ccircle%20cx%3D%2250.5%22%20cy%3D%2212.5%22%20r%3D%224%22%20fill%3D%22%23e11d2e%22/%3E%3C/svg%3E">
+<title>Gribouillis EPS v298</title>
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0b0b0c">
+<meta name="apple-mobile-web-app-title" content="Gribouillis">
+<meta name="application-name" content="Gribouillis EPS">
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
 /* ── THÈME SOMBRE UNIQUEMENT ── */
@@ -1279,6 +1286,21 @@ details.evl-crit[open]>summary{margin-bottom:6px;}
 .chp-m .roles{font-size:.72rem;color:#94a3b8;margin-top:3px;line-height:1.5;}
 .chp-niv{font-size:.66rem;font-weight:800;border-radius:5px;padding:1px 5px;background:#334155;color:#e2e8f0;}
 .chp-pw{font-size:.7rem;color:#fde68a;}
+.chp-m>summary{list-style:none;cursor:pointer;display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
+.chp-m>summary::-webkit-details-marker{display:none;}
+.chp-m>summary::after{content:'✎';color:#64748b;margin-left:auto;}
+.chp-m[open]>summary{margin-bottom:6px;}
+.chp-sc{font-weight:800;font-size:.9rem;min-width:44px;text-align:center;}
+.chp-pp{font-size:.7rem;color:#fdba74;font-weight:700;}
+.chp-side{border-left:3px solid #334155;padding:3px 0 3px 8px;margin:4px 0;}
+.chp-side .chp-row{margin:2px 0;}
+.chp-ck{display:inline-flex;gap:4px;align-items:center;font-size:.74rem;border:1px solid #334155;border-radius:6px;padding:2px 6px;cursor:pointer;}
+.chp-ck.on{border-color:#fb923c;background:rgba(251,146,60,.15);}
+.chp-blk{border:1px dashed #334155;border-radius:8px;padding:6px 8px;margin:6px 0;}
+.chp-blk>.hd{display:flex;gap:8px;align-items:center;font-weight:800;font-size:.8rem;color:#fdba74;}
+.chp-blk .cc-dim{font-size:.7rem;}
+.chp-tab td input{width:46px !important;}
+.chp-row input[type=color]{width:36px !important;height:28px;padding:0 2px;flex:0 0 auto !important;}
 .fit-vid{display:block;max-width:100%;max-height:calc(100vh - 170px);margin:8px auto;border-radius:10px;background:#000;}
 .pres-vids h5{margin:12px 0 2px;font-size:.9rem;color:#93c5fd;}
 .ok-list{margin:0;padding:0;list-style:none;}
@@ -22844,6 +22866,120 @@ cadInject=(function(o){return function(){o.apply(this,arguments);try{const q=evl
   if(!(q.cadre&&q.cadre.ca==='CA4')&&!(q.champ&&q.champ.on))return;chpEnsure(q);
   const ed=document.querySelector('#seq-console .seq-ed');if(!ed||E('chp-box'))return;const w=document.createElement('div');w.innerHTML=chpHtml(q);const ev=E('evl-box');
   if(ev&&ev.parentNode===ed)ed.insertBefore(w.firstChild,ev);else ed.appendChild(w.firstChild);}catch(e){console.warn('chp',e);}};})(cadInject);
+
+// ══════════════════════════════════════════════════════════════════════
+// v298 — championnat : jusqu'à 4 niveaux par club ; barème modulable par
+// blocs (résultat, façon de marquer, bonus collectifs, objectifs individuels,
+// « avec la manière », pouvoirs) ; saisie détaillée par match (repliée).
+// ══════════════════════════════════════════════════════════════════════
+const CHP_NIVS=['Espoirs','Confirmés','Experts','Élite'];
+function chpUid(){return 'b'+Date.now().toString(36)+Math.floor(Math.random()*1e4).toString(36);}
+function chpSc(c){if(c.sc&&typeof c.sc==='object')return c.sc;const B=c.bar||{v:4,n:2,d:1,b1:1,b2:2};
+  c.sc={bon:[{id:'tt',lab:'Tous les joueurs ont tiré',pts:+B.b1||1},{id:'tm',lab:'Tous les joueurs ont marqué',pts:+B.b2||2}],
+    act:{on:false,list:[{id:'a1',lab:'But',val:1},{id:'a2',lab:'But après passe',val:2}]},
+    ind:{on:false,mode:'each',pts:1,pct:75,bonus:2,def:'',obj:{}},
+    man:{on:false,vert:{lab:'Buts après au moins 2 passes',seuil:3},rouge:{lab:'Pertes de balle',seuil:8},tab:{v:[4,3,3],n:[3,2,1],d:[2,1,0]}}};
+  return c.sc;}
+chpEnsure=(function(o){return function(q){const c=o(q);if(c&&c.on){chpSc(c);(c.jours||[]).forEach(J=>(J.m||[]).forEach(m=>{if(!m.bon){m.bon={a:[],b:[]};if(+m.ba===1)m.bon.a.push('tt');if(+m.ba===2)m.bon.a.push('tm');if(+m.bb===1)m.bon.b.push('tt');if(+m.bb===2)m.bon.b.push('tm');}}));}return c;};})(chpEnsure);
+function chpScore(c,m,sd){const S=chpSc(c);if(S.act.on){const A=(m.ac||{})[sd]||{};let t=0,any=false;S.act.list.forEach(a=>{const n=+A[a.id]||0;if(A[a.id]!==undefined&&A[a.id]!=='')any=true;t+=n*(+a.val||0);});return any?t:(m[sd==='a'?'sa':'sb']===''||m[sd==='a'?'sa':'sb']==null?null:+m[sd==='a'?'sa':'sb']);}
+  const v=m[sd==='a'?'sa':'sb'];return v===''||v==null?null:+v;}
+function chpManState(c,m,sd){const S=chpSc(c).man;const M=(m.mv||{})[sd]||{};const v=+M.v||0,r=+M.r||0;const gv=v>=(+S.vert.seuil||1),gr=r>=(+S.rouge.seuil||1);return gv&&!gr?0:gr&&!gv?2:1;}
+function chpIndBonus(c,m,sd){const S=chpSc(c).ind;if(!S.on)return {p:0,ok:0,n:0};const P=chpMembers(c,sd==='a'?m.a:m.b,m.niv);const ok=((m.io||{})[sd]||[]).filter(n=>P.indexOf(n)>=0).length;
+  if(S.mode==='each')return {p:ok*(+S.pts||0),ok,n:P.length};return {p:P.length&&ok/P.length*100>=(+S.pct||0)?(+S.bonus||0):0,ok,n:P.length};}
+function chpSidePts(c,m,sd,a,b){const S=chpSc(c);const B=c.bar;const mine=sd==='a'?a:b,oth=sd==='a'?b:a;const res=mine>oth?'v':mine===oth?'n':'d';
+  let p=S.man.on?(+((S.man.tab[res]||[])[chpManState(c,m,sd)])||0):(+B[res]||0);
+  const bon=((m.bon||{})[sd]||[]);const bv=S.bon.filter(x=>bon.indexOf(x.id)>=0).map(x=>(res==='d'&&x.ptsD!==''&&x.ptsD!=null)?+x.ptsD||0:+x.pts||0);
+  if(bv.length)p+=S.bonMode==='max'?Math.max.apply(null,bv):bv.reduce((u,v)=>u+v,0);
+  if(S.rat&&S.rat.on)(S.rat.list||[]).forEach(x=>{const R=(((m.rt||{})[sd]||{})[x.id])||{};const n=+R.n,d=+R.d;if(R.n===undefined||R.n===''||!(d>0))return;if(n/d>(+x.seuil||0))p+=+x.pts||0;});
+  p+=chpIndBonus(c,m,sd).p;return p;}
+chpRes=function(c,m){const a=chpScore(c,m,'a'),b=chpScore(c,m,'b');if(a==null||b==null)return null;return {a,b,pa:chpSidePts(c,m,'a',a,b),pb:chpSidePts(c,m,'b',a,b)};};
+function chpSet(id,path,val){chpMut(id,c=>{chpSc(c);const k=path.split('.');let o=c;for(let i=0;i<k.length-1;i++){if(o[k[i]]==null||typeof o[k[i]]!=='object')o[k[i]]=/^\d+$/.test(k[i+1])?[]:{};o=o[k[i]];}o[k[k.length-1]]=val;});}
+function chpTogArr(id,path,v){chpMut(id,c=>{chpSc(c);const k=path.split('.');let o=c;for(let i=0;i<k.length-1;i++){if(o[k[i]]==null||typeof o[k[i]]!=='object')o[k[i]]={};o=o[k[i]];}const L=Array.isArray(o[k[k.length-1]])?o[k[k.length-1]]:(o[k[k.length-1]]=[]);const j=L.indexOf(v);if(j>=0)L.splice(j,1);else L.push(v);});}
+function chpIn(qi,path,val,type,w){return '<input type="'+(type||'number')+'" value="'+esc(String(val==null?'':val))+'"'+(w?' style="width:'+w+'px !important;"':'')+' onchange="chpSet(\''+qi+'\',\''+path+'\','+(type==='text'?'this.value':'(this.value===\'\'?\'\':+this.value)')+')">';}
+function chpBlk(t,on,qi,path,body,help){return '<'+'div class="chp-blk"><'+'div class="hd">'+(path?'<input type="checkbox"'+(on?' checked':'')+' onchange="chpSet(\''+qi+'\',\''+path+'\',this.checked)">':'')+esc(t)+'</'+'div>'+(help?'<'+'div class="cc-dim">'+help+'</'+'div>':'')+(on||!path?body:'')+'</'+'div>';}
+function chpBaremeHtml(q){const c=q.champ;const qi=esc(q.id);const S=chpSc(c);const B=c.bar;const D='<'+'div',X='</'+'div>';
+  let h=chpBlk('Résultat du match',true,qi,'',D+' class="chp-row">Victoire '+chpIn(qi,'bar.v',B.v)+' Nul '+chpIn(qi,'bar.n',B.n)+' Défaite '+chpIn(qi,'bar.d',B.d)
+      +'<button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="chpMut(\''+qi+'\',c=>{c.bar.v=3;c.bar.n=1;c.bar.d=0;})">3 / 1 / 0</button><button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="chpMut(\''+qi+'\',c=>{c.bar.v=4;c.bar.n=2;c.bar.d=1;})">4 / 2 / 1</button>'+X,S.man.on?'Remplacé par le tableau « avec la manière » (activé plus bas).':'');
+  h+=chpBlk('Façon de marquer (le score du match = somme des actions)',S.act.on,qi,'sc.act.on',S.act.list.map((a,i)=>D+' class="chp-row">'+chpIn(qi,'sc.act.list.'+i+'.lab',a.lab,'text',180)+' vaut '+chpIn(qi,'sc.act.list.'+i+'.val',a.val)+' pt'+'<button type="button" class="btn-xs red" onclick="chpMut(\''+qi+'\',c=>{chpSc(c).act.list.splice('+i+',1);})">🗑</button>'+X).join('')
+    +'<button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="chpMut(\''+qi+'\',c=>{chpSc(c).act.list.push({id:chpUid(),lab:\'Action\',val:1});})">＋ Action</button>','Ex. : but = 1, but après passe = 2, but en zone = 3. Pendant le match on compte chaque action.');
+  h+=chpBlk('Bonus collectifs',true,qi,'',D+' class="chp-row"><select onchange="chpSet(\''+qi+'\',\'sc.bonMode\',this.value)"><option value="cumul"'+(S.bonMode!=='max'?' selected':'')+'>Les bonus se cumulent</option><option value="max"'+(S.bonMode==='max'?' selected':'')+'>Paliers : seul le plus haut compte</option></select>'+X+S.bon.map((x,i)=>D+' class="chp-row">'+chpIn(qi,'sc.bon.'+i+'.lab',x.lab,'text',220)+' +'+chpIn(qi,'sc.bon.'+i+'.pts',x.pts)+' pt · si défaite '+chpIn(qi,'sc.bon.'+i+'.ptsD',x.ptsD==null?'':x.ptsD)+'<button type="button" class="btn-xs red" onclick="chpMut(\''+qi+'\',c=>{chpSc(c).bon.splice('+i+',1);})">🗑</button>'+X).join('')
+    +'<button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="chpMut(\''+qi+'\',c=>{chpSc(c).bon.push({id:chpUid(),lab:\'Bonus\',pts:1});})">＋ Bonus</button>','Cochés match par match pour chaque équipe. Un malus = des points négatifs. « Si défaite » vide = même valeur.');
+  const RT=S.rat||{on:false,list:[]};
+  h+=chpBlk('Bonus de ratio',RT.on,qi,'sc.rat.on',(RT.list||[]).map((x,i)=>D+' class="chp-row">'+chpIn(qi,'sc.rat.list.'+i+'.lab',x.lab,'text',150)+' : '+chpIn(qi,'sc.rat.list.'+i+'.num',x.num,'text',150)+' ÷ '+chpIn(qi,'sc.rat.list.'+i+'.den',x.den,'text',120)+' &gt; '+chpIn(qi,'sc.rat.list.'+i+'.seuil',x.seuil)+' → +'+chpIn(qi,'sc.rat.list.'+i+'.pts',x.pts)+'<button type="button" class="btn-xs red" onclick="chpMut(\''+qi+'\',c=>{chpSc(c).rat.list.splice('+i+',1);})">🗑</button>'+X).join('')
+    +'<button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="chpMut(\''+qi+'\',c=>{const S=chpSc(c);if(!S.rat)S.rat={on:true,list:[]};S.rat.list.push({id:chpUid(),lab:\'Ratio\',num:\'Actions\',den:\'Possessions\',seuil:0.5,pts:1});})">＋ Ratio</button>',
+    'Ex. : zone de marque atteinte ÷ possessions &gt; 0,5 → +1 ; buts collectifs ÷ buts individuels &gt; 1 → +1. On saisit les deux nombres pendant le match.');
+  const CC=S.cc||{on:false};
+  h+=chpBlk('Concours annexe (ajouté au total du club)',CC.on,qi,'sc.cc.on',D+' class="chp-row">Nom '+chpIn(qi,'sc.cc.lab',CC.lab||'Concours de tirs','text',160)+' · 1er '+chpIn(qi,'sc.cc.pts.0',(CC.pts||[])[0])+' 2e '+chpIn(qi,'sc.cc.pts.1',(CC.pts||[])[1])+' 3e '+chpIn(qi,'sc.cc.pts.2',(CC.pts||[])[2])+' 4e '+chpIn(qi,'sc.cc.pts.3',(CC.pts||[])[3])+X,
+    'Classement des clubs à chaque journée (concours de tirs, défi…), saisi dans la journée.');
+  const I=S.ind;const N=chpNames().filter(n=>c.aff[n]);
+  h+=chpBlk('Objectifs individuels au sein du collectif',I.on,qi,'sc.ind.on',
+    D+' class="chp-row"><select onchange="chpSet(\''+qi+'\',\'sc.ind.mode\',this.value)"><option value="each"'+(I.mode==='each'?' selected':'')+'>Chaque objectif atteint rapporte</option><option value="seuil"'+(I.mode==='seuil'?' selected':'')+'>Bonus si assez de joueurs atteignent leur objectif</option></select>'
+      +(I.mode==='each'?chpIn(qi,'sc.ind.pts',I.pts)+' pt à l\'équipe':' au moins '+chpIn(qi,'sc.ind.pct',I.pct)+' % des joueurs → +'+chpIn(qi,'sc.ind.bonus',I.bonus)+' pts')+X
+      +D+' class="chp-row">Objectif par défaut '+chpIn(qi,'sc.ind.def',I.def,'text',260)+X
+      +'<table class="chp-t"><thead><tr><th>Élève</th><th>Objectif individuel (vide = objectif par défaut)</th></tr></thead><tbody>'
+      +N.map(n=>'<tr><td class="l">'+esc(n)+'</td><td><input type="text" style="width:300px !important;" value="'+esc((I.obj||{})[n]||'')+'" placeholder="'+esc(I.def||'')+'" data-n="'+esc(n)+'" onchange="chpObj(\''+qi+'\',this.dataset.n,this.value)"></td></tr>').join('')+'</tbody></table>',
+    'Chaque élève a un objectif (marquer 1 but, faire 3 passes décisives, ne pas perdre la balle en dribble…) ; à chaque match on coche ceux qui l\'ont atteint.');
+  const M=S.man;const st=['vert atteint','ni l\'un ni l\'autre','rouge atteint'];
+  h+=chpBlk('Gagner (ou perdre) avec la manière',M.on,qi,'sc.man.on',
+    D+' class="chp-row">🟩 Zone verte (à atteindre) : '+chpIn(qi,'sc.man.vert.lab',M.vert.lab,'text',220)+' au moins '+chpIn(qi,'sc.man.vert.seuil',M.vert.seuil)+X
+    +D+' class="chp-row">🟥 Zone rouge (à éviter) : '+chpIn(qi,'sc.man.rouge.lab',M.rouge.lab,'text',220)+' au moins '+chpIn(qi,'sc.man.rouge.seuil',M.rouge.seuil)+X
+    +'<table class="chp-t chp-tab"><thead><tr><th></th>'+st.map(t=>'<th>'+t+'</th>').join('')+'</tr></thead><tbody>'
+    +[['v','Victoire'],['n','Nul'],['d','Défaite']].map(([r,l])=>'<tr><td class="l">'+l+'</td>'+[0,1,2].map(j=>'<td>'+chpIn(qi,'sc.man.tab.'+r+'.'+j,(M.tab[r]||[])[j])+'</td>').join('')+'</tr>').join('')+'</tbody></table>',
+    'Les points du match dépendent du résultat ET de la façon de jouer : on compte un indicateur positif (zone verte) et un négatif (zone rouge). Comme chez N. Mascret en badminton : gagner rapporte toujours plus, mais perdre en atteignant la zone verte rapporte aussi.');
+  h+=chpBlk('Pouvoirs et jokers',true,qi,'',D+' class="chp-row">1 pouvoir pour l\'équipe en retard tous les '+chpIn(qi,'bar.seuil',B.seuil)+' points d\'écart au classement (3 au plus)'+X
+    +'<textarea style="width:100%;min-height:80px;font-family:inherit;background:#0f172a;color:#e2e8f0;border:1px solid #334155;border-radius:6px;padding:4px 6px;font-size:.76rem;" onchange="chpMut(\''+qi+'\',c=>{c.pouv=this.value.split(\'\\n\').map(x=>x.trim()).filter(Boolean);})" aria-label="Pouvoirs, un par ligne">'+esc((c.pouv||[]).join('\n'))+'</textarea>');
+  return h;}
+function chpObj(id,n,v){chpMut(id,c=>{const I=chpSc(c).ind;if(!I.obj)I.obj={};if(String(v).trim())I.obj[n]=String(v).trim();else delete I.obj[n];});}
+function chpMatchHtml(q,ji,mi){const c=q.champ;const qi=esc(q.id);const S=chpSc(c);const m=c.jours[ji].m[mi];const D='<'+'div',X='</'+'div>';
+  const R=chpRoles(c,ji,mi,q.sport);const pw=chpPouv(c,ji,m);const r=chpRes(c,m);const key='chpm'+ji+'_'+mi;const P='jours.'+ji+'.m.'+mi;
+  let h='<details class="chp-m"'+chpOpen(key)+' ontoggle="CAD_UI.o[\''+key+'\']=this.open"><summary><b>M'+(mi+1)+'</b>'+(c.niv.length>1?'<span class="chp-niv">'+esc(c.niv[m.niv]||'')+'</span>':'')+chpBadge(c,m.a)
+    +'<span class="chp-sc">'+(r?r.a+' – '+r.b:'– : –')+'</span>'+chpBadge(c,m.b)+(r?'<span class="chp-pp">'+r.pa+' pt'+(r.pa>1?'s':'')+' / '+r.pb+' pt'+(r.pb>1?'s':'')+'</span>':'')
+    +(pw?'<span class="chp-pw">🃏 '+esc(chpClub(c,pw.club).nom)+' : '+pw.n+' pouvoir'+(pw.n>1?'s':'')+'</span>':'')+'</summary>';
+  ['a','b'].forEach(sd=>{const club=sd==='a'?m.a:m.b;const k=chpClub(c,club);const mem=chpMembers(c,club,m.niv);
+    h+=D+' class="chp-side" style="border-left-color:'+esc(k.col)+';">'+D+' class="chp-row">'+chpBadge(c,club);
+    if(S.act.on)h+=S.act.list.map(a=>'<label>'+esc(a.lab)+' '+chpIn(qi,P+'.ac.'+sd+'.'+a.id,((m.ac||{})[sd]||{})[a.id])+'</label>').join('')+'<b>= '+(chpScore(c,m,sd)==null?'–':chpScore(c,m,sd))+'</b>';
+    else h+='Score '+chpIn(qi,P+'.s'+sd,m['s'+sd]);
+    h+=X;
+    if(S.bon.length)h+=D+' class="chp-row">'+S.bon.map(x=>{const on=((m.bon||{})[sd]||[]).indexOf(x.id)>=0;return '<label class="chp-ck'+(on?' on':'')+'"><input type="checkbox"'+(on?' checked':'')+' onchange="chpTogArr(\''+qi+'\',\''+P+'.bon.'+sd+'\',\''+esc(x.id)+'\')">'+esc(x.lab)+' ('+(x.pts>0?'+':'')+x.pts+')</label>';}).join('')+X;
+    if(S.rat&&S.rat.on&&(S.rat.list||[]).length)h+=D+' class="chp-row">'+S.rat.list.map(x=>{const R=(((m.rt||{})[sd]||{})[x.id])||{};const ok=R.n!==undefined&&R.n!==''&&+R.d>0&&(+R.n/+R.d)>(+x.seuil||0);return '<span>📈 '+esc(x.lab)+' : '+esc(x.num)+' '+chpIn(qi,P+'.rt.'+sd+'.'+x.id+'.n',R.n)+' / '+esc(x.den)+' '+chpIn(qi,P+'.rt.'+sd+'.'+x.id+'.d',R.d)+(ok?' <b style="color:#fdba74;">+'+x.pts+'</b>':'')+'</span>';}).join(' ')+X;
+    if(S.man.on){const M=(m.mv||{})[sd]||{};h+=D+' class="chp-row">🟩 '+esc(S.man.vert.lab)+' '+chpIn(qi,P+'.mv.'+sd+'.v',M.v)+' 🟥 '+esc(S.man.rouge.lab)+' '+chpIn(qi,P+'.mv.'+sd+'.r',M.r)+'<span class="cc-dim">→ '+['zone verte','aucune zone','zone rouge'][chpManState(c,m,sd)]+'</span>'+X;}
+    if(S.ind.on){const ok=(m.io||{})[sd]||[];const ib=chpIndBonus(c,m,sd);h+=D+' class="chp-row">🎯 '+(mem.length?mem.map(n=>{const on=ok.indexOf(n)>=0;const ob=(S.ind.obj||{})[n]||S.ind.def||'';return '<label class="chp-ck'+(on?' on':'')+'" title="'+esc(ob||'Objectif à définir (Barème → Objectifs individuels)')+'"><input type="checkbox"'+(on?' checked':'')+' data-n="'+esc(n)+'" onchange="chpTogArr(\''+qi+'\',\''+P+'.io.'+sd+'\',this.dataset.n)">'+esc(n)+'</label>';}).join(''):'<span class="cc-dim">aucun joueur placé</span>')+'<span class="cc-dim">'+ib.ok+'/'+ib.n+(ib.p?' → +'+ib.p:'')+'</span>'+X;}
+    h+=X;});
+  h+=D+' class="roles">'+(R.ga||R.gb?'🧤 '+esc([R.ga,R.gb].filter(Boolean).join(' / '))+' · ':'')+'🟨 Arbitres : '+esc(R.arb.join(', ')||'—')+' · 📝 Score : '+esc(R.sc.join(', ')||'—')+(R.obs.length?' · 👀 Observent : '+esc(R.obs.join(', ')):'')+(!R.A.length||!R.B.length?' · <span style="color:#fca5a5;">placez les élèves dans les clubs (Répartition)</span>':'')+X;
+  return h+'</details>';}
+chpHtml=(function(o){return function(q){const c=q.champ;if(!c||!c.on)return o(q);chpSc(c);const qi=esc(q.id);
+  const w=document.createElement('div');w.innerHTML=o(q);const box=w.firstChild;
+  // niveaux : 1 à 4
+  const nivRow=[...box.querySelectorAll('.chp-row')].find(r=>/^Niveaux/.test(r.textContent.trim()));
+  if(nivRow){const btn=nivRow.querySelector('button');if(btn)btn.remove();
+    const add=document.createElement('span');add.innerHTML=(c.niv.length<4?'<button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="chpMut(\''+qi+'\',c=>{if(c.niv.length<4)c.niv.push(CHP_NIVS[c.niv.length]||(\'Niveau \'+(c.niv.length+1)));})">＋ Niveau</button>':'')
+      +(c.niv.length>1?'<button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="chpMut(\''+qi+'\',c=>{if(c.niv.length>1){c.niv.pop();Object.values(c.aff).forEach(a=>{if(+a.niv>=c.niv.length)a.niv=c.niv.length-1;});}})">－ Niveau</button>':'')
+      +'<span class="cc-dim">'+c.niv.length+' niveau'+(c.niv.length>1?'x':'')+' par club (4 au plus) · les matchs opposent les clubs niveau contre niveau</span>';
+    nivRow.appendChild(add);}
+  // barème
+  const dets=[...box.querySelectorAll(':scope > details.cz')];const bar=dets.find(d=>/Barème/.test(d.querySelector('summary').textContent));
+  if(bar){const S=chpSc(c);const on=[S.act.on?'façon de marquer':'',S.bon.length?S.bon.length+' bonus':'',S.ind.on?'objectifs individuels':''].filter(Boolean);
+    bar.innerHTML='<summary><span class="lab">Barème, bonus et pouvoirs</span><span class="cc-dim">'+(S.man.on?'avec la manière':'V '+c.bar.v+' · N '+c.bar.n+' · D '+c.bar.d)+(on.length?' · '+esc(on.join(' · ')):'')+'</span></summary>'+chpBaremeHtml(q);}
+  // matchs : version repliée + saisie détaillée
+  const jd=dets.find(d=>/Journées/.test(d.querySelector('summary').textContent));
+  if(jd){jd.querySelectorAll(':scope > details.cz').forEach((dj,ji)=>{const ms=dj.querySelectorAll(':scope > .chp-m');ms.forEach((el,mi)=>{const t=document.createElement('div');t.innerHTML=chpMatchHtml(q,ji,mi);el.replaceWith(t.firstChild);});});}
+  return box.outerHTML;};})(chpHtml);
+
+// v298 (suite) — niveaux comptés dans le total du club, concours annexe
+chpStand=(function(o){return function(c,uptoJ){const T=o(c,uptoJ);const off=c.nivOff||[];const S=chpSc(c);
+  Object.keys(T).forEach(k=>{T[k].tot=T[k].niv.reduce((a,s,i)=>a+(off.indexOf(i)>=0?0:s.pts),0);T[k].cc=0;});
+  if(S.cc&&S.cc.on)(c.jours||[]).forEach((J,ji)=>{if(uptoJ!=null&&ji>=uptoJ)return;Object.keys(J.cc||{}).forEach(k=>{const r=+J.cc[k];const p=r>0?+((S.cc.pts||[])[r-1])||0:0;if(T[k]){T[k].cc+=p;T[k].tot+=p;}});});
+  return T;};})(chpStand);
+chpHtml=(function(o){return function(q){const c=q.champ;if(!c||!c.on)return o(q);const S=chpSc(c);const qi=esc(q.id);const w=document.createElement('div');w.innerHTML=o(q);const box=w.firstChild;
+  const nivRow=[...box.querySelectorAll('.chp-row')].find(r=>/^Niveaux/.test(r.textContent.trim()));
+  if(nivRow&&c.niv.length>1){const off=c.nivOff||[];const sp=document.createElement('div');sp.className='chp-row';sp.innerHTML='Comptent dans le total du club : '+c.niv.map((v,i)=>'<label class="chp-ck'+(off.indexOf(i)<0?' on':'')+'"><input type="checkbox"'+(off.indexOf(i)<0?' checked':'')+' onchange="chpTogArr(\''+qi+'\',\'nivOff\','+i+')">'+esc(v)+'</label>').join('');nivRow.after(sp);}
+  if(S.cc&&S.cc.on){const jd=[...box.querySelectorAll(':scope > details.cz')].find(d=>/Journées/.test(d.querySelector('summary').textContent));
+    if(jd)jd.querySelectorAll(':scope > details.cz').forEach((dj,ji)=>{const J=c.jours[ji];if(!J)return;const r=document.createElement('div');r.className='chp-row';
+      r.innerHTML='🏅 '+esc(S.cc.lab||'Concours')+' : '+c.clubs.map(k=>chpBadge(c,k.id)+'<select onchange="chpSet(\''+qi+'\',\'jours.'+ji+'.cc.'+k.id+'\',+this.value)"><option value="0">—</option>'+c.clubs.map((_,i)=>'<option value="'+(i+1)+'"'+(+((J.cc||{})[k.id])===i+1?' selected':'')+'>'+(i+1)+(i?'e':'er')+'</option>').join('')+'</select>').join(' ');
+      const first=dj.querySelector(':scope > .chp-row');if(first)first.after(r);else dj.appendChild(r);});
+    const tb=box.querySelector('.chp-t');if(tb){const T=chpStand(c);const th=tb.querySelector('thead tr');const last=th.lastElementChild;const nth=document.createElement('th');nth.textContent=S.cc.lab||'Concours';th.insertBefore(nth,last);
+      const rank=c.clubs.slice().sort((a,b)=>T[b.id].tot-T[a.id].tot);tb.querySelectorAll('tbody tr').forEach((tr,i)=>{const k=rank[i];const td=document.createElement('td');td.textContent=k?T[k.id].cc:'';tr.insertBefore(td,tr.lastElementChild);});}}
+  return box.outerHTML;};})(chpHtml);
 </script>
 </body>
 </html>
