@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v300</title>
+<title>Gribouillis EPS v301</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -1301,6 +1301,8 @@ details.evl-crit[open]>summary{margin-bottom:6px;}
 .chp-blk .cc-dim{font-size:.7rem;}
 .chp-tab td input{width:46px !important;}
 .chp-row input[type=color]{width:36px !important;height:28px;padding:0 2px;flex:0 0 auto !important;}
+.asp-ex .ov{font-size:.62rem;font-weight:800;color:#fde68a;border:1px solid #a16207;border-radius:5px;padding:0 4px;margin-left:4px;white-space:nowrap;}
+.sit-ban{background:rgba(161,98,7,.18);border:1px solid #a16207;border-radius:8px;padding:6px 8px;font-size:.76rem;color:#fde68a;margin-bottom:8px;}
 .fit-vid{display:block;max-width:100%;max-height:calc(100vh - 170px);margin:8px auto;border-radius:10px;background:#000;}
 .pres-vids h5{margin:12px 0 2px;font-size:.9rem;color:#93c5fd;}
 .ok-list{margin:0;padding:0;list-style:none;}
@@ -23012,6 +23014,67 @@ function grpRename(lists,by){let ch=false;const used={};lists.forEach(G=>G.forEa
   lists.forEach(G=>G.forEach(g=>{if(!g)return;if(Array.isArray(g.members))g.members=g.members.map(n=>map[n]||n);if(Array.isArray(g.subs))g.subs.forEach(x=>{if(x&&map[x.n])x.n=map[x.n];});
     Object.keys(g).forEach(f=>{if(typeof g[f]==='string'&&map[g[f]])g[f]=map[g[f]];});}));
   return true;}
+
+// ══════════════════════════════════════════════════════════════════════
+// v301 — double-clic sur une situation dans un bloc (séance AS) : l'éditeur
+// des situations s'ouvre. « Utiliser pour cette séance » adapte la situation
+// pour cette séance seulement ; « Enregistrer dans la biblio » modifie la
+// situation de la bibliothèque.
+// ══════════════════════════════════════════════════════════════════════
+function sitOvApply(inf,e){if(!inf||!e||!e.ov||typeof e.ov!=='object')return inf;const o=e.ov;const src=Object.assign({},inf.src||{});
+  ['titre','desc','objectif','objectifEl','descEl','video','image','anim','terrain','minJ'].forEach(k=>{if(o[k]!==undefined)src[k]=o[k];});
+  if(Array.isArray(o.criteres))src.criteres=o.criteres;if(Array.isArray(o.roles))src.roles=o.roles;
+  const r=Object.assign({},inf,{src:src,ov:true});if(o.titre)r.titre=o.titre;if(o.anim!==undefined)r.anim=o.anim;if(o.minJ!==undefined)r.minJ=o.minJ;return r;}
+aspExInfo=(function(f){return function(e){return sitOvApply(f.apply(this,arguments),e);};})(aspExInfo);
+planExInfo=(function(f){return function(e){return sitOvApply(f.apply(this,arguments),e);};})(planExInfo);
+aspAtHtml=(function(f){return function(s,b,a,i){let h=f.apply(this,arguments);try{(a.exos||[]).forEach((e,k)=>{if(!e||!e.ov)return;const tag='data-drag="ae:'+esc(b.id)+':'+esc(a.id)+':'+k+'"';const j=h.indexOf(tag);if(j<0)return;const n=h.indexOf('<span class="n">',j);if(n<0)return;const end=h.indexOf('</span>',n);if(end<0)return;
+    h=h.slice(0,end)+'<span class="ov" title="Situation adaptée pour cette séance (la biblio n\'a pas changé)">✎ adaptée</span>'+h.slice(end);});}catch(x){}return h;};})(aspAtHtml);
+let SIT=null;
+function sitLibByTitle(t){t=String(t||'').trim().toLowerCase();if(!t)return null;const L=libLoad().filter(x=>x&&x.kind==='remed'&&String(x.titre||'').trim().toLowerCase()===t);return L.length===1?L[0]:null;}
+function sitEdit(bi,ai,k){const s=getActiveSeance();if(!s||!s.asp)return;const a=aspAt(s,bi,ai);const e=a&&(a.exos||[])[+k];if(!e)return;
+  try{sbExoClose();}catch(x){}
+  const inf=aspExInfo(e);if(!inf||inf.kind==='warm')return;
+  if(e.k==='lib'){const it=libLoad().find(x=>x.id===e.id);if(!it)return;
+    if(it.kind==='match'){libEdit(e.id);return;} // FPS : éditeur de la biblio
+    libEdit(e.id);}
+  else if(e.k==='exo'){const r=exoByKey(e.key);if(!r)return;const src=e.lib||sitLibByTitle(r.exo.titre);
+    if(src&&libLoad().some(x=>x.id===(src.id||src))){libEdit(src.id||src);}
+    else{libcOpen('remed');}}
+  else return;
+  if(!LIBC)return;const f=LIBC.f;const S=inf.src||{};
+  f.titre=String(S.titre||inf.titre||'');f.desc=String(S.desc||'');if(S.objectif!==undefined)f.objectif=String(S.objectif||'');if(S.objectifEl!==undefined)f.objectifEl=String(S.objectifEl||'');if(S.descEl!==undefined)f.descEl=String(S.descEl||'');
+  f.video=String(S.video||'');f.image=S.image||null;f.anim=S.anim||null;if(S.terrain!==undefined)f.terrain=S.terrain||'';if(S.minJ!==undefined)f.minJ=S.minJ?String(S.minJ):'';
+  f.crits=(S.criteres||[]).map(c=>({label:c.label||'',cible:c.cible==null?1:c.cible,collectif:!!c.collectif,neg:!!c.neg}));
+  f.roles=(S.roles||[]).map(r=>typeof r==='string'?r:(r&&r.label)||'').filter(Boolean);
+  SIT={bi:bi,ai:ai,k:+k,kind:e.k,editId:LIBC.editId||null};LIBC.sit=1;libcRender();}
+libcRender=(function(f){return function(){const r=f.apply(this,arguments);try{if(!LIBC||!LIBC.sit||!SIT)return r;const o=E('libc-ov');const box=o&&o.firstChild;if(!box)return r;
+    const s=getActiveSeance();const a=s&&aspAt(s,SIT.bi,SIT.ai);const e=a&&(a.exos||[])[SIT.k];
+    if(!box.querySelector('.sit-ban')){const d=document.createElement('div');d.className='sit-ban';d.innerHTML='📅 <b>Situation de la séance</b> — modifiez ce qu\'il faut pour aujourd\'hui. <b>Utiliser pour cette séance</b> ne change pas la biblio ; <b>Enregistrer dans la biblio</b> modifie la situation pour toutes les séances à venir.';box.insertBefore(d,box.firstChild);}
+    const btn=[...box.querySelectorAll('button')].find(b=>(b.getAttribute('onclick')||'')==='libcSave()');const row=btn&&btn.parentNode;
+    if(row){row.style.flexWrap='wrap';row.innerHTML='<button type="button" class="btn-xs" style="background:#a16207;color:#fff;padding:8px 14px;" onclick="sitUse()">✅ Utiliser pour cette séance</button>'
+      +'<button type="button" class="btn-xs" style="background:#15803d;color:#fff;padding:8px 14px;" onclick="sitSaveLib()">💾 Enregistrer dans la biblio</button>'
+      +(e&&e.ov?'<button type="button" class="btn-xs" style="background:#334155;color:#fff;padding:8px 14px;" onclick="sitReset()">↺ Revenir à la version de la biblio</button>':'')
+      +'<button type="button" class="btn-xs" style="background:#334155;color:#fff;padding:8px 14px;" onclick="sitClose()">Annuler</button>';}}catch(x){console.warn('sit',x);}return r;};})(libcRender);
+function sitEntry(){if(!SIT)return null;const s=getActiveSeance();const a=s&&aspAt(s,SIT.bi,SIT.ai);const e=a&&(a.exos||[])[SIT.k];return e?{s:s,a:a,e:e}:null;}
+function sitOvFromF(f,e){const crits=(f.crits||[]).filter(c=>String(c.label||'').trim()).map(c=>({label:String(c.label).trim(),cible:Number(c.cible)||1,collectif:!!c.collectif,neg:!!c.neg}));
+  let roles=(f.roles||[]).slice();
+  if(e.k==='exo'){const r=exoByKey(e.key);const old=(r&&r.exo.roles)||[];roles=roles.map((l,q)=>{const m=old.find(x=>x&&x.label===l);return m?{id:m.id,label:l}:{id:'r-'+Date.now().toString(36)+q,label:l};});
+    const oc=(r&&r.exo.criteres)||[];crits.forEach((c,q)=>{if(oc[q]&&oc[q].id)c.id=oc[q].id;else c.id='crit-'+Date.now()+'-'+q;});}
+  const o={titre:String(f.titre||'').trim(),desc:String(f.desc||''),video:String(f.video||'').trim()||null,image:f.image||null,anim:f.anim||null,criteres:crits,roles:roles};
+  ['objectif','objectifEl','descEl','terrain'].forEach(k=>{if(f[k]!==undefined)o[k]=String(f[k]||'');});if(f.minJ!==undefined)o.minJ=+f.minJ||0;return o;}
+function sitClose(){SIT=null;libcClose();}
+function sitUse(){const x=sitEntry();if(!x||!LIBC)return;const o=sitOvFromF(LIBC.f,x.e);if(!o.titre){alert('Donne un titre.');return;}
+  x.e.ov=o;saveSeances();sitClose();renderSeanceTab();try{toast2('✅ Situation adaptée pour cette séance (la biblio n\'a pas changé)');}catch(e){}}
+function sitReset(){const x=sitEntry();if(!x)return;delete x.e.ov;saveSeances();sitClose();renderSeanceTab();}
+function sitSaveLib(){const x=sitEntry();if(!x||!LIBC)return;const f=LIBC.f;const o=sitOvFromF(f,x.e);if(!o.titre){alert('Donne un titre.');return;}
+  const before={};libLoad().forEach(i=>{before[i.id]=1;});LIBC.sit=0;
+  if(x.e.k==='lib')LIBC.editId=x.e.id;
+  libcSave();if(LIBC){LIBC.sit=1;libcRender();return;} // enregistrement refusé (champ manquant)
+  if(x.e.k==='exo'){const r=exoByKey(x.e.key);if(r){const ex=r.exo;['titre','desc','video','image','anim','criteres','roles'].forEach(k=>{ex[k]=o[k];});if(o.terrain!==undefined)ex.terrain=o.terrain;try{saveRemedEdits();}catch(e){}}
+    const nw=libLoad().find(i=>!before[i.id]);if(nw)x.e.lib=nw.id;else if(SIT&&SIT.editId)x.e.lib=SIT.editId;}
+  delete x.e.ov;saveSeances();SIT=null;try{libRefresh();}catch(e){}renderSeanceTab();try{toast2('💾 Situation enregistrée dans la biblio');}catch(e){}}
+document.addEventListener('dblclick',ev=>{try{const el=ev.target&&ev.target.closest&&ev.target.closest('.asp-ex[data-drag^="ae:"]');if(!el||ev.target.closest('button'))return;
+  const p=el.dataset.drag.split(':');if(p.length<4)return;ev.preventDefault();sitEdit(p[1],p[2],p[3]);}catch(x){console.warn('sit dbl',x);}});
 </script>
 </body>
 </html>
