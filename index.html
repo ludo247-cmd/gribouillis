@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v307</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v308</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v307</title>
+<title>Gribouillis EPS v308</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -1355,6 +1355,13 @@ details.evl-crit[open]>summary{margin-bottom:6px;}
 body.mode-eleve #sync-badge{display:none;}
 #sync-ban{position:fixed;left:50%;transform:translateX(-50%);top:8px;z-index:99990;background:#1e3a8a;color:#fff;border:1px solid #60a5fa;border-radius:12px;padding:8px 12px;font-size:.82rem;box-shadow:0 6px 18px rgba(0,0,0,.5);display:flex;gap:8px;align-items:center;max-width:94vw;}
 #sync-ban button{background:#15803d;color:#fff;border:none;border-radius:8px;padding:6px 10px;font-weight:800;cursor:pointer;}
+#prn-ov .box{max-width:560px;}
+#prn-ov .prn-it{display:flex;gap:10px;align-items:center;width:100%;text-align:left;background:#0f172a;border:1px solid #334155;color:#e2e8f0;border-radius:10px;padding:9px 11px;margin:5px 0;cursor:pointer;font-size:.86rem;}
+#prn-ov .prn-it:hover{border-color:#60a5fa;}
+#prn-ov .prn-it .ic{font-size:1.3rem;}
+#prn-ov .prn-it small{display:block;color:#94a3b8;font-size:.72rem;}
+#prn-ov .prn-it[disabled]{opacity:.45;cursor:not-allowed;}
+#prn-ov h4{margin:12px 0 2px;font-size:.78rem;color:#93c5fd;text-transform:uppercase;letter-spacing:.05em;}
 .fit-vid{display:block;max-width:100%;max-height:calc(100vh - 170px);margin:8px auto;border-radius:10px;background:#000;}
 .pres-vids h5{margin:12px 0 2px;font-size:.9rem;color:#93c5fd;}
 .ok-list{margin:0;padding:0;list-style:none;}
@@ -16873,7 +16880,7 @@ function renderSeanceTab(){
   host.innerHTML=
     '<div class="card">'
     +'<div class="card-title"><span class="ico">📅</span>'+esc(s.classe)+(s.categorie?' · '+esc(s.categorie):'')+(s.equipeLabel?' · '+esc(s.equipeLabel):'')+' · '+esc(s.date)+' · '+(APSA_ICONS[s.sport]||'')+'</div>'
-    +'<div style="margin:-4px 0 10px;display:flex;gap:6px;flex-wrap:wrap;"><button class="btn-xs" style="background:#7c3aed;color:#fff;" onclick="setSeanceMode(\'eleve\')">🧒 Passer en mode élève</button><button class="btn-xs" style="background:#1b2a4a;color:#fff;" onclick="printSeance()">🖨️ Imprimer la fiche</button><button class="btn-xs" style="background:#0f766e;color:#fff;" onclick="libSaveSeance()">📚 Enregistrer comme modèle</button><button class="btn-xs" style="background:#4f46e5;color:#fff;" onclick="exportSeanceEleve()">📤 Envoyer aux élèves</button><button class="btn-xs" style="background:#0e7490;color:#fff;" onclick="pubSeance()">🔗 Lien + code pour les élèves</button><span style="flex:1;"></span><button class="btn-xs" style="background:#334155;color:#fff;" onclick="seanceFoldAll(\''+esc(sid)+'\',false)">▸ Tout replier</button><button class="btn-xs" style="background:#334155;color:#fff;" onclick="seanceFoldAll(\''+esc(sid)+'\',true)">▾ Tout déplier</button></div>'
+    +'<div style="margin:-4px 0 10px;display:flex;gap:6px;flex-wrap:wrap;"><button class="btn-xs" style="background:#7c3aed;color:#fff;" onclick="setSeanceMode(\'eleve\')">🧒 Passer en mode élève</button><button class="btn-xs" style="background:#1b2a4a;color:#fff;" onclick="prnOpen()">🖨️ Imprimer…</button><button class="btn-xs" style="background:#0f766e;color:#fff;" onclick="libSaveSeance()">📚 Enregistrer comme modèle</button><button class="btn-xs" style="background:#4f46e5;color:#fff;" onclick="exportSeanceEleve()">📤 Envoyer aux élèves</button><button class="btn-xs" style="background:#0e7490;color:#fff;" onclick="pubSeance()">🔗 Lien + code pour les élèves</button><span style="flex:1;"></span><button class="btn-xs" style="background:#334155;color:#fff;" onclick="seanceFoldAll(\''+esc(sid)+'\',false)">▸ Tout replier</button><button class="btn-xs" style="background:#334155;color:#fff;" onclick="seanceFoldAll(\''+esc(sid)+'\',true)">▾ Tout déplier</button></div>'
     +renderSeanceBuilder(s)
     +(()=>{try{const t=terrainSummary(s);return B('terrain','🗺 Terrains et matériel',t.sum,renderTerrainConsole(s),t.alert);}catch(e){console.warn('terrain:',e);return '';}})()
     +B('nomen','① Nomenclature',nomSum,renderSeanceNomenBlock(s),false)
@@ -23614,6 +23621,85 @@ setTimeout(()=>{try{const cb=E('gh-sync');if(cb)cb.checked=syncOn();syncStart();
 setInterval(()=>{try{if(syncOn()&&document.visibilityState==='visible'&&Date.now()-SYNC.lastPull>60000)syncNow(false);}catch(e){}},15000);
 document.addEventListener('visibilitychange',()=>{try{if(!syncOn())return;const m=syncMeta();if(document.visibilityState==='hidden'){if(m&&Object.keys(m.dirty).length&&!syncInMatch())syncNow(false);}else if(Date.now()-SYNC.lastPull>20000)syncNow(false);}catch(e){}});
 stopMatch=(function(f){return function(){const r=f.apply(this,arguments);try{if(syncOn())setTimeout(()=>syncNow(false),5000);}catch(e){}return r;};})(stopMatch);
+
+// ══════════════════════════════════════════════════════════════════════
+// v308 — 🖨 Centre d'impression : fiche de séance (prof), fiches élèves
+// (une par élève : son plan de séance, ses groupes, ses situations, ses
+// critères de réussite, son auto-évaluation), feuille d'appel, fiche
+// d'observation vierge, feuilles de match, affichage des groupes, cartes de
+// rôles, planning de la séquence, fiches d'évaluation et EPIC.
+// ══════════════════════════════════════════════════════════════════════
+const PRN_CSS='*{box-sizing:border-box;}body{font-family:Arial,Helvetica,sans-serif;color:#111;margin:0;}.pg{padding:10mm 11mm;page-break-after:always;}.pg:last-child{page-break-after:auto;}'
+ +'h1{font-size:16px;margin:0 0 4px;}h2{font-size:13px;margin:10px 0 4px;color:#1b2a4a;}h3{font-size:12px;margin:8px 0 3px;}.hd{display:flex;justify-content:space-between;gap:10px;align-items:flex-end;border-bottom:3px solid #b91c1c;padding-bottom:4px;margin-bottom:6px;}'
+ +'.hd .r{font-size:11px;color:#444;text-align:right;}.lg{font-size:10px;color:#666;}table{border-collapse:collapse;width:100%;font-size:11px;margin:4px 0;}th,td{border:1px solid #777;padding:4px;vertical-align:top;}th{background:#eee;}'
+ +'.box{border:1px solid #999;border-radius:6px;padding:6px 8px;margin:5px 0;font-size:11.5px;}.tag{display:inline-block;border:1px solid #999;border-radius:5px;padding:0 5px;margin:1px 2px;font-size:10.5px;}'
+ +'.ck{display:inline-block;width:12px;height:12px;border:1.5px solid #333;border-radius:2px;vertical-align:middle;margin-right:4px;}.cards{display:grid;grid-template-columns:1fr 1fr;gap:8mm;}.card{border:2px dashed #555;border-radius:8px;padding:8px;min-height:60mm;font-size:12px;}'
+ +'.card h3{font-size:15px;margin:0 0 6px;}.big td{height:24px;}.xl{font-size:22px;}.grp{border:2px solid #333;border-radius:10px;padding:8px;margin:6px 0;break-inside:avoid;}.grp h2{margin:0 0 4px;font-size:18px;}.grp .m{font-size:16px;line-height:1.5;}'
+ +'.mm{display:grid;grid-template-columns:1fr 1fr;gap:6mm;}.mt{border:2px solid #333;border-radius:8px;padding:6px;break-inside:avoid;}.tally td{height:18px;width:18px;text-align:center;font-size:9px;color:#999;}img{max-width:100%;}.ael-step,.ael-ex{border:1px solid #bbb;border-radius:6px;padding:6px;margin:5px 0;}'
+ +'@media print{.pg{padding:7mm 8mm;}}';
+function prnWin(title,body){const html='<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>'+esc(title)+'</title><style>'+PRN_CSS+'</style></head><body>'+body+'<script>setTimeout(function(){print();},500);<\/script></body></html>';
+  try{const u=URL.createObjectURL(new Blob([html],{type:'text/html'}));const w=window.open(u,'_blank');if(!w){const a=document.createElement('a');a.href=u;a.download=(title||'impression').replace(/[^\wÀ-ÿ -]+/g,'_')+'.html';document.body.appendChild(a);a.click();a.remove();}}catch(e){console.warn('prn',e);}}
+function prnHd(t,sub){const c=clsActive();const d=new Date().toLocaleDateString('fr-FR');return '<div class="hd"><div><h1>'+t+'</h1>'+(sub?'<div class="lg">'+sub+'</div>':'')+'</div><div class="r">'+esc(c?c.nom:'')+'<br>'+d+'<br><b style="color:#b91c1c;">Gribouillis EPS</b></div></div>';}
+function prnNames(){return ((typeof COMPO!=='undefined'&&COMPO.roster)||[]).filter(r=>r&&r.name!=null).map(r=>r.name);}
+function prnClean(h){const t=document.createElement('div');t.innerHTML=h;t.querySelectorAll('button,input,select,textarea,script,svg.wheel-links,.wheel-wrap,.ael-res,.ael-obs,.sel-dim').forEach(x=>x.remove());
+  t.querySelectorAll('video,iframe').forEach(v=>{const s=document.createElement('span');s.className='tag';s.textContent='📹 vidéo dans l\'app';v.replaceWith(s);});t.querySelectorAll('canvas').forEach(v=>v.remove());
+  t.querySelectorAll('[style]').forEach(x=>{x.style.color='';x.style.background='';});return t.innerHTML;}
+function prnSeance(){try{printSeance();}catch(e){alert('Ouvre d\'abord une séance.');}}
+function prnSit(ex){if(!ex)return '';const c=(ex.criteres||[]).filter(x=>x&&String(x.label||'').trim());return '<div class="box"><b>🏃 '+esc(String(ex.titre||'Situation'))+'</b>'+(ex.objectifEl||ex.objectif?'<div><i>But : '+esc(String(ex.objectifEl||ex.objectif))+'</i></div>':'')
+  +(ex.descEl||ex.desc?'<div>'+esc(String(ex.descEl||ex.desc)).replace(/\n/g,'<br>')+'</div>':'')+(ex.image?'<img src="'+ex.image+'" style="max-height:45mm;margin-top:4px;">':'')
+  +(c.length?'<div style="margin-top:4px;"><b>Pour réussir :</b> '+c.map(x=>'<span class="ck"></span>'+esc(String(x.label))+(x.cible!=null&&x.cible!==''?' '+(x.neg?'≤':'≥')+' '+esc(String(x.cible)):'')).join(' &nbsp; ')+'</div>':'')+'</div>';}
+function prnEleves(){const s=getActiveSeance();if(!s){alert('Ouvre d\'abord une séance.');return;}const c=clsActive();const N=prnNames();if(!N.length){alert('Pas de liste d\'élèves pour cette classe.');return;}
+  let pages='';const sub=esc(calSportName(s.sport||CFG.apsa||''))+' · séance du '+esc(seanceDateFr(s.date||edtToday()));
+  if(s.asp&&Array.isArray(s.asp.blocks)){const keep=ELEVE_ME;const pres=aspRoster();
+    (pres.length?pres:N).forEach(n=>{try{ELEVE_ME={sid:s.id,n:n};const h=prnClean(aspEleveHtml(s));pages+='<div class="pg">'+prnHd('Ma séance — '+esc(n),sub)+h+'<div class="box" style="min-height:16mm;">Ce que je retiens / mon objectif pour la prochaine fois :</div></div>';}catch(e){console.warn('prn élève',n,e);}});ELEVE_ME=keep;}
+  else{const steps=(s.steps||[]);const G=(s.groupes||[]);
+    N.forEach(n=>{const g=G.find(x=>(x.members||[]).indexOf(n)>=0);let h='<div class="box">Mon groupe : <b>'+esc(g?String(g.name||g.label||'—'):'—')+'</b>'+(g?' · avec '+esc((g.members||[]).filter(x=>x!==n).join(', ')):'')+'</div>';
+      steps.forEach((st,i)=>{const def=seanceStepDef(st.key)||{};const ex=seanceStepExos(s,st.key);h+='<h2>'+(i+1)+'. '+esc(String(def.label||st.key))+'</h2>'+(ex.length?ex.map(r=>prnSit(r.exo)).join(''):'');});
+      pages+='<div class="pg">'+prnHd('Ma séance — '+esc(n),sub)+h+prnAuto(s)+'</div>';});}
+  prnWin('Fiches élèves '+(c?c.nom:''),pages);}
+function prnAuto(s){let F=[];try{const P=seanceOeMicros?seanceOeMicros(s):[];F=(P||[]).map(m=>m&&(m.label||m.short)).filter(Boolean);}catch(e){}
+  return '<h2>Mon bilan</h2><table class="big"><tr><th style="width:55%;">Ce que je devais apprendre</th><th>Pas encore</th><th>En partie</th><th>Réussi</th></tr>'
+    +(F.length?F:['Objectif de la séance','','']).map(t=>'<tr><td>'+esc(String(t||''))+'</td><td></td><td></td><td></td></tr>').join('')+'</table><div class="box" style="min-height:18mm;">Ce que je retiens / mon objectif pour la prochaine fois :</div>';}
+function prnAppel(){const c=clsActive();const N=prnNames();if(!N.length){alert('Pas de liste d\'élèves.');return;}let D=[];try{const q=seqCurrentFor(c);D=(q&&q.dates||[]).slice(0,12);}catch(e){}
+  while(D.length<12)D.push('');const cols=D.map(d=>'<th style="font-size:9px;">'+(d?esc(d.slice(8,10)+'/'+d.slice(5,7)):'&nbsp;')+'</th>').join('');
+  prnWin('Feuille d\'appel',  '<div class="pg">'+prnHd('Feuille d\'appel et de suivi',esc(calSportName(CFG.apsa||'')))+'<table class="big"><tr><th>Élève</th>'+cols+'<th>Remarques</th></tr>'+N.map(n=>'<tr><td>'+esc(n)+'</td>'+D.map(()=>'<td></td>').join('')+'<td style="width:22%;"></td></tr>').join('')+'</table><div class="lg">P = présent · A = absent · D = dispensé · R = retard · T = tenue</div></div>');}
+function prnObs(){let B=[];try{B=(getTeamDialogBtns(0)||[]).map(b=>String(b.label||'')).filter(Boolean);}catch(e){}if(!B.length)B=['Action 1','Action 2','Action 3'];const N=prnNames();const rows=(N.length?N:Array.from({length:14},()=>''));
+  prnWin('Fiche d\'observation',  '<div class="pg">'+prnHd('Fiche d\'observation',esc(calSportName(CFG.apsa||''))+' · Observateur : ……………… · Match : ………… contre …………')+'<table class="big"><tr><th>Joueur</th>'+B.map(b=>'<th style="font-size:9.5px;">'+esc(b)+'</th>').join('')+'<th>Total</th></tr>'+rows.map(n=>'<tr><td>'+esc(n)+'</td>'+B.map(()=>'<td></td>').join('')+'<td></td></tr>').join('')+'</table><div class="lg">Un trait par action. Les boutons viennent du profil d\'observation choisi dans l\'onglet Match.</div></div>');}
+function prnMatch(){const one='<div class="mt"><div style="display:flex;justify-content:space-between;font-size:12px;"><b>Match n° ……</b><span>Terrain ……</span><span>Durée ……</span></div>'
+  +['A','B'].map(t=>'<div style="margin-top:5px;font-size:12px;">Équipe '+t+' : ……………………………… Score : <b class="xl">……</b></div><table class="tally"><tr>'+Array.from({length:20},(_,i)=>'<td>'+(i+1)+'</td>').join('')+'</tr><tr>'+Array.from({length:20},(_,i)=>'<td>'+(i+21)+'</td>').join('')+'</tr></table><div style="font-size:10.5px;">Bonus : <span class="ck"></span>tous ont tiré <span class="ck"></span>tous ont marqué <span class="ck"></span>…………… · Fautes : ………</div>').join('')
+  +'<div style="font-size:10.5px;margin-top:4px;">Arbitre : ……………… · Marque : ……………… · Signature des capitaines : ……… / ………</div></div>';
+  prnWin('Feuilles de match','<div class="pg">'+prnHd('Feuilles de match','4 matchs par page · coche un numéro à chaque point')+'<div class="mm">'+one+one+one+one+'</div></div>');}
+function prnGroupes(){const s=getActiveSeance();let G=(s&&s.groupes)||[];if(s&&s.asp){try{G=aspChips(s).filter(g=>!g.base);}catch(e){}}
+  if(!G.length){alert('Pas encore de groupes dans cette séance.');return;}
+  prnWin('Groupes','<div class="pg">'+prnHd('Groupes et équipes',s?esc(seanceDateFr(s.date||edtToday())):'')+G.map(g=>'<div class="grp" style="border-color:'+esc(g.color||'#333')+';"><h2>'+esc(String(g.name||g.label||'Groupe'))+'</h2><div class="m">'+esc((g.members||[]).join(' · '))+'</div></div>').join('')+'</div>');}
+const PRN_ROLES=[['🟨 Arbitre','Je connais les règles du jour. Je siffle fort et tôt, je montre le geste, j\'annonce le score. Je reste neutre et je fais respecter le jeu.'],
+ ['👀 Observateur','Je suis UN joueur ou UNE équipe. Je note chaque action sur la fiche, sans parler aux joueurs pendant le jeu. À la fin, je donne 1 point fort et 1 conseil.'],
+ ['©️ Capitaine','Je fais l\'appel de mon équipe, je rappelle le projet de jeu, je propose les changements et je parle à l\'arbitre calmement.'],
+ ['⏱ Chronométreur','Je lance et j\'arrête le temps, j\'annonce les 30 dernières secondes et la fin, je note les temps.'],
+ ['📝 Marqueur','Je tiens le score sur la feuille de match et je le compare avec l\'arbitre à chaque pause.'],
+ ['🧑‍🏫 Coach','Avant : je rappelle 1 consigne. Pendant : j\'observe. Après : je donne 1 point fort et 1 piste de progrès.']];
+function prnRoles(){prnWin('Cartes de rôles','<div class="pg">'+prnHd('Cartes de rôles','à découper et plastifier')+'<div class="cards">'+PRN_ROLES.map(r=>'<div class="card"><h3>'+r[0]+'</h3>'+esc(r[1])+'<div style="margin-top:8px;">Aujourd\'hui je suis : ……………………</div></div>').join('')+'</div></div>');}
+function prnPlanning(){const c=clsActive();if(!c){alert('Choisis une classe.');return;}const L=seqOfClass(c);if(!L.length){alert('Pas de séquence pour cette classe.');return;}
+  prnWin('Planning','<div class="pg">'+prnHd('Planning des séquences',esc(c.nom))+L.map(q=>{let comp='';try{if(q.cadre)comp=cadCompTxt(q,q.cadre);}catch(e){}const oe=(()=>{try{return cadOes(q);}catch(e){return [];}})();
+    return '<h2>'+esc(q.nom)+'</h2>'+(comp?'<div class="box"><b>Compétence :</b> '+esc(comp)+'</div>':'')+(oe.length?'<div class="box"><b>Objets d\'enseignement :</b> '+oe.map(esc).join(' ; ')+'</div>':'')
+      +'<table><tr><th>Séance</th><th>Date</th><th>Contenu / remarques</th></tr>'+Array.from({length:q.nb||0},(_,k)=>{const se=seqSeance(q,k);return '<tr><td>S'+(k+1)+'</td><td>'+esc((q.dates||[])[k]?seanceDateFr(q.dates[k]):'')+'</td><td>'+esc(se?String(se.oeLabel||se.titre||'séance préparée'):'')+'</td></tr>';}).join('')+'</table>';}).join('')+'</div>');}
+function prnEval(mode){const c=clsActive();const q=seqCurrentFor(c);if(!q){alert('Pas de séquence en cours pour cette classe.');return;}try{if(mode==='epic')epPrint(q.id,0);else evlPrint(q.id,mode==='full'?1:0);}catch(e){alert('Prépare d\'abord l\'évaluation dans la séquence.');}}
+function prnOpen(){const o0=E('prn-ov');if(o0)o0.remove();const s=getActiveSeance();const c=clsActive();const q=c?seqCurrentFor(c):null;const N=prnNames();
+  const it=(ic,t,sub,fn,dis)=>'<button type="button" class="prn-it"'+(dis?' disabled':'')+' onclick="'+fn+'"><span class="ic">'+ic+'</span><span><b>'+t+'</b><small>'+sub+'</small></span></button>';
+  const o=document.createElement('div');o.id='prn-ov';o.className='lib-pick-ov';o.onclick=e=>{if(e.target===o)o.remove();};
+  o.innerHTML='<div class="lib-pick-box box"><div style="display:flex;align-items:center;"><b style="flex:1;font-size:1.05rem;">🖨 Imprimer</b><button type="button" class="btn-xs red" onclick="E(\'prn-ov\').remove()">✕</button></div>'
+    +'<h4>Séance</h4>'+it('📄','Fiche de séance (prof)','déroulé, objets, rôles, matchs',"E('prn-ov').remove();prnSeance()",!s)
+    +it('🧒','Fiches élèves','une page par élève : son plan, ses groupes, ses situations, ses critères, son bilan',"E('prn-ov').remove();prnEleves()",!s||!N.length)
+    +it('👥','Affichage des groupes','en gros caractères, à afficher au gymnase',"E('prn-ov').remove();prnGroupes()",!s)
+    +'<h4>Utilitaires</h4>'+it('✅','Feuille d\'appel','élèves × dates de la séquence',"E('prn-ov').remove();prnAppel()",!N.length)
+    +it('📋','Fiche d\'observation vierge','colonnes = boutons du profil d\'observation',"E('prn-ov').remove();prnObs()")
+    +it('🏆','Feuilles de match','4 par page, score, bonus, arbitre',"E('prn-ov').remove();prnMatch()")
+    +it('🎭','Cartes de rôles','arbitre, observateur, capitaine, chronométreur, marqueur, coach',"E('prn-ov').remove();prnRoles()")
+    +'<h4>Séquence</h4>'+it('🗓','Planning des séquences','compétence, objets, dates',"E('prn-ov').remove();prnPlanning()",!c)
+    +it('📝','Fiche d\'évaluation (vierge)','référentiel de la séquence en cours',"E('prn-ov').remove();prnEval('blank')",!q)
+    +it('📝','Fiches d\'évaluation remplies','toute la classe',"E('prn-ov').remove();prnEval('full')",!q)
+    +it('🧩','Fiche du dispositif EPIC','indicateur, seuils, DAERC',"E('prn-ov').remove();prnEval('epic')",!(q&&q.epic&&q.epic.on))+'</div>';
+  document.body.appendChild(o);}
 </script>
 </body>
 </html>
