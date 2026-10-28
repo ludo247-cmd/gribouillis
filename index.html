@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v298</title>
+<title>Gribouillis EPS v299</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -22980,6 +22980,25 @@ chpHtml=(function(o){return function(q){const c=q.champ;if(!c||!c.on)return o(q)
     const tb=box.querySelector('.chp-t');if(tb){const T=chpStand(c);const th=tb.querySelector('thead tr');const last=th.lastElementChild;const nth=document.createElement('th');nth.textContent=S.cc.lab||'Concours';th.insertBefore(nth,last);
       const rank=c.clubs.slice().sort((a,b)=>T[b.id].tot-T[a.id].tot);tb.querySelectorAll('tbody tr').forEach((tr,i)=>{const k=rank[i];const td=document.createElement('td');td.textContent=k?T[k.id].cc:'';tr.insertBefore(td,tr.lastElementChild);});}}
   return box.outerHTML;};})(chpHtml);
+
+// ══════════════════════════════════════════════════════════════════════
+// v299 — groupes de la séance tenus à jour avec la liste (colonne présent) :
+// un membre devenu absent passe en remplaçant (absent) ; un remplaçant
+// « absent » redevenu présent revient dans son groupe ; un remplaçant qui
+// n'est plus dans la liste disparaît. Vaut aussi pour les découpages.
+// ══════════════════════════════════════════════════════════════════════
+function grpLiveList(G,by){let ch=false;(G||[]).forEach(g=>{if(!g||!Array.isArray(g.members))return;if(!Array.isArray(g.subs))g.subs=[];
+    const keep=g.members.filter(n=>{const r=by[n];if(r&&r.absent){if(!g.subs.some(x=>x&&x.n===n))g.subs.push({n:n,w:'absent'});ch=true;return false;}return true;});g.members=keep;
+    g.subs=g.subs.filter(x=>{if(!x||typeof x!=='object')return true;const r=by[x.n];if(!r){ch=true;return false;}
+      if(x.w==='absent'&&!r.absent){if(g.members.indexOf(x.n)<0)g.members.push(x.n);ch=true;return false;}return true;});});return ch;}
+function grpLiveSync(s){try{if(!s)return false;const R=(typeof COMPO!=='undefined'&&COMPO.roster)||[];if(!R.length)return false;const by={};R.forEach(r=>{if(r&&r.name!=null)by[String(r.name)]=r;});
+  const lists=[s.groupes||[]].concat((Array.isArray(s.decoupages)?s.decoupages:[]).map(d=>d&&d.groupes||[]));
+  // la liste chargée doit être celle de la séance (sinon on ne touche à rien)
+  const all=[];lists.forEach(G=>G.forEach(g=>(g&&g.members||[]).forEach(n=>all.push(n))));if(!all.length)return false;
+  const found=all.filter(n=>by[n]).length;if(found<all.length*0.6)return false;
+  let ch=false;lists.forEach(G=>{if(grpLiveList(G,by))ch=true;});return ch;}catch(e){console.warn('grpLive',e);return false;}}
+renderSeanceTab=(function(o){return function(){try{const s=getActiveSeance();if(s&&grpLiveSync(s))saveSeances();}catch(e){}return o.apply(this,arguments);};})(renderSeanceTab);
+importCompoCSVText=(function(o){return function(){const r=o.apply(this,arguments);try{const s=getActiveSeance();if(s&&grpLiveSync(s)){saveSeances();setTimeout(()=>{try{renderSeanceTab();}catch(e){}},0);}}catch(e){}return r;};})(importCompoCSVText);
 </script>
 </body>
 </html>
