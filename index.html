@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v299</title>
+<title>Gribouillis EPS v300</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -22996,9 +22996,22 @@ function grpLiveSync(s){try{if(!s)return false;const R=(typeof COMPO!=='undefine
   // la liste chargée doit être celle de la séance (sinon on ne touche à rien)
   const all=[];lists.forEach(G=>G.forEach(g=>(g&&g.members||[]).forEach(n=>all.push(n))));if(!all.length)return false;
   const found=all.filter(n=>by[n]).length;if(found<all.length*0.6)return false;
-  let ch=false;lists.forEach(G=>{if(grpLiveList(G,by))ch=true;});return ch;}catch(e){console.warn('grpLive',e);return false;}}
+  let ch=grpRename(lists,by);lists.forEach(G=>{if(grpLiveList(G,by))ch=true;});return ch;}catch(e){console.warn('grpLive',e);return false;}}
 renderSeanceTab=(function(o){return function(){try{const s=getActiveSeance();if(s&&grpLiveSync(s))saveSeances();}catch(e){}return o.apply(this,arguments);};})(renderSeanceTab);
 importCompoCSVText=(function(o){return function(){const r=o.apply(this,arguments);try{const s=getActiveSeance();if(s&&grpLiveSync(s)){saveSeances();setTimeout(()=>{try{renderSeanceTab();}catch(e){}},0);}}catch(e){}return r;};})(importCompoCSVText);
+
+// v300 — un élève renommé dans le Sheets est reconnu dans les groupes
+function grpNorm(x){return String(x==null?'':x).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/\s+/g,' ').trim();}
+function grpRename(lists,by){let ch=false;const used={};lists.forEach(G=>G.forEach(g=>{(g&&g.members||[]).forEach(n=>{if(by[n])used[n]=1;});(g&&g.subs||[]).forEach(x=>{if(x&&by[x.n])used[x.n]=1;});}));
+  const free=Object.keys(by).filter(n=>!used[n]);const map={};
+  const find=old=>{const o=grpNorm(old);if(!o)return null;const C=free.filter(r=>{const n=grpNorm(r);return n&&(n===o||o.indexOf(n+' ')===0||n.indexOf(o+' ')===0);});return C.length===1?C[0]:null;};
+  lists.forEach(G=>G.forEach(g=>{if(!g)return;const names=(g.members||[]).concat((g.subs||[]).map(x=>x&&x.n));names.forEach(n=>{if(n&&!by[n]&&map[n]===undefined)map[n]=find(n);});}));
+  Object.keys(map).forEach(k=>{if(!map[k])delete map[k];});
+  const vals=Object.values(map);Object.keys(map).forEach(k=>{if(vals.filter(v=>v===map[k]).length>1)delete map[k];});
+  if(!Object.keys(map).length)return false;
+  lists.forEach(G=>G.forEach(g=>{if(!g)return;if(Array.isArray(g.members))g.members=g.members.map(n=>map[n]||n);if(Array.isArray(g.subs))g.subs.forEach(x=>{if(x&&map[x.n])x.n=map[x.n];});
+    Object.keys(g).forEach(f=>{if(typeof g[f]==='string'&&map[g[f]])g[f]=map[g[f]];});}));
+  return true;}
 </script>
 </body>
 </html>
