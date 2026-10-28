@@ -4,7 +4,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v295</title>
+<title>Gribouillis EPS v297</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2215%22%20fill%3D%22%230b0b0c%22/%3E%3Cpath%20d%3D%22M44%2021C39.5%2015%2032.5%2013.5%2026.5%2015.5C17.5%2019%2013.5%2029%2016.5%2038C19.5%2047%2030%2051.5%2038.5%2048C43%2046%2045.5%2042.5%2046%2038H33%22%20fill%3D%22none%22%20stroke%3D%22%23e11d2e%22%20stroke-width%3D%226.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%3Ccircle%20cx%3D%2250.5%22%20cy%3D%2212.5%22%20r%3D%224%22%20fill%3D%22%23e11d2e%22/%3E%3C/svg%3E">
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
 /* ── THÈME SOMBRE UNIQUEMENT ── */
@@ -1223,6 +1224,61 @@ body.nav-off.nav-peek #nav-handle{display:none;}
 @media (max-width:640px){.evl-deg{grid-template-columns:1fr 1fr;}.cad-comp{grid-template-columns:1fr;}}
 .seq-pick select{font-size:.85rem;padding:5px 8px;border-radius:8px;background:#0f172a;color:#e2e8f0;border:1px solid #334155;}
 .seq-pick label{display:flex;gap:6px;align-items:center;}
+.sidenav-logo svg{width:46px;height:46px;display:block;margin:0 auto;}
+.sidenav-logo{position:relative;}
+.sidenav-logo .snl-apsa{position:absolute;right:6px;bottom:6px;font-size:1rem;line-height:1;filter:drop-shadow(0 0 2px #000);}
+.cz{min-width:0;max-width:100%;box-sizing:border-box;border:1px solid #334155;border-radius:9px;padding:0 8px;margin:6px 0;background:rgba(15,23,42,.35);}
+.cz>summary{list-style:none;cursor:pointer;display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:6px 0;font-size:.8rem;}
+.cz>summary::-webkit-details-marker{display:none;}
+.cz>summary::after{content:'▸';margin-left:auto;color:#64748b;transition:transform .15s;}
+.cz[open]>summary::after{transform:rotate(90deg);}
+.cz>summary .lab{font-weight:800;color:#93c5fd;margin-right:4px;}
+.cz[open]{padding-bottom:8px;}
+.cz-ok{color:#86efac;}.cz-off{color:#94a3b8;}
+.cz-1l{flex:1 1 0;width:0;min-width:120px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#cbd5e1;}
+.cz-tree{display:inline-flex;align-items:center;gap:3px;margin-right:8px;}
+.czd,.cza{position:relative;display:inline-block;border-radius:6px;padding:2px 7px;font-size:.72rem;font-weight:800;border:1px solid #334155;color:#64748b;background:#0f172a;}
+.czd.on{background:#1d4ed8;border-color:#60a5fa;color:#fff;}
+.cza.on{background:rgba(96,165,250,.18);border-color:#60a5fa;color:#bfdbfe;}
+.cz-tree .ar{color:#64748b;font-size:.7rem;}
+[data-tip]:hover::after{content:attr(data-tip);position:absolute;left:0;top:calc(100% + 6px);z-index:50;width:max-content;max-width:320px;white-space:normal;background:#020617;color:#e2e8f0;border:1px solid #475569;border-radius:8px;padding:6px 8px;font-size:.74rem;font-weight:400;line-height:1.35;box-shadow:0 6px 18px rgba(0,0,0,.5);}
+.cad-dom{border-left:3px solid #334155;padding:4px 0 4px 8px;margin:8px 0;}
+.cad-dom.on{border-left-color:#60a5fa;}
+.cad-dom .cad-chip{margin-bottom:2px;}
+.cad-dom .none{font-size:.72rem;color:#64748b;padding-left:6px;}
+.cad-also{font-size:.66rem;color:#93c5fd;border:1px solid #334155;border-radius:5px;padding:0 4px;margin-left:4px;white-space:nowrap;}
+.cad-top{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:.8rem;}
+.cad-top b{font-size:.9rem;}
+details.evl-crit>summary{list-style:none;cursor:pointer;display:flex;gap:6px;align-items:center;font-size:.78rem;padding:2px 0;}
+details.evl-crit>summary::-webkit-details-marker{display:none;}
+details.evl-crit>summary::after{content:'✎';color:#64748b;margin-left:4px;}
+details.evl-crit[open]>summary{margin-bottom:6px;}
+.evl-pts{color:#c4b5fd;white-space:nowrap;}
+.cz-help{font-size:.74rem;color:#94a3b8;margin:4px 0;}
+.cz-help>summary{cursor:pointer;color:#93c5fd;}
+@media (max-width:640px){.seq-ed .row{flex-wrap:wrap;}.seq-ed .row>input{min-width:0;flex:1 1 100% !important;}.seq-pick label{flex:1 1 100%;}.seq-pick select,.cad-top select{max-width:100%;min-width:0;flex:1 1 auto;}.seq-ed,.cad,.evl{min-width:0;max-width:100%;box-sizing:border-box;}.seq-gs input{min-width:0;flex:1 1 100%;}}
+.chp{background:rgba(180,83,9,.10);border:1px solid rgba(251,146,60,.4);border-radius:10px;padding:0 10px;margin:10px 0;}
+.chp>summary{list-style:none;cursor:pointer;display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:8px 0;font-size:.85rem;}
+.chp>summary::-webkit-details-marker{display:none;}
+.chp>summary::after{content:'▸';margin-left:auto;color:#64748b;}
+.chp[open]>summary::after{transform:rotate(90deg);}
+.chp[open]{padding-bottom:10px;}
+.chp .cz>summary .lab{color:#fdba74;}
+.chp-club{display:inline-flex;align-items:center;gap:4px;border-radius:6px;padding:1px 7px;font-size:.74rem;font-weight:800;color:#fff;}
+.chp-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:.78rem;margin:4px 0;}
+.chp-row input[type=text]{width:110px;}.chp-row input[type=number]{width:52px;}
+.chp-t{border-collapse:collapse;font-size:.76rem;margin:4px 0;}
+.chp-t th,.chp-t td{border:1px solid #1e293b;padding:3px 6px;text-align:center;}
+.chp-t td.l{text-align:left;}
+.chp-t select{font-size:.74rem;}
+.chp-m{border:1px solid #334155;border-radius:8px;padding:5px 7px;margin:5px 0;font-size:.78rem;}
+.chp-m .top{display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
+.chp-m input[type=number]{width:52px !important;flex:0 0 auto !important;min-width:0;text-align:center;}
+.chp-m select,.chp-t select,.chp-row input[type=number],.chp-row input[type=text]{width:auto !important;flex:0 0 auto !important;}
+.chp-row input[type=number]{width:56px !important;}
+.chp-m .roles{font-size:.72rem;color:#94a3b8;margin-top:3px;line-height:1.5;}
+.chp-niv{font-size:.66rem;font-weight:800;border-radius:5px;padding:1px 5px;background:#334155;color:#e2e8f0;}
+.chp-pw{font-size:.7rem;color:#fde68a;}
 .fit-vid{display:block;max-width:100%;max-height:calc(100vh - 170px);margin:8px auto;border-radius:10px;background:#000;}
 .pres-vids h5{margin:12px 0 2px;font-size:.9rem;color:#93c5fd;}
 .ok-list{margin:0;padding:0;list-style:none;}
@@ -3664,7 +3720,7 @@ function updateAPSAUI(){
   syncRacketUI();
   try{syncPresetFilter();}catch(e){}
   const icon=APSA_ICONS[CFG.apsa]||'⚽';
-  E('sidenav-logo').innerText=icon;
+  try{E('sidenav-logo').innerHTML=gribLogoHtml(icon);}catch(e){E('sidenav-logo').innerText=icon;}
   if(E('btn-start'))E('btn-start').innerText=icon+' DÉMARRER';
   drawPreviewAll();
 }
@@ -22531,7 +22587,7 @@ function evlGen(id){cadMut(id,k=>{const have={};k.ev.crit.forEach(c=>{if(c.src)h
   const fresh=!k.ev.crit.length;k.ev.crit=k.ev.crit.concat(add);
   if(fresh||!Object.keys(k.ev.notes).length)evlSplit(k.ev.crit);});
   CAD_UI.ev=true;renderSeqTab();}
-function evlAdd(id){cadMut(id,k=>{k.ev.n++;k.ev.crit.push({id:'C'+k.ev.n,src:'Critère',comp:'mot',lab:'',pts:2,deg:EVL_TXT.mot.slice()});});}
+function evlAdd(id){cadMut(id,k=>{k.ev.n++;CAD_UI.oc['C'+k.ev.n]=true;k.ev.crit.push({id:'C'+k.ev.n,src:'Critère',comp:'mot',lab:'',pts:2,deg:EVL_TXT.mot.slice()});});}
 function evlDel(id,cid){cadMut(id,k=>{k.ev.crit=k.ev.crit.filter(c=>c.id!==cid);});}
 function evlCset(id,cid,f,v,j){cadMut(id,k=>{const c=k.ev.crit.find(x=>x.id===cid);if(!c)return;
   if(f==='deg'){c.deg[j]=v;}else if(f==='pts'){c.pts=Math.max(0,+String(v).replace(',','.')||0);}else if(f==='comp'){c.comp=v;}else c[f]=v;});}
@@ -22545,10 +22601,10 @@ function evlHtml(q){const k=q.cadre;const qi=esc(q.id);const D='<'+'div',X='</'+
   if(!cr.length){h+=D+' class="cc-dim" style="margin:6px 0;">Le référentiel est construit à partir des attendus cochés dans le cadre (un critère par attendu, 4 degrés de maîtrise, points répartis 12 moteur / 4 méthodologique / 4 social). Tout reste modifiable.'+X
     +'<button type="button" class="btn-xs" style="background:#7c3aed;color:#fff;padding:8px 14px;" onclick="evlGen(\''+qi+'\')">⚙ Générer le référentiel</button>'+X+'</details>'+X;return h;}
   h+=D+' class="sub">Référentiel · '+EVL_DEG.map((d,i)=>EVL_AB[i]+' = '+d).join(' · ')+' · points du critère × degré / 4'+X;
-  h+=cr.map(c=>{const ci=esc(c.id);return D+' class="evl-crit">'+D+' class="hd"><b>'+esc(evlSrcLab(k,c))+'</b><select onchange="evlCset(\''+qi+'\',\''+ci+'\',\'comp\',this.value)">'+['mot','met','soc'].map(x=>'<option value="'+x+'"'+(x===c.comp?' selected':'')+'>'+CAD_CL[x]+'</option>').join('')+'</select>'
+  h+=cr.map(c=>{const ci=esc(c.id);return '<details class="evl-crit"'+(CAD_UI.oc[c.id]?' open':'')+' ontoggle="CAD_UI.oc[\''+ci+'\']=this.open"><summary><b>'+esc(evlSrcLab(k,c))+'</b> <span class="cad-tag '+esc(c.comp)+'">'+(CAD_CL[c.comp]||'')+'</span><span class="cz-1l">'+esc(c.lab||'(critère à écrire)')+'</span><b class="evl-pts">/'+evlFr(+c.pts||0)+'</b></summary>'+D+' class="hd"><b>'+esc(evlSrcLab(k,c))+'</b><select onchange="evlCset(\''+qi+'\',\''+ci+'\',\'comp\',this.value)">'+['mot','met','soc'].map(x=>'<option value="'+x+'"'+(x===c.comp?' selected':'')+'>'+CAD_CL[x]+'</option>').join('')+'</select>'
     +'<textarea onchange="evlCset(\''+qi+'\',\''+ci+'\',\'lab\',this.value)" aria-label="Critère">'+esc(c.lab)+'</textarea><label>/ <input type="number" min="0" step="0.5" value="'+esc(String(c.pts))+'" onchange="evlCset(\''+qi+'\',\''+ci+'\',\'pts\',this.value)"></label>'
     +'<button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="evlDup(\''+qi+'\',\''+ci+'\')" title="Ajouter un autre critère évaluable pour '+esc(c.src)+' (les points de '+esc(c.src)+' sont partagés)">＋ critère '+esc(c.src)+'</button><button type="button" class="btn-xs red" onclick="evlDel(\''+qi+'\',\''+ci+'\')" title="Supprimer ce critère">🗑</button>'+X
-    +D+' class="evl-deg">'+[0,1,2,3].map(j=>D+' class="d'+(j+1)+'"><label>'+EVL_AB[j]+' · '+EVL_DEG[j]+' ('+evlFr((+c.pts||0)*(j+1)/4)+' pt)</label><textarea onchange="evlCset(\''+qi+'\',\''+ci+'\',\'deg\',this.value,'+j+')">'+esc(c.deg[j]||'')+'</textarea>'+X).join('')+X+X;}).join('');
+    +D+' class="evl-deg">'+[0,1,2,3].map(j=>D+' class="d'+(j+1)+'"><label>'+EVL_AB[j]+' · '+EVL_DEG[j]+' ('+evlFr((+c.pts||0)*(j+1)/4)+' pt)</label><textarea onchange="evlCset(\''+qi+'\',\''+ci+'\',\'deg\',this.value,'+j+')">'+esc(c.deg[j]||'')+'</textarea>'+X).join('')+X+'</details>';}).join('');
   h+=D+' style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;"><b style="font-size:.8rem;">Total : /'+evlFr(tot)+'</b>'+(Math.abs(tot-20)>0.01?'<span class="cc-dim">(pas sur 20)</span>':'')+'<span style="flex:1;"></span>'
     +'<button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="evlAdd(\''+qi+'\')">＋ Critère</button>'
     +(k.att.some(i=>!cr.some(c=>c.src===cadAttLab(k,i)))?'<button type="button" class="btn-xs" style="background:#7c3aed;color:#fff;" onclick="evlGen(\''+qi+'\')">＋ Attendus cochés manquants</button>':'')+X;
@@ -22627,7 +22683,7 @@ function cadInject(){const host=E('seq-console');if(!host)return;const q0=evlOpe
   const ed=host.querySelector('.seq-ed');if(!ed)return;
   const raw=seqGet(q0.id);if(raw&&(!raw.cadre||raw.cadre.sp!==raw.sport))seqUpdate(q0.id,x=>{cadEnsure(x);});
   const q=evlOpenQ();const w=document.createElement('div');w.innerHTML=cadHtml(q);const cad=w.firstChild;
-  const gs=ed.querySelector('.seq-gs');if(gs&&gs.parentNode===ed)gs.after(cad);else{const rows=ed.querySelectorAll(':scope > .row');const last=rows[1]||rows[0];if(last)last.after(cad);else ed.prepend(cad);}
+  const gs=ed.querySelector('.seq-gs-wrap')||ed.querySelector('.seq-gs');if(gs&&gs.parentNode===ed)gs.after(cad);else{const rows=ed.querySelectorAll(':scope > .row');const last=rows[1]||rows[0];if(last)last.after(cad);else ed.prepend(cad);}
   const w2=document.createElement('div');w2.innerHTML=evlHtml(q);ed.appendChild(w2.firstChild);
   if(CAD_UI.ev)setTimeout(()=>evlPull(q.id,true),300);}
 renderSeqTab=(function(o){return function(){const r=o.apply(this,arguments);try{cadInject();}catch(e){console.warn('cadInject',e);}return r;};})(renderSeqTab);
@@ -22652,8 +22708,142 @@ function evlSrcLab(k,c){const same=k.ev.crit.filter(x=>x.src===c.src);if(same.le
 function evlDup(id,cid){cadMut(id,k=>{const i=k.ev.crit.findIndex(x=>x.id===cid);if(i<0)return;const c=k.ev.crit[i];
   const grp=k.ev.crit.filter(x=>x.src===c.src);const tot=grp.reduce((a,x)=>a+(+x.pts||0),0);k.ev.n++;
   const nc={id:'C'+k.ev.n,src:c.src,comp:c.comp,lab:'',pts:0,deg:(EVL_TXT[c.comp]||EVL_TXT.mot).slice()};
-  let j=i;k.ev.crit.forEach((x,ix)=>{if(x.src===c.src)j=ix;});k.ev.crit.splice(j+1,0,nc);
+  CAD_UI.oc[nc.id]=true;let j=i;k.ev.crit.forEach((x,ix)=>{if(x.src===c.src)j=ix;});k.ev.crit.splice(j+1,0,nc);
   const g2=grp.concat([nc]);const each=Math.floor(tot/g2.length*2)/2;g2.forEach(x=>x.pts=each);g2[0].pts=evlR(g2[0].pts+tot-each*g2.length);});}
+
+// ══════════════════════════════════════════════════════════════════════
+// v296 — logo ; séquence allégée : tout est replié en une ligne et se
+// déplie au clic (survol = texte complet) ; AFC/AFL rangés sous leur
+// domaine du socle / objectif général
+// ══════════════════════════════════════════════════════════════════════
+const GRIB_LOGO='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="15" fill="#0b0b0c"/><path d="M44 21C39.5 15 32.5 13.5 26.5 15.5C17.5 19 13.5 29 16.5 38C19.5 47 30 51.5 38.5 48C43 46 45.5 42.5 46 38H33" fill="none" stroke="#e11d2e" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50.5" cy="12.5" r="4" fill="#e11d2e"/></svg>';
+function gribLogoHtml(icon){return GRIB_LOGO+(icon?'<span class="snl-apsa">'+icon+'</span>':'');}
+try{E('sidenav-logo').innerHTML=gribLogoHtml(APSA_ICONS[CFG.apsa]||'⚽');E('sidenav-logo').title='Gribouillis EPS';}catch(e){}
+if(!CAD_UI.oc)CAD_UI.oc={};
+if(!CAD_UI.o)CAD_UI.o={};
+// domaine(s) / objectif(s) auquel chaque attendu se rattache : le 1er est le principal
+function cadAttDoms(k,i){const t=String(cadAtt(k)[i]||'');const cp=cadCompOf(k,i);const D=[{mot:0,met:1,soc:2}[cp]];
+  if(/état physique|échauff|santé|ressources|entretenir|effort/i.test(t)&&D.indexOf(3)<0)D.push(3);
+  if(k.niv!=='lycee'&&/apprécier|culture|prestations des autres/i.test(t)&&D.indexOf(4)<0)D.push(4);
+  if(k.niv==='lycee'&&/patrimoine|cultur/i.test(t)&&D.indexOf(4)<0)D.push(4);
+  return D;}
+function cadTip(t){return esc(String(t||'')).replace(/"/g,'&quot;');}
+cadHtml=function(q){const k=q.cadre;const qi=esc(q.id);const D='<'+'div',X='</'+'div>';
+  const att=cadAtt(k);const P=cadP(k)[k.ca]||{};const lyc=k.niv==='lycee';const doms=cadDoms(k);
+  const prim=doms.map(()=>[]);att.forEach((t,i)=>{const d=cadAttDoms(k,i)[0];if(prim[d])prim[d].push(i);});
+  const AL=lyc?'AFL':'AFC';
+  let h=D+' class="cad">'+D+' class="cad-top"><b>🧭 Cadre</b><select onchange="cadSet(\''+qi+'\',\'niv\',this.value)" aria-label="Niveau">'+['cycle3','cycle4','lycee'].map(n=>'<option value="'+n+'"'+(n===k.niv?' selected':'')+'>'+esc(cadNivLab(n))+'</option>').join('')+'</select>'
+    +'<select onchange="cadSet(\''+qi+'\',\'ca\',this.value)" aria-label="Champ d\'apprentissage" style="max-width:100%;">'+cadCaList(k).map(c=>'<option value="'+c+'"'+(c===k.ca?' selected':'')+'>'+c+' · '+esc(String(cadP(k)[c].titre||'').slice(0,70))+'</option>').join('')+'</select>'+X;
+  // socle -> attendus, version repliée
+  h+='<details class="cz"'+(CAD_UI.o.soc?' open':'')+' ontoggle="CAD_UI.o.soc=this.open"><summary><span class="lab">'+(lyc?'Objectifs → AFL':'Socle → AFC')+'</span>'
+    +doms.map((d,di)=>{const on=k.dom.indexOf(di)>=0;const A=prim[di];if(!on&&!A.some(i=>k.att.indexOf(i)>=0))return '<span class="cz-tree"><span class="czd" data-tip="'+cadTip(d.code+' · '+cadCap(d.t)+(d.sub?' — EPS : '+d.sub:''))+'">'+esc(d.code)+'</span></span>';
+      return '<span class="cz-tree"><span class="czd'+(on?' on':'')+'" data-tip="'+cadTip(d.code+' · '+cadCap(d.t)+(d.sub?' — EPS : '+d.sub:''))+'">'+esc(d.code)+'</span>'+(A.length?'<span class="ar">▸</span>'+A.map(i=>'<span class="cza'+(k.att.indexOf(i)>=0?' on':'')+'" data-tip="'+cadTip(cadAttLab(k,i)+' · '+att[i])+'">'+esc(cadAttLab(k,i).replace(/ \(.*\)/,'').replace(/^AF[CL]/,''))+'</span>').join(''):'')+'</span>';}).join('')
+    +'</summary>'
+    +(P.afc_preambule?D+' class="cc-dim" style="font-size:.74rem;">'+esc(k.ca)+' · '+esc(P.titre||'')+' — '+esc(P.afc_preambule)+X:D+' class="cc-dim" style="font-size:.74rem;">'+esc(k.ca)+' · '+esc(P.titre||'')+X)
+    +doms.map((d,di)=>{const on=k.dom.indexOf(di)>=0;const A=prim[di];
+      return D+' class="cad-dom'+(on?' on':'')+'"><button type="button" class="cad-chip'+(on?' on':'')+'" onclick="cadTog(\''+qi+'\',\'dom\','+di+')"><b>'+esc(d.code)+'</b>'+esc(cadCap(d.t))+(d.sub?'<br><span style="opacity:.8;">EPS : '+esc(d.sub)+'</span>':'')+'</button>'
+        +(A.length?A.map(i=>{const cp=cadCompOf(k,i);const also=cadAttDoms(k,i).slice(1);return '<label class="cad-att"><input type="checkbox"'+(k.att.indexOf(i)>=0?' checked':'')+' onchange="cadTog(\''+qi+'\',\'att\','+i+')"><span><b>'+esc(cadAttLab(k,i))+'</b> <span class="cad-tag '+cp+'">'+CAD_CL[cp]+'</span>'+esc(att[i])+also.map(x=>'<span class="cad-also">aussi '+esc((doms[x]||{}).code||'')+'</span>').join('')+'</span></label>';}).join(''):D+' class="none">Aucun '+AL+' de ce champ n\'y est rattaché directement.'+X)+X;}).join('')
+    +'</details>';
+  // compétence, version repliée
+  const ct=cadCompTxt(q,k);
+  h+='<details class="cz"'+(CAD_UI.o.comp?' open':'')+' ontoggle="CAD_UI.o.comp=this.open"><summary><span class="lab">Compétence</span><span class="cz-1l" title="'+cadTip(ct)+'">'+esc(ct)+'</span></summary>'
+    +D+' class="cad-comp"><span>Situation</span><textarea onchange="cadSet(\''+qi+'\',\'sit\',this.value)">'+esc(k.comp.sit||'')+'</textarea>'
+    +['mot','met','soc'].map(x=>'<span><span class="cad-tag '+x+'">'+CAD_CL[x]+'</span></span><textarea onchange="cadSet(\''+qi+'\',\''+x+'\',this.value)">'+esc(k.comp[x]||'')+'</textarea>').join('')+X
+    +D+' style="font-size:.74rem;margin:8px 0 3px;display:flex;gap:6px;align-items:center;flex-wrap:wrap;"><b>Compétence de la séquence</b><span class="cc-dim">'+(k.comp.man?'(texte modifié à la main)':'(écrite à partir des 4 cases et des objets d\'enseignement choisis)')+'</span><span style="flex:1;"></span><button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="cadRegen(\''+qi+'\')">↻ Repartir des propositions</button>'+X
+    +'<textarea class="big" onchange="cadSet(\''+qi+'\',\'txt\',this.value)">'+esc(ct)+'</textarea></details>';
+  return h+X;};
+seqGsRowHtml=(function(o){return function(q){const h=o(q);const g=(q&&q.gs)||{};
+  return '<details class="cz seq-gs-wrap"'+(CAD_UI.o.gs?' open':'')+' ontoggle="CAD_UI.o.gs=this.open"><summary><span class="lab">📊 Google Sheets</span>'+(g.url?'<span class="cz-ok">✅ relié</span>':'<span class="cz-off">non relié — cliquer pour relier</span>')+'</summary>'+h+'</details>';};})(seqGsRowHtml);
+cadInject=(function(o){return function(){o.apply(this,arguments);try{const ed=document.querySelector('#seq-console .seq-ed');if(!ed)return;
+  [...ed.querySelectorAll(':scope > .cc-dim')].forEach(p=>{if(!/Touchez une case/.test(p.textContent))return;const d=document.createElement('details');d.className='cz-help';d.innerHTML='<summary>ⓘ Comment remplir la grille</summary>';d.appendChild(document.createTextNode(p.textContent));p.replaceWith(d);});}catch(e){}};})(cadInject);
+
+// ══════════════════════════════════════════════════════════════════════
+// v297 — 🏆 Championnat de la séquence (sports collectifs), sous les objets
+// d'enseignement : clubs, espoirs / confirmés, répartition, barème, pouvoirs
+// et jokers, journées (matchs + rotation des rôles), classement.
+// ══════════════════════════════════════════════════════════════════════
+const CHP_COLS=['#2563eb','#dc2626','#ca8a04','#ea580c','#16a34a','#7c3aed'];
+const CHP_NOMS=['Bleus','Rouges','Jaunes','Oranges','Verts','Violets'];
+const CHP_POUV=['2 jokers : un coup de sifflet en attaque ne fait pas perdre le ballon','Personne ne défend à moins de 2 bras du porteur','Un défenseur en prison quand nous avons le ballon','Zone favorable de marque indéfendable','1er tir gratuit','Un défenseur joue la main dans le dos','Option dribble','Tour de contrôle'];
+const CHP_GK=['handball','football'];
+function chpEnsure(q){if(!q.champ||typeof q.champ!=='object')q.champ={on:false};const c=q.champ;if(!c.on)return c;
+  if(!Array.isArray(c.clubs)||!c.clubs.length)c.clubs=[0,1,2].map(i=>({id:'k'+i,nom:CHP_NOMS[i],col:CHP_COLS[i]}));
+  if(!Array.isArray(c.niv)||!c.niv.length)c.niv=['Espoirs','Confirmés'];
+  if(!c.aff||typeof c.aff!=='object')c.aff={};
+  if(!c.bar)c.bar={v:4,n:2,d:1,b1:1,b2:2,seuil:4};
+  if(!Array.isArray(c.pouv))c.pouv=CHP_POUV.slice();
+  if(!Array.isArray(c.jours))c.jours=[];return c;}
+function chpMut(id,fn){seqUpdate(id,q=>{chpEnsure(q);fn(q.champ,q);});renderSeqTab();}
+function chpNames(){return ((typeof COMPO!=='undefined'&&COMPO.roster)||[]).map(r=>r&&r.name).filter(Boolean);}
+function chpClub(c,id){return c.clubs.find(x=>x.id===id)||{nom:'?',col:'#475569'};}
+function chpBadge(c,id){const k=chpClub(c,id);return '<span class="chp-club" style="background:'+esc(k.col)+';">'+esc(k.nom)+'</span>';}
+function chpMembers(c,club,niv){return chpNames().filter(n=>{const a=c.aff[n];return a&&a.club===club&&(c.niv.length>1?+a.niv:0)===+niv;});}
+function chpRes(c,m){if(m.sa===''||m.sa==null||m.sb===''||m.sb==null)return null;const a=+m.sa,b=+m.sb;const B=c.bar;
+  const pa=(a>b?B.v:a===b?B.n:B.d)+(+m.ba===2?B.b2:+m.ba===1?B.b1:0),pb=(b>a?B.v:a===b?B.n:B.d)+(+m.bb===2?B.b2:+m.bb===1?B.b1:0);return {a,b,pa,pb};}
+function chpStand(c,uptoJ){const T={};c.clubs.forEach(k=>{T[k.id]={tot:0,niv:c.niv.map(()=>({j:0,v:0,n:0,d:0,bp:0,bc:0,pts:0}))};});
+  c.jours.forEach((J,ji)=>{if(uptoJ!=null&&ji>=uptoJ)return;(J.m||[]).forEach(m=>{const r=chpRes(c,m);if(!r||!T[m.a]||!T[m.b])return;const A=T[m.a].niv[m.niv],B=T[m.b].niv[m.niv];if(!A||!B)return;
+    A.j++;B.j++;A.bp+=r.a;A.bc+=r.b;B.bp+=r.b;B.bc+=r.a;if(r.a>r.b){A.v++;B.d++;}else if(r.a<r.b){B.v++;A.d++;}else{A.n++;B.n++;}A.pts+=r.pa;B.pts+=r.pb;T[m.a].tot+=r.pa;T[m.b].tot+=r.pb;});});
+  return T;}
+function chpPouv(c,ji,m){const T=chpStand(c,ji);const a=T[m.a]&&T[m.a].niv[m.niv],b=T[m.b]&&T[m.b].niv[m.niv];if(!a||!b)return null;const e=Math.abs(a.pts-b.pts);const n=Math.min(3,Math.floor(e/Math.max(1,+c.bar.seuil||4)));
+  if(!n)return null;return {club:a.pts<b.pts?m.a:m.b,n};}
+function chpNewDay(id){chpMut(id,(c,q)=>{const ji=c.jours.length;const P=[];for(let i=0;i<c.clubs.length;i++)for(let j=i+1;j<c.clubs.length;j++)P.push([c.clubs[i].id,c.clubs[j].id]);
+  const ord=P.map((p,i)=>P[(i*2+ji)%P.length]);const m=[];ord.forEach(p=>c.niv.forEach((_,nv)=>m.push({niv:nv,a:p[0],b:p[1],sa:'',sb:'',ba:0,bb:0})));
+  const t0=edtToday();const last=ji?String(c.jours[ji-1].date||''):'';const t=last>=t0?last:t0;const D=(q.dates||[]).filter(d=>last?d>t:d>=t);c.jours.push({date:D[0]||t,m});CAD_UI.o['chpj'+ji]=true;CAD_UI.o.chpJ=true;});}
+function chpRoles(c,ji,mi,sport){const m=c.jours[ji].m[mi];const A=chpMembers(c,m.a,m.niv),B=chpMembers(c,m.b,m.niv);
+  const others=chpNames().filter(n=>A.indexOf(n)<0&&B.indexOf(n)<0&&c.aff[n]);const same=others.filter(n=>(c.niv.length>1?+c.aff[n].niv:0)===+m.niv);const pool=same.length>=3?same:others;
+  const rot=(L,k)=>L.length?L.slice(k%L.length).concat(L.slice(0,k%L.length)):[];const R=rot(pool,ji*7+mi*3);
+  const gk=CHP_GK.indexOf(sport)>=0;return {A,B,ga:gk&&A.length?A[(ji+mi)%A.length]:'',gb:gk&&B.length?B[(ji+mi+1)%B.length]:'',arb:R.slice(0,2),sc:R.slice(2,3),obs:R.slice(3)};}
+function chpAuto(id){chpMut(id,c=>{const N=chpNames();const note=n=>{try{const r=rosterOf(n);return +(r&&r.note)||3;}catch(e){return 3;}};
+  const sx=n=>{try{return /^f/i.test(grpSexe(n)||'')?1:0;}catch(e){return 0;}};
+  const L=N.slice().sort((a,b)=>note(b)-note(a)||sx(a)-sx(b));const nv=c.niv.length;const per=Math.ceil(L.length/nv);c.aff={};
+  for(let v=0;v<nv;v++){const G=L.slice(v*per,(v+1)*per);const lv=nv>1?nv-1-v:0;G.forEach((n,i)=>{const r=Math.floor(i/c.clubs.length),p=i%c.clubs.length;const k=r%2?c.clubs.length-1-p:p;c.aff[n]={club:c.clubs[k].id,niv:lv};});}});}
+function chpOpen(key){return CAD_UI.o[key]?' open':'';}
+function chpHtml(q){const c=q.champ;const qi=esc(q.id);const D='<'+'div',X='</'+'div>';
+  if(!c||!c.on)return '<details class="chp" id="chp-box"><summary><b>🏆 Championnat</b><span class="cz-off">pas de championnat dans cette séquence</span></summary>'+D+' class="cc-dim" style="margin:4px 0 8px;">Clubs, espoirs / confirmés, matchs, rotation des rôles (joue, gardien, arbitre, observe), pouvoirs et jokers, classement qui se remplit tout seul.'+X+'<button type="button" class="btn-xs" style="background:#c2410c;color:#fff;padding:7px 12px;" onclick="chpMut(\''+qi+'\',c=>{c.on=true;chpEnsure({champ:c});})">🏆 Créer le championnat</button></details>';
+  const T=chpStand(c);const rank=c.clubs.slice().sort((a,b)=>T[b.id].tot-T[a.id].tot);const N=chpNames();const nAff=N.filter(n=>c.aff[n]).length;
+  const played=c.jours.reduce((a,J)=>a+(J.m||[]).filter(m=>chpRes(c,m)).length,0);
+  let h='<details class="chp" id="chp-box"'+chpOpen('chp')+' ontoggle="CAD_UI.o.chp=this.open"><summary><b>🏆 Championnat</b>'+rank.map(k=>chpBadge(c,k.id)+'<b style="font-size:.74rem;">'+T[k.id].tot+'</b>').join(' ')+'<span class="cc-dim">· '+c.jours.length+' journée'+(c.jours.length>1?'s':'')+' · '+played+' match'+(played>1?'s':'')+' joué'+(played>1?'s':'')+'</span></summary>';
+  // classement
+  h+='<table class="chp-t"><thead><tr><th>Club</th>'+c.niv.map(v=>'<th>'+esc(v)+'<br><small>J V N D · pts</small></th>').join('')+'<th>Total</th></tr></thead><tbody>'
+    +rank.map(k=>'<tr><td class="l">'+chpBadge(c,k.id)+'</td>'+T[k.id].niv.map(s=>'<td>'+s.j+' '+s.v+' '+s.n+' '+s.d+' · <b>'+s.pts+'</b></td>').join('')+'<td><b>'+T[k.id].tot+'</b></td></tr>').join('')+'</tbody></table>';
+  // clubs & niveaux
+  h+='<details class="cz"'+chpOpen('chpC')+' ontoggle="CAD_UI.o.chpC=this.open"><summary><span class="lab">Clubs et niveaux</span>'+c.clubs.map(k=>chpBadge(c,k.id)).join(' ')+'<span class="cc-dim">· '+c.niv.map(esc).join(' / ')+'</span></summary>'
+    +c.clubs.map((k,i)=>D+' class="chp-row"><input type="color" value="'+esc(k.col)+'" onchange="chpMut(\''+qi+'\',c=>{c.clubs['+i+'].col=this.value;})" aria-label="Couleur"><input type="text" value="'+esc(k.nom)+'" onchange="chpMut(\''+qi+'\',c=>{c.clubs['+i+'].nom=this.value.trim()||c.clubs['+i+'].nom;})" aria-label="Nom du club">'
+      +(c.clubs.length>2?'<button type="button" class="btn-xs red" onclick="chpMut(\''+qi+'\',c=>{c.clubs.splice('+i+',1);})">🗑</button>':'')+X).join('')
+    +(c.clubs.length<6?'<button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="chpMut(\''+qi+'\',c=>{const i=c.clubs.length;c.clubs.push({id:\'k\'+Date.now().toString(36),nom:CHP_NOMS[i]||(\'Club \'+(i+1)),col:CHP_COLS[i%6]});})">＋ Club</button>':'')
+    +D+' class="chp-row">Niveaux : '+c.niv.map((v,i)=>'<input type="text" value="'+esc(v)+'" onchange="chpMut(\''+qi+'\',c=>{c.niv['+i+']=this.value.trim()||c.niv['+i+'];})">').join('')
+    +'<button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="chpMut(\''+qi+'\',c=>{if(c.niv.length>1)c.niv=[c.niv.join(\' + \')];else c.niv=[\'Espoirs\',\'Confirmés\'];})">'+(c.niv.length>1?'Un seul niveau':'Espoirs / Confirmés')+'</button>'+X+'</details>';
+  // répartition
+  h+='<details class="cz"'+chpOpen('chpR')+' ontoggle="CAD_UI.o.chpR=this.open"><summary><span class="lab">Répartition des élèves</span><span class="cc-dim">'+nAff+' / '+N.length+' élèves placés</span></summary>'
+    +D+' class="chp-row"><button type="button" class="btn-xs" style="background:#c2410c;color:#fff;" onclick="chpAuto(\''+qi+'\')">⚖ Répartir automatiquement</button><span class="cc-dim">(niveaux d\'après la note de la liste, clubs équilibrés)</span>'+X
+    +'<table class="chp-t"><thead><tr><th>Élève</th><th>Club</th>'+(c.niv.length>1?'<th>Niveau</th>':'')+'</tr></thead><tbody>'
+    +N.map((n,ni)=>{const a=c.aff[n]||{};return '<tr><td class="l">'+esc(n)+'</td><td><select onchange="chpAff(\''+qi+'\','+ni+',\'club\',this.value)"><option value="">—</option>'+c.clubs.map(k=>'<option value="'+esc(k.id)+'"'+(a.club===k.id?' selected':'')+'>'+esc(k.nom)+'</option>').join('')+'</select></td>'
+      +(c.niv.length>1?'<td><select onchange="chpAff(\''+qi+'\','+ni+',\'niv\',this.value)">'+c.niv.map((v,i)=>'<option value="'+i+'"'+(+a.niv===i?' selected':'')+'>'+esc(v)+'</option>').join('')+'</select></td>':'')+'</tr>';}).join('')+'</tbody></table></details>';
+  // barème & pouvoirs
+  const B=c.bar;const num=(f,lab)=>'<label>'+lab+' <input type="number" min="0" step="1" value="'+esc(String(B[f]))+'" onchange="chpMut(\''+qi+'\',c=>{c.bar.'+f+'=+this.value||0;})"></label>';
+  h+='<details class="cz"'+chpOpen('chpB')+' ontoggle="CAD_UI.o.chpB=this.open"><summary><span class="lab">Barème, pouvoirs et jokers</span><span class="cc-dim">V '+B.v+' · N '+B.n+' · D '+B.d+' · bonus +'+B.b1+'/+'+B.b2+' · '+c.pouv.length+' pouvoirs</span></summary>'
+    +D+' class="chp-row">'+num('v','Victoire')+num('n','Nul')+num('d','Défaite')+num('b1','Bonus tous tireurs')+num('b2','Bonus tous marqueurs')+X
+    +D+' class="chp-row">'+num('seuil','1 pouvoir pour l\'équipe en retard tous les')+' points d\'écart au classement (3 au plus)'+X
+    +'<textarea style="width:100%;min-height:90px;font-family:inherit;background:#0f172a;color:#e2e8f0;border:1px solid #334155;border-radius:6px;padding:4px 6px;font-size:.76rem;" onchange="chpMut(\''+qi+'\',c=>{c.pouv=this.value.split(\'\\n\').map(x=>x.trim()).filter(Boolean);})" aria-label="Pouvoirs, un par ligne">'+esc(c.pouv.join('\n'))+'</textarea>'+D+' class="cc-dim" style="font-size:.7rem;">Un pouvoir par ligne.'+X+'</details>';
+  // journées
+  h+='<details class="cz"'+chpOpen('chpJ')+' ontoggle="CAD_UI.o.chpJ=this.open"><summary><span class="lab">Journées</span><span class="cc-dim">'+c.jours.length+' journée'+(c.jours.length>1?'s':'')+'</span></summary>'
+    +c.jours.map((J,ji)=>{const M=J.m||[];const pl=M.filter(m=>chpRes(c,m)).length;
+      return '<details class="cz"'+chpOpen('chpj'+ji)+' ontoggle="CAD_UI.o[\'chpj'+ji+'\']=this.open"><summary><span class="lab">J'+(ji+1)+'</span><span>'+esc(seanceDateFr(J.date))+'</span><span class="cc-dim">'+M.length+' matchs · '+pl+' joué'+(pl>1?'s':'')+'</span></summary>'
+        +D+' class="chp-row"><label>Date <input type="date" value="'+esc(J.date||'')+'" onchange="chpMut(\''+qi+'\',c=>{c.jours['+ji+'].date=this.value;})"></label><span style="flex:1;"></span>'+(ji===c.jours.length-1?'<button type="button" class="btn-xs red" onclick="chpMut(\''+qi+'\',c=>{c.jours.pop();})">🗑 Supprimer la journée</button>':'')+X
+        +M.map((m,mi)=>{const R=chpRoles(c,ji,mi,q.sport);const pw=chpPouv(c,ji,m);const sel=(f,v)=>'<select onchange="chpMut(\''+qi+'\',c=>{c.jours['+ji+'].m['+mi+'].'+f+'=+this.value;})" title="Bonus">'+['0','+'+B.b1+' tous tireurs','+'+B.b2+' tous marqueurs'].map((t,i)=>'<option value="'+i+'"'+(+v===i?' selected':'')+'>'+t+'</option>').join('')+'</select>';
+          const sc=f=>'<input type="number" min="0" value="'+esc(m[f]===''||m[f]==null?'':String(m[f]))+'" onchange="chpMut(\''+qi+'\',c=>{c.jours['+ji+'].m['+mi+'].'+f+'=this.value===\'\'?\'\':+this.value;})" aria-label="Score">';
+          return D+' class="chp-m">'+D+' class="top"><b>M'+(mi+1)+'</b>'+(c.niv.length>1?'<span class="chp-niv">'+esc(c.niv[m.niv]||'')+'</span>':'')+chpBadge(c,m.a)+sc('sa')+'–'+sc('sb')+chpBadge(c,m.b)+sel('ba',m.ba)+sel('bb',m.bb)
+            +(pw?'<span class="chp-pw">🃏 '+esc(chpClub(c,pw.club).nom)+' : '+pw.n+' pouvoir'+(pw.n>1?'s':'')+'</span>':'')+X
+            +D+' class="roles">'+(R.ga||R.gb?'🧤 '+esc([R.ga,R.gb].filter(Boolean).join(' / '))+' · ':'')+'🟨 Arbitres : '+esc(R.arb.join(', ')||'—')+' · 📝 Score : '+esc(R.sc.join(', ')||'—')+(R.obs.length?' · 👀 Observent : '+esc(R.obs.join(', ')):'')
+            +(!R.A.length||!R.B.length?' · <span style="color:#fca5a5;">placez les élèves dans les clubs (Répartition)</span>':'')+X+X;}).join('')+'</details>';}).join('')
+    +'<button type="button" class="btn-xs" style="background:#c2410c;color:#fff;margin-top:6px;" onclick="chpNewDay(\''+qi+'\')">＋ Nouvelle journée</button></details>';
+  h+=D+' style="text-align:right;margin-top:6px;"><button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="chpMut(\''+qi+'\',c=>{c.on=false;})" title="Le championnat est gardé : vous pourrez le réactiver">Masquer le championnat</button>'+X;
+  return h+'</details>';}
+function chpAff(id,ni,f,v){const n=chpNames()[ni];if(!n)return;chpMut(id,c=>{const a=c.aff[n]||{club:'',niv:c.niv.length>1?0:0};if(f==='club'){if(!v){delete c.aff[n];return;}a.club=v;}else a.niv=+v;if(a.club)c.aff[n]=a;});}
+cadInject=(function(o){return function(){o.apply(this,arguments);try{const q=evlOpenQ();if(!q)return;const sd=seqSd(q);if(q.ref&&sd&&sd.custom)return;
+  if(!(q.cadre&&q.cadre.ca==='CA4')&&!(q.champ&&q.champ.on))return;chpEnsure(q);
+  const ed=document.querySelector('#seq-console .seq-ed');if(!ed||E('chp-box'))return;const w=document.createElement('div');w.innerHTML=chpHtml(q);const ev=E('evl-box');
+  if(ev&&ev.parentNode===ed)ed.insertBefore(w.firstChild,ev);else ed.appendChild(w.firstChild);}catch(e){console.warn('chp',e);}};})(cadInject);
 </script>
 </body>
 </html>
