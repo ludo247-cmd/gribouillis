@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v311</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v312</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v311</title>
+<title>Gribouillis EPS v312</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -23894,6 +23894,52 @@ setInterval(prmTick,700);
 +'.prm-go{min-height:52px;border:0;border-radius:12px;background:#dc2626;color:#fff;font-weight:800;font-size:16px;cursor:pointer;margin-top:2px;}.prm-go[disabled]{opacity:.45;}'
 +'#prm-end{position:fixed;left:50%;top:12px;transform:translateX(-50%);z-index:9750;background:#0f1115;border:2px solid #dc2626;border-radius:14px;padding:10px 12px;width:min(92vw,420px);display:flex;flex-direction:column;gap:8px;color:#e8e8ea;box-shadow:0 8px 30px rgba(0,0,0,.5);}'
 +'#prm-end .prm-et{font-weight:700;font-size:15px;}#prm-end .prm-row>*{flex:1 1 0;}';
+document.head.appendChild(st);})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v312 — avant-match : changer d'équipe (toucher le nom) ;
+// écran « boutons seuls » du match dans le nouveau style.
+// ══════════════════════════════════════════════════════════════════════
+PRM.pickTeam=null;
+function prmSetTeam(ti,id){const el=E('sel-t'+(ti+1));if(el){el.value=String(id);try{el.dispatchEvent(new Event('change',{bubbles:true}));}catch(e){}}
+  const T=prmTeamObjs();PRM.base[ti]=prmNames(T[ti]);PRM.lineup[ti]=PRM.base[ti].slice();PRM.pickTeam=null;PRM.pick=null;prmRender();}
+prmRender=(function(o){return function(){o.apply(this,arguments);try{
+  const ov=E('prm-ov');if(!ov)return;const T=prmTeamObjs();
+  ov.querySelectorAll('.prm-team').forEach((tm,ti)=>{if(tm.classList.contains('prm-adv'))return;const tn=tm.querySelector('.prm-tn');if(!tn)return;
+    const b=document.createElement('button');b.type='button';b.className='prm-tnb'+(PRM.pickTeam===ti?' on':'');b.title='Changer d\'équipe';b.innerHTML='<span>'+tn.innerHTML+'</span><span class="prm-chg">⇄ changer</span>';
+    b.onclick=()=>{PRM.pickTeam=(PRM.pickTeam===ti?null:ti);PRM.pick=null;prmRender();};tn.replaceWith(b);});
+  if(PRM.pickTeam!=null&&T[PRM.pickTeam]){const tv=ov.querySelector('.prm-tv');const cur=T[PRM.pickTeam];const other=T[1-PRM.pickTeam];
+    const box=document.createElement('div');box.className='prm-card prm-pickbox';
+    box.innerHTML='<b>Équipe '+(PRM.pickTeam+1)+' : choisis l\'équipe qui joue</b><'+'div class="prm-wrap">'+teams.map(t=>'<button type="button" class="prm-chip'+(t.id===cur.id?' on':'')+'" onclick="prmSetTeam('+PRM.pickTeam+','+t.id+')">'+esc(t.name)+(other&&t.id===other.id?' (en face)':'')+'</button>').join('')+'</'+'div>'
+      +'<'+'div class="prm-row"><button type="button" class="prm-chip" onclick="PRM.pickTeam=null;prmRender();">Annuler</button></'+'div>';
+    if(tv)tv.insertAdjacentElement('afterend',box);}
+}catch(e){console.warn('prm v312',e);}};})(prmRender);
+// couleur d'équipe pour l'écran boutons seuls
+obsSimpleRefresh=(function(o){return function(){const r=o.apply(this,arguments);try{const p=E('obs-simple');if(p){const pal=PALETTE[curT===1?CFG.t2pal:CFG.t1pal]||PALETTE[1];p.style.setProperty('--team',pal.stroke);}}catch(e){}return r;};})(obsSimpleRefresh);
+(function(){const st=document.createElement('style');st.textContent=
+ '.prm-tnb{display:flex;flex-direction:column;align-items:flex-start;gap:2px;background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.3);border-radius:10px;padding:6px 8px;color:#fff;cursor:pointer;text-align:left;min-height:44px;}'
++'.prm-tnb>span:first-child{font-weight:800;font-size:17px;letter-spacing:.03em;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,.5);}'
++'.prm-tnb.on{border:2px solid #fff;}.prm-chg{font-size:11px;font-weight:600;opacity:.85;}'
+// écran « boutons seuls » : fond plein, en-tête à la couleur de l'équipe, gros boutons nets
++'html body #obs-simple{background:#0f1115;border:1px solid #262a33;border-radius:16px;padding:12px;gap:10px;box-shadow:0 10px 30px rgba(0,0,0,.45);font-family:Inter,system-ui,sans-serif;}'
++'html body #obs-simple .os-h{font-size:.95rem;color:#e8e8ea;padding:2px 2px 8px;border-bottom:1px solid #262a33;}'
++'html body #obs-simple .os-h>span{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;background:var(--team,#3b82f6);color:#fff;font-weight:800;text-transform:uppercase;letter-spacing:.03em;text-shadow:0 1px 2px rgba(0,0,0,.45);}'
++'html body #obs-simple .os-h .btn-xs{border-radius:999px!important;min-height:34px;padding:0 12px!important;background:#262a33!important;border:1px solid #343946;}'
++'html body #obs-simple .os-t{font-size:.7rem;color:#a3a7b0;letter-spacing:.07em;}'
++'html body #obs-simple .os-g{gap:10px;}'
++'html body #obs-simple .os-g button{position:relative;border-radius:16px;font-size:1.15rem;font-weight:800;min-height:88px;padding:16px 14px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.12);text-shadow:0 1px 2px rgba(0,0,0,.35);line-height:1.2;}'
++'html body #obs-simple .os-g button:has(.os-n){padding:16px 46px;}'
++'html body #obs-simple .os-g button small{font-size:.75em;opacity:.85;}'
++'html body #obs-simple .os-n{position:absolute;top:10px;right:10px;float:none;margin:0;min-width:28px;text-align:center;background:rgba(0,0,0,.4);font-size:.9rem;padding:3px 8px;}'
++'html body #obs-simple .os-rec{border-radius:14px;min-height:56px;font-size:1rem;}'
++'html body #obs-simple .os-cols{grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;}'
++'html body #obs-simple .os-col{border:1px solid #262a33;border-top:4px solid #16a34a;background:#15171c;border-radius:14px;padding:10px;gap:8px;}'
++'html body #obs-simple .os-col.adv{border-top-color:#dc2626;background:#15171c;}'
++'html body #obs-simple .os-col.cnt{border-top-color:#64748b;background:#15171c;}'
++'html body #obs-simple .os-col .os-g{grid-template-columns:repeat(auto-fit,minmax(220px,1fr));}'
++'html body #obs-simple.two .os-cols>.os-col:not(.cnt){grid-column:1/-1;}'
+// barre de commandes du match : boutons homogènes
++'html body #float-ctl .btn-f{border-radius:12px;min-height:46px;padding:0 14px;font-weight:700;font-size:.92rem;border:1px solid rgba(255,255,255,.08);box-shadow:0 4px 14px rgba(0,0,0,.35);}';
 document.head.appendChild(st);})();
 </script>
 </body>
