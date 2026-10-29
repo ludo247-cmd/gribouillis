@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v317</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v318</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v317</title>
+<title>Gribouillis EPS v318</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -24233,6 +24233,68 @@ renderLibTab=(function(o){return function(){const r=o.apply(this,arguments);try{
 +'html body .libs-fine[open]>*:not(summary){margin-top:8px;}'
 +'html body .libs-sec{margin:6px 0 14px;}html body .libs-sec h3{font-size:.95rem;margin:0 0 6px;color:#e8e8ea;display:flex;align-items:center;gap:8px;}html body .libs-sec h3 span{font-size:.75rem;color:#a3a7b0;font-weight:600;background:#1a1d24;border-radius:999px;padding:1px 8px;}'
 +'html body .libs-empty{font-size:.8rem;color:#a3a7b0;}';
+document.head.appendChild(st);})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v318 — le tournoi de la séquence (championnat de clubs ou tournoi de
+// raquette) arrive dans la séance : dans « Faire cours », l'étape de match
+// affiche le tour du jour (le créer, gérer les absents, saisir les scores,
+// lancer un match avec la bonne compo ; le score revient tout seul).
+// ══════════════════════════════════════════════════════════════════════
+CRS.tour=null;
+function trnSeqOf(s){let q=null;try{if(s.seqId)q=seqGet(s.seqId);}catch(e){}if(!q){try{q=seqCurrentFor(clsActive(),s.sport);}catch(e){}}return q;}
+function trnKind(q){if(!q)return null;if(q.rkt&&q.rkt.on)return 'rkt';if(q.champ&&q.champ.on)return 'chp';return null;}
+function trnObj(q,k){return k==='rkt'?rktEnsure(q):chpEnsure(q);}
+function trnDayIdx(t,s){const J=t.jours||[];let i=J.findIndex(j=>j.date===s.date);return i;}
+function trnUpd(q,fn){seqUpdate(q.id,qq=>{const k=trnKind(qq);fn(trnObj(qq,k),qq);});try{crsRender();}catch(e){}}
+function trnAllPlayers(q,k,t){if(k==='rkt')return [].concat(...t.poules.map(p=>p.m||[]));return Object.keys(t.aff||{});}
+function trnNewDay(qid){const s=getActiveSeance();const q=seqGet(qid);if(!s||!q)return;const k=trnKind(q);
+  trnUpd(q,(t)=>{if(trnDayIdx(t,s)>=0)return;const ji=t.jours.length;
+    if(k==='rkt'){t.jours.push({date:s.date,mt:rktGen(t,ji),done:false,abs:[]});}
+    else{const P=[];for(let i=0;i<t.clubs.length;i++)for(let j=i+1;j<t.clubs.length;j++)P.push([t.clubs[i].id,t.clubs[j].id]);const ord=P.map((p,i)=>P[(i*2+ji)%P.length]);const m=[];ord.forEach(p=>t.niv.forEach((_,nv)=>m.push({niv:nv,a:p[0],b:p[1],sa:'',sb:'',ba:0,bb:0})));t.jours.push({date:s.date,m:m,abs:[]});}});}
+function trnAbs(qid,ji,name){const q=seqGet(qid);if(!q)return;trnUpd(q,t=>{const J=t.jours[ji];if(!J)return;J.abs=J.abs||[];const i=J.abs.indexOf(name);if(i>=0)J.abs.splice(i,1);else J.abs.push(name);});}
+function trnRegen(qid,ji){const q=seqGet(qid);if(!q||trnKind(q)!=='rkt')return;const t0=rktEnsure(q);const J=t0.jours[ji];if(!J)return;
+  if((J.mt||[]).some(m=>m.sa!==''&&m.sa!=null)&&!confirm('Des scores sont déjà saisis pour ce tour. Refaire tous les matchs sans les absents ?'))return;
+  trnUpd(q,t=>{const J2=t.jours[ji];const abs=J2.abs||[];const tt=Object.assign({},t,{poules:t.poules.map(p=>Object.assign({},p,{m:(p.m||[]).filter(n=>abs.indexOf(n)<0)}))});J2.mt=rktGen(tt,ji);});
+  try{toast2('Matchs refaits sans les absents');}catch(e){}}
+function trnScore(qid,ji,mi,side,v){const q=seqGet(qid);if(!q)return;const k=trnKind(q);seqUpdate(q.id,qq=>{const t=trnObj(qq,k);const J=t.jours[ji];const L=k==='rkt'?J.mt:J.m;if(L&&L[mi])L[mi][side]=(v===''?'':+v);});}
+function trnSides(q,k,t,J,m){const abs=J.abs||[];if(k==='rkt')return [(m.a||[]).slice(),(m.b||[]).slice()];
+  return [chpMembers(t,m.a,m.niv).filter(n=>abs.indexOf(n)<0),chpMembers(t,m.b,m.niv).filter(n=>abs.indexOf(n)<0)];}
+function trnLaunch(qid,ji,mi){const q=seqGet(qid);if(!q)return;const k=trnKind(q);const t=trnObj(q,k);const J=t.jours[ji];const m=(k==='rkt'?J.mt:J.m)[mi];if(!m)return;
+  const sides=trnSides(q,k,t,J,m);const names=k==='chp'?[chpClub(t,m.a).nom,chpClub(t,m.b).nom]:null;
+  CRS.tour={qid:q.id,ji:ji,mi:mi};CRS.back=true;const s=getActiveSeance();CRS.backSid=s&&s.id;crsClose();try{goTab('t-home');}catch(e){}
+  setTimeout(()=>{try{
+    if(names){[0,1].forEach(i=>{const tm=teams.find(x=>pjNorm(x.name)===pjNorm(names[i]));const el=E('sel-t'+(i+1));if(tm&&el){el.value=String(tm.id);try{el.dispatchEvent(new Event('change',{bubbles:true}));}catch(e){}}});}
+    if(k==='rkt'||sides[1].length){CFG.gameMode='2eq';try{applyConfigToUI();}catch(e){}}
+    startMatch();if(E('prm-ov')){PRM.lineup=[sides[0].slice(),sides[1].slice()];prmRender();}}catch(e){console.warn('trn launch',e);}},250);}
+// le score du match revient dans le tour
+stopMatch=(function(o){return function(){let sc=null;try{if(CRS.tour){if(isRacket()){const R=RK.sets.slice();const cur=rkSetScore();if(cur[0]+cur[1]>0)R.push({a:cur[0],b:cur[1]});sc=R.length===1?[R[0].a,R[0].b]:[R.filter(x=>x.a>x.b).length,R.filter(x=>x.b>x.a).length];}else sc=[tStats[0].pts||0,CFG.gameMode==='2eq'?(tStats[1].pts||0):(tStats[0].scoreAdv||0)];}}catch(e){}
+  const r=o.apply(this,arguments);try{if(CRS.tour&&sc){const T=CRS.tour;CRS.tour=null;const q=seqGet(T.qid);if(q){const k=trnKind(q);seqUpdate(q.id,qq=>{const t=trnObj(qq,k);const J=t.jours[T.ji];const m=J&&(k==='rkt'?J.mt:J.m)[T.mi];if(m&&(m.sa===''||m.sa==null)&&(m.sb===''||m.sb==null)){m.sa=sc[0];m.sb=sc[1];}});try{toast2('🏆 Score reporté dans le tournoi : '+sc[0]+' – '+sc[1]);}catch(e){}}}}catch(e){console.warn('trn stop',e);}return r;};})(stopMatch);
+function trnHtml(s){const q=trnSeqOf(s);const k=trnKind(q);if(!k)return '';const t=trnObj(q,k);const qi=esc(q.id);const ji=trnDayIdx(t,s);
+  let h='<'+'div class="trn-box"><'+'div class="trn-hd"><b>🏆 '+(k==='rkt'?'Tournoi de la séquence':'Championnat des clubs')+'</b><span>'+esc(q.nom||'')+'</span></'+'div>';
+  if(ji<0){h+='<'+'div class="crs-dim">Pas encore de tour pour cette séance ('+(t.jours||[]).length+' tour'+((t.jours||[]).length>1?'s':'')+' joués).</'+'div><button type="button" class="crs-big" style="background:#a16207;" onclick="trnNewDay(\''+qi+'\')">Créer le tour du jour</button></'+'div>';return h;}
+  const J=t.jours[ji];const L=(k==='rkt'?J.mt:J.m)||[];const abs=J.abs||[];
+  h+='<'+'div class="crs-lab">Tour '+(ji+1)+' · '+L.length+' match'+(L.length>1?'s':'')+'</'+'div>';
+  h+=L.map((m,mi)=>{let A,B,lab;if(k==='rkt'){A=(m.a||[]).join(' + ');B=(m.b||[]).join(' + ');lab=m.lab||'';}else{A='<span class="chp-club" style="background:'+esc(chpClub(t,m.a).col)+'">'+esc(chpClub(t,m.a).nom)+'</span>';B='<span class="chp-club" style="background:'+esc(chpClub(t,m.b).col)+'">'+esc(chpClub(t,m.b).nom)+'</span>';lab=t.niv[m.niv]||'';}
+    const absIn=k==='rkt'&&[].concat(m.a||[],m.b||[]).some(n=>abs.indexOf(n)>=0);
+    const inp=(sd,v)=>'<input type="number" min="0" inputmode="numeric" aria-label="Score" value="'+(v===''||v==null?'':esc(String(v)))+'" onchange="trnScore(\''+qi+'\','+ji+','+mi+',\''+sd+'\',this.value)">';
+    return '<'+'div class="trn-m'+(absIn?' abs':'')+'"><'+'div class="trn-lab">'+esc(lab)+(absIn?' · ⚠ absent':'')+'</'+'div><'+'div class="trn-row"><span class="trn-p">'+(k==='rkt'?esc(A):A)+'</span>'+inp('sa',m.sa)+'<span class="trn-x">–</span>'+inp('sb',m.sb)+'<span class="trn-p r">'+(k==='rkt'?esc(B):B)+'</span></'+'div>'
+      +'<button type="button" class="prm-chip" onclick="trnLaunch(\''+qi+'\','+ji+','+mi+')">⚽ Observer ce match</button></'+'div>';}).join('');
+  const P=trnAllPlayers(q,k,t);if(P.length){h+='<details class="trn-abs"'+(abs.length?' open':'')+'><summary>Absents ('+abs.length+')</summary><'+'div class="prm-wrap">'+P.map(n=>'<button type="button" class="prm-chip'+(abs.indexOf(n)>=0?' on':'')+'" onclick="trnAbs(\''+qi+'\','+ji+',\''+esc(n).replace(/'/g,"\\'")+'\')">'+esc(n)+'</button>').join('')+'</'+'div>'
+    +(k==='rkt'?'<button type="button" class="prm-chip" style="margin-top:6px;" onclick="trnRegen(\''+qi+'\','+ji+')">↻ Refaire les matchs sans les absents</button>':'<'+'div class="crs-dim" style="margin-top:6px;">Les absents sont retirés des compos quand tu lances un match.</'+'div>')+'</details>';}
+  h+='<button type="button" class="prm-chip" onclick="crsClose();SEQ_UI.open=\''+qi+'\';goTab(\'t-seq\');try{renderSeqTab();}catch(e){}">Classement et réglages dans la séquence</button></'+'div>';return h;}
+crsRender=(function(o){return function(){o.apply(this,arguments);try{const ov=E('crs-ov');const s=getActiveSeance();if(!ov||!s)return;const cur=crsCur(s);const st=s.steps.find(x=>x.key===CRS.view)||cur;
+  if(!st||seanceStepBase(st.key)!=='match')return;const html=trnHtml(s);if(!html)return;const card=ov.querySelector('.crs-card');if(!card)return;const d=document.createElement('div');d.innerHTML=html;const big=card.querySelector('.crs-big');
+  if(big)big.insertAdjacentElement('beforebegin',d.firstChild);else{const nx=card.querySelector('.crs-next');if(nx)card.insertBefore(d.firstChild,nx);else card.appendChild(d.firstChild);}}catch(e){console.warn('trn crs',e);}};})(crsRender);
+(function(){const st=document.createElement('style');st.textContent=
+ '.trn-box{display:flex;flex-direction:column;gap:8px;background:#1d1a10;border:1px solid #6b5b1f;border-radius:14px;padding:12px;}'
++'.trn-hd{display:flex;flex-direction:column;}.trn-hd b{font-size:15px;}.trn-hd span{font-size:12px;color:#a3a7b0;}'
++'.trn-m{background:#15171c;border:1px solid #2d323d;border-radius:12px;padding:8px 10px;display:flex;flex-direction:column;gap:6px;}.trn-m.abs{border-color:#b45309;}'
++'.trn-lab{font-size:11px;color:#a3a7b0;text-transform:uppercase;letter-spacing:.05em;}'
++'.trn-row{display:flex;align-items:center;gap:6px;}.trn-p{flex:1;min-width:0;font-weight:600;font-size:14px;}.trn-p.r{text-align:right;}.trn-x{color:#a3a7b0;}'
++'.trn-row input{width:52px;min-height:40px;border-radius:8px;border:1px solid #343946;background:#0f1115;color:#fff;font-size:18px;font-weight:800;text-align:center;}'
++'.trn-abs summary{cursor:pointer;font-size:13px;color:#c3c6cc;min-height:34px;display:flex;align-items:center;}'
++'#crs-ov .chp-club{display:inline-block;padding:2px 8px;border-radius:999px;color:#fff;font-size:12px;font-weight:700;}';
 document.head.appendChild(st);})();
 </script>
 </body>
