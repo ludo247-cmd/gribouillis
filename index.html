@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v320</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v321</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v320</title>
+<title>Gribouillis EPS v321</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -24353,6 +24353,84 @@ libImportText=(function(f){return function(t){try{const o=JSON.parse(String(t||'
 // v320 — la fenêtre « Importer un code » laisse passer TOUT code Gribouillis
 // (liens, championnat, calendrier, lot…) : c'est l'import lui-même qui décide.
 libImportParse=(function(o){return function(t){const r=o.apply(this,arguments);if(r)return r;try{const d=JSON.parse(String(t||'').trim());if(d&&typeof d==='object'&&typeof d.gribouillis==='string'&&d.gribouillis!=='lib')return [{kind:d.gribouillis}];}catch(e){}return r;};})(libImportParse);
+
+// ══════════════════════════════════════════════════════════════════════
+// v321 — synchro plus robuste et lisible :
+// • toucher le badge ouvre un panneau : état, dernière erreur expliquée,
+//   données en attente, dernier envoi vu dans le cloud, boutons d'action ;
+// • l'envoi se fait donnée par donnée : si une donnée échoue, les autres
+//   partent quand même (et l'index est mis à jour pour elles) ;
+// • une modification faite après une récupération est toujours considérée
+//   plus récente que la version récupérée (horloges d'appareils décalées) ;
+// • en revenant dans l'app, si des données d'un autre appareil sont
+//   arrivées et que rien n'est en cours, l'app se recharge toute seule
+//   (sinon l'app risquait de réécrire l'ancienne version par-dessus).
+// ══════════════════════════════════════════════════════════════════════
+const SYNC2={err:'',errAt:0,okAt:0,fail:{},stale:false,back:0};
+function syncExplain(msg){msg=String(msg||'');
+  if(/ 401/.test(msg))return 'Ton jeton GitHub a expiré ou n\'est plus valable. Crée un nouveau jeton sur GitHub (Settings → Developer settings → Personal access tokens), puis colle-le dans Profils → GitHub.';
+  if(/ 403/.test(msg)&&/rate|limit/i.test(msg))return 'GitHub limite le nombre d\'envois pour l\'instant. Rien n\'est perdu : l\'app réessaiera toute seule dans quelques minutes.';
+  if(/ 403/.test(msg))return 'Le jeton n\'a pas le droit d\'écrire dans le dépôt de sauvegarde. Sur GitHub, vérifie que le jeton a l\'accès « Contents : Read and write » au dépôt '+esc(ghCfg().brepo||'')+'.';
+  if(/ 404/.test(msg))return 'Dépôt de sauvegarde introuvable : vérifie son nom dans Profils → GitHub (et que le jeton y a accès).';
+  if(/ 409/.test(msg)||(/ 422/.test(msg)&&/sha/i.test(msg)))return 'Deux appareils ont envoyé en même temps. L\'app réessaiera toute seule.';
+  if(/ 422/.test(msg))return 'GitHub a refusé une donnée (souvent : trop grosse). Les autres données sont envoyées quand même ; envoie-moi ce message.';
+  if(/ 413/.test(msg))return 'Une donnée est trop grosse pour être envoyée.';
+  if(/ 5\d\d/.test(msg))return 'GitHub a un souci passager. L\'app réessaiera toute seule.';
+  if(/Connexion|Failed to fetch|NetworkError|Load failed/i.test(msg))return 'Pas de connexion internet (ou réseau de l\'établissement qui bloque GitHub). Les modifications restent sur l\'appareil et partiront plus tard.';
+  return '';}
+const SYNC2_NAMES={grib_seances_v1:'Séances',grib_seance_state_v1:'Séance en cours',grib_sequences_v1:'Séquences',grib_classes_v1:'Classes',eps_classes:'Élèves',grib_cfg_v10:'Réglages',grib_lib_v1:'Bibliothèque',grib_archives_v3:'Matchs archivés',grib_referentiels_v1:'Référentiels',grib_remed_edits_v1:'Situations modifiées',grib_teams_v9:'Équipes',grib_compo_v1:'Compositions',studioEPS_lib:'Studio',grib_prm_v1:'Avant-match'};
+function syncKeyName(k){return SYNC2_NAMES[k]||k;}
+// envoi donnée par donnée
+syncPush=(function(o){return async function(){const m=syncMeta();if(!m)return 0;const c=ghCfg();const keys=Object.keys(m.dirty).filter(k=>syncKeys().indexOf(k)>=0);if(!keys.length)return 0;
+  const idx=(await syncIndex())||{v:1,mt:{}};let n=0;const fail={};let firstErr=null;
+  for(const k of keys){const rt=+idx.mt[k]||0,lt=+m.mt[k]||0;if(rt>lt)continue;
+    const v=_lsGet.call(localStorage,k);if(v==null){delete m.dirty[k];continue;}
+    try{await ghPut(c.brepo,syncPath(k),new TextEncoder().encode(v),'sync '+k);idx.mt[k]=lt;delete m.dirty[k];n++;syncMetaSave(m);}
+    catch(e){fail[k]=e.message;if(!firstErr)firstErr=e;if(/ 401| 403| 404|Connexion|Renseigne/.test(e.message))break;}}
+  if(n){for(let t=0;t<3;t++){try{const cur=(await syncIndex())||{v:1,mt:{}};Object.keys(idx.mt).forEach(k=>{if((+idx.mt[k]||0)>(+cur.mt[k]||0))cur.mt[k]=idx.mt[k];});cur.at=Date.now();cur.device=SYNC.dev;
+      await ghPut(c.brepo,'sync/index.json',new TextEncoder().encode(JSON.stringify(cur)),'sync index');break;}catch(e){if(t===2){firstErr=firstErr||e;}else await new Promise(r=>setTimeout(r,800));}}}
+  syncMetaSave(m);SYNC2.fail=fail;if(firstErr){const e=new Error(firstErr.message+(n?' ('+n+' donnée'+(n>1?'s':'')+' envoyée'+(n>1?'s':'')+' quand même)':''));throw e;}return n;};})(syncPush);
+// horloges décalées : une modification après récupération est toujours plus récente
+Storage.prototype.setItem=(function(o){return function(k,v){let before=0;try{if(this===window.localStorage&&!SYNC.applying&&syncKeys().indexOf(k)>=0){const m=syncMeta();before=m?(+m.mt[k]||0):0;}}catch(e){}
+  const r=o.apply(this,arguments);try{if(before){const m=syncMeta();if(m&&m.dirty[k]&&(+m.mt[k]||0)<=before){m.mt[k]=before+1;syncMetaSave(m);}}}catch(e){}return r;};})(Storage.prototype.setItem);
+// mémoriser erreurs / succès, et recharger tout seul au retour dans l'app
+syncBadge=(function(o){return function(t,tip){if(/⚠️/.test(t||'')){SYNC2.err=tip||'';SYNC2.errAt=Date.now();}else if(/à jour|nouvelles/.test(t||'')){SYNC2.err='';SYNC2.okAt=Date.now();}
+  o.apply(this,arguments);const b=E('sync-badge');if(b){b.onclick=syncPanel;b.title=(tip||'')+' — toucher pour voir le détail';b.classList.toggle('sync-err',/⚠️/.test(t||''));}
+  try{const p=E('sync-pan');if(p)syncPanelFill(p);}catch(e){}};})(syncBadge);
+function syncBusyUI(){if(syncInMatch())return true;if(CRS&&CRS.view)return true;const a=document.activeElement;if(a&&/INPUT|TEXTAREA|SELECT/.test(a.tagName)&&a.type!=='checkbox')return true;
+  return !!document.querySelector('.lib-pick-ov,#libc-ov,#mt-ov,#prm-ov,#sync-first,#sync-pan,dialog[open]');}
+syncNow=(function(o){return async function(manual){const fromBack=Date.now()-SYNC2.back<4000;const r=await o.apply(this,arguments);
+  try{if(fromBack&&E('sync-ban')&&!syncBusyUI()){location.reload();}}catch(e){}return r;};})(syncNow);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')SYNC2.back=Date.now();},true);
+// panneau
+function syncPanel(){let p=E('sync-pan');if(p){p.remove();return;}p=document.createElement('div');p.id='sync-pan';document.body.appendChild(p);syncPanelFill(p);
+  syncIndex().then(idx=>{SYNC2.idx=idx;const q=E('sync-pan');if(q)syncPanelFill(q);}).catch(e=>{SYNC2.idxErr=e.message;const q=E('sync-pan');if(q)syncPanelFill(q);});}
+function syncFmt(t){return t?new Date(+t).toLocaleString('fr-FR',{weekday:'short',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'—';}
+function syncPanelFill(p){const m=syncMeta()||{dirty:{},mt:{}};const d=Object.keys(m.dirty||{}).filter(k=>syncKeys().indexOf(k)>=0);const c=ghCfg();const idx=SYNC2.idx;
+  const ex=SYNC2.err?syncExplain(SYNC2.err):'';
+  p.innerHTML='<'+'div class="sp-h"><b>☁️ Synchronisation</b><button type="button" class="sp-x" onclick="E(\'sync-pan\').remove()">✕</button></'+'div>'
+   +'<'+'div class="sp-st">'+esc(SYNC.state||'—')+'</'+'div>'
+   +(SYNC2.err?'<'+'div class="sp-err"><b>Dernière erreur</b> ('+syncFmt(SYNC2.errAt)+') : '+esc(SYNC2.err)+(ex?'<br><span>👉 '+ex+'</span>':'')+'</'+'div>':'')
+   +'<'+'div class="sp-l">Dernière synchro réussie ici : <b>'+syncFmt(SYNC2.okAt||SYNC.lastPull)+'</b></'+'div>'
+   +'<'+'div class="sp-l">Dernier envoi vu dans le cloud : <b>'+(idx?syncFmt(idx.at)+(idx.device?(idx.device===SYNC.dev?' (cet appareil)':' (un autre appareil)'):''):(SYNC2.idxErr?'erreur : '+esc(SYNC2.idxErr):'…'))+'</b></'+'div>'
+   +'<'+'div class="sp-l">En attente d\'envoi : '+(d.length?d.map(k=>'<span class="sp-k'+(SYNC2.fail[k]?' bad':'')+'" title="'+esc(SYNC2.fail[k]||'')+'">'+esc(syncKeyName(k))+'</span>').join(' '):'<b>rien</b>')+'</'+'div>'
+   +'<'+'div class="sp-l sp-dim">Appareil : '+esc(SYNC.dev||syncDev())+' · dépôt : '+esc((c.owner||'')+'/'+(c.brepo||''))+' · jeton : '+(c.token?'renseigné':'<b style="color:#f87171">absent</b>')+'</'+'div>'
+   +'<'+'div class="sp-b"><button type="button" class="sp-go" onclick="syncPanelRun(0)">🔄 Synchroniser maintenant</button>'
+   +'<button type="button" onclick="syncPanelRun(1)" title="Renvoie toutes les données de cet appareil vers le cloud (elles deviennent la version de référence)">📤 Tout renvoyer depuis cet appareil</button>'
+   +'<button type="button" onclick="syncPanelRun(2)" title="Remplace les données de cet appareil par celles du cloud">📥 Tout reprendre du cloud</button></'+'div>';}
+async function syncPanelRun(a){const now=Date.now();
+  if(a===1){if(!confirm('Renvoyer toutes les données de cet appareil vers le cloud ?\nElles remplaceront celles des autres appareils.'))return;const m={mt:{},dirty:{}};syncKeys().forEach(k=>{if(_lsGet.call(localStorage,k)!=null){m.mt[k]=now;m.dirty[k]=1;}});syncMetaSave(m);}
+  if(a===2){if(!confirm('Remplacer les données de cet appareil par celles du cloud ?\nLes modifications pas encore envoyées depuis cet appareil seront perdues.'))return;syncMetaSave({mt:{},dirty:{}});
+    try{const n=await syncPull();if(n){location.reload();return;}}catch(e){syncBadge('⚠️ synchro',e.message);return;}}
+  await syncNow(false);try{const idx=await syncIndex();SYNC2.idx=idx;}catch(e){}const p=E('sync-pan');if(p)syncPanelFill(p);}
+(function(){const st=document.createElement('style');st.textContent=
+ 'html body #sync-badge.sync-err{background:#7f1d1d;border-color:#f87171;color:#fff;font-weight:700;}'
++'html body #sync-pan{position:fixed;left:6px;bottom:34px;z-index:99980;width:min(420px,calc(100vw - 12px));background:#0f172a;border:1px solid #3b82f6;border-radius:12px;padding:10px 12px;color:#e2e8f0;font-size:.82rem;box-shadow:0 8px 24px rgba(0,0,0,.55);max-height:80vh;overflow:auto;}'
++'html body #sync-pan .sp-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;font-size:.95rem;}html body #sync-pan .sp-x{background:none;border:none;color:#94a3b8;font-size:1.1rem;cursor:pointer;min-width:36px;min-height:36px;}'
++'html body #sync-pan .sp-st{font-weight:800;margin-bottom:6px;}html body #sync-pan .sp-err{background:#3f1212;border:1px solid #b91c1c;border-radius:8px;padding:6px 8px;margin:4px 0 8px;word-break:break-word;}html body #sync-pan .sp-err span{color:#fde68a;}'
++'html body #sync-pan .sp-l{margin:4px 0;}html body #sync-pan .sp-dim{color:#94a3b8;font-size:.74rem;}html body #sync-pan .sp-k{display:inline-block;background:#1e293b;border-radius:6px;padding:1px 6px;margin:1px;}html body #sync-pan .sp-k.bad{background:#7f1d1d;}'
++'html body #sync-pan .sp-b{display:flex;flex-direction:column;gap:6px;margin-top:8px;}html body #sync-pan .sp-b button{min-height:40px;border:none;border-radius:9px;background:#334155;color:#fff;font-weight:700;cursor:pointer;}html body #sync-pan .sp-b .sp-go{background:#15803d;}';
+document.head.appendChild(st);})();
 </script>
 </body>
 </html>
