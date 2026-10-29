@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v312</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v313</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v312</title>
+<title>Gribouillis EPS v313</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -23940,6 +23940,100 @@ obsSimpleRefresh=(function(o){return function(){const r=o.apply(this,arguments);
 +'html body #obs-simple.two .os-cols>.os-col:not(.cnt){grid-column:1/-1;}'
 // barre de commandes du match : boutons homogènes
 +'html body #float-ctl .btn-f{border-radius:12px;min-height:46px;padding:0 14px;font-weight:700;font-size:.92rem;border:1px solid rgba(255,255,255,.08);box-shadow:0 4px 14px rgba(0,0,0,.35);}';
+document.head.appendChild(st);})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v313 — « Faire cours » : vue simplifiée de la séance en cours (séances de
+// classe, pas l'AS). La séance se déroule étape par étape : l'étape en cours
+// en grand, avec son chrono, son contenu et ses outils (lancer le match,
+// animations, groupes), puis « Étape terminée → suivante ». Tout le reste
+// de l'onglet Séance est inchangé.
+// ══════════════════════════════════════════════════════════════════════
+const CRS_KEY='grib_crs_v1';
+const CRS={view:null,back:false,anims:[],tick:null};
+function crsT(){try{return JSON.parse(localStorage.getItem(CRS_KEY)||'{}')||{};}catch(e){return {};}}
+function crsTSave(t){try{localStorage.setItem(CRS_KEY,JSON.stringify(t));}catch(e){}}
+function crsOk(s){return !!s&&!s.asp&&Array.isArray(s.steps)&&s.steps.length>0&&SEANCE_STATE.mode!=='eleve';}
+function crsCur(s){return (s.steps.find(x=>x.status==='current')||s.steps.find(x=>x.status!=='done')||s.steps[s.steps.length-1]);}
+function crsOpen(){const s=getActiveSeance();if(!crsOk(s))return;CRS.view=null;CRS.back=false;
+  let o=E('crs-ov');if(!o){o=document.createElement('div');o.id=['crs','ov'].join('-');document.body.appendChild(o);}
+  crsRender();if(!CRS.tick)CRS.tick=setInterval(crsTickUI,500);}
+function crsClose(){const o=E('crs-ov');if(o)o.remove();}
+function crsFmt(sec){sec=Math.max(0,Math.round(sec));return Math.floor(sec/60)+':'+String(sec%60).padStart(2,'0');}
+// chrono de l'étape (survit à la mise en veille : on garde l'heure de fin)
+function crsTimerOf(s,key){const t=crsT();return (t.sid===s.id&&t.key===key)?t:null;}
+function crsRemain(s,st){const t=crsTimerOf(s,st.key);const tot=stepDurOf(st)*60;if(!t)return tot;if(t.run)return (t.end-Date.now())/1000;return t.left!=null?t.left:tot;}
+function crsTimerGo(){const s=getActiveSeance();if(!s)return;const st=s.steps.find(x=>x.key===CRS.view)||crsCur(s);const t=crsTimerOf(s,st.key);
+  if(t&&t.run){crsTSave({sid:s.id,key:st.key,run:false,left:Math.max(0,(t.end-Date.now())/1000)});}
+  else{const left=t&&t.left!=null?t.left:stepDurOf(st)*60;crsTSave({sid:s.id,key:st.key,run:true,end:Date.now()+left*1000,beep:false});}
+  crsRender();}
+function crsTimerReset(){const s=getActiveSeance();if(!s)return;crsTSave({});crsRender();}
+function crsTimerAdd(m){const s=getActiveSeance();if(!s)return;const st=s.steps.find(x=>x.key===CRS.view)||crsCur(s);const t=crsTimerOf(s,st.key);
+  if(t&&t.run){t.end+=m*60000;crsTSave(t);}else{const left=Math.max(0,(t&&t.left!=null?t.left:stepDurOf(st)*60)+m*60);crsTSave({sid:s.id,key:st.key,run:false,left});}crsRender();}
+function crsTickUI(){const o=E('crs-ov');if(!o)return;const s=getActiveSeance();if(!s)return;const st=s.steps.find(x=>x.key===CRS.view)||crsCur(s);if(!st)return;
+  const el=E('crs-clock');if(el){const r=crsRemain(s,st);el.textContent=r<0?'+'+crsFmt(-r):crsFmt(r);el.classList.toggle('over',r<0);}
+  const t=crsTimerOf(s,st.key);if(t&&t.run&&!t.beep&&(t.end-Date.now())<=0){t.beep=true;crsTSave(t);try{if(navigator.vibrate)navigator.vibrate([300,150,300]);}catch(e){}try{toast2('⏰ Temps de l\'étape écoulé');}catch(e){}}
+  const nw=E('crs-now');if(nw){const d=new Date();nw.textContent=d.getHours()+'h'+String(d.getMinutes()).padStart(2,'0');}}
+function crsView(k){CRS.view=k;crsRender();}
+function crsDone(key){const s=getActiveSeance();if(!s)return;const t=crsT();if(t.key===key)crsTSave({});CRS.view=null;try{markSeanceStepDone(key);}catch(e){console.warn(e);}crsRender();
+  try{const n=crsCur(getActiveSeance());if(n&&n.key!==key){const d=seanceStepDef(n.key);toast2('➡ '+d.ico+' '+d.label);}}catch(e){}}
+function crsMatch(key){const s=getActiveSeance();if(!s)return;CRS.back=true;CRS.backSid=s.id;crsClose();try{goTab('t-home');}catch(e){}setTimeout(()=>{try{startMatch();}catch(e){console.warn(e);}},250);}
+function crsAnim(k){const a=CRS.anims[k];if(a)try{animPlay(a);}catch(e){console.warn(e);}}
+function crsNum(s,st){const b=seanceStepBase(st.key);const same=s.steps.filter(x=>seanceStepBase(x.key)===b);return same.length>1?' '+(same.indexOf(st)+1):'';}
+function crsBody(s,st){const b=seanceStepBase(st.key);let h='';CRS.anims=[];
+  if(b==='echauffement'){const ph=(s.echauffement&&s.echauffement.phases)||[];
+    h+=ph.length?ph.map(p=>'<'+'div class="crs-item"><b>'+esc(p.titre||'Phase')+'</b>'+(p.desc?'<span>'+esc(p.desc).replace(/\n/g,'<br>')+'</span>':'')+'</'+'div>').join(''):'<'+'div class="crs-dim">Pas de phase d\'échauffement prévue : tu peux en ajouter dans l\'onglet Séance (bloc Échauffement).</'+'div>';}
+  else if(b==='match'){let c={};try{c=matchCfgOf(s,st.key)||{};}catch(e){}
+    if(c.nom||c.format)h+='<'+'div class="crs-item"><b>'+esc(c.nom||'Match')+'</b>'+(c.format?'<span>'+esc(c.format)+'</span>':'')+'</'+'div>';
+    let G=[];try{G=seanceGroupChips(s)||[];}catch(e){}
+    if(G.length)h+='<'+'div class="crs-lab">Équipes / groupes</'+'div><'+'div class="crs-groups">'+G.slice(0,8).map(g=>'<'+'div class="crs-grp" style="border-color:'+esc(g.color||'#64748b')+'"><b>'+esc(g.label||'')+'</b><span>'+esc((g.members||[]).join(', '))+'</span></'+'div>').join('')+'</'+'div>';
+    h+='<button type="button" class="crs-big" onclick="crsMatch(\''+esc(st.key)+'\')">⚽ Lancer le match</button><'+'div class="crs-dim">L\'écran d\'avant-match s\'ouvre : compo, temps ou score, boutons. À la fin du match, l\'étape est cochée toute seule.</'+'div>';}
+  else if(b==='remediation'){let X=[];try{X=seanceStepExos(s,st.key)||[];}catch(e){}
+    h+=X.length?X.map(x=>{const e=x.exo||{};let an='';if(e.anim&&e.anim.json){CRS.anims.push(e.anim.json);an='<button type="button" class="prm-chip" onclick="crsAnim('+(CRS.anims.length-1)+')">▶ Animation</button>';}
+      return '<'+'div class="crs-item"><b>'+esc(e.titre||'Situation')+'</b>'+(e.desc?'<span>'+esc(String(e.desc).slice(0,400)).replace(/\n/g,'<br>')+'</span>':'')+(e.image?'<img src="'+esc(e.image)+'" alt="">':'')+(an?'<'+'div class="prm-row">'+an+'</'+'div>':'')+'</'+'div>';}).join(''):'<'+'div class="crs-dim">Pas encore de situation choisie pour cette étape (onglet Séance, bloc Remédiation).</'+'div>';}
+  else if(b==='presentation'){h+='<'+'div class="crs-dim">Présente l\'objet d\'enseignement et les critères de réussite du jour.</'+'div>';}
+  else if(b==='fin'){h+='<'+'div class="crs-dim">Bilan collectif : 1 point fort, 1 piste de progrès. Puis termine la séance.</'+'div><button type="button" class="crs-big" onclick="crsClose();finishSeance();">🏁 Terminer la séance</button>';}
+  return h;}
+function crsRender(){const o=E('crs-ov');if(!o)return;const s=getActiveSeance();if(!crsOk(s)){crsClose();return;}
+  const cur=crsCur(s);const st=s.steps.find(x=>x.key===CRS.view)||cur;const def=seanceStepDef(st.key);let T={};try{T=seanceStepTimes(s)||{};}catch(e){}
+  const t=crsTimerOf(s,st.key),run=!!(t&&t.run);const isCur=st.key===cur.key&&st.status!=='done';
+  let h='<'+'div class="crs-box"><'+'div class="crs-hd"><'+'div class="crs-logo">G</'+'div><'+'div class="crs-ti"><b>'+esc(s.classe||'')+' · '+esc(typeof calSportName==='function'?calSportName(s.sport||''):(s.sport||''))+'</b><span>'+esc(typeof seanceDateFr==='function'&&s.date?seanceDateFr(s.date):(s.date||''))+' · il est <span id="crs-now"></span></span></'+'div><button type="button" class="prm-x" aria-label="Quitter la vue cours" title="Revenir à l\'onglet Séance complet" onclick="crsClose()">✕</button></'+'div>';
+  h+='<'+'div class="crs-steps">'+s.steps.map(x=>{const d=seanceStepDef(x.key);const cl=x.status==='done'?'done':(x.key===cur.key?'cur':'');return '<button type="button" class="crs-st '+cl+(x.key===st.key?' sel':'')+'" onclick="crsView(\''+esc(x.key)+'\')"><span>'+(x.status==='done'?'✓':d.ico)+'</span><small>'+esc(d.label.split(' ')[0])+crsNum(s,x)+'</small></button>';}).join('')+'</'+'div>';
+  h+='<'+'div class="crs-card'+(isCur?' now':'')+'"><'+'div class="crs-sth"><span class="crs-ico">'+def.ico+'</span><'+'div><b>'+esc(def.label)+crsNum(s,st)+'</b><span>'+(T[st.key]?T[st.key].start+' – '+T[st.key].end+' · ':'')+stepDurOf(st)+' min'+(st.status==='done'?' · faite ✓':isCur?' · en cours':' · à venir')+'</span></'+'div></'+'div>';
+  const r=crsRemain(s,st);
+  h+='<'+'div class="crs-timer"><button type="button" class="crs-tb" aria-label="Une minute de moins" onclick="crsTimerAdd(-1)">−1</button><'+'div class="crs-clock'+(r<0?' over':'')+'" id="crs-clock">'+(r<0?'+'+crsFmt(-r):crsFmt(r))+'</'+'div><button type="button" class="crs-tb" aria-label="Une minute de plus" onclick="crsTimerAdd(1)">+1</button></'+'div>'
+    +'<'+'div class="prm-row"><button type="button" class="prm-chip" onclick="crsTimerGo()">'+(run?'⏸ Pause':(t?'▶ Reprendre':'▶ Lancer le chrono'))+'</button>'+(t?'<button type="button" class="prm-chip" onclick="crsTimerReset()">↺ Remettre</button>':'')+'</'+'div>';
+  h+=crsBody(s,st);
+  if(isCur&&seanceStepBase(st.key)!=='fin')h+='<button type="button" class="crs-next" onclick="crsDone(\''+esc(st.key)+'\')">✓ Étape terminée → suivante</button>';
+  else if(!isCur)h+='<button type="button" class="prm-chip" style="width:100%;" onclick="crsView(null)">← Revenir à l\'étape en cours</button>';
+  h+='</'+'div>';
+  const i=s.steps.indexOf(cur);const nx=s.steps.slice(i+1,i+3).filter(x=>x.status!=='done');
+  if(nx.length)h+='<'+'div class="crs-lab">Ensuite</'+'div>'+nx.map(x=>{const d=seanceStepDef(x.key);return '<button type="button" class="crs-nx" onclick="crsView(\''+esc(x.key)+'\')"><span>'+d.ico+' '+esc(d.label)+crsNum(s,x)+'</span><span>'+(T[x.key]?T[x.key].start+' · ':'')+stepDurOf(x)+' min</span></button>';}).join('');
+  h+='</'+'div>';o.innerHTML=h;crsTickUI();}
+// bouton d'entrée dans l'onglet Séance + retour automatique après un match
+renderSeanceTab=(function(o){return function(){const r=o.apply(this,arguments);try{const s=getActiveSeance();const box=E('seance-tab-content');
+  if(box&&crsOk(s)&&!E('crs-enter')){const b=document.createElement('button');b.type='button';b.id=['crs','enter'].join('-');b.className='crs-enter';b.innerHTML='▶ Faire cours <small>vue simplifiée, étape par étape</small>';b.onclick=crsOpen;box.insertAdjacentElement('afterbegin',b);}
+  if(CRS.back&&s&&s.id===CRS.backSid&&crsOk(s)&&!E('crs-ov')){CRS.back=false;crsOpen();}else if(E('crs-ov'))crsRender();}catch(e){console.warn('crs',e);}return r;};})(renderSeanceTab);
+(function(){const st=document.createElement('style');st.textContent=
+ '#crs-ov{position:fixed;inset:0;z-index:9600;background:#0b0c0f;overflow-y:auto;font-family:Inter,system-ui,sans-serif;}'
++'#crs-ov .crs-box{max-width:620px;margin:0 auto;padding:12px 14px 30px;color:#e8e8ea;display:flex;flex-direction:column;gap:12px;box-sizing:border-box;}'
++'.crs-hd{display:flex;align-items:center;gap:10px;padding-right:46px;}.crs-logo{width:32px;height:32px;border-radius:9px;background:#dc2626;color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;}'
++'.crs-ti{flex:1;display:flex;flex-direction:column;min-width:0;}.crs-ti b{font-size:16px;}.crs-ti>span{font-size:12px;color:#a3a7b0;}'
++'.crs-steps{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;}'
++'.crs-st{flex:1 0 64px;min-height:54px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border-radius:10px;border:1px solid #262a33;background:#1a1d24;color:#a3a7b0;cursor:pointer;}'
++'.crs-st span{font-size:18px;}.crs-st small{font-size:11px;}.crs-st.done{background:#14261b;color:#86efac;}.crs-st.cur{background:#dc2626;border-color:#dc2626;color:#fff;}.crs-st.sel{outline:2px solid #fff;outline-offset:1px;}'
++'.crs-card{background:#15171c;border:1px solid #2d323d;border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px;}.crs-card.now{border-color:#dc2626;}'
++'.crs-sth{display:flex;gap:10px;align-items:center;}.crs-ico{font-size:30px;}.crs-sth b{font-size:20px;display:block;}.crs-sth>div>span{font-size:13px;color:#a3a7b0;}'
++'.crs-timer{display:flex;align-items:center;justify-content:center;gap:14px;background:#0f1115;border-radius:14px;padding:10px;}'
++'.crs-clock{font-size:48px;font-weight:800;font-variant-numeric:tabular-nums;min-width:150px;text-align:center;}.crs-clock.over{color:#fca5a5;}'
++'.crs-tb{width:56px;height:48px;border-radius:12px;border:0;background:#262a33;color:#fff;font-size:16px;font-weight:700;cursor:pointer;}'
++'.crs-item{background:#1a1d24;border:1px solid #262a33;border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:4px;}.crs-item span{font-size:13px;color:#c3c6cc;line-height:1.45;}.crs-item img{max-width:100%;max-height:220px;border-radius:8px;object-fit:contain;}'
++'.crs-lab{font-size:12px;color:#a3a7b0;text-transform:uppercase;letter-spacing:.06em;}.crs-dim{font-size:13px;color:#a3a7b0;}'
++'.crs-groups{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:6px;}.crs-grp{border:1px solid #343946;border-left-width:5px;border-radius:10px;padding:8px;background:#1a1d24;display:flex;flex-direction:column;gap:2px;}.crs-grp span{font-size:12px;color:#c3c6cc;}'
++'.crs-big{min-height:56px;border:0;border-radius:12px;background:#1d4ed8;color:#fff;font-weight:800;font-size:16px;cursor:pointer;}'
++'.crs-next{min-height:56px;border:0;border-radius:12px;background:#dc2626;color:#fff;font-weight:800;font-size:16px;cursor:pointer;}'
++'.crs-nx{display:flex;justify-content:space-between;gap:8px;min-height:46px;align-items:center;padding:0 12px;border-radius:10px;border:1px solid #262a33;background:#15171c;color:#e8e8ea;font-size:14px;cursor:pointer;}.crs-nx span:last-child{color:#a3a7b0;font-size:12px;}'
++'.crs-enter{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;min-height:56px;margin:0 0 10px;padding:10px 14px;border:0;border-radius:14px;background:#dc2626;color:#fff;font-weight:800;font-size:17px;cursor:pointer;text-align:left;}.crs-enter small{font-weight:500;font-size:12px;opacity:.9;}';
 document.head.appendChild(st);})();
 </script>
 </body>
