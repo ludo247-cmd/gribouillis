@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v309</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v310</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v309</title>
+<title>Gribouillis EPS v310</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -23703,6 +23703,198 @@ function prnOpen(){const o0=E('prn-ov');if(o0)o0.remove();const s=getActiveSeanc
 
 // v309 — le code « liens » est reconnu par la fenêtre « Importer un code »
 (function(){const op=libImportParse;libImportParse=function(t){try{const d=JSON.parse(String(t||'').trim());if(d&&d.gribouillis==='liens'&&Array.isArray(d.liens))return [{kind:'liens'}];}catch(e){}return op.apply(this,arguments);};})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v310 — écran d'avant-match : DÉMARRER ouvre une feuille de réglages
+// rapides (compo des équipes, fin du match au temps / au score / points
+// disputés, observation, boutons seuls ou gribouillis, profils et boutons
+// à la carte). « Coup d'envoi » lance le match exactement comme avant.
+// ══════════════════════════════════════════════════════════════════════
+const PRM_KEY='grib_prm_v1';
+try{if(GRIB_BACKUP_KEYS.indexOf(PRM_KEY)<0)GRIB_BACKUP_KEYS.push(PRM_KEY);}catch(e){}
+const PRM={c:null,base:null,lineup:null,cand:[],pick:null,menu:null,sel:null,temp:null,override:null,restore:null,run:false,dismiss:'',bypass:false,more:false,_lp:false,_t:null};
+function prmCfg(){const d={end:'free',target:15,smode:'win'};try{return Object.assign(d,JSON.parse(localStorage.getItem(PRM_KEY)||'{}')||{});}catch(e){return d;}}
+function prmSave(){try{localStorage.setItem(PRM_KEY,JSON.stringify(PRM.c));}catch(e){}}
+function prmVis(el){try{return !!el&&!el.hidden&&getComputedStyle(el).display!=='none'&&el.getClientRects().length>0;}catch(e){return false;}}
+function prmTwo(){return CFG.gameMode==='2eq';}
+function prmTeamObjs(){const g=id=>{const el=E(id);const v=el?+el.value:NaN;return teams.find(t=>t.id===v);};const t1=g('sel-t1')||teams[0];const t2=g('sel-t2')||teams[1]||teams[0];return prmTwo()?[t1,t2]:[t1];}
+function prmNames(t){if(!t)return [];let L=[];try{L=getPlayersForTeam(cleanVal(t.name))||[];}catch(e){}return L.map(x=>typeof x==='string'?x:(x&&x.name)||'').filter(Boolean);}
+function prmTarget(){return isRacket()?rkCfg().p:PRM.c.target;}
+function prmSetTarget(v){v=Math.max(1,Math.min(99,Math.round(v)));if(isRacket()){rkCfg().p=v;try{const el=E('cfg-set-points');if(el)el.value=v;}catch(e){}}else PRM.c.target=v;}
+function prmOpen(){
+  PRM.c=prmCfg();PRM.pick=null;PRM.menu=null;PRM.temp=null;PRM.more=false;
+  const T=prmTeamObjs();PRM.base=T.map(prmNames);PRM.lineup=PRM.base.map(l=>l.slice());
+  const o0=E('prm-ov');if(o0)o0.remove();
+  const o=document.createElement('div');o.id=['prm','ov'].join('-');document.body.appendChild(o);
+  o.addEventListener('click',e=>{if(e.target===o)prmClose();});
+  prmRender();
+}
+function prmClose(){const o=E('prm-ov');if(o)o.remove();const m=E('prm-menu');if(m)m.remove();}
+function prmChip(on,lab,fn,extra){return '<button type="button" class="prm-chip'+(on?' on':'')+'" onclick="'+fn+'"'+(extra||'')+'>'+lab+'</button>';}
+function prmStepper(lab,val,fnm,fnp){return '<'+'div class="prm-step"><button type="button" aria-label="moins" onclick="'+fnm+'">−</button><span>'+val+(lab?' '+lab:'')+'</span><button type="button" aria-label="plus" onclick="'+fnp+'">+</button></'+'div>';}
+function prmBtnsNow(){return PRM.temp||getTeamDialogBtns(0)||CFG.dialogBtns||[];}
+function prmProfLab(kind){if(PRM.temp&&((kind==='simple')===!!CFG.obsSimple))return 'à la carte · '+PRM.temp.length+' bouton'+(PRM.temp.length>1?'s':'');const p=CFG.savedPresets&&CFG.savedPresets[CFG.activePresetIndexT1];return p?p.name:'boutons du réglage actuel';}
+function prmRender(){
+  const o=E('prm-ov');if(!o)return;const c=PRM.c;const T=prmTeamObjs();const rk=isRacket();
+  let h='<'+'div class="prm-box"><'+'div class="prm-hd"><b>Avant le match</b><button type="button" class="prm-x" aria-label="Fermer" onclick="prmClose()">✕</button></'+'div>';
+  // compo façon télé
+  h+='<'+'div class="prm-tv">';
+  T.forEach((t,ti)=>{const pal=PALETTE[(t&&t.pal!==undefined)?t.pal:(ti?0:6)]||PALETTE[0];const L=PRM.lineup[ti]||[];
+    h+='<'+'div class="prm-team" style="background:linear-gradient(180deg,'+pal.stroke+'cc,'+pal.bg+');"><'+'div class="prm-tn">'+esc(t?t.name:'Équipe '+(ti+1))+'</'+'div>';
+    if(!L.length)h+='<'+'div class="prm-dim">Pas de liste de joueurs pour cette équipe (groupes, composition ou classe).</'+'div>';
+    L.forEach((n,i)=>{const on=PRM.pick&&PRM.pick.ti===ti&&PRM.pick.i===i;h+='<button type="button" class="prm-pl'+(on?' on':'')+'" onclick="prmPick('+ti+','+i+')"><span class="prm-num">'+(i+1)+'</span><span class="prm-nm">'+esc(n)+'</span></button>';});
+    h+='<button type="button" class="prm-add" onclick="prmPick('+ti+',-1)">＋ joueur</button></'+'div>';});
+  if(!prmTwo())h+='<'+'div class="prm-team prm-adv"><'+'div class="prm-tn">Adversaire</'+'div><'+'div class="prm-dim">Observation d\'une seule équipe</'+'div></'+'div>';
+  h+='</'+'div>';
+  if(PRM.pick){const all=[];const seen={};PRM.lineup.forEach(l=>l.forEach(n=>seen[n]=1));
+    (MATCH.playersData||[]).forEach(p=>{const n=p&&p.name;if(n&&!seen[n]&&all.indexOf(n)<0)all.push(n);});
+    PRM.base.forEach(l=>l.forEach(n=>{if(!seen[n]&&all.indexOf(n)<0)all.push(n);}));PRM.cand=all;
+    const cur=PRM.pick.i>=0?PRM.lineup[PRM.pick.ti][PRM.pick.i]:'';
+    h+='<'+'div class="prm-card prm-pickbox"><b>'+(cur?'Remplacer '+esc(cur)+' par :':'Ajouter un joueur :')+'</b><'+'div class="prm-wrap">'+(all.length?all.map((n,k)=>'<button type="button" class="prm-chip" onclick="prmSwap('+k+')">'+esc(n)+'</button>').join(''):'<span class="prm-dim">Aucun autre élève disponible.</span>')+'</'+'div>'
+      +'<'+'div class="prm-row">'+(cur?'<button type="button" class="prm-chip" onclick="prmRemove()">Retirer '+esc(cur)+'</button>':'')+'<button type="button" class="prm-chip" onclick="prmPick(-1)">Annuler</button></'+'div></'+'div>';}
+  // fin du match
+  h+='<'+'div class="prm-card"><'+'div class="prm-lab">Fin du match</'+'div><'+'div class="prm-row">'
+    +prmChip(c.end==='free','Chrono libre',"prmEnd('free')")+prmChip(c.end==='time','Au temps',"prmEnd('time')")+prmChip(c.end==='score','Au score',"prmEnd('score')")+'</'+'div>';
+  if(c.end==='time')h+='<'+'div class="prm-row">'+prmStepper('min',String(CFG.periodDur).replace('.',','),"prmStep('dur',-0.5)","prmStep('dur',0.5)")+prmStepper(CFG.nbPeriods>1?'périodes':'période',CFG.nbPeriods,"prmStep('nb',-1)","prmStep('nb',1)")+'</'+'div>';
+  if(c.end==='score'){const tg=prmTarget();
+    h+='<'+'div class="prm-row">'+[15,21,25].map(v=>prmChip(tg===v&&!PRM.more,v+' pts','prmTg('+v+')')).join('')+prmChip(PRM.more,'+ Options','prmMore()')+'</'+'div>';
+    if(rk)h+='<'+'div class="prm-row"><span class="prm-dim" style="flex:0 0 auto;">Nombre de sets :</span>'+prmStepper(rkCfg().n>1?'sets':'set',rkCfg().n,"prmStep('rkn',-1)","prmStep('rkn',1)")+'</'+'div>';
+    if(PRM.more)h+='<'+'div class="prm-sub">'+prmStepper('points',tg,"prmStep('tg',-1)","prmStep('tg',1)")+'<'+'div class="prm-dim">Le '+(rk?'set':'match')+' s\'arrête quand…</'+'div>'
+      +'<button type="button" class="prm-mode'+(c.smode!=='sum'?' on':'')+'" onclick="prmSmode(\'win\')"><b>Points gagnants</b><span>une équipe atteint '+tg+' points</span></button>'
+      +'<button type="button" class="prm-mode'+(c.smode==='sum'?' on':'')+'" onclick="prmSmode(\'sum\')"><b>Points disputés</b><span>la somme des deux scores fait '+tg+' (ex. '+Math.ceil(tg/2+1)+'–'+Math.floor(tg/2-1)+')</span></button></'+'div>';
+    h+='<'+'div class="prm-dim">'+(c.smode==='sum'?tg+' points disputés':'en '+tg+' points gagnants')+(rk?' par set':'')+' : l\'app te propose de terminer quand c\'est atteint.</'+'div>';}
+  h+='</'+'div>';
+  // observation
+  h+='<'+'div class="prm-card"><'+'div class="prm-lab">Observation</'+'div><'+'div class="prm-row">'
+    +prmChip(!CFG.indivObsEnabled,'Collective',"prmObs(false)")+prmChip(!!CFG.indivObsEnabled,'Individuelle + collective',"prmObs(true)")+'</'+'div>';
+  if(CFG.indivObsEnabled&&!(MATCH.playersData||[]).length)h+='<'+'div class="prm-dim">⚠ L\'observation individuelle a besoin de la liste de la classe.</'+'div>';
+  h+='<'+'div class="prm-lab" style="margin-top:6px;">Saisie · maintiens le doigt pour choisir le profil ou les boutons</'+'div><'+'div class="prm-grid">'
+    +'<button type="button" class="prm-big'+(CFG.obsSimple?' on':'')+'" data-lp="simple" onclick="prmInput(\'simple\')"><b>✋ Boutons seuls</b><span>'+esc(CFG.obsSimple?prmProfLab('simple'):'maintenir : profils')+'</span></button>'
+    +'<button type="button" class="prm-big'+(!CFG.obsSimple?' on':'')+'" data-lp="draw" onclick="prmInput(\'draw\')"><b>✏️ Gribouillis</b><span>'+esc(!CFG.obsSimple?prmProfLab('draw'):'maintenir : profils')+'</span></button></'+'div></'+'div>';
+  h+='<button type="button" class="prm-go" onclick="prmKick()">Coup d\'envoi</button></'+'div>';
+  o.innerHTML=h;
+  o.querySelectorAll('[data-lp]').forEach(b=>{const k=b.dataset.lp;
+    const st=()=>{PRM._lp=false;clearTimeout(PRM._t);PRM._t=setTimeout(()=>{PRM._lp=true;try{if(navigator.vibrate)navigator.vibrate(25);}catch(e){}prmMenu(k);},550);};
+    const en=()=>clearTimeout(PRM._t);
+    b.addEventListener('pointerdown',st);b.addEventListener('pointerup',en);b.addEventListener('pointerleave',en);b.addEventListener('pointercancel',en);
+    b.addEventListener('contextmenu',e=>{e.preventDefault();});});
+}
+function prmPick(ti,i){if(ti<0){PRM.pick=null;}else PRM.pick={ti:ti,i:i};prmRender();}
+function prmSwap(k){const n=PRM.cand[k];if(!n||!PRM.pick)return;const L=PRM.lineup[PRM.pick.ti];if(PRM.pick.i>=0)L[PRM.pick.i]=n;else L.push(n);PRM.pick=null;prmRender();}
+function prmRemove(){if(!PRM.pick||PRM.pick.i<0)return;PRM.lineup[PRM.pick.ti].splice(PRM.pick.i,1);PRM.pick=null;prmRender();}
+function prmEnd(m){PRM.c.end=m;prmRender();}
+function prmTg(v){PRM.more=false;prmSetTarget(v);prmRender();}
+function prmMore(){PRM.more=!PRM.more;prmRender();}
+function prmSmode(m){PRM.c.smode=m;prmRender();}
+function prmStep(f,d){
+  if(f==='dur')CFG.periodDur=Math.max(0.5,Math.min(90,Math.round(((+CFG.periodDur||0)+d)*2)/2));
+  else if(f==='nb')CFG.nbPeriods=Math.max(1,Math.min(6,(+CFG.nbPeriods||1)+d));
+  else if(f==='tg')prmSetTarget(prmTarget()+d);
+  else if(f==='rkn'){const c=rkCfg();c.n=Math.max(1,Math.min(7,(+c.n||1)+d));try{const el=E('cfg-set-count');if(el)el.value=c.n;}catch(e){}}
+  prmRender();}
+function prmObs(v){CFG.indivObsEnabled=!!v;prmRender();}
+function prmInput(k){if(PRM._lp){PRM._lp=false;return;}CFG.obsSimple=(k==='simple');prmRender();}
+// profils et boutons à la carte
+function prmCatalog(){const out=[];const seen={};const add=b=>{if(!b||!b.label)return;const key=b.label+'|'+(b.adv?1:0);if(seen[key])return;seen[key]=1;out.push(JSON.parse(JSON.stringify(b)));};
+  prmBtnsNow().forEach(add);(CFG.savedPresets||[]).filter(p=>p&&(p.apsaKey||'')===CFG.apsa).forEach(p=>(p.dialogBtns||[]).forEach(add));
+  try{(genericProfileDef(CFG.apsa).dialogBtns||[]).forEach(add);}catch(e){}return out;}
+function prmMenu(kind){
+  PRM.menu=kind;const cat=prmCatalog();PRM.cat=cat;if(!PRM.sel)PRM.sel={};PRM.sel={};prmBtnsNow().forEach(b=>{if(b&&b.label)PRM.sel[b.label+'|'+(b.adv?1:0)]=1;});
+  prmMenuRender();}
+function prmMenuRender(){
+  const m0=E('prm-menu');if(m0)m0.remove();if(!PRM.menu)return;const kind=PRM.menu;
+  const m=document.createElement('div');m.id=['prm','menu'].join('-');document.body.appendChild(m);m.addEventListener('click',e=>{if(e.target===m){PRM.menu=null;m.remove();}});
+  const L=(CFG.savedPresets||[]).map((p,i)=>({p,i})).filter(x=>x.p&&(x.p.apsaKey||'')===CFG.apsa);
+  let h='<'+'div class="prm-box"><'+'div class="prm-hd"><b>'+(kind==='simple'?'✋ Boutons seuls':'✏️ Gribouillis')+' · profil</b><button type="button" class="prm-x" aria-label="Fermer" onclick="prmMenuClose()">✕</button></'+'div>';
+  h+=L.length?L.map(x=>'<button type="button" class="prm-mode'+(!PRM.temp&&CFG.activePresetIndexT1===x.i?' on':'')+'" onclick="prmUseProfile('+x.i+')"><b>'+esc(x.p.name||'Profil')+'</b><span>'+esc((x.p.dialogBtns||[]).filter(b=>!b.adv).map(b=>b.label).slice(0,6).join(' · '))+'</span></button>').join(''):'<'+'div class="prm-dim">Pas encore de profil pour ce sport.</'+'div>';
+  h+='<'+'div class="prm-lab" style="margin-top:10px;">Ou à la carte, pour ce match</'+'div><'+'div class="prm-wrap">'
+    +PRM.cat.map((b,k)=>{const on=!!PRM.sel[b.label+'|'+(b.adv?1:0)];return '<button type="button" class="prm-chip'+(on?' on':'')+'" onclick="prmCarte('+k+')">'+esc(b.label)+(b.adv?' (adv.)':'')+'</button>';}).join('')+'</'+'div>';
+  const n=Object.keys(PRM.sel).length;
+  h+='<'+'div class="prm-row" style="margin-top:8px;"><button type="button" class="prm-go" style="flex:1 1 0;margin:0;" onclick="prmCarteUse()"'+(n?'':' disabled')+'>Utiliser ces '+n+' boutons</button><button type="button" class="prm-chip" style="flex:1 1 0;min-height:48px;" onclick="prmCarteSave()"'+(n?'':' disabled')+'>Enregistrer comme profil</button></'+'div>';
+  h+='<'+'div class="prm-dim" style="margin-top:6px;">« Utiliser » ne vaut que pour ce match. « Enregistrer » crée un profil que tu retrouves dans l\'onglet Profils.</'+'div></'+'div>';
+  m.innerHTML=h;}
+function prmMenuClose(){PRM.menu=null;const m=E('prm-menu');if(m)m.remove();}
+function prmCarte(k){const b=PRM.cat[k];if(!b)return;const key=b.label+'|'+(b.adv?1:0);if(PRM.sel[key])delete PRM.sel[key];else PRM.sel[key]=1;prmMenuRender();}
+function prmSelBtns(){return PRM.cat.filter(b=>PRM.sel[b.label+'|'+(b.adv?1:0)]).map(b=>JSON.parse(JSON.stringify(b)));}
+function prmUseProfile(i){const kind=PRM.menu;try{applyNamedPreset(i);}catch(e){console.warn('prm profil',e);}PRM.temp=null;CFG.obsSimple=(kind==='simple');prmMenuClose();prmRender();}
+function prmCarteUse(){const L=prmSelBtns();if(!L.length)return;const kind=PRM.menu;PRM.temp=L;CFG.obsSimple=(kind==='simple');prmMenuClose();prmRender();}
+function prmCarteSave(){const L=prmSelBtns();if(!L.length)return;const kind=PRM.menu;
+  const n=(CFG.savedPresets||[]).filter(p=>p&&/^Mon profil/.test(p.name||'')).length+1;
+  askTextDlg('Nom du nouveau profil','Mon profil '+n,v=>{v=String(v||'').trim();if(!v)return;
+    let base=null;try{base=CFG.savedPresets[CFG.activePresetIndexT1];}catch(e){}if(!base){try{base=genericProfileDef(CFG.apsa);}catch(e){}}
+    const p=JSON.parse(JSON.stringify(base||{apsaKey:CFG.apsa,customRatios:[]}));p.name=v;p.apsaKey=CFG.apsa;p.dialogBtns=L;if(p.meta&&p.meta.fpsId)delete p.meta.fpsId;p.obsSimple=(kind==='simple');
+    if(!Array.isArray(p.customRatios))p.customRatios=JSON.parse(JSON.stringify(CFG.customRatios||[]));
+    CFG.savedPresets.push(p);const i=CFG.savedPresets.length-1;try{applyNamedPreset(i);}catch(e){}CFG.obsSimple=(kind==='simple');PRM.temp=null;
+    try{localStorage.setItem('grib_cfg_v10',JSON.stringify(CFG));}catch(e){}try{toast2('Profil « '+v+' » enregistré');}catch(e){}prmMenuClose();prmRender();},'Nom du profil');}
+// coup d'envoi
+function prmKick(){
+  const c=PRM.c;CFG.countdownMode=(c.end==='time');
+  const T=prmTeamObjs();let ov=null;T.forEach((t,ti)=>{const a=(PRM.base[ti]||[]).join('\u0001'),b=(PRM.lineup[ti]||[]).join('\u0001');if(t&&a!==b){ov=ov||{};ov[cleanVal(t.name)]=PRM.lineup[ti].slice();}});
+  PRM.override=ov;
+  if(PRM.temp){PRM.restore=JSON.parse(JSON.stringify(CFG.dialogBtns||[]));try{localStorage.setItem('grib_prm_restore',JSON.stringify(PRM.restore));}catch(e){}CFG.dialogBtns=PRM.temp;}
+  try{applyConfigToUI();}catch(e){}
+  prmSave();prmClose();PRM.run=(c.end==='score');PRM.dismiss='';PRM.bypass=true;
+  try{startMatch();}finally{PRM.bypass=false;}
+}
+startMatch=(function(o){return function(){if(PRM.bypass||window.__PRM_SKIP)return o.apply(this,arguments);try{prmOpen();}catch(e){console.warn('prm',e);return o.apply(this,arguments);}};})(startMatch);
+getPlayersForTeam=(function(o){return function(n){try{if(PRM.override){const k=cleanVal(n);if(PRM.override[k])return PRM.override[k].slice();}}catch(e){}return o.apply(this,arguments);};})(getPlayersForTeam);
+stopMatch=(function(o){return function(){const r=o.apply(this,arguments);try{PRM.run=false;prmBanner(null);PRM.override=null;
+  if(PRM.restore){CFG.dialogBtns=PRM.restore;PRM.restore=null;PRM.temp=null;localStorage.setItem('grib_cfg_v10',JSON.stringify(CFG));localStorage.removeItem('grib_prm_restore');try{renderDialogEditor();}catch(e){}}}catch(e){console.warn('prm stop',e);}return r;};})(stopMatch);
+setTimeout(()=>{try{const r=localStorage.getItem('grib_prm_restore');const sm=E('s-match');if(r&&!prmVis(sm)){CFG.dialogBtns=JSON.parse(r);localStorage.setItem('grib_cfg_v10',JSON.stringify(CFG));localStorage.removeItem('grib_prm_restore');}}catch(e){}},1500);
+// fin au score / points disputés
+function prmScore(){if(isRacket())return rkSetScore();return [tStats[0].pts||0,prmTwo()?(tStats[1].pts||0):(tStats[0].scoreAdv||0)];}
+function prmBanner(kind,txt){let b=E('prm-end');if(!kind){if(b)b.remove();return;}
+  if(!b){b=document.createElement('div');b.id=['prm','end'].join('-');document.body.appendChild(b);}
+  const btn=kind==='set'?'<button type="button" class="prm-go" style="margin:0;" onclick="prmCloseSet()">Fin du set</button>':'<button type="button" class="prm-go" style="margin:0;" onclick="prmFinish()">Terminer le match</button>';
+  b.innerHTML='<'+'div class="prm-et">🏁 '+esc(txt)+'</'+'div><'+'div class="prm-row">'+btn+'<button type="button" class="prm-chip" onclick="prmContinue()">Continuer</button></'+'div>';}
+function prmKey(){return 'k'+(isRacket()?RK.sets.length:0);}
+function prmContinue(){PRM.dismiss=prmKey();prmBanner(null);}
+function prmFinish(){prmBanner(null);PRM.run=false;try{stopMatch();}catch(e){console.warn(e);}}
+function prmCloseSet(){const c=PRM.c;const n=RK.sets.length+1;let r;
+  if(c.smode==='sum'){const sc=rkSetScore();RK.sets.push({a:sc[0],b:sc[1],target:sc[0]+sc[1]});RK.base=[{pts:tStats[0].pts||0,adv:tStats[0].scoreAdv||0},{pts:tStats[1].pts||0,adv:tStats[1].scoreAdv||0}];try{rkRefreshScore();redrawAll();}catch(e){}r={a:sc[0],b:sc[1]};}
+  else r=rkCloseSet();
+  try{rkSetButtonLabel();}catch(e){}try{rkToast('Set '+n+' terminé : '+r.a+' – '+r.b);}catch(e){}
+  PRM.dismiss='';
+  if(RK.sets.length>=rkCfg().n){const btn=E('btn-endset');if(btn)btn.textContent='🏁 Match fini — appuie sur STOP';prmBanner('end','Dernier set terminé ('+r.a+' – '+r.b+')');PRM.dismiss='';}
+  else prmBanner(null);}
+function prmTick(){try{if(!PRM.run||!PRM.c)return;const sm=E('s-match');if(!prmVis(sm))return;
+  if(isRacket()&&RK.sets.length>=rkCfg().n)return;
+  const sc=prmScore(),tg=isRacket()?(PRM.c.smode==='sum'?rkCfg().p:rkTarget()):PRM.c.target;
+  const hit=PRM.c.smode==='sum'?(sc[0]+sc[1]>=tg):(Math.max(sc[0],sc[1])>=tg);
+  const key=prmKey();
+  if(hit&&PRM.dismiss!==key){if(!E('prm-end'))prmBanner(isRacket()?'set':'end',(PRM.c.smode==='sum'?tg+' points disputés':tg+' points atteints')+' ('+sc[0]+' – '+sc[1]+')');}
+  else if(!hit||PRM.dismiss===key){if(E('prm-end')&&!(isRacket()&&RK.sets.length>=rkCfg().n))prmBanner(null);}
+}catch(e){}}
+setInterval(prmTick,700);
+(function(){const st=document.createElement('style');st.textContent=
+ '#prm-ov,#prm-menu{position:fixed;inset:0;background:rgba(0,0,0,.66);z-index:9700;display:flex;align-items:flex-end;justify-content:center;}'
++'#prm-menu{z-index:9720;}'
++'#prm-ov .prm-box,#prm-menu .prm-box{background:#0f1115;color:#e8e8ea;width:100%;max-width:560px;max-height:94vh;overflow-y:auto;border-radius:18px 18px 0 0;border:1px solid #2d323d;padding:14px 14px 18px;box-sizing:border-box;display:flex;flex-direction:column;gap:10px;font-size:14px;}'
++'@media(min-width:700px){#prm-ov,#prm-menu{align-items:center;}#prm-ov .prm-box,#prm-menu .prm-box{border-radius:18px;}}'
++'.prm-hd{display:flex;align-items:center;gap:8px;font-size:16px;}.prm-hd b{flex:1;}.prm-x{width:40px;height:40px;border-radius:10px;border:0;background:#262a33;color:#e8e8ea;font-size:16px;cursor:pointer;}'
++'.prm-tv{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border-radius:14px;overflow:hidden;border:1px solid #343946;}'
++'.prm-team{display:flex;flex-direction:column;gap:6px;padding:10px 8px;min-width:0;}.prm-adv{background:#1a1d24;}'
++'.prm-tn{font-weight:800;font-size:17px;letter-spacing:.03em;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,.5);}'
++'.prm-pl{display:flex;align-items:center;gap:6px;min-height:42px;padding:0 8px;border-radius:9px;border:1px solid rgba(255,255,255,.25);background:rgba(0,0,0,.32);color:#fff;font-size:14px;cursor:pointer;text-align:left;}'
++'.prm-pl.on{border:2px solid #fff;}.prm-num{font-weight:800;width:20px;opacity:.8;}.prm-nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600;}'
++'.prm-add{min-height:36px;border-radius:9px;border:1px dashed rgba(255,255,255,.4);background:transparent;color:#fff;cursor:pointer;font-size:13px;}'
++'.prm-card{background:#1a1d24;border:1px solid #262a33;border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:8px;}.prm-pickbox{border-color:#dc2626;}'
++'.prm-lab{font-size:12px;color:#a3a7b0;}.prm-dim{font-size:12px;color:#a3a7b0;}'
++'.prm-row,.prm-wrap{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}.prm-row>.prm-chip{flex:1 1 0;}'
++'.prm-chip{min-height:40px;padding:0 12px;border-radius:999px;border:1px solid #343946;background:#262a33;color:#fff;font-size:13px;cursor:pointer;}.prm-chip.on{background:#dc2626;border-color:#dc2626;}.prm-chip[disabled]{opacity:.45;}'
++'.prm-step{flex:1 1 140px;display:flex;align-items:center;justify-content:space-between;background:#262a33;border-radius:10px;padding:3px;}.prm-step span{font-weight:700;}'
++'.prm-step button{width:42px;height:40px;border:0;border-radius:8px;background:#1a1d24;color:#fff;font-size:18px;cursor:pointer;}'
++'.prm-sub .prm-step{flex:0 0 auto;}'
++'#prm-ov .prm-box>*,#prm-menu .prm-box>*{flex-shrink:0;}'
++'.prm-sub{display:flex;flex-direction:column;gap:6px;background:#15171c;border:1px solid #343946;border-radius:10px;padding:8px;}'
++'.prm-mode{display:flex;flex-direction:column;gap:2px;text-align:left;min-height:50px;padding:8px 10px;border-radius:10px;border:1px solid #343946;background:#262a33;color:#fff;cursor:pointer;}.prm-mode span{font-size:12px;color:#d4d6db;}.prm-mode.on{border-color:#dc2626;background:#3a1416;}'
++'.prm-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;}'
++'.prm-big{display:flex;flex-direction:column;gap:3px;text-align:left;min-height:62px;padding:8px 10px;border-radius:12px;border:1px solid #343946;background:#262a33;color:#fff;cursor:pointer;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:manipulation;}'
++'.prm-big span{font-size:12px;color:#d4d6db;}.prm-big.on{border-color:#dc2626;background:#3a1416;}'
++'.prm-go{min-height:52px;border:0;border-radius:12px;background:#dc2626;color:#fff;font-weight:800;font-size:16px;cursor:pointer;margin-top:2px;}.prm-go[disabled]{opacity:.45;}'
++'#prm-end{position:fixed;left:50%;top:12px;transform:translateX(-50%);z-index:9750;background:#0f1115;border:2px solid #dc2626;border-radius:14px;padding:10px 12px;width:min(92vw,420px);display:flex;flex-direction:column;gap:8px;color:#e8e8ea;box-shadow:0 8px 30px rgba(0,0,0,.5);}'
++'#prm-end .prm-et{font-weight:700;font-size:15px;}#prm-end .prm-row>*{flex:1 1 0;}';
+document.head.appendChild(st);})();
 </script>
 </body>
 </html>
