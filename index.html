@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v313</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v315</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v313</title>
+<title>Gribouillis EPS v315</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -24034,6 +24034,138 @@ renderSeanceTab=(function(o){return function(){const r=o.apply(this,arguments);t
 +'.crs-next{min-height:56px;border:0;border-radius:12px;background:#dc2626;color:#fff;font-weight:800;font-size:16px;cursor:pointer;}'
 +'.crs-nx{display:flex;justify-content:space-between;gap:8px;min-height:46px;align-items:center;padding:0 12px;border-radius:10px;border:1px solid #262a33;background:#15171c;color:#e8e8ea;font-size:14px;cursor:pointer;}.crs-nx span:last-child{color:#a3a7b0;font-size:12px;}'
 +'.crs-enter{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;min-height:56px;margin:0 0 10px;padding:10px 14px;border:0;border-radius:14px;background:#dc2626;color:#fff;font-weight:800;font-size:17px;cursor:pointer;text-align:left;}.crs-enter small{font-weight:500;font-size:12px;opacity:.9;}';
+document.head.appendChild(st);})();
+
+// v314 — mémos dans la séance : un mémo général et un mémo par étape,
+// visibles et modifiables dans « Faire cours » (enregistrés avec la séance).
+CRS.memoEdit=null;
+function crsMemoGet(s,k){return (s&&s.memos&&s.memos[k])||'';}
+function crsMemoEdit(k){CRS.memoEdit=k;crsRender();setTimeout(()=>{const t=E('crs-memo-ta');if(t){t.focus();t.setSelectionRange(t.value.length,t.value.length);}},30);}
+function crsMemoSave(k){const s=getActiveSeance();const t=E('crs-memo-ta');if(!s||!t)return;if(!s.memos||typeof s.memos!=='object')s.memos={};const v=t.value.replace(/\s+$/,'');if(v)s.memos[k]=v;else delete s.memos[k];CRS.memoEdit=null;saveSeances();crsRender();}
+function crsMemoHtml(s,k,lab){const v=crsMemoGet(s,k);
+  if(CRS.memoEdit===k)return '<'+'div class="crs-memo edit"><label class="crs-lab" for="crs-memo-ta">'+lab+'</label><textarea id="crs-memo-ta" rows="4" placeholder="Ex. : penser à sortir les plots, Louis dispensé, revoir la règle du service…">'+esc(v)+'</textarea><'+'div class="prm-row"><button type="button" class="prm-chip on" onclick="crsMemoSave(\''+esc(k)+'\')">Enregistrer</button><button type="button" class="prm-chip" onclick="CRS.memoEdit=null;crsRender();">Annuler</button></'+'div></'+'div>';
+  if(!v)return '<button type="button" class="crs-memo-add" onclick="crsMemoEdit(\''+esc(k)+'\')">📝 '+lab+'</button>';
+  return '<button type="button" class="crs-memo" onclick="crsMemoEdit(\''+esc(k)+'\')" title="Modifier le mémo"><span class="crs-lab">📝 '+lab+'</span><span class="crs-memo-t">'+esc(v)+'</span></button>';}
+crsRender=(function(o){return function(){o.apply(this,arguments);try{const ov=E('crs-ov');const s=getActiveSeance();if(!ov||!s)return;
+  const cur=crsCur(s);const st=s.steps.find(x=>x.key===CRS.view)||cur;
+  const steps=ov.querySelector('.crs-steps');if(steps){const d=document.createElement('div');d.innerHTML=crsMemoHtml(s,'_seance','Mémo de la séance');steps.insertAdjacentElement('afterend',d.firstChild);}
+  const card=ov.querySelector('.crs-card');if(card&&st){const d=document.createElement('div');d.innerHTML=crsMemoHtml(s,st.key,'Mémo de cette étape');const nx=card.querySelector('.crs-next');if(nx)card.insertBefore(d.firstChild,nx);else card.appendChild(d.firstChild);}
+  ov.querySelectorAll('.crs-nx').forEach(b=>{const m=/crsView\('([^']+)'\)/.exec(b.getAttribute('onclick')||'');if(m&&crsMemoGet(s,m[1])){const f=b.querySelector('span');if(f)f.insertAdjacentHTML('beforeend',' <span title="Mémo">📝</span>');}});
+  ov.querySelectorAll('.crs-st').forEach(b=>{const m=/crsView\('([^']+)'\)/.exec(b.getAttribute('onclick')||'');if(m&&crsMemoGet(s,m[1]))b.classList.add('memo');});
+}catch(e){console.warn('crs memo',e);}};})(crsRender);
+(function(){const st=document.createElement('style');st.textContent=
+ '.crs-memo,.crs-memo-add{display:flex;flex-direction:column;gap:4px;text-align:left;width:100%;border-radius:12px;padding:10px 12px;cursor:pointer;color:#e8e8ea;font-family:inherit;}'
++'.crs-memo{background:#2a2412;border:1px solid #6b5b1f;}.crs-memo-t{white-space:pre-wrap;font-size:14px;line-height:1.45;color:#fde68a;}'
++'.crs-memo-add{background:transparent;border:1px dashed #4b5160;min-height:44px;justify-content:center;font-size:14px;color:#c3c6cc;}'
++'.crs-memo.edit{background:#1a1d24;border:1px solid #6b5b1f;cursor:default;}.crs-memo.edit textarea{width:100%;box-sizing:border-box;border-radius:10px;border:1px solid #343946;background:#0f1115;color:#e8e8ea;font-size:15px;padding:10px;font-family:inherit;}'
++'.crs-st.memo small::after{content:" 📝";}';
+document.head.appendChild(st);})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v315 — Projet d'entraînement (élèves) : choisir l'OE, classer ses
+// problèmes (fils rouges dans leur version négative), le n°1 devient le
+// fil rouge → CP → exercice → score → au match suivant, un bouton en plus
+// pour observer ce fil rouge → progrès. S'appuie sur le référentiel de
+// l'app (et tes modifications, jamais écrasées).
+// ══════════════════════════════════════════════════════════════════════
+// 1) Exercices de ton carnet ajoutés à l'OE C du volley, seulement là où tu n'as encore rien mis
+(function(){const EX={cp1:{id:'exo-pj-attaquant-pointe',titre:"L'Attaquant de pointe",desc:"Élan 3 pas (G-D-G), impulsion verticale, frappe bras tendu, main haute au sommet du saut.\nObjectif : au moins 5 smashs sur 10 cadrés au-dessus du filet.",criteres:[{id:'c1',label:'Smashs cadrés au-dessus du filet (sur 10)',cible:5}]},
+  cp2:{id:'exo-pj-touche-coule',titre:"Touché… presque coulé",desc:"Retard défensif : au sommet du saut, regarder la défense. Contre formé → feinte ou balle placée ; pas de contre → smash.\nObjectif : au moins 6 bons choix sur 10.",criteres:[{id:'c1',label:'Bons choix selon la défense (sur 10)',cible:6}]},
+  cp4:{id:'exo-pj-passeur-masque',titre:"Le Passeur Masqué",desc:"Le passeur s'installe au centre, fixe le contreur et varie passe avant (zone 4) et passe arrière (zone 2).\nObjectif : désorganiser le contre adverse (au moins 4 points directs).",criteres:[{id:'c1',label:'Points directs',cible:4}]}};
+  const fill=(root)=>{try{const v=root&&root.volley;const o=v&&(v.oe||[]).find(x=>x.id==='volley-c');if(!o)return;(o.micro||[]).forEach(m=>(m.cps||[]).forEach(cp=>{const k=(/-(cp\d+)$/.exec(cp.id||'')||[])[1];if(EX[k]&&Array.isArray(cp.exercices)&&!cp.exercices.length)cp.exercices.push(JSON.parse(JSON.stringify(EX[k])));}));}catch(e){}};
+  try{fill(REMEDIATION_DATA);}catch(e){}try{if(REMED_CONTENT)fill(REMED_CONTENT);}catch(e){}})();
+// 2) le parcours
+const PJ={sid:null,grp:null,step:1,oe:null,sel:[],rank:[],cp:null,exo:null,score:0};
+function pjS(){return getActiveSeance();}
+function pjOes(s){const sd=seanceSportDef(s);let L=(sd&&sd.oe)||[];try{const a=allowedOes(s);if(Array.isArray(a)&&a.length)L=L.filter(o=>a.indexOf(o.id)>=0||/-a$/.test(o.id));}catch(e){}return L;}
+function pjOe(s,id){const sd=seanceSportDef(s);return ((sd&&sd.oe)||[]).find(o=>o.id===id)||null;}
+function pjNeg(m){const st=(m.states||[]);const n=st.find(x=>x.id==='s2')||st[st.length-1];return n?n.label:String(m.label||'').replace(/^Frm\d+\s*—\s*/,'');}
+function pjInd(m){let t=pjNeg(m);t=t.split(/\s*[(:;]\s*/)[0];return t.length>46?t.slice(0,44)+'…':t;}
+function pjGroups(s){let G=[];try{G=(seanceGroupChips(s)||[]).filter(g=>g.label);}catch(e){}const seen={};return G.filter(g=>seen[g.label]?0:(seen[g.label]=1));}
+function pjStore(s){if(!s.projets||typeof s.projets!=='object')s.projets={};return s.projets;}
+function pjOpen(grp){const s=pjS();if(!s)return;PJ.sid=s.id;PJ.grp=grp||null;const p=grp&&pjStore(s)[grp];
+  if(p){PJ.oe=p.oe;PJ.rank=(p.rank||[]).slice();PJ.sel=PJ.rank.slice();PJ.cp=p.cpPath||null;PJ.exo=p.exoId||null;PJ.score=p.score||0;PJ.step=p.exoId?6:(p.frm?4:(p.oe?3:2));}
+  else{PJ.oe=null;PJ.sel=[];PJ.rank=[];PJ.cp=null;PJ.exo=null;PJ.score=0;PJ.step=grp?2:1;}
+  let o=E('pj-ov');if(!o){o=document.createElement('div');o.id=['pj','ov'].join('-');document.body.appendChild(o);}pjRender();}
+function pjClose(){const o=E('pj-ov');if(o)o.remove();try{if(E('crs-ov'))crsRender();}catch(e){}}
+function pjGo(n){PJ.step=n;pjRender();}
+function pjSave(extra){const s=pjS();if(!s||!PJ.grp)return;const P=pjStore(s);const prev=P[PJ.grp]||{};const oe=pjOe(s,PJ.oe);const m=oe&&(oe.micro||[]).find(x=>x.id===PJ.rank[0]);
+  P[PJ.grp]=Object.assign(prev,{oe:PJ.oe,rank:PJ.rank.slice(),frm:PJ.rank[0]||null,frmLab:m?pjNeg(m):'',ind:m?pjInd(m):'',cpPath:PJ.cp,exoId:PJ.exo,score:PJ.score,t:Date.now()},extra||{});saveSeances();}
+function pjPickGrp(k){const G=pjGroups(pjS());const g=k<0?'Toute la classe':(G[k]&&G[k].label);if(!g)return;pjOpen(g);}
+function pjPickOe(id){PJ.oe=id;PJ.sel=[];PJ.rank=[];PJ.cp=null;PJ.exo=null;pjSave();pjGo(3);}
+function pjTog(id){const i=PJ.sel.indexOf(id);if(i>=0){PJ.sel.splice(i,1);PJ.rank=PJ.rank.filter(x=>x!==id);}else{PJ.sel.push(id);PJ.rank.push(id);}pjRender();}
+function pjMv(i,d){const j=i+d;if(j<0||j>=PJ.rank.length)return;const t=PJ.rank[i];PJ.rank[i]=PJ.rank[j];PJ.rank[j]=t;pjRender();}
+function pjValRank(){if(!PJ.rank.length)return;PJ.cp=null;PJ.exo=null;pjSave();pjGo(4);}
+function pjPickExo(path,id){PJ.cp=path;PJ.exo=id;PJ.score=0;pjSave();pjGo(5);}
+function pjScore(d){PJ.score=Math.max(0,Math.min(10,PJ.score+d));pjRender();}
+function pjValScore(){pjSave({scoreAt:Date.now()});try{toast2('🎯 Projet enregistré : au prochain match, le bouton « '+(pjStore(pjS())[PJ.grp]||{}).ind+' » sera proposé');}catch(e){}pjGo(6);}
+function pjArch(s){let A=[];try{A=JSON.parse(localStorage.getItem('grib_archives_v3')||'[]');}catch(e){}return (s.matchArchiveIdxs||[]).map(i=>A[i]).filter(Boolean);}
+function pjNorm(x){return stripAccents(String(x||'')).toLowerCase().replace(/[^a-z0-9]/g,'');}
+function pjCounts(s,p){const out=[];pjArch(s).forEach((a,ai)=>{const T=(a.teams||[]);let ti=T.findIndex(t=>{const n=pjNorm(t.name),g=pjNorm(PJ.grp);return n&&g&&(n.indexOf(g)>=0||g.indexOf(n)>=0);});const idx=ti>=0?[ti]:T.map((t,i)=>i);
+  let bp=0,fr=null;idx.forEach(t=>{const L=(a.btnLabels&&a.btnLabels[t])||a.btnLabels||[];const C=(T[t]&&T[t].stats&&T[t].stats.custom)||[];(Array.isArray(L)?L:[]).forEach((lb,i)=>{const l=String(lb||'');if(/beau/i.test(l)&&/point/i.test(l))bp+=(+C[i]||0);if(p.ind&&l.indexOf(p.ind)>=0)fr=(fr||0)+(+C[i]||0);});});
+  out.push({n:ai+1,date:a.date,bp:bp,fr:fr});});return out;}
+function pjRender(){const o=E('pj-ov');if(!o)return;const s=pjS();if(!s){pjClose();return;}const oe=pjOe(s,PJ.oe);
+  const steps=['Équipe','OE','Problèmes','Exercice','Score','Progrès'];
+  let h='<'+'div class="crs-box"><'+'div class="crs-hd"><'+'div class="crs-logo">🎯</'+'div><'+'div class="crs-ti"><b>Projet d\'entraînement</b><span>'+esc(PJ.grp||'choisis ton équipe')+'</span></'+'div><button type="button" class="prm-x" aria-label="Fermer" onclick="pjClose()">✕</button></'+'div>';
+  h+='<'+'div class="crs-steps">'+steps.map((l,i)=>'<button type="button" class="crs-st'+(i+1===PJ.step?' cur':(i+1<PJ.step?' done':''))+'"'+((i+1<PJ.step||(PJ.grp&&i>0&&i+1<=pjMaxStep()))?' onclick="pjGo('+(i+1)+')"':' disabled')+'><small>'+l+'</small></button>').join('')+'</'+'div>';
+  h+='<'+'div class="crs-card now">';
+  if(PJ.step===1){const G=pjGroups(s);h+='<b class="pj-q">Quelle est votre équipe ?</b>'+(G.length?G.map((g,k)=>'<button type="button" class="pj-opt" onclick="pjPickGrp('+k+')"><b>'+esc(g.label)+'</b><span>'+esc((g.members||[]).join(', '))+'</span></button>').join(''):'')+'<button type="button" class="pj-opt" onclick="pjPickGrp(-1)"><b>Toute la classe</b><span>un seul projet commun</span></button>';}
+  else if(PJ.step===2){const L=pjOes(s);const ar=pjArch(s).slice(-1)[0];
+    if(ar){const c=pjCounts(s,{}).slice(-1)[0];h+='<'+'div class="crs-item"><b>Votre dernier match</b><span>'+(c?c.bp+' beau'+(c.bp>1?'x':'')+' point'+(c.bp>1?'s':''):'')+'</span></'+'div>';}
+    h+='<b class="pj-q">Sur quoi voulez-vous progresser ?</b>'+L.map(x=>{const hard=/-a$/.test(x.id)&&L.length>1;return '<button type="button" class="pj-opt'+(PJ.oe===x.id?' on':'')+(hard?' dim':'')+'" onclick="pjPickOe(\''+esc(x.id)+'\')"><b>'+esc(x.short||x.label)+'</b><span>'+esc(x.label||'')+'</span>'+(hard?'<em>seulement en cas de grosses difficultés</em>':'')+'</button>';}).join('');}
+  else if(PJ.step===3&&oe){const M=oe.micro||[];
+    h+='<b class="pj-q">Quels problèmes avez-vous eus ?</b><'+'div class="crs-dim">Touchez ceux que vous reconnaissez, puis classez-les : le n°1 devient votre fil rouge.</'+'div>';
+    h+=M.map(m=>{const on=PJ.sel.indexOf(m.id)>=0;return '<button type="button" class="pj-opt'+(on?' on':'')+'" onclick="pjTog(\''+esc(m.id)+'\')"><span class="pj-ck">'+(on?'✓':'')+'</span><b>'+esc(pjNeg(m))+'</b></button>';}).join('');
+    if(PJ.rank.length){h+='<'+'div class="crs-lab" style="margin-top:6px;">Notre classement</'+'div>'+PJ.rank.map((id,i)=>{const m=M.find(x=>x.id===id);return '<'+'div class="pj-rk'+(i===0?' top':'')+'"><span class="pj-n">'+(i+1)+'</span><span class="pj-t">'+esc(m?pjNeg(m):id)+'</span><button type="button" aria-label="Plus gros problème" onclick="pjMv('+i+',-1)">↑</button><button type="button" aria-label="Moins gros problème" onclick="pjMv('+i+',1)">↓</button></'+'div>';}).join('')
+      +'<button type="button" class="crs-next" onclick="pjValRank()">Valider : notre fil rouge est le n°1</button>';}}
+  else if(PJ.step===4&&oe){const m=(oe.micro||[]).find(x=>x.id===PJ.rank[0]);const R=seanceRefId(s);
+    h+='<'+'div class="crs-memo"><span class="crs-lab">Notre fil rouge</span><span class="crs-memo-t">'+esc(m?pjNeg(m):'')+'</span></'+'div><b class="pj-q">Choisissez un exercice</b>';
+    let any=0;((m&&m.cps)||[]).forEach(cp=>{const path=remedCpPath(R,oe.id,m.id,cp.id);let X=[];try{const c=getCpByPath(path);X=(c&&c.exercices)||[];}catch(e){}
+      h+='<'+'div class="crs-lab">'+esc(cp.label||'')+'</'+'div>';
+      if(!X.length)h+='<'+'div class="crs-dim">Pas encore d\'exercice ici : demande à ton prof.</'+'div>';
+      X.forEach(x=>{any=1;h+='<button type="button" class="pj-opt'+(PJ.exo===x.id&&PJ.cp===path?' on':'')+'" onclick="pjPickExo(\''+esc(path)+'\',\''+esc(x.id||'')+'\')"><b>'+esc(x.titre||'Exercice')+'</b>'+(x.desc?'<span>'+esc(String(x.desc).slice(0,220))+'</span>':'')+'</button>';});});}
+  else if(PJ.step===5){let ex=null;try{const r=exoByKey(PJ.cp+'#'+PJ.exo);ex=r&&r.exo;}catch(e){}
+    h+='<b class="pj-q">'+esc(ex?ex.titre:'Exercice')+'</b>'+(ex&&ex.desc?'<'+'div class="crs-dim" style="white-space:pre-wrap;">'+esc(ex.desc)+'</'+'div>':'')
+      +'<'+'div class="crs-timer"><button type="button" class="crs-tb" aria-label="Une réussite de moins" onclick="pjScore(-1)">−</button><'+'div class="crs-clock">'+PJ.score+'<small style="font-size:16px;color:#a3a7b0;"> /10</small></'+'div><button type="button" class="crs-tb" aria-label="Une réussite de plus" onclick="pjScore(1)">+</button></'+'div>'
+      +'<'+'div class="crs-dim">Nombre de réussites sur 10 essais.</'+'div><button type="button" class="crs-next" onclick="pjValScore()">Score enregistré → match suivant</button>';}
+  else if(PJ.step===6){const p=pjStore(s)[PJ.grp]||{};let ex=null;try{const r=exoByKey(p.cpPath+'#'+p.exoId);ex=r&&r.exo;}catch(e){}
+    h+='<'+'div class="crs-memo"><span class="crs-lab">Notre fil rouge</span><span class="crs-memo-t">'+esc(p.frmLab||'')+'</span></'+'div>'
+      +'<'+'div class="crs-item"><b>Exercice : '+esc(ex?ex.titre:'—')+'</b><span>'+(p.score!=null?p.score+' / 10':'')+'</span></'+'div>'
+      +'<'+'div class="crs-dim">Au prochain match, sur l\'écran d\'avant-match, le bouton « 🎯 '+esc(p.ind||'')+' » est ajouté pour observer votre fil rouge.</'+'div>';
+    const C=pjCounts(s,p);if(C.length){const mx=Math.max(1,...C.map(c=>Math.max(c.bp,c.fr||0)));h+='<'+'div class="crs-lab">Nos matchs</'+'div>'+C.map(c=>'<'+'div class="crs-item"><b>Match '+c.n+'</b><'+'div class="pj-bar"><span>Beaux points</span><i style="width:'+Math.round(6+150*c.bp/mx)+'px;background:#dc2626"></i><span>'+c.bp+'</span></'+'div><'+'div class="pj-bar"><span>Fil rouge</span><i style="width:'+Math.round(6+150*(c.fr||0)/mx)+'px;background:#8b7cf0"></i><span>'+(c.fr==null?'non observé':c.fr)+'</span></'+'div></'+'div>').join('');}
+    h+='<button type="button" class="prm-chip" onclick="pjGo(3)">Changer de fil rouge</button>';}
+  h+='</'+'div></'+'div>';o.innerHTML=h;}
+function pjMaxStep(){const s=pjS();const p=s&&PJ.grp&&pjStore(s)[PJ.grp];if(!p)return 2;return p.scoreAt?6:p.exoId?5:p.frm?4:p.oe?3:2;}
+// 3) avant-match : ajouter le bouton du fil rouge (pour ce match seulement)
+prmOpen=(function(o){return function(){o.apply(this,arguments);try{const s=getActiveSeance();if(!s||!s.projets)return;const P=Object.keys(s.projets).map(k=>Object.assign({grp:k},s.projets[k])).filter(p=>p.ind);if(!P.length)return;
+  const T=prmTeamObjs().map(t=>pjNorm(t&&t.name));PRM.pjOn={};P.forEach(p=>{const g=pjNorm(p.grp);PRM.pjOn[p.grp]=T.some(n=>n&&g&&(n.indexOf(g)>=0||g.indexOf(n)>=0))||P.length===1;});PRM.pjList=P;pjPrmApply();prmRender();}catch(e){console.warn('pj prm',e);}};})(prmOpen);
+function pjPrmApply(){const base=(PRM._pjBase||prmBtnsNow()).filter(b=>!(b&&b.pj));PRM._pjBase=base;const add=(PRM.pjList||[]).filter(p=>PRM.pjOn[p.grp]).map(p=>({label:'🎯 '+p.ind,color:'#6d28d9',pj:p.grp}));
+  PRM.temp=add.length?JSON.parse(JSON.stringify(base)).concat(add):(PRM._pjTempUser||null);}
+function pjPrmTog(k){const p=(PRM.pjList||[])[k];if(!p)return;PRM.pjOn[p.grp]=!PRM.pjOn[p.grp];pjPrmApply();prmRender();}
+prmRender=(function(o){return function(){o.apply(this,arguments);try{const ov=E('prm-ov');if(!ov||!PRM.pjList||!PRM.pjList.length)return;const cards=ov.querySelectorAll('.prm-card');const last=cards[cards.length-1];if(!last)return;
+  const d=document.createElement('div');d.className='prm-card';d.innerHTML='<'+'div class="prm-lab">🎯 Fils rouges des projets d\'entraînement (bouton en plus pour ce match)</'+'div><'+'div class="prm-wrap">'+PRM.pjList.map((p,k)=>'<button type="button" class="prm-chip'+(PRM.pjOn[p.grp]?' on':'')+'" onclick="pjPrmTog('+k+')">'+esc(p.grp)+' · '+esc(p.ind)+'</button>').join('')+'</'+'div>';
+  last.insertAdjacentElement('afterend',d);}catch(e){}};})(prmRender);
+prmCarteUse=(function(o){return function(){o.apply(this,arguments);PRM._pjBase=null;PRM._pjTempUser=PRM.temp;try{if(PRM.pjList)pjPrmApply();}catch(e){}prmRender();};})(prmCarteUse);
+prmUseProfile=(function(o){return function(){o.apply(this,arguments);PRM._pjBase=null;PRM._pjTempUser=null;try{if(PRM.pjList)pjPrmApply();}catch(e){}prmRender();};})(prmUseProfile);
+prmClose=(function(o){return function(){o.apply(this,arguments);if(!E('prm-ov')){PRM._pjBase=null;PRM._pjTempUser=null;}};})(prmClose);
+// 4) points d'entrée : mode élève et « Faire cours » (étape de remédiation)
+function pjListHtml(s,teacher){const P=pjStore(s);const G=pjGroups(s);const keys=Object.keys(P);let h='<'+'div class="pj-entry"><b>🎯 Projets d\'entraînement</b>';
+  h+=keys.length?keys.map(k=>{const p=P[k];return '<button type="button" class="pj-opt" onclick="pjOpen(\''+esc(k).replace(/'/g,"\\'")+'\')"><b>'+esc(k)+'</b><span>'+(p.ind?'fil rouge : '+esc(p.ind)+(p.score!=null&&p.scoreAt?' · exo '+p.score+'/10':''):'en cours de choix')+'</span></button>';}).join(''):'<'+'div class="crs-dim">'+(teacher?'Aucun projet encore : les élèves le lancent après leur match.':'Après votre match, lancez votre projet.')+'</'+'div>';
+  h+='<button type="button" class="crs-big" style="background:#6d28d9;" onclick="pjOpen(null)">'+(keys.length?'＋ Nouveau projet':'🎯 Lancer notre projet')+'</button></'+'div>';return h;}
+function pjSportOk(s){try{if(!s||(s.sport!=='volley'&&seanceRefId(s)!=='volley'&&!s.projOn))return false;const sd=seanceSportDef(s);return !!(sd&&(sd.oe||[]).some(o=>(o.micro||[]).length));}catch(e){return false;}}
+renderSeanceEleve=(function(o){return function(s){const r=o.apply(this,arguments);try{if(s&&!s.asp&&pjSportOk(s)){const host=E('seance-tab-content');if(host&&!host.querySelector('.pj-entry')){const d=document.createElement('div');d.innerHTML=pjListHtml(s,false);host.insertAdjacentElement('afterbegin',d.firstChild);}}}catch(e){console.warn('pj eleve',e);}return r;};})(renderSeanceEleve);
+crsRender=(function(o){return function(){o.apply(this,arguments);try{const ov=E('crs-ov');const s=getActiveSeance();if(!ov||!s||!pjSportOk(s))return;const cur=crsCur(s);const st=s.steps.find(x=>x.key===CRS.view)||cur;
+  if(!st||seanceStepBase(st.key)!=='remediation')return;const card=ov.querySelector('.crs-card');if(!card)return;const d=document.createElement('div');d.innerHTML=pjListHtml(s,true);const nx=card.querySelector('.crs-next');if(nx)card.insertBefore(d.firstChild,nx);else card.appendChild(d.firstChild);}catch(e){console.warn('pj crs',e);}};})(crsRender);
+(function(){const st=document.createElement('style');st.textContent=
+ '#pj-ov{position:fixed;inset:0;z-index:9650;background:#0b0c0f;overflow-y:auto;font-family:Inter,system-ui,sans-serif;}#pj-ov .crs-box{max-width:620px;margin:0 auto;padding:12px 14px 30px;color:#e8e8ea;display:flex;flex-direction:column;gap:12px;box-sizing:border-box;}'
++'#pj-ov .crs-st[disabled]{opacity:.45;cursor:default;}#pj-ov .crs-st{flex:1 0 56px;min-height:42px;}'
++'.pj-q{font-size:17px;}.pj-opt{display:flex;flex-direction:column;gap:3px;text-align:left;width:100%;min-height:52px;padding:10px 12px;border-radius:12px;border:1px solid #2d323d;background:#1a1d24;color:#e8e8ea;cursor:pointer;font-family:inherit;position:relative;}'
++'.pj-opt span{font-size:13px;color:#c3c6cc;}.pj-opt em{font-size:11px;color:#fca5a5;font-style:normal;}.pj-opt.on{border-color:#dc2626;background:#2a1416;}.pj-opt.dim{opacity:.8;}'
++'.pj-opt .pj-ck{position:absolute;right:12px;top:10px;color:#86efac;font-weight:800;}.pj-opt:has(.pj-ck) b{padding-right:24px;font-weight:600;font-size:14px;}'
++'.pj-rk{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:12px;background:#1a1d24;border:1px solid #2d323d;}.pj-rk.top{border-color:#dc2626;background:#2a1416;}'
++'.pj-n{font-weight:800;font-size:18px;color:#fca5a5;width:22px;}.pj-t{flex:1;font-size:14px;}.pj-rk button{width:38px;height:34px;border:0;border-radius:8px;background:#262a33;color:#fff;cursor:pointer;}'
++'.pj-bar{display:flex;align-items:center;gap:8px;font-size:12px;color:#a3a7b0;}.pj-bar span:first-child{width:80px;}.pj-bar i{display:block;height:10px;border-radius:6px;}'
++'.pj-entry{display:flex;flex-direction:column;gap:8px;background:#17131f;border:1px solid #4c3d8a;border-radius:14px;padding:12px;margin:0 0 10px;color:#e8e8ea;font-family:Inter,system-ui,sans-serif;}.pj-entry>b{font-size:15px;}';
 document.head.appendChild(st);})();
 </script>
 </body>
