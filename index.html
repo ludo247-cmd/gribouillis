@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v316</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v317</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v316</title>
+<title>Gribouillis EPS v317</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -24182,6 +24182,58 @@ eleveOpenMatch=(function(o){return function(key){const r=o.apply(this,arguments)
   if(matchCfgOf(s,key).scoreOnly)return r;const h=E('t-home');if(!h||!h.classList.contains('active'))return r;
   let extra=[];try{if(pjSportOk(s)){const P=pjStore(s);let g=pjGroupOfMe(s);const ks=Object.keys(P).filter(k=>P[k]&&P[k].ind);if(!g&&ks.length===1)g=ks[0];if(g&&P[g]&&P[g].ind)extra=[{label:'🎯 '+P[g].ind,color:'#6d28d9',pj:g}];}}catch(e){}
   setTimeout(()=>{try{prmDirect(extra);}catch(e){console.warn('eleve direct',e);}},150);}catch(e){console.warn('eleve match',e);}return r;};})(eleveOpenMatch);
+
+// ══════════════════════════════════════════════════════════════════════
+// v317 — Bibliothèque rangée par étagères (une par APSA + « Commun ») et par
+// rayons (Échauffement, Situations, Formes de rencontre, Séances modèles).
+// Elle s'ouvre sur l'APSA en cours. Les anciens filtres (tags, OE, CP, notes,
+// mot-clé) restent dans « Recherche fine ». Rien n'est modifié dans les données.
+// ══════════════════════════════════════════════════════════════════════
+const LIBS={shelf:null,rayon:''};
+const LIBS_RAYONS=[['warm','🔥 Échauffement',['warm','phase']],['remed','🛠 Situations d\'apprentissage',['remed']],['match','⚽ Formes de rencontre (matchs, FPS)',['match']],['seance','📅 Séances modèles',['seance']]];
+const LIBS_NAMES={football:'Football',handball:'Handball',basketball:'Basket',volley:'Volley',badminton:'Badminton',commun:'Commun'};
+function libsShelvesOf(x){try{if(Array.isArray(x.apsas)&&x.apsas.length)return x.apsas.map(a=>a==='general'?'commun':a);}catch(e){}const k=libSportKeyOf(x);return [k||'commun'];}
+function libsAuto(){let k='';try{const s=getActiveSeance();if(s&&s.sport)k=s.sport;}catch(e){}if(!k){try{k=CFG.apsa||'';}catch(e){}}return LIBS_NAMES[k]?k:'commun';}
+function libsShelf(){return LIBS.shelf||libsAuto();}
+function libsSet(k,v){LIBS[k]=v;renderLibTab();}
+renderLibTab=(function(o){return function(){const r=o.apply(this,arguments);try{
+  const host=E('lib-tab-content');if(!host)return r;const card=host.querySelector('.card');const grid=host.querySelector('.lib-mos');if(!card||!grid)return r;
+  const all=libLoad();const byId={};all.forEach(x=>byId[x.id]=x);const shelf=libsShelf();
+  const cnt={};all.forEach(x=>libsShelvesOf(x).forEach(k=>cnt[k]=(cnt[k]||0)+1));
+  const order=[libsAuto()].concat(SEQ_SPORTS,['commun']).filter((k,i,a)=>a.indexOf(k)===i&&(cnt[k]||k===libsAuto()||k==='commun'));
+  // étagères
+  const bar=document.createElement('div');bar.className='libs-bar';
+  bar.innerHTML=order.map(k=>'<button type="button" class="libs-sh'+(shelf===k?' on':'')+'" onclick="libsSet(\'shelf\',\''+k+'\')">'+(k==='commun'?'🧰':(APSA_ICONS[k]||''))+' '+esc(LIBS_NAMES[k]||k)+' <b>'+(cnt[k]||0)+'</b></button>').join('')
+    +'<button type="button" class="libs-sh'+(shelf==='tout'?' on':'')+'" onclick="libsSet(\'shelf\',\'tout\')">📚 Tout <b>'+all.length+'</b></button>';
+  const title=card.querySelector('.card-title');if(title){title.insertAdjacentElement('afterend',bar);title.lastChild&&(title.lastChild.textContent='Bibliothèque · '+(shelf==='tout'?'tout':(LIBS_NAMES[shelf]||shelf)));}
+  // recherche fine : on range les anciens filtres
+  const det=document.createElement('details');det.className='libs-fine';const sum=document.createElement('summary');sum.textContent='🔎 Recherche fine (type, tags, OE, CP, notes, mot-clé)';det.appendChild(sum);
+  const kids=[...card.children];const btnRow=kids.find(c=>c.querySelector&&c.querySelector('button[onclick^="libcOpen"]'));let start=btnRow?kids.indexOf(btnRow)+1:2;
+  kids.slice(start).forEach(c=>{if(c===grid||c.classList.contains('libs-bar'))return;if(c.tagName==='P')return;det.appendChild(c);});
+  const act=['kind','tag','oe','cp','q','niv','wt','note','apsa'].some(k=>LIB_UI[k]);if(act)det.open=true;grid.insertAdjacentElement('beforebegin',det);
+  // rayons
+  const tiles=[...grid.querySelectorAll('.lib-tile')];const vis=tiles.filter(t=>{const x=byId[t.dataset.id];return x&&(shelf==='tout'||libsShelvesOf(x).indexOf(shelf)>=0);});
+  const rc={};vis.forEach(t=>{const x=byId[t.dataset.id];const R=LIBS_RAYONS.find(z=>z[2].indexOf(x.kind)>=0);const k=R?R[0]:'autre';rc[k]=(rc[k]||0)+1;});
+  const rbar=document.createElement('div');rbar.className='libs-rbar';
+  rbar.innerHTML='<button type="button" class="libs-ry'+(!LIBS.rayon?' on':'')+'" onclick="libsSet(\'rayon\',\'\')">Tous les rayons</button>'+LIBS_RAYONS.map(z=>'<button type="button" class="libs-ry'+(LIBS.rayon===z[0]?' on':'')+'" onclick="libsSet(\'rayon\',\''+z[0]+'\')">'+z[1]+' <b>'+(rc[z[0]]||0)+'</b></button>').join('');
+  det.insertAdjacentElement('beforebegin',rbar);
+  const wrap=document.createElement('div');wrap.className='libs-wrap';
+  LIBS_RAYONS.concat([['autre','📦 Autres',[]]]).forEach(z=>{if(LIBS.rayon&&LIBS.rayon!==z[0])return;const T=vis.filter(t=>{const x=byId[t.dataset.id];const R=LIBS_RAYONS.find(q=>q[2].indexOf(x.kind)>=0);return (R?R[0]:'autre')===z[0];});if(!T.length)return;
+    const sec=document.createElement('section');sec.className='libs-sec';sec.innerHTML='<h3>'+z[1]+' <span>'+T.length+'</span></h3>';const g=document.createElement('div');g.className='lib-mos';T.forEach(t=>g.appendChild(t));sec.appendChild(g);wrap.appendChild(sec);});
+  if(!wrap.children.length)wrap.innerHTML='<p class="libs-empty">Rien sur cette étagère'+(LIBS.rayon?' dans ce rayon':'')+' pour l\'instant. Crée une situation avec « ➕ Situation » ou regarde l\'étagère « Tout ».</p>';
+  grid.replaceWith(wrap);
+}catch(e){console.warn('libs',e);}return r;};})(renderLibTab);
+(function(){const st=document.createElement('style');st.textContent=
+ 'html body .libs-bar{display:flex;gap:6px;overflow-x:auto;padding:2px 0 8px;margin:0 0 6px;border-bottom:1px solid var(--border,#2d3f55);}'
++'html body .libs-sh{flex:0 0 auto;min-height:44px;padding:0 14px;border-radius:12px;border:1px solid #343946;background:#1a1d24;color:#e8e8ea;font-weight:700;font-size:.92rem;cursor:pointer;}'
++'html body .libs-sh b{font-weight:600;color:#a3a7b0;font-size:.8rem;margin-left:4px;}html body .libs-sh.on{background:#dc2626;border-color:#dc2626;color:#fff;}html body .libs-sh.on b{color:#fde2e2;}'
++'html body .libs-rbar{display:flex;gap:6px;flex-wrap:wrap;margin:4px 0 8px;}'
++'html body .libs-ry{min-height:38px;padding:0 12px;border-radius:999px;border:1px solid #343946;background:#15171c;color:#e8e8ea;font-size:.82rem;cursor:pointer;}html body .libs-ry b{color:#a3a7b0;font-weight:600;margin-left:3px;}html body .libs-ry.on{background:#262a33;border-color:#e8e8ea;}'
++'html body .libs-fine{margin:4px 0 10px;border:1px solid var(--border,#2d3f55);border-radius:10px;padding:6px 10px;}html body .libs-fine summary{cursor:pointer;font-size:.8rem;color:#a3a7b0;min-height:30px;display:flex;align-items:center;}'
++'html body .libs-fine[open]>*:not(summary){margin-top:8px;}'
++'html body .libs-sec{margin:6px 0 14px;}html body .libs-sec h3{font-size:.95rem;margin:0 0 6px;color:#e8e8ea;display:flex;align-items:center;gap:8px;}html body .libs-sec h3 span{font-size:.75rem;color:#a3a7b0;font-weight:600;background:#1a1d24;border-radius:999px;padding:1px 8px;}'
++'html body .libs-empty{font-size:.8rem;color:#a3a7b0;}';
+document.head.appendChild(st);})();
 </script>
 </body>
 </html>
