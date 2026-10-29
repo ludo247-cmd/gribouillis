@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v318</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v319</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v318</title>
+<title>Gribouillis EPS v319</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -24296,6 +24296,59 @@ crsRender=(function(o){return function(){o.apply(this,arguments);try{const ov=E(
 +'.trn-abs summary{cursor:pointer;font-size:13px;color:#c3c6cc;min-height:34px;display:flex;align-items:center;}'
 +'#crs-ov .chp-club{display:inline-block;padding:2px 8px;border-radius:999px;color:#fff;font-size:12px;font-weight:700;}';
 document.head.appendChild(st);})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v319 — championnat : catégories (A, B, C…) et matchs à plusieurs
+// catégories (A/B contre A/B, B/C, A/C), comme dans le fichier volley.
+// Chaque élève a un club et une catégorie ; chaque « forme » de match
+// (A/B…) a son classement. + import du championnat depuis un code.
+// ══════════════════════════════════════════════════════════════════════
+function chpFormLab(c,f){return f.map(i=>c.cats[i]||'?').join('/');}
+function chpMixOn(id,on){chpMut(id,c=>{if(on){const old=c.niv.slice();c.cats=c.cats&&c.cats.length?c.cats:['A','B','C'];if(!c.formes||!c.formes.length)c.formes=c.cats.length>=3?[[0,1],[1,2],[0,2]]:[[0,1]];
+    Object.values(c.aff||{}).forEach(a=>{if(a.cat==null)a.cat=Math.min(c.cats.length-1,Math.max(0,c.niv.length>1?(old.length-1-(+a.niv||0)):0));});c.mix=true;c.niv=c.formes.map(f=>chpFormLab(c,f));}
+  else{c.mix=false;c.niv=(c.cats||['Espoirs','Confirmés']).slice();Object.values(c.aff||{}).forEach(a=>{a.niv=a.cat!=null?+a.cat:0;});}});}
+function chpCatSet(id,i,v){chpMut(id,c=>{if(!c.mix)return;v=String(v||'').trim();if(v)c.cats[i]=v;c.niv=c.formes.map(f=>chpFormLab(c,f));});}
+function chpCatAdd(id,d){chpMut(id,c=>{if(!c.mix)return;if(d>0&&c.cats.length<5)c.cats.push(String.fromCharCode(65+c.cats.length));else if(d<0&&c.cats.length>1){const k=c.cats.length-1;c.cats.pop();c.formes=c.formes.filter(f=>f.indexOf(k)<0);if(!c.formes.length)c.formes=[[0]];Object.values(c.aff).forEach(a=>{if(+a.cat>=c.cats.length)a.cat=c.cats.length-1;});}c.niv=c.formes.map(f=>chpFormLab(c,f));});}
+function chpFormTog(id,key){chpMut(id,c=>{if(!c.mix)return;const f=key.split('-').map(Number);const i=c.formes.findIndex(x=>x.join('-')===key);
+  if(i>=0){if((c.jours||[]).some(J=>(J.m||[]).length)&&!confirm('Des matchs existent déjà : retirer cette forme décale les classements par forme. Continuer ?'))return;if(c.formes.length>1)c.formes.splice(i,1);}else c.formes.push(f);c.niv=c.formes.map(x=>chpFormLab(c,x));});}
+function chpAffCat(id,ni,v){const n=chpNames()[ni];if(!n)return;chpMut(id,c=>{const a=c.aff[n];if(!a)return;a.cat=+v;});}
+chpMembers=(function(o){return function(c,club,niv){if(!c||!c.mix)return o.apply(this,arguments);const F=(c.formes||[])[+niv]||[];return chpNames().filter(n=>{const a=c.aff[n];return a&&a.club===club&&F.indexOf(+a.cat)>=0;});};})(chpMembers);
+chpAuto=(function(o){return function(id){const q=seqGet(id);const c=q&&q.champ;if(!c||!c.mix)return o.apply(this,arguments);
+  seqUpdate(id,qq=>{qq.champ._f=qq.champ.niv;qq.champ.niv=qq.champ.cats.slice();});o.apply(this,arguments);
+  seqUpdate(id,qq=>{const cc=qq.champ;Object.values(cc.aff||{}).forEach(a=>{a.cat=+a.niv||0;});cc.niv=cc._f;delete cc._f;});renderSeqTab();};})(chpAuto);
+chpNewDay=(function(o){return function(id){const q=seqGet(id);const c=q&&q.champ;if(!c||!c.mix)return o.apply(this,arguments);
+  chpMut(id,(c,q)=>{const ji=c.jours.length;const P=[];for(let i=0;i<c.clubs.length;i++)for(let j=i+1;j<c.clubs.length;j++)P.push([c.clubs[i].id,c.clubs[j].id]);const F=c.formes.length;
+    const m=P.map((p,i)=>({niv:(i+ji)%F,a:p[0],b:p[1],sa:'',sb:'',ba:0,bb:0}));
+    const t0=edtToday();const last=ji?String(c.jours[ji-1].date||''):'';const t=last>=t0?last:t0;const D=(q.dates||[]).filter(d=>last?d>t:d>=t);c.jours.push({date:D[0]||t,m});CAD_UI.o['chpj'+ji]=true;CAD_UI.o.chpJ=true;});};})(chpNewDay);
+// trnNewDay (séance) : même logique en mode catégories
+trnNewDay=(function(o){return function(qid){const q=seqGet(qid);const s=getActiveSeance();if(!q||!s||trnKind(q)!=='chp'||!q.champ.mix)return o.apply(this,arguments);
+  trnUpd(q,(t)=>{if(trnDayIdx(t,s)>=0)return;const ji=t.jours.length;const P=[];for(let i=0;i<t.clubs.length;i++)for(let j=i+1;j<t.clubs.length;j++)P.push([t.clubs[i].id,t.clubs[j].id]);const F=t.formes.length;
+    t.jours.push({date:s.date,m:P.map((p,i)=>({niv:(i+ji)%F,a:p[0],b:p[1],sa:'',sb:'',ba:0,bb:0})),abs:[]});});};})(trnNewDay);
+chpHtml=(function(o){return function(q){const c=q.champ;if(!c||!c.on)return o(q);const qi=esc(q.id);const w=document.createElement('div');w.innerHTML=o(q);const box=w.firstChild;
+  const nivRow=[...box.querySelectorAll('.chp-row')].find(r=>/^Niveaux/.test(r.textContent.trim()));
+  const blk=document.createElement('div');blk.className='chp-row chp-mix';
+  if(!c.mix){blk.innerHTML='<button type="button" class="btn-xs" style="background:#7c3aed;color:#fff;" onclick="chpMixOn(\''+qi+'\',true)">A / B / C : catégories et matchs à 2 catégories (A/B contre A/B…)</button><span class="cc-dim">comme ton fichier de volley : chaque élève a un club et une catégorie</span>';}
+  else{const n=c.cats.length;const pairs=[];for(let i=0;i<n;i++)pairs.push([i]);for(let i=0;i<n;i++)for(let j=i+1;j<n;j++)pairs.push([i,j]);if(n>=3)pairs.push(c.cats.map((_,i)=>i));
+    blk.innerHTML='<'+'div><b>Catégories</b> : '+c.cats.map((v,i)=>'<input type="text" value="'+esc(v)+'" style="width:60px !important;" onchange="chpCatSet(\''+qi+'\','+i+',this.value)">').join('')
+      +(n<5?'<button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="chpCatAdd(\''+qi+'\',1)">＋</button>':'')+(n>1?'<button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="chpCatAdd(\''+qi+'\',-1)">－</button>':'')+'</'+'div>'
+      +'<'+'div style="margin-top:6px;"><b>Formes de match</b> (qui joue ensemble) : '+pairs.map(f=>{const k=f.join('-');const on=c.formes.some(x=>x.join('-')===k);return '<label class="chp-ck'+(on?' on':'')+'"><input type="checkbox"'+(on?' checked':'')+' onchange="chpFormTog(\''+qi+'\',\''+k+'\')"> '+esc(chpFormLab(c,f))+' contre '+esc(chpFormLab(c,f))+'</label>';}).join(' ')+'</'+'div>'
+      +'<'+'div class="cc-dim" style="margin-top:4px;">Chaque journée : chaque paire de clubs joue une forme, qui tourne d\'une journée à l\'autre. Classement par forme et total du club.</'+'div>'
+      +'<button type="button" class="btn-xs" style="background:#334155;color:#fff;margin-top:6px;" onclick="if(confirm(\'Revenir aux niveaux (Espoirs / Confirmés…) ?\'))chpMixOn(\''+qi+'\',false)">Revenir aux niveaux simples</button>';
+    if(nivRow)nivRow.style.display='none';}
+  if(nivRow)nivRow.insertAdjacentElement('afterend',blk);else{const d=box.querySelector(':scope > details.cz');if(d)d.appendChild(blk);}
+  if(c.mix){const rep=[...box.querySelectorAll(':scope > details.cz')].find(d=>/Répartition/.test(d.querySelector('summary').textContent));
+    if(rep){const th=rep.querySelector('thead tr');if(th){const ths=th.querySelectorAll('th');if(ths.length>=3)ths[2].textContent='Catégorie';else{const x=document.createElement('th');x.textContent='Catégorie';th.appendChild(x);}}
+      const N=chpNames();rep.querySelectorAll('tbody tr').forEach((tr,ni)=>{const n=N[ni];const a=(c.aff||{})[n]||{};const tds=tr.querySelectorAll('td');let td=tds[2];if(!td){td=document.createElement('td');tr.appendChild(td);}
+        td.innerHTML=a.club?'<select onchange="chpAffCat(\''+qi+'\','+ni+',this.value)">'+c.cats.map((v,i)=>'<option value="'+i+'"'+(+a.cat===i?' selected':'')+'>'+esc(v)+'</option>').join('')+'</select>':'';});}}
+  return box.outerHTML;};})(chpHtml);
+// import d'un championnat (code « champ »)
+libImportParse=(function(o){return function(t){try{const d=JSON.parse(String(t||'').trim());if(d&&d.gribouillis==='champ'&&d.champ)return [{kind:'champ'}];}catch(e){}return o.apply(this,arguments);};})(libImportParse);
+libImportText=(function(f){return function(t){try{const o=JSON.parse(String(t||'').trim());if(o&&o.gribouillis==='champ'&&o.champ){
+  const c=clsByLooseName(o.classe||'');if(!c){alert('Classe « '+(o.classe||'?')+' » introuvable dans l\'app.');return 0;}
+  const all=seqAll();const q=all.filter(x=>x.classeId===c.id&&x.sport===o.apsa).slice(-1)[0];if(!q){alert('Pas de séquence '+(o.apsa||'')+' pour la classe '+c.nom+'.');return 0;}
+  if(q.champ&&q.champ.on&&(q.champ.jours||[]).length&&!confirm('La séquence « '+(q.nom||'')+' » a déjà un championnat avec des journées. Le remplacer par celui du fichier ?'))return 0;
+  seqUpdate(q.id,qq=>{qq.champ=Object.assign({},JSON.parse(JSON.stringify(o.champ)),{on:true});chpEnsure(qq);});try{renderSeqTab();}catch(e){}
+  alert('✅ Championnat importé dans « '+(q.nom||'séquence')+' » : '+o.champ.clubs.length+' clubs, '+Object.keys(o.champ.aff||{}).length+' élèves, '+(o.champ.jours||[]).reduce((a,J)=>a+(J.m||[]).length,0)+' matchs.');return 1;}}catch(e){}return f.apply(this,arguments);};})(libImportText);
 </script>
 </body>
 </html>
