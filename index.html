@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v315</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v316</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v315</title>
+<title>Gribouillis EPS v316</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -24167,6 +24167,21 @@ crsRender=(function(o){return function(){o.apply(this,arguments);try{const ov=E(
 +'.pj-bar{display:flex;align-items:center;gap:8px;font-size:12px;color:#a3a7b0;}.pj-bar span:first-child{width:80px;}.pj-bar i{display:block;height:10px;border-radius:6px;}'
 +'.pj-entry{display:flex;flex-direction:column;gap:8px;background:#17131f;border:1px solid #4c3d8a;border-radius:14px;padding:12px;margin:0 0 10px;color:#e8e8ea;font-family:Inter,system-ui,sans-serif;}.pj-entry>b{font-size:15px;}';
 document.head.appendChild(st);})();
+
+// v316 — mode élève : « Ouvrir le match » lance directement le match (sans la
+// page Match ni l'écran d'avant-match). Le bouton du fil rouge du projet de
+// l'équipe de l'élève est ajouté tout seul.
+function pjGroupOfMe(s){let me=null;try{me=elMeGet(s);}catch(e){}if(!me)return null;const G=pjGroups(s);const g=G.find(x=>(x.members||[]).indexOf(me)>=0);return g?g.label:null;}
+function prmDirect(extra){PRM.c=prmCfg();PRM.override=null;PRM.temp=null;
+  if(extra&&extra.length){const base=JSON.parse(JSON.stringify(getTeamDialogBtns(0)||CFG.dialogBtns||[])).filter(b=>!b.pj);PRM.temp=base.concat(extra);
+    PRM.restore=JSON.parse(JSON.stringify(CFG.dialogBtns||[]));try{localStorage.setItem('grib_prm_restore',JSON.stringify(PRM.restore));}catch(e){}CFG.dialogBtns=PRM.temp;}
+  CFG.countdownMode=(PRM.c.end==='time');try{applyConfigToUI();}catch(e){}
+  PRM.run=(PRM.c.end==='score');PRM.dismiss='';PRM.bypass=true;try{startMatch();}finally{PRM.bypass=false;}}
+eleveOpenMatch=(function(o){return function(key){const r=o.apply(this,arguments);try{
+  if(SEANCE_STATE.mode!=='eleve'||GRIB_EXPORT_MODE)return r;const s=getActiveSeance();if(!s||seanceStepBase(key)!=='match')return r;
+  if(matchCfgOf(s,key).scoreOnly)return r;const h=E('t-home');if(!h||!h.classList.contains('active'))return r;
+  let extra=[];try{if(pjSportOk(s)){const P=pjStore(s);let g=pjGroupOfMe(s);const ks=Object.keys(P).filter(k=>P[k]&&P[k].ind);if(!g&&ks.length===1)g=ks[0];if(g&&P[g]&&P[g].ind)extra=[{label:'🎯 '+P[g].ind,color:'#6d28d9',pj:g}];}}catch(e){}
+  setTimeout(()=>{try{prmDirect(extra);}catch(e){console.warn('eleve direct',e);}},150);}catch(e){console.warn('eleve match',e);}return r;};})(eleveOpenMatch);
 </script>
 </body>
 </html>
