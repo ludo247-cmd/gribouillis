@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v319</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v320</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v319</title>
+<title>Gribouillis EPS v320</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -24349,6 +24349,10 @@ libImportText=(function(f){return function(t){try{const o=JSON.parse(String(t||'
   if(q.champ&&q.champ.on&&(q.champ.jours||[]).length&&!confirm('La séquence « '+(q.nom||'')+' » a déjà un championnat avec des journées. Le remplacer par celui du fichier ?'))return 0;
   seqUpdate(q.id,qq=>{qq.champ=Object.assign({},JSON.parse(JSON.stringify(o.champ)),{on:true});chpEnsure(qq);});try{renderSeqTab();}catch(e){}
   alert('✅ Championnat importé dans « '+(q.nom||'séquence')+' » : '+o.champ.clubs.length+' clubs, '+Object.keys(o.champ.aff||{}).length+' élèves, '+(o.champ.jours||[]).reduce((a,J)=>a+(J.m||[]).length,0)+' matchs.');return 1;}}catch(e){}return f.apply(this,arguments);};})(libImportText);
+
+// v320 — la fenêtre « Importer un code » laisse passer TOUT code Gribouillis
+// (liens, championnat, calendrier, lot…) : c'est l'import lui-même qui décide.
+libImportParse=(function(o){return function(t){const r=o.apply(this,arguments);if(r)return r;try{const d=JSON.parse(String(t||'').trim());if(d&&typeof d==='object'&&typeof d.gribouillis==='string'&&d.gribouillis!=='lib')return [{kind:d.gribouillis}];}catch(e){}return r;};})(libImportParse);
 </script>
 </body>
 </html>
