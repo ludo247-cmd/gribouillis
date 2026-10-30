@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v326</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v327</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v326</title>
+<title>Gribouillis EPS v327</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -24741,6 +24741,41 @@ pjRender=(function(o){return function(){o.apply(this,arguments);try{if(PJ.step!=
  '#pj-ov .px-cps{display:flex;flex-direction:column;gap:6px;}#pj-ov .px-cp{display:flex;gap:8px;align-items:flex-start;background:#13202f;border:1px solid #1e3a5f;border-radius:10px;padding:8px 10px;font-size:14px;}'
 +'#pj-ov .px-cp span{flex:0 0 22px;height:22px;border-radius:50%;background:#1d4ed8;color:#fff;font-weight:800;font-size:12px;display:flex;align-items:center;justify-content:center;}';
 document.head.appendChild(st);})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v327 — match en mode élève (volley) : toujours au score (15 points),
+// observation collective ET individuelle, 4 boutons : Beau point / Autre
+// point pour nous, Beau point / Autre point pour eux (+ fils rouges des
+// projets). Tablette de club : on observe l'équipe de son club. Les
+// réglages habituels de l'appareil sont remis à la fin du match.
+// ══════════════════════════════════════════════════════════════════════
+const VM={saved:null,tour:null};
+function vmOn(){try{const s=getActiveSeance();return !!(s&&SEANCE_STATE.mode==='eleve'&&!GRIB_EXPORT_MODE&&(s.sport==='volley'||seanceRefId(s)==='volley'));}catch(e){return false;}}
+function vmBtns(){return [
+  {label:'🌟 Beau point',color:'#16a34a',isShot:true,isGoal:true,switchTeam:false,secondary:null,pts:1,newPoss:false,who:true},
+  {label:'🎁 Autre point',color:'#7c3aed',isShot:true,isGoal:true,switchTeam:false,secondary:null,pts:1,newPoss:false,who:false},
+  {label:'Beau point adverse',color:'#dc2626',isShot:false,isGoal:false,switchTeam:false,secondary:null,pts:1,newPoss:false,adv:true,who:false},
+  {label:'Autre point adverse (notre faute)',color:'#ea580c',isShot:false,isGoal:false,switchTeam:false,secondary:null,pts:1,newPoss:false,adv:true,who:true}];}
+function vmApply(extra){VM.saved={indiv:!!CFG.indivObsEnabled,gm:CFG.gameMode,os:!!CFG.obsSimple,btns:JSON.parse(JSON.stringify(CFG.dialogBtns||[]))};try{localStorage.setItem('grib_vm_restore',JSON.stringify(VM.saved));}catch(e){}
+  PRM.c={end:'score',target:15,smode:'win'};CFG.indivObsEnabled=true;CFG.gameMode='1eq';PRM.temp=vmBtns().concat((extra||[]).filter(b=>b&&b.pj));PRM.restore=null;CFG.dialogBtns=PRM.temp;
+  CFG.countdownMode=false;try{applyConfigToUI();}catch(e){}}
+function vmRestore(){let v=VM.saved;if(!v){try{v=JSON.parse(localStorage.getItem('grib_vm_restore')||'null');}catch(e){}}if(!v)return;
+  CFG.indivObsEnabled=v.indiv;CFG.gameMode=v.gm;CFG.obsSimple=v.os;if(Array.isArray(v.btns)&&v.btns.length)CFG.dialogBtns=v.btns;VM.saved=null;try{localStorage.removeItem('grib_vm_restore');}catch(e){}try{applyConfigToUI();}catch(e){}try{saveConfig();}catch(e){}}
+setTimeout(()=>{try{if(localStorage.getItem('grib_vm_restore')&&!syncInMatch())vmRestore();}catch(e){}},1500);
+prmDirect=(function(o){return function(extra){if(CT.pend||!vmOn())return o.apply(this,arguments);
+  vmApply(extra);PRM.override=null;PRM.run=true;PRM.dismiss='';PRM.bypass=true;try{startMatch();}finally{PRM.bypass=false;}};})(prmDirect);
+ctStart=(function(o){return function(){if(!vmOn())return o.apply(this,arguments);const p=CT.pend;CT.pend=null;if(!p)return;const s=getActiveSeance();const q=seqGet(p.qid);if(!q||!s)return;const c=q.champ;
+  const club=ctClub(s)||p.A;const mine=(club===p.B)?p.B:p.A;const opp=mine===p.A?p.B:p.A;const t=ctTeamFor(chpClub(c,mine).nom);
+  const el=E('sel-t1');if(el){el.value=String(t.id);try{el.dispatchEvent(new Event('change',{bubbles:true}));}catch(e){}}
+  const L=ctMembers(q,s,mine,p.fi);const ovr={};ovr[cleanVal(t.name)]=L;
+  const P=pjStore(s);const extra=[];const add=(k,lab)=>{const pj=P[k];if(pj&&pj.ind&&extra.length<4)extra.push({label:lab+pj.ind,color:'#6d28d9',pj:k});};
+  try{add(cpColKey(s,club),'🎯 ');cpBins(s,club).forEach(k=>{if((P[k].members||[]).some(n=>L.indexOf(n)>=0))add(k,'👥 ');});}catch(e){}
+  VM.tour=p.mi>=0?{qid:q.id,ji:p.ji,mi:p.mi,mineA:(mine===c.jours[p.ji].m[p.mi].a)}:null;CRS.tour=null;
+  vmApply(extra);PRM.override=ovr;PRM.run=true;PRM.dismiss='';PRM.bypass=true;try{startMatch();}finally{PRM.bypass=false;}};})(ctStart);
+stopMatch=(function(o){return function(){let sc=null;try{if(VM.tour)sc=[+tStats[0].pts||0,+tStats[0].scoreAdv||0];}catch(e){}const T=VM.tour;VM.tour=null;
+  const r=o.apply(this,arguments);
+  try{if(T&&sc){seqUpdate(T.qid,qq=>{const J=qq.champ.jours[T.ji];const m=J&&J.m[T.mi];if(m&&(m.sa===''||m.sa==null)){m.sa=T.mineA?sc[0]:sc[1];m.sb=T.mineA?sc[1]:sc[0];}});try{toast2('🏆 Score reporté dans le championnat : '+sc[0]+' – '+sc[1]);}catch(e){}}}catch(e){console.warn('vm score',e);}
+  try{if(VM.saved)vmRestore();}catch(e){}return r;};})(stopMatch);
 </script>
 </body>
 </html>
