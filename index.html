@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v322</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v323</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v322</title>
+<title>Gribouillis EPS v323</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -24528,6 +24528,39 @@ function ctStart(){const p=CT.pend;CT.pend=null;if(!p)return;const s=getActiveSe
 +'html body #ct-ov{position:fixed;inset:0;z-index:9660;background:rgba(0,0,0,.75);display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:14px;}'
 +'html body #ct-ov .ct-dlg{background:#0f172a;border:1px solid #334155;border-radius:14px;padding:12px;max-width:560px;width:100%;display:flex;flex-direction:column;gap:8px;color:#e8e8ea;}';
 document.head.appendChild(st);})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v323 — club choisi comme un nom d'élève (comme au foot) : en arrivant,
+// tous les clubs sont proposés ; on touche le sien → « La séance du club »
+// s'affiche (étape par étape : qui joue contre qui, exercices des projets).
+// Le choix ne vaut que pour cette ouverture de l'app (comme le nom d'élève) :
+// « Ce n'est pas notre club » pour changer. La liste des noms d'élèves est
+// masquée quand un club est choisi.
+// ══════════════════════════════════════════════════════════════════════
+try{localStorage.removeItem('grib_clubtab_v1');}catch(e){}
+function ctKey(s){return 'grib_club_me_'+(s&&s.id||'');}
+ctGet=function(s){if(!s)return null;try{const v=sessionStorage.getItem(ctKey(s));if(v!=null)return {sid:s.id,club:v};}catch(e){}return null;};
+ctSet=function(club){const s=getActiveSeance();if(!s)return;try{if(club==null)sessionStorage.removeItem(ctKey(s));else sessionStorage.setItem(ctKey(s),club);}catch(e){}renderSeanceTab();if(club)setTimeout(()=>{try{ctPerson();}catch(e){console.warn(e);}},50);};
+ctPickHtml=function(s,q){const c=q.champ;return '<'+'div class="ct-box"><'+'div class="ct-hd"><b>🏳 Choisis ton club pour voir toute votre séance</b></'+'div>'
+  +'<'+'div class="ct-clubs">'+c.clubs.map(k=>'<button type="button" class="ct-club" style="background:'+esc(k.col||'#475569')+'" onclick="ctSet(\''+esc(k.id)+'\')">'+esc(k.nom)+'</button>').join('')+'</'+'div>'
+  +'<button type="button" class="ct-chg" onclick="ctSet(\'\')">Pas de club</button></'+'div>';};
+ctTeamsHtml=(function(o){return function(s,q,mode){let h=o.apply(this,arguments);
+  return h.replace(/<button type="button" class="ct-chg"[^>]*>changer<\/button>/,'<span class="ct-hb"><button type="button" class="ct-my" onclick="ctPerson()">📋 Notre séance</button><button type="button" class="ct-chg" onclick="ctSet(null)">Ce n\'est pas notre club</button></span>');};})(ctTeamsHtml);
+renderSeanceEleve=(function(o){return function(s){const r=o.apply(this,arguments);try{if(s&&!GRIB_EXPORT_MODE&&ctSeq(s)){const ct=ctGet(s);if(!ct||ct.club){const host=E('seance-tab-content');const em=host&&host.querySelector('.el-me');if(em)em.remove();}}}catch(e){}return r;};})(renderSeanceEleve);
+function ctPerson(){const s=getActiveSeance();const q=ctSeq(s);const club=ctClub(s);if(!q||!club)return;const c=q.champ;const cl=chpClub(c,club);const ji=ctDay(q,s);const P=pjStore(s);
+  let tms={};try{tms=seanceStepTimes(s)||{};}catch(e){}
+  const old=E('ct-pers');if(old)old.remove();const o=document.createElement('div');o.id=['ct','pers'].join('-');o.className='org-fs';
+  let rows='';(s.steps||[]).forEach(st=>{const d=seanceStepDef(st.key);const b=seanceStepBase(st.key);const tm=tms[st.key];let x='tous ensemble';
+    if(b==='match'){x=c.formes.map((f,fi)=>{const m=ji>=0?(c.jours[ji].m||[]).find(mm=>+mm.niv===fi&&(mm.a===club||mm.b===club)):null;const opp=m?(m.a===club?m.b:m.a):null;
+      return '<b>'+esc(chpFormLab(c,f))+'</b> : '+(m?'contre '+esc(chpClub(c,opp).nom)+(m.sa!==''&&m.sa!=null?' ('+(m.a===club?m.sa+'–'+m.sb:m.sb+'–'+m.sa)+')':''):(ji>=0?'pas de match prévu : on s\'entraîne sur notre projet':'adversaire à choisir au moment du match'));}).join('<br>');}
+    else if(b==='remediation'){x=c.formes.map((f,fi)=>{const g=ctGrp(q,club,fi);const p=P[g]||{};let ex=null;try{if(p.exoId){const r=exoByKey(p.cpPath+'#'+p.exoId);ex=r&&r.exo;}}catch(e){}
+      return '<b>'+esc(chpFormLab(c,f))+'</b> : '+(ex?'🎯 '+esc(ex.titre)+(p.scoreAt?' · dernier score '+p.score+'/10':''):(p.ind?'🎯 '+esc(p.ind)+' · exercice à choisir':'projet à faire'));}).join('<br>');}
+    rows+='<'+'div class="org-row"><span class="t">'+esc(tm&&tm.start?tm.start:'')+'</span><span class="x"><b>'+d.ico+' '+esc(eleveStepLabel(st.key))+seanceStepNum(s,st.key)+'</b><br>'+x+'</span></'+'div>';});
+  const teamsH=c.formes.map((f,fi)=>'<'+'div class="org-row"><span class="t">'+esc(chpFormLab(c,f))+'</span><span class="x">'+esc(ctMembers(q,s,club,fi).join(', '))+'</span></'+'div>').join('');
+  o.innerHTML='<'+'div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;"><b style="flex:1;font-size:1.5rem;">🏳 La séance du club <span style="color:'+esc(cl.col||'#fff')+'">'+esc(cl.nom)+'</span></b><button type="button" class="btn-xs" style="background:#334155;color:#fff;padding:10px 14px;" onclick="E(\'ct-pers\').remove()">✕ Fermer</button></'+'div>'
+    +'<'+'div style="font-weight:800;margin:4px 0;">Nos équipes</'+'div>'+teamsH+'<'+'div style="font-weight:800;margin:10px 0 4px;">Notre séance</'+'div>'+rows;
+  document.body.appendChild(o);}
+(function(){const st=document.createElement('style');st.textContent='html body .ct-hb{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;}html body .ct-my{background:#15803d;color:#fff;border:none;border-radius:8px;padding:4px 10px;font-weight:800;font-size:.8rem;cursor:pointer;min-height:32px;}';document.head.appendChild(st);})();
 </script>
 </body>
 </html>
