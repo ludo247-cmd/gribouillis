@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v324</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v325</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v324</title>
+<title>Gribouillis EPS v325</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -24630,6 +24630,77 @@ ctPerson=(function(o){return function(){o.apply(this,arguments);try{const s=getA
 (function(){const st=document.createElement('style');st.textContent=
  'html body .cf-box{display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:#1c1606;border:1px solid #a16207;border-radius:12px;padding:8px 10px;margin:0 0 10px;color:#fde68a;}html body .cf-box .cc-dim{flex:1 1 200px;}'
 +'html body .cf-now{background:#0b2a4a;border:1px solid #1d4ed8;border-radius:12px;padding:8px 10px;margin:0 0 8px;color:#dbeafe;font-size:.9rem;}';
+document.head.appendChild(st);})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v325 — projets par club : en mode élève on choisit son CLUB (jamais la
+// liste de toutes les équipes), puis le club fait
+//   • un projet collectif (tout le club) ;
+//   • des projets individuels en binôme (chaque binôme du club le sien).
+// Ensuite toute la séance se déroule avec ces projets : au match, le
+// bouton du fil rouge collectif (et ceux des binômes qui jouent) ; à
+// l'entraînement, l'exercice du projet collectif ou de son binôme.
+// ══════════════════════════════════════════════════════════════════════
+function cpColKey(s,club){const q=ctSeq(s);return chpClub(q.champ,club).nom+' · projet collectif';}
+function cpBins(s,club){const P=pjStore(s);return Object.keys(P).filter(k=>P[k]&&P[k].club===club&&P[k].kind==='bin').sort((a,b)=>(P[a].t0||0)-(P[b].t0||0));}
+function cpClubAll(s,club){const q=ctSeq(s);const c=q.champ;return Object.keys(c.aff||{}).filter(n=>c.aff[n]&&c.aff[n].club===club);}
+function cpExo(p){try{if(p&&p.exoId){const r=exoByKey(p.cpPath+'#'+p.exoId);return r&&r.exo;}}catch(e){}return null;}
+function cpStatus(p){const ex=cpExo(p);return p&&p.ind?'🎯 '+esc(p.ind)+(ex?' · '+esc(ex.titre)+(p.scoreAt?' · '+p.score+'/10':''):' · exercice à choisir'):'<i>pas encore de projet</i>';}
+function cpBtn(key,p){const k=esc(key).replace(/'/g,"\\'");const ex=cpExo(p);
+  if(ex)return '<span class="cp-bb"><button type="button" class="ct-go" onclick="ctTrain(\''+k+'\')">▶ Notre exercice</button><button type="button" class="ct-go2" onclick="pjOpen(\''+k+'\')">Modifier</button></span>';
+  return '<button type="button" class="ct-go" onclick="cpOpen(\''+k+'\')">'+(p&&p.frm?'Choisir notre exercice':'🎯 Faire notre projet')+'</button>';}
+function cpOpen(key){const s=getActiveSeance();if(!s)return;const P=pjStore(s);if(!P[key]){const club=ctClub(s);P[key]={club:club,kind:'col',t0:Date.now()};saveSeances();}pjOpen(key);if(P[key].frm&&!P[key].exoId)pjGo(4);}
+ctTeamsHtml=function(s,q,mode){const c=q.champ;const club=ctClub(s);const cl=chpClub(c,club);const P=pjStore(s);const ck=cpColKey(s,club);const B=cpBins(s,club);
+  let h='<'+'div class="ct-box" style="--cc:'+esc(cl.col||'#475569')+'"><'+'div class="ct-hd"><b>🏳 Club '+esc(cl.nom)+'</b><span class="ct-hb"><button type="button" class="ct-my" onclick="ctPerson()">📋 Notre séance</button><button type="button" class="ct-chg" onclick="ctSet(null)">Ce n\'est pas notre club</button></span></'+'div>';
+  if(mode==='train')h+='<'+'div class="ct-q">🏋 Entraînement : faites l\'exercice de votre projet</'+'div>';
+  h+='<'+'div class="ct-team cp-col"><'+'div class="ct-tt"><b>🎯 Projet collectif — tout le club</b><span>'+esc(cpClubAll(s,club).join(', '))+'</span></'+'div><'+'div class="ct-pj">'+cpStatus(P[ck])+'</'+'div>'+cpBtn(ck,P[ck])+'</'+'div>';
+  h+='<'+'div class="cp-lab">👥 Projets individuels en binôme</'+'div>';
+  B.forEach(k=>{const p=P[k];h+='<'+'div class="ct-team"><'+'div class="ct-tt"><b>'+esc((p.members||[]).join(' & '))+'</b></'+'div><'+'div class="ct-pj">'+cpStatus(p)+'</'+'div>'+cpBtn(k,p)+'</'+'div>';});
+  h+='<button type="button" class="ct-go2" onclick="cpBinNew()">＋ Nouveau binôme</button>';
+  return h+'</'+'div>';};
+function cpBinNew(){const s=getActiveSeance();const club=ctClub(s);if(!s||!club)return;const P=pjStore(s);const taken={};cpBins(s,club).forEach(k=>(P[k].members||[]).forEach(n=>taken[n]=1));
+  let ov=E('ct-ov');if(!ov){ov=document.createElement('div');ov.id=['ct','ov'].join('-');document.body.appendChild(ov);}CT.sel=[];
+  const N=cpClubAll(s,club);ov.innerHTML='<'+'div class="ct-dlg"><'+'div class="ct-hd"><b>👥 Qui est dans votre binôme ?</b><button type="button" class="prm-x" aria-label="Fermer" onclick="E(\'ct-ov\').remove()">✕</button></'+'div><'+'div class="ct-q" style="font-weight:400;font-size:.85rem;">Touchez vos 2 noms (3 si vous êtes un nombre impair).</'+'div>'
+    +'<'+'div class="cp-names">'+N.map(n=>'<button type="button" class="cp-n'+(taken[n]?' tk':'')+'" data-n="'+esc(n)+'" onclick="cpTog(this)">'+esc(n)+(taken[n]?' <small>(déjà en binôme)</small>':'')+'</button>').join('')+'</'+'div>'
+    +'<button type="button" class="ct-go" id="cp-ok" disabled onclick="cpBinOk()">Valider notre binôme</button></'+'div>';}
+function cpTog(b){const n=b.dataset.n;const i=CT.sel.indexOf(n);if(i>=0)CT.sel.splice(i,1);else if(CT.sel.length<3)CT.sel.push(n);b.classList.toggle('on',CT.sel.indexOf(n)>=0);const ok=E('cp-ok');if(ok)ok.disabled=CT.sel.length<2;}
+function cpBinOk(){const s=getActiveSeance();const club=ctClub(s);if(!s||!club||CT.sel.length<2)return;const P=pjStore(s);const nom=chpClub(ctSeq(s).champ,club).nom;const key=nom+' · '+CT.sel.join(' & ');
+  if(!P[key])P[key]={club:club,kind:'bin',members:CT.sel.slice(),t0:Date.now()};saveSeances();const ov=E('ct-ov');if(ov)ov.remove();renderSeanceTab();pjOpen(key);}
+// jamais la liste de toutes les équipes en mode tablette de club
+pjOpen=(function(o){return function(grp){const s=getActiveSeance();if(!grp&&s&&SEANCE_STATE.mode==='eleve'&&ctSeq(s)){const club=ctClub(s);if(!club){try{toast2('Choisissez d\'abord votre club en haut de la séance');}catch(e){}renderSeanceTab();try{window.scrollTo(0,0);}catch(e){}return;}return cpOpen(cpColKey(s,club));}return o.apply(this,arguments);};})(pjOpen);
+pjGo=(function(o){return function(n){try{if(n===1&&ctOn(getActiveSeance()))return;}catch(e){}return o.apply(this,arguments);};})(pjGo);
+// pendant un bloc de match : les équipes libres font les projets du club
+cfClubBlocHtml=(function(o){return function(s,key){let h=o.apply(this,arguments);if(!h)return h;const w=document.createElement('div');w.innerHTML=h;
+  w.querySelectorAll('.ct-team').forEach(t=>{if(!/entraînement/.test((t.querySelector('b')||{}).textContent||''))return;t.querySelectorAll('.ct-pj,.ct-go,.cp-bb').forEach(x=>x.remove());const d=document.createElement('div');d.className='ct-pj';d.textContent='🏋 Exercice du projet collectif ou de votre binôme (voir « Club » en haut)';t.appendChild(d);});
+  return w.innerHTML;};})(cfClubBlocHtml);
+// « Notre séance »
+ctPerson=(function(o){return function(){o.apply(this,arguments);try{const s=getActiveSeance();const club=ctClub(s);const ov=E('ct-pers');if(!ov)return;const P=pjStore(s);const ck=cpColKey(s,club);const B=cpBins(s,club);
+  const sum='<b>🎯 Collectif</b> : '+cpStatus(P[ck])+B.map(k=>'<br><b>👥 '+esc((P[k].members||[]).join(' & '))+'</b> : '+cpStatus(P[k])).join('');
+  const nT=(ctSeq(s).champ.formes||[]).length;const rows=ov.querySelectorAll('.org-row');
+  s.steps.forEach((st,i)=>{const row=rows[nT+i];if(!row)return;const x=row.querySelector('.x');if(!x)return;const b=seanceStepBase(st.key);
+    if(b==='remediation')x.innerHTML='<b>'+esc(eleveStepLabel(st.key))+seanceStepNum(s,st.key)+'</b><br>'+sum;
+    else x.innerHTML=x.innerHTML.replace(/🏋 [^<]*/g,'🏋 projets du club');});
+  const d=document.createElement('div');d.innerHTML='<'+'div style="font-weight:800;margin:10px 0 4px;">Nos projets</'+'div><'+'div class="org-row"><span class="t"></span><span class="x">'+sum+'</span></'+'div>';
+  const heads=[...ov.children].filter(x=>/Notre séance/.test(x.textContent)&&x.children.length===0);if(heads[0])heads[0].insertAdjacentElement('beforebegin',d.firstChild);if(heads[0])heads[0].insertAdjacentElement('beforebegin',d.lastChild||document.createElement('span'));}catch(e){console.warn(e);}};})(ctPerson);
+// match : fil rouge collectif + binômes présents sur le terrain
+ctStart=function(){const p=CT.pend;CT.pend=null;if(!p)return;const s=getActiveSeance();const q=seqGet(p.qid);if(!q||!s)return;const c=q.champ;
+  const tA=ctTeamFor(chpClub(c,p.A).nom),tB=ctTeamFor(chpClub(c,p.B).nom);
+  [[tA,'sel-t1'],[tB,'sel-t2']].forEach(([t,id])=>{const el=E(id);if(el){el.value=String(t.id);try{el.dispatchEvent(new Event('change',{bubbles:true}));}catch(e){}}});
+  CFG.gameMode='2eq';
+  const LA=ctMembers(q,s,p.A,p.fi),LB=ctMembers(q,s,p.B,p.fi);const ovr={};ovr[cleanVal(tA.name)]=LA;ovr[cleanVal(tB.name)]=LB;
+  const P=pjStore(s);const club=ctClub(s);const extra=[];const add=(k,lab)=>{const pj=P[k];if(pj&&pj.ind&&extra.length<4)extra.push({label:lab+pj.ind,color:'#6d28d9',pj:k});};
+  if(club){add(cpColKey(s,club),'🎯 ');const on=LA.concat(LB);cpBins(s,club).forEach(k=>{if((P[k].members||[]).some(n=>on.indexOf(n)>=0))add(k,'👥 ');});}
+  if(!extra.length)add(p.grp,'🎯 ');
+  if(p.mi>=0){CRS.tour={qid:q.id,ji:p.ji,mi:p.mi};}
+  PRM.c=prmCfg();PRM.temp=null;
+  if(extra.length){const base=JSON.parse(JSON.stringify(getTeamDialogBtns(0)||CFG.dialogBtns||[])).filter(b=>!b.pj);PRM.temp=base.concat(extra);
+    PRM.restore=JSON.parse(JSON.stringify(CFG.dialogBtns||[]));try{localStorage.setItem('grib_prm_restore',JSON.stringify(PRM.restore));}catch(e){}CFG.dialogBtns=PRM.temp;}
+  CFG.countdownMode=(PRM.c.end==='time');try{applyConfigToUI();}catch(e){}
+  PRM.override=ovr;PRM.run=(PRM.c.end==='score');PRM.dismiss='';PRM.bypass=true;try{startMatch();}finally{PRM.bypass=false;}};
+(function(){const st=document.createElement('style');st.textContent=
+ 'html body .cp-col{border-color:var(--cc,#6d28d9);}html body .cp-lab{font-weight:800;margin-top:4px;}html body .cp-bb{display:flex;gap:6px;}html body .cp-bb .ct-go{flex:2;}html body .cp-bb .ct-go2{flex:1;}'
++'html body .cp-names{display:flex;flex-wrap:wrap;gap:6px;}html body .cp-n{min-height:48px;padding:0 14px;border-radius:10px;border:1px solid #334155;background:#1a1d24;color:#e8e8ea;font-weight:700;cursor:pointer;}html body .cp-n.tk{opacity:.55;}html body .cp-n.on{background:#6d28d9;border-color:#a78bfa;opacity:1;}'
++'html body #cp-ok[disabled]{opacity:.4;}';
 document.head.appendChild(st);})();
 </script>
 </body>
