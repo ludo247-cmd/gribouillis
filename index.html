@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v327</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v328</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v327</title>
+<title>Gribouillis EPS v328</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -24776,6 +24776,37 @@ stopMatch=(function(o){return function(){let sc=null;try{if(VM.tour)sc=[+tStats[
   const r=o.apply(this,arguments);
   try{if(T&&sc){seqUpdate(T.qid,qq=>{const J=qq.champ.jours[T.ji];const m=J&&J.m[T.mi];if(m&&(m.sa===''||m.sa==null)){m.sa=T.mineA?sc[0]:sc[1];m.sb=T.mineA?sc[1]:sc[0];}});try{toast2('🏆 Score reporté dans le championnat : '+sc[0]+' – '+sc[1]);}catch(e){}}}catch(e){console.warn('vm score',e);}
   try{if(VM.saved)vmRestore();}catch(e){}return r;};})(stopMatch);
+
+// ══════════════════════════════════════════════════════════════════════
+// v328 — score validé par les deux équipes : à la fin d'un match de
+// championnat observé sur une tablette, le score n'est inscrit que si les
+// deux capitaines sont d'accord (on peut corriger avant). Deux tablettes
+// qui valident le même score écrivent la même chose : plus de conflit.
+// ══════════════════════════════════════════════════════════════════════
+const SV={};
+stopMatch=(function(o){return function(){let T=null,sc=null;try{if(VM.tour){T=VM.tour;sc=[+tStats[0].pts||0,+tStats[0].scoreAdv||0];VM.tour=null;}}catch(e){}
+  const r=o.apply(this,arguments);if(T&&sc)setTimeout(()=>{try{svOpen(T,T.mineA?sc:[sc[1],sc[0]]);}catch(e){console.warn('sv',e);}},300);return r;};})(stopMatch);
+function svOpen(T,ab){const q=seqGet(T.qid);const c=q&&q.champ;const m=c&&c.jours[T.ji]&&c.jours[T.ji].m[T.mi];if(!m)return;SV.T=T;SV.ab=ab.slice();svRender();}
+function svRender(){const T=SV.T;const q=seqGet(T.qid);const c=q.champ;const m=c.jours[T.ji].m[T.mi];const A=chpClub(c,m.a),B=chpClub(c,m.b);
+  let ov=E('sv-ov');if(!ov){ov=document.createElement('div');ov.id=['sv','ov'].join('-');document.body.appendChild(ov);}
+  const old=(m.sa!==''&&m.sa!=null)?'<'+'div class="sv-old">⚠️ Un score est déjà inscrit pour ce match : '+m.sa+' – '+m.sb+'. Valider le remplacera.</'+'div>':'';
+  const side=(i,k)=>'<'+'div class="sv-side" style="--c:'+esc(k.col||'#475569')+'"><b>'+esc(k.nom)+'</b><'+'div class="sv-n"><button type="button" onclick="svAdj('+i+',-1)">−</button><span>'+SV.ab[i]+'</span><button type="button" onclick="svAdj('+i+',1)">+</button></'+'div></'+'div>';
+  ov.innerHTML='<'+'div class="sv-box"><b class="sv-t">🏆 Score du match · '+esc(chpFormLab(c,c.formes[+m.niv]||[]))+'</b><'+'div class="sv-row">'+side(0,A)+'<span class="sv-dash">–</span>'+side(1,B)+'</'+'div>'
+   +'<'+'div class="sv-q">Les deux capitaines sont-ils d\'accord avec ce score ?<br><small>Si besoin, corrigez avec − / + avant de valider.</small></'+'div>'+old
+   +'<button type="button" class="sv-ok" onclick="svOk()">✅ Nous sommes d\'accord : on valide</button>'
+   +'<button type="button" class="sv-no" onclick="svNo()">Pas d\'accord : le prof décidera (score non inscrit)</button></'+'div>';}
+function svAdj(i,d){SV.ab[i]=Math.max(0,SV.ab[i]+d);svRender();}
+function svOk(){const T=SV.T;const ab=SV.ab;seqUpdate(T.qid,qq=>{const m=qq.champ.jours[T.ji].m[T.mi];if(m){m.sa=ab[0];m.sb=ab[1];m.val={ok:true,t:Date.now()};}});const ov=E('sv-ov');if(ov)ov.remove();try{toast2('🏆 Score validé : '+ab[0]+' – '+ab[1]);}catch(e){}SV.T=null;}
+function svNo(){const T=SV.T;const ab=SV.ab;seqUpdate(T.qid,qq=>{const m=qq.champ.jours[T.ji].m[T.mi];if(m){m.val={ok:false,prop:ab.slice(),t:Date.now()};}});const ov=E('sv-ov');if(ov)ov.remove();try{toast2('Score non inscrit : à voir avec le prof');}catch(e){}SV.T=null;}
+(function(){const st=document.createElement('style');st.textContent=
+ 'html body #sv-ov{position:fixed;inset:0;z-index:99970;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;padding:14px;}'
++'html body .sv-box{background:#0f172a;border:2px solid #a16207;border-radius:16px;padding:14px;max-width:520px;width:100%;display:flex;flex-direction:column;gap:12px;color:#e8e8ea;}'
++'html body .sv-t{font-size:1.1rem;}html body .sv-row{display:flex;align-items:center;justify-content:center;gap:10px;}html body .sv-dash{font-size:2rem;font-weight:900;}'
++'html body .sv-side{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;border:2px solid var(--c);border-radius:12px;padding:8px;}html body .sv-side b{font-size:1.1rem;}'
++'html body .sv-n{display:flex;align-items:center;gap:8px;}html body .sv-n span{font-size:2.4rem;font-weight:900;min-width:56px;text-align:center;}html body .sv-n button{width:48px;height:48px;border:none;border-radius:10px;background:#334155;color:#fff;font-size:1.4rem;cursor:pointer;}'
++'html body .sv-q{text-align:center;}html body .sv-old{background:#3f2a06;border:1px solid #a16207;border-radius:8px;padding:6px 8px;font-size:.85rem;}'
++'html body .sv-ok{min-height:56px;border:none;border-radius:12px;background:#15803d;color:#fff;font-weight:900;font-size:1.05rem;cursor:pointer;}html body .sv-no{min-height:44px;border:1px solid #475569;border-radius:12px;background:transparent;color:#cbd5e1;cursor:pointer;}';
+document.head.appendChild(st);})();
 </script>
 </body>
 </html>
