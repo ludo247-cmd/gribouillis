@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v323</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v324</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v323</title>
+<title>Gribouillis EPS v324</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -24561,6 +24561,76 @@ function ctPerson(){const s=getActiveSeance();const q=ctSeq(s);const club=ctClub
     +'<'+'div style="font-weight:800;margin:4px 0;">Nos équipes</'+'div>'+teamsH+'<'+'div style="font-weight:800;margin:10px 0 4px;">Notre séance</'+'div>'+rows;
   document.body.appendChild(o);}
 (function(){const st=document.createElement('style');st.textContent='html body .ct-hb{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;}html body .ct-my{background:#15803d;color:#fff;border:none;border-radius:8px;padding:4px 10px;font-weight:800;font-size:.8rem;cursor:pointer;min-height:32px;}';document.head.appendChild(st);})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v324 — « Remplir les blocs avec le championnat » : un bloc par match du
+// tour du jour. Pendant chaque bloc : 2 équipes jouent (observées par
+// l'app), une équipe arbitre, toutes les autres font l'exercice de leur
+// projet (OE au choix selon les réglages de la séance → fil rouge → CP →
+// situation). Présentation, échauffement et bilan sont gardés ; l'ancienne
+// version des blocs est gardée pour pouvoir annuler.
+// ══════════════════════════════════════════════════════════════════════
+function cfRef(c,m){const o=c.clubs.filter(k=>k.id!==m.a&&k.id!==m.b);return o.length?o[0].id:null;}
+function cfFill(){const s=getActiveSeance();const q=s&&trnSeqOf(s);if(!q||!q.champ||!q.champ.on){alert('Pas de championnat dans la séquence de cette séance.');return;}
+  let ji=ctDay(q,s);if(ji<0){try{trnNewDay(q.id);}catch(e){console.warn(e);}ji=ctDay(seqGet(q.id),s);}
+  const c=seqGet(q.id).champ;const J=ji>=0?c.jours[ji]:null;const M=J?(J.m||[]):[];if(!M.length){alert('Le tour du jour n\'a pas de match.');return;}
+  const has=s.steps.some(st=>{const b=seanceStepBase(st.key);return (b==='match'||b==='remediation')&&st.status==='done';});
+  if(!confirm('Remplacer les blocs Match / Entraînement de la séance par '+M.length+' bloc'+(M.length>1?'s':'')+' (un par match du tour du jour) ?\n\nPendant chaque bloc : 2 équipes jouent, 1 équipe arbitre, les autres font l\'exercice de leur projet.\nPrésentation, échauffement et bilan sont gardés. Tu pourras annuler.'+(has?'\n\n⚠️ Certaines étapes sont déjà faites.':'')))return;
+  s.fillBackup=JSON.parse(JSON.stringify({steps:s.steps,matchCfg:s.matchCfg||{},stepExos:s.stepExos||{},par:s.par||null,parGroups:s.parGroups||null,parEleves:s.parEleves||null,chpBloc:s.chpBloc||null,at:Date.now()}));
+  const firstM=s.steps.find(st=>seanceStepBase(st.key)==='match');let fps=null;try{fps=JSON.parse(JSON.stringify(matchCfgOf(s,firstM?firstM.key:'match-1')));}catch(e){}
+  const keep=s.steps.filter(st=>{const b=seanceStepBase(st.key);return b!=='match'&&b!=='remediation';});
+  const old=s.steps.filter(st=>{const b=seanceStepBase(st.key);return b==='match'||b==='remediation';}).map(st=>st.key);
+  old.forEach(k=>{if(s.matchCfg)Object.keys(s.matchCfg).forEach(x=>{if(x===k||x.indexOf(k+'~')===0)delete s.matchCfg[x];});if(s.stepExos)Object.keys(s.stepExos).forEach(x=>{if(x===k||x.indexOf(k+'~')===0)delete s.stepExos[x];});if(s.par)delete s.par[k];if(s.eleveChoix)delete s.eleveChoix[k];});
+  const fin=keep.findIndex(st=>seanceStepBase(st.key)==='fin');const blocks=M.map((m,i)=>({key:'match-'+(i+1),status:'pending'}));
+  s.steps=fin<0?keep.concat(blocks):keep.slice(0,fin).concat(blocks,keep.slice(fin));
+  if(!s.matchCfg||typeof s.matchCfg!=='object')s.matchCfg={};s.chpBloc={};
+  M.forEach((m,i)=>{const k='match-'+(i+1);s.chpBloc[k]={qid:q.id,ji:ji,mi:i};const cfg=JSON.parse(JSON.stringify(fps||matchCfgOf(s,k)));cfg.groupes=[];delete cfg.scoreOnly;
+    cfg.eleves=ctMembers(seqGet(q.id),s,m.a,+m.niv).concat(ctMembers(seqGet(q.id),s,m.b,+m.niv));s.matchCfg[k]=cfg;});
+  recomputeSeanceStatuses(s);saveSeances();try{renderSeanceTab();}catch(e){}try{if(E('crs-ov'))crsRender();}catch(e){}
+  try{toast2('⚡ '+M.length+' blocs créés à partir du tour du jour');}catch(e){}}
+function cfUndo(){const s=getActiveSeance();if(!s||!s.fillBackup)return;if(!confirm('Revenir aux blocs d\'avant le remplissage ?'))return;const b=s.fillBackup;
+  s.steps=b.steps;s.matchCfg=b.matchCfg;s.stepExos=b.stepExos;['par','parGroups','parEleves','chpBloc'].forEach(k=>{if(b[k])s[k]=b[k];else delete s[k];});delete s.fillBackup;
+  recomputeSeanceStatuses(s);saveSeances();try{renderSeanceTab();}catch(e){}try{if(E('crs-ov'))crsRender();}catch(e){}}
+function cfBloc(s,key){const b=s&&s.chpBloc&&s.chpBloc[key];if(!b)return null;const q=seqGet(b.qid);const c=q&&q.champ;const J=c&&c.jours&&c.jours[b.ji];const m=J&&J.m&&J.m[b.mi];if(!m)return null;return {q:q,c:c,m:m,b:b,ref:cfRef(c,m)};}
+function cfMatchLab(c,m){return chpClub(c,m.a).nom+' – '+chpClub(c,m.b).nom+' · '+chpFormLab(c,c.formes[+m.niv]||[]);}
+function cfBoxHtml(s){const q=s&&trnSeqOf(s);if(!q||!q.champ||!q.champ.on)return '';const nb=s.chpBloc?Object.keys(s.chpBloc).length:0;
+  return '<'+'div class="cf-box"><b>🏆 Championnat</b><span class="cc-dim">'+(nb?nb+' blocs remplis avec le tour du jour (un match par bloc, les autres équipes sur leur projet)':'un bloc par match du tour du jour : 2 équipes jouent, 1 arbitre, les autres font l\'exercice de leur projet')+'</span>'
+   +'<button type="button" class="btn-xs" style="background:#a16207;color:#fff;" onclick="cfFill()">⚡ '+(nb?'Remplir à nouveau':'Remplir les blocs de la séance')+'</button>'
+   +(s.fillBackup?'<button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="cfUndo()">↩ Annuler le remplissage</button>':'')+'</'+'div>';}
+// séance (prof) : le bouton
+renderSeanceTab=(function(o){return function(){const r=o.apply(this,arguments);try{if(SEANCE_STATE.mode==='eleve'||GRIB_EXPORT_MODE)return r;const s=getActiveSeance();const host=E('seance-tab-content');if(!s||!host||host.querySelector('.cf-box'))return r;const h=cfBoxHtml(s);if(!h)return r;
+  const d=document.createElement('div');d.innerHTML=h;const card=host.querySelector('.card');if(card)card.insertAdjacentElement('afterbegin',d.firstChild);else host.insertAdjacentElement('afterbegin',d.firstChild);}catch(e){console.warn('cf',e);}return r;};})(renderSeanceTab);
+// Faire cours : bouton + bloc en cours mis en avant
+trnHtml=(function(o){return function(s){let h=o.apply(this,arguments);try{const q=trnSeqOf(s);if(!h||trnKind(q)!=='chp')return h;const key=CRS.view||(crsCur(s)||{}).key;const B=cfBloc(s,key);
+  let top='';if(B){const r=B.ref?chpClub(B.c,B.ref).nom+' '+chpFormLab(B.c,B.c.formes[+B.m.niv]||[]):'—';top='<'+'div class="cf-now">⚽ Ce bloc : <b>'+esc(cfMatchLab(B.c,B.m))+'</b> · 🟨 arbitres : '+esc(r)+' · 🏋 les autres équipes : exercice de leur projet</'+'div>';}
+  return top+h+cfBoxHtml(s);}catch(e){return h;}};})(trnHtml);
+// tablette de club : ce que fait chaque équipe pendant le bloc
+function cfBusy(s,B){const f=+B.m.niv;const L=ctMembers(B.q,s,B.m.a,f).concat(ctMembers(B.q,s,B.m.b,f));if(B.ref)ctMembers(B.q,s,B.ref,f).forEach(n=>L.push(n));return L;}
+function cfTeamRole(B,club,fi){const m=B.m;if(+m.niv===fi&&(m.a===club||m.b===club))return 'play';if(+m.niv===fi&&B.ref===club)return 'ref';return 'train';}
+function cfClubBlocHtml(s,key){const B=cfBloc(s,key);const club=ctClub(s);if(!B||!club)return '';const c=B.c;const q=B.q;const P=pjStore(s);
+  let h='<'+'div class="ct-box" style="--cc:'+esc(chpClub(c,club).col||'#475569')+'"><'+'div class="ct-q">⚽ Pendant ce bloc : '+esc(cfMatchLab(c,B.m))+'</'+'div>';
+  c.formes.forEach((f,fi)=>{const g=ctGrp(q,club,fi);const role=cfTeamRole(B,club,fi);const gi=esc(g).replace(/'/g,"\\'");const p=P[g]||{};let ex=null;try{if(p.exoId){const r=exoByKey(p.cpPath+'#'+p.exoId);ex=r&&r.exo;}}catch(e){}
+    h+='<'+'div class="ct-team"><'+'div class="ct-tt"><b>'+esc(chpFormLab(c,f))+(role==='play'?' · ⚽ vous jouez':role==='ref'?' · 🟨 vous arbitrez':' · 🏋 entraînement')+'</b><span>'+esc((role==='train'?ctMembers(q,s,club,fi).filter(n=>cfBusy(s,B).indexOf(n)<0):ctMembers(q,s,club,fi)).join(', ')||'tous pris par le match ou l\'arbitrage')+'</span></'+'div>';
+    if(role==='train'&&!ctMembers(q,s,club,fi).filter(n=>cfBusy(s,B).indexOf(n)<0).length){h+='</'+'div>';return;}
+    if(role==='play'){const opp=B.m.a===club?B.m.b:B.m.a;h+='<button type="button" class="ct-go" style="background:#1d4ed8" onclick="ctLaunch(\''+esc(key)+'\','+fi+',\''+esc(opp)+'\','+B.b.mi+')">▶ Lancer l\'observation contre '+esc(chpClub(c,opp).nom)+'</button>';}
+    else if(role==='ref')h+='<'+'div class="ct-pj">Arbitrez le match '+esc(cfMatchLab(c,B.m))+'.</'+'div>';
+    else h+='<'+'div class="ct-pj">'+(ex?'🎯 '+esc(ex.titre):(p.ind?'🎯 '+esc(p.ind)+' · exercice à choisir':'projet à faire'))+'</'+'div><button type="button" class="ct-go" onclick="ctTrain(\''+gi+'\')">'+(p.exoId?'▶ Notre exercice':(p.frm?'Choisir notre exercice':'Faire notre projet'))+'</button>';
+    h+='</'+'div>';});
+  return h+'</'+'div>';}
+renderSeanceEleve=(function(o){return function(s){const r=o.apply(this,arguments);try{if(!ctOn(s))return r;const host=E('seance-tab-content');const card=host&&host.querySelector('.seance-eleve');if(!card)return r;
+  const cur=SEANCE_ELEVE_VIEW?s.steps.find(x=>x.key===SEANCE_ELEVE_VIEW):null;const st=cur||s.steps.find(x=>x.status==='current')||s.steps[s.steps.length-1];if(!st||!cfBloc(s,st.key))return r;
+  const d=document.createElement('div');d.innerHTML=cfClubBlocHtml(s,st.key);const nm=card.querySelector('.sel-stepname');if(nm)nm.insertAdjacentElement('afterend',d.firstChild);else card.appendChild(d.firstChild);}catch(e){console.warn('cf eleve',e);}return r;};})(renderSeanceEleve);
+eleveOpenMatch=(function(o){return function(key){const s=getActiveSeance();if(ctOn(s)&&!CT.pend){const B=cfBloc(s,key);const club=ctClub(s);if(B&&club){const fi=+B.m.niv;if(B.m.a===club||B.m.b===club){ctLaunch(key,fi,B.m.a===club?B.m.b:B.m.a,B.b.mi);return;}}}return o.apply(this,arguments);};})(eleveOpenMatch);
+// « Notre séance » : le rôle de chaque équipe à chaque bloc
+ctPerson=(function(o){return function(){o.apply(this,arguments);try{const s=getActiveSeance();const club=ctClub(s);const ov=E('ct-pers');if(!ov||!s||!s.chpBloc)return;const rows=ov.querySelectorAll('.org-row');
+  const steps=s.steps;const nT=(trnSeqOf(s).champ.formes||[]).length;
+  steps.forEach((st,i)=>{const B=cfBloc(s,st.key);const row=rows[nT+i];if(!B||!row)return;const x=row.querySelector('.x');if(!x)return;const c=B.c;
+    x.innerHTML='<b>⚽ '+esc(cfMatchLab(c,B.m))+'</b><br>'+c.formes.map((f,fi)=>{const role=cfTeamRole(B,club,fi);const g=ctGrp(B.q,club,fi);const p=pjStore(s)[g]||{};let ex=null;try{if(p.exoId){const rr=exoByKey(p.cpPath+'#'+p.exoId);ex=rr&&rr.exo;}}catch(e){}
+      return '<b>'+esc(chpFormLab(c,f))+'</b> : '+(role==='play'?'⚽ on joue':role==='ref'?'🟨 on arbitre':'🏋 '+(ex?esc(ex.titre):'exercice de notre projet'));}).join('<br>');});}catch(e){console.warn(e);}};})(ctPerson);
+(function(){const st=document.createElement('style');st.textContent=
+ 'html body .cf-box{display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:#1c1606;border:1px solid #a16207;border-radius:12px;padding:8px 10px;margin:0 0 10px;color:#fde68a;}html body .cf-box .cc-dim{flex:1 1 200px;}'
++'html body .cf-now{background:#0b2a4a;border:1px solid #1d4ed8;border-radius:12px;padding:8px 10px;margin:0 0 8px;color:#dbeafe;font-size:.9rem;}';
+document.head.appendChild(st);})();
 </script>
 </body>
 </html>
