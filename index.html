@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v325</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v326</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v325</title>
+<title>Gribouillis EPS v326</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -24701,6 +24701,45 @@ ctStart=function(){const p=CT.pend;CT.pend=null;if(!p)return;const s=getActiveSe
  'html body .cp-col{border-color:var(--cc,#6d28d9);}html body .cp-lab{font-weight:800;margin-top:4px;}html body .cp-bb{display:flex;gap:6px;}html body .cp-bb .ct-go{flex:2;}html body .cp-bb .ct-go2{flex:1;}'
 +'html body .cp-names{display:flex;flex-wrap:wrap;gap:6px;}html body .cp-n{min-height:48px;padding:0 14px;border-radius:10px;border:1px solid #334155;background:#1a1d24;color:#e8e8ea;font-weight:700;cursor:pointer;}html body .cp-n.tk{opacity:.55;}html body .cp-n.on{background:#6d28d9;border-color:#a78bfa;opacity:1;}'
 +'html body #cp-ok[disabled]{opacity:.4;}';
+document.head.appendChild(st);})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v326 — projet (élèves), étape « Exercice » : jamais bloqué. On écrit les
+// CP du fil rouge choisi ; sous chaque CP, ses exercices du référentiel,
+// sinon les situations de la bibliothèque rangées sur ce CP ; puis toutes
+// les autres situations de la bibliothèque du sport (les plus proches en
+// premier), même si elles ne collent pas tout à fait.
+// ══════════════════════════════════════════════════════════════════════
+function pxLib(id){return libLoad().find(x=>x&&x.id===id)||null;}
+exoByKey=(function(o){return function(key){const k=String(key||'');const at=k.lastIndexOf('#');if(at>=0&&k.slice(at+1,at+5)==='lib:'){const x=pxLib(k.slice(at+5));if(!x)return null;
+  return {cpPath:k.slice(0,at),exoId:k.slice(at+1),index:-1,lib:true,exo:{id:k.slice(at+1),titre:x.titre||'Situation',desc:x.desc||'',criteres:(x.criteres||[]).slice(),image:x.image||null,video:x.video||null,anim:x.anim||null}};}
+  return o.apply(this,arguments);};})(exoByKey);
+function pxSport(s){return s&&(s.sport||'')||'volley';}
+function pxLibFor(s){const sp=pxSport(s);return libLoad().filter(x=>x&&x.kind==='remed'&&(libSportKeyOf(x)===sp||(Array.isArray(x.apsas)&&x.apsas.indexOf(sp)>=0)));}
+function pxBtn(path,id,titre,desc,tag){const on=PJ.exo===id&&PJ.cp===path;return '<button type="button" class="pj-opt'+(on?' on':'')+'" onclick="pjPickExo(\''+esc(path)+'\',\''+esc(id)+'\')"><b>'+esc(titre||'Situation')+'</b>'+(tag?'<em style="color:#a5b4fc">'+esc(tag)+'</em>':'')+(desc?'<span>'+esc(String(desc).slice(0,220))+'</span>':'')+'</button>';}
+pjRender=(function(o){return function(){o.apply(this,arguments);try{if(PJ.step!==4)return;const ov=E('pj-ov');const s=pjS();const oe=pjOe(s,PJ.oe);if(!ov||!s||!oe)return;const card=ov.querySelector('.crs-card.now');if(!card)return;
+  const m=(oe.micro||[]).find(x=>x.id===PJ.rank[0]);const R=seanceRefId(s);const L=pxLibFor(s);const used={};
+  let h='<'+'div class="crs-memo"><span class="crs-lab">Notre fil rouge</span><span class="crs-memo-t">'+esc(m?pjNeg(m):'')+'</span></'+'div>';
+  const cps=(m&&m.cps)||[];const paths=cps.map(cp=>remedCpPath(R,oe.id,m.id,cp.id));
+  if(cps.length){h+='<b class="pj-q">Ce qu\'il faut travailler (les CP de votre fil rouge)</b><'+'div class="px-cps">'+cps.map((cp,i)=>'<'+'div class="px-cp"><span>'+(i+1)+'</span>'+esc(cp.label||'')+'</'+'div>').join('')+'</'+'div>';}
+  h+='<b class="pj-q">Choisissez un exercice</b>';
+  cps.forEach((cp,i)=>{const path=paths[i];let X=[];try{const c=getCpByPath(path);X=(c&&c.exercices)||[];}catch(e){}
+    const lab=cpGroupKey(cp.label||'');const LX=L.filter(x=>{const cs=[x.cp].concat(x.cpAlso||[]).filter(Boolean);return cs.some(c=>c===path||(lab&&cpGroupKey(libCpLabel(c))===lab));});
+    h+='<'+'div class="crs-lab">CP '+(i+1)+' · '+esc(cp.label||'')+'</'+'div>';
+    X.forEach(x=>{used['r:'+(x.id||'')+'|'+(x.titre||'')]=1;h+=pxBtn(path,x.id||'',x.titre||'Exercice',x.desc,'');});
+    LX.forEach(x=>{if(used[x.id])return;used[x.id]=1;h+=pxBtn(path,'lib:'+x.id,x.titre,x.desc,'📚 bibliothèque');});
+    if(!X.length&&!LX.length)h+='<'+'div class="crs-dim">Pas d\'exercice rangé sur ce CP : choisissez-en un plus bas.</'+'div>';});
+  const p0=paths[0]||remedCpPath(R,oe.id,(m&&m.id)||'x','cp1');
+  const rest=L.filter(x=>!used[x.id]).map(x=>{let sc=0;if(x.oe===oe.id||(x.oeAlso||[]).indexOf(oe.id)>=0)sc+=2;const cs=[x.cp].concat(x.cpAlso||[]).filter(Boolean);if(m&&cs.some(c=>c.indexOf('|'+m.id+'|')>=0))sc+=3;return {x:x,sc:sc};}).sort((a,b)=>b.sc-a.sc);
+  if(rest.length){h+='<'+'div class="crs-lab" style="margin-top:8px;">📚 Autres situations de la bibliothèque'+(cps.length?' (pas tout à fait sur ces CP)':'')+'</'+'div>';
+    rest.forEach(r=>{h+=pxBtn(p0,'lib:'+r.x.id,r.x.titre,r.x.desc,r.sc>=2?(r.x.oeLab?'même OE · '+r.x.oeLab:'même OE'):(r.x.oeLab||''));});}
+  let nO=0;try{const sd=seanceSportDef(s);((sd&&sd.oe)||[]).slice().sort((a,b)=>(b.id===oe.id)-(a.id===oe.id)).forEach(o2=>(o2.micro||[]).forEach(mm=>{if(m&&mm.id===m.id&&o2.id===oe.id)return;(mm.cps||[]).forEach(cp=>{const pth=remedCpPath(R,o2.id,mm.id,cp.id);let X=[];try{const c=getCpByPath(pth);X=(c&&c.exercices)||[];}catch(e){}
+    X.forEach(x=>{const uk='r:'+x.id+'|'+(x.titre||'');if(!x||!x.id||used[uk])return;used[uk]=1;if(!nO)h+='<'+'div class="crs-lab" style="margin-top:8px;">🧭 Exercices des autres fils rouges</'+'div>';nO++;h+=pxBtn(pth,x.id,x.titre||'Exercice',x.desc,(o2.short||'')+' · '+(cp.label||''));});});}));}catch(e){console.warn(e);}
+  if(!cps.length&&!rest.length&&!nO)h+='<'+'div class="crs-dim">Aucune situation dans la bibliothèque pour ce sport : ton prof va vous en donner une.</'+'div>';
+  card.innerHTML=h;}catch(e){console.warn('px',e);}};})(pjRender);
+(function(){const st=document.createElement('style');st.textContent=
+ '#pj-ov .px-cps{display:flex;flex-direction:column;gap:6px;}#pj-ov .px-cp{display:flex;gap:8px;align-items:flex-start;background:#13202f;border:1px solid #1e3a5f;border-radius:10px;padding:8px 10px;font-size:14px;}'
++'#pj-ov .px-cp span{flex:0 0 22px;height:22px;border-radius:50%;background:#1d4ed8;color:#fff;font-weight:800;font-size:12px;display:flex;align-items:center;justify-content:center;}';
 document.head.appendChild(st);})();
 </script>
 </body>
