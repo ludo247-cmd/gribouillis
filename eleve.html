@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Gribouillis Élèves</title>
+<style>
+:root{--bg:#0b0c0f;--card:#15171c;--card2:#1a1d24;--line:#2d323d;--tx:#e8e8ea;--dim:#a3a7b0;--ok:#15803d;--blue:#1d4ed8;--violet:#6d28d9;--red:#dc2626;--cc:#475569;}
+*{box-sizing:border-box;}
+html,body{margin:0;background:var(--bg);color:var(--tx);font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-tap-highlight-color:transparent;}
+body{min-height:100vh;}
+button{font-family:inherit;cursor:pointer;}
+#app{max-width:760px;margin:0 auto;padding:12px 14px 40px;display:flex;flex-direction:column;gap:12px;}
+.top{display:flex;align-items:center;gap:8px;}
+.top h1{flex:1;font-size:1.05rem;margin:0;line-height:1.25;}
+.top small{display:block;color:var(--dim);font-weight:400;font-size:.78rem;}
+.sync{font-size:.72rem;color:var(--dim);border:1px solid var(--line);border-radius:999px;padding:4px 9px;white-space:nowrap;background:none;}
+.sync.bad{color:#fecaca;border-color:#b91c1c;}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:8px;}
+.card.club{border:2px solid var(--cc);}
+.card h2{font-size:1rem;margin:0;display:flex;align-items:center;gap:8px;}
+.card h2 span{flex:1;}
+.dim{color:var(--dim);font-size:.85rem;}
+.clubs{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;}
+.clubbtn{min-height:90px;border:none;border-radius:16px;color:#fff;font-size:1.5rem;font-weight:900;}
+.big{min-height:54px;border:none;border-radius:12px;background:var(--violet);color:#fff;font-weight:800;font-size:1rem;padding:0 14px;}
+.big.blue{background:var(--blue);}.big.green{background:var(--ok);}.big.grey{background:#334155;}.big.ghost{background:transparent;border:1px solid var(--line);color:var(--dim);font-weight:600;}
+.row{display:flex;gap:8px;flex-wrap:wrap;}.row>*{flex:1;}
+.item{background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:6px;}
+.item b{font-size:1rem;}.item .who{font-size:.82rem;color:var(--dim);}
+.pj{font-size:.88rem;color:#c4b5fd;}
+.tag{display:inline-block;font-size:.72rem;border-radius:999px;padding:2px 8px;background:#262a33;color:#cbd5e1;margin-right:4px;}
+.tag.play{background:#1e3a8a;color:#dbeafe;}.tag.ref{background:#713f12;color:#fef3c7;}.tag.train{background:#3b0764;color:#ede9fe;}.tag.ok{background:#14532d;color:#dcfce7;}
+.now{border-color:#0e7490;background:#06202a;}
+.small{font-size:.75rem;padding:4px 10px;min-height:34px;border-radius:9px;border:1px solid var(--line);background:none;color:var(--dim);}
+.opt{display:flex;flex-direction:column;gap:3px;text-align:left;width:100%;min-height:52px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--card2);color:var(--tx);font-size:.95rem;}
+.opt span{font-size:.82rem;color:#c3c6cc;}.opt em{font-size:.72rem;color:#a5b4fc;font-style:normal;}
+.opt.on{border-color:var(--red);background:#2a1416;}
+.lab{font-size:.75rem;text-transform:uppercase;letter-spacing:.04em;color:var(--dim);margin-top:4px;}
+.rk{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:12px;background:var(--card2);border:1px solid var(--line);}
+.rk.top{border-color:var(--red);background:#2a1416;}.rk .n{font-weight:900;color:#fca5a5;width:22px;font-size:1.1rem;}.rk .t{flex:1;font-size:.92rem;}
+.rk button{width:42px;height:38px;border:0;border-radius:8px;background:#262a33;color:#fff;font-size:1rem;}
+.steps{display:flex;gap:4px;}.steps i{flex:1;height:5px;border-radius:3px;background:#262a33;}.steps i.on{background:var(--red);}
+.cp{display:flex;gap:8px;align-items:flex-start;background:#13202f;border:1px solid #1e3a5f;border-radius:10px;padding:8px 10px;font-size:.9rem;}
+.cp span{flex:0 0 22px;height:22px;border-radius:50%;background:var(--blue);color:#fff;font-weight:800;font-size:.75rem;display:flex;align-items:center;justify-content:center;}
+.ctr{display:flex;align-items:center;justify-content:center;gap:16px;}
+.ctr button{width:72px;height:72px;border-radius:16px;border:none;background:#334155;color:#fff;font-size:2rem;}
+.ctr .v{font-size:3.2rem;font-weight:900;min-width:110px;text-align:center;}
+.ov{position:fixed;inset:0;background:var(--bg);z-index:50;overflow-y:auto;}
+.ov>.in{max-width:760px;margin:0 auto;padding:12px 14px 40px;display:flex;flex-direction:column;gap:12px;}
+.names{display:flex;flex-wrap:wrap;gap:8px;}.names button{min-height:52px;padding:0 16px;border-radius:12px;border:1px solid var(--line);background:var(--card2);color:var(--tx);font-weight:700;font-size:1rem;}
+.names button.on{background:var(--violet);border-color:#a78bfa;}.names button.tk{opacity:.5;}
+/* match */
+.score{display:flex;align-items:stretch;gap:10px;}
+.score>div{flex:1;border-radius:14px;padding:8px;text-align:center;background:var(--card2);border:2px solid var(--line);}
+.score b{display:block;font-size:.95rem;}.score .pts{font-size:3.4rem;font-weight:900;line-height:1.1;}
+.score .us{border-color:var(--cc);}
+.mbtns{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.mb{min-height:84px;border:none;border-radius:14px;color:#fff;font-weight:800;font-size:1.05rem;position:relative;padding:6px;}
+.mb small{display:block;font-weight:600;opacity:.85;font-size:.75rem;}
+.mb .c{position:absolute;top:6px;right:9px;font-size:.8rem;opacity:.9;}
+.fr{min-height:60px;border:none;border-radius:12px;background:var(--violet);color:#fff;font-weight:700;position:relative;padding:6px 40px 6px 10px;text-align:left;}
+.fr .c{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:1.1rem;font-weight:900;}
+.banner{background:#14532d;border:1px solid #22c55e;border-radius:12px;padding:10px;display:flex;gap:8px;align-items:center;}
+.banner span{flex:1;font-weight:700;}
+.err{background:#3f1212;border:1px solid #b91c1c;border-radius:12px;padding:12px;}
+.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#111827;border:1px solid #334155;color:#fff;padding:10px 14px;border-radius:12px;z-index:99;font-size:.9rem;max-width:92vw;}
+.vbox .side{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;border:2px solid var(--line);border-radius:14px;padding:10px;}
+.vbox .side .v{font-size:2.8rem;font-weight:900;}
+.vbox .side .pm{display:flex;gap:10px;}.vbox .side .pm button{width:56px;height:56px;border:none;border-radius:12px;background:#334155;color:#fff;font-size:1.6rem;}
+a.vid{color:#93c5fd;}
+</style>
+</head>
+<body>
+<div id="app"><div class="card"><b>Chargement de la séance…</b></div></div>
+<script>
+'use strict';
+// ══════════════════════════════════════════════════════════════════════
+// Gribouillis — app élève (tablettes). La séance est publiée par le prof
+// dans le Google Sheets de la séquence ; cette page la lit et n'écrit que
+// des « retours » (projets, scores validés par les capitaines, observations).
+// ══════════════════════════════════════════════════════════════════════
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const LS={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}},
+  sget(k){try{return sessionStorage.getItem(k);}catch(e){return null;}},sset(k,v){try{if(v==null)sessionStorage.removeItem(k);else sessionStorage.setItem(k,v);}catch(e){}}};
+function toast(t){const d=document.createElement('div');d.className='toast';d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),2600);}
+// ── configuration (lien / QR) ──
+function readConf(){const h=new URLSearchParams(location.hash.replace(/^#/,''));const c={p:h.get('p'),f:h.get('f'),k:h.get('k'),s:h.get('s')};
+  if(c.p&&c.f&&c.k&&c.s){LS.set('el_conf',c);try{history.replaceState(null,'',location.pathname);}catch(e){}return c;}return LS.get('el_conf',null);}
+const CONF=readConf();
+let TAB=LS.get('el_tab',null);if(!TAB){TAB='tab-'+Math.random().toString(36).slice(2,8);LS.set('el_tab',TAB);}
+const ST={pk:null,ret:[],online:null,err:'',view:'home',busy:false};
+function locKey(){return 'el_loc_'+(CONF&&CONF.s);}
+function LOC(){const l=LS.get(locKey(),null)||{};l.projets=l.projets||{};l.queue=l.queue||[];l.scores=l.scores||{};return l;}
+function saveLoc(l){LS.set(locKey(),l);}
+// ── réseau ──
+async function apiGet(){const u=CONF.p+(CONF.p.indexOf('?')<0?'?':'&')+'action=eleve&fichier='+encodeURIComponent(CONF.f)+'&k='+encodeURIComponent(CONF.k)+'&s='+encodeURIComponent(CONF.s)+'&t='+Date.now();
+  const r=await fetch(u,{redirect:'follow'});const j=JSON.parse(await r.text());if(j.erreur)throw new Error(j.erreur==='cle'?'lien périmé : demande le nouveau QR code au prof':j.erreur==='seance'?'séance pas encore publiée par le prof':j.erreur);return j;}
+async function apiPut(items){const r=await fetch(CONF.p,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},redirect:'follow',body:JSON.stringify({action:'eleve_put',fichier:CONF.f,k:CONF.k,s:CONF.s,tab:TAB,items:items})});
+  const j=JSON.parse(await r.text());if(j.erreur)throw new Error(j.erreur);return j;}
+async function load(first){try{const j=await apiGet();ST.pk=j.paquet;ST.ret=j.retours||[];ST.online=true;ST.err='';LS.set('el_cache_'+CONF.s,{pk:ST.pk,ret:ST.ret});}
+  catch(e){ST.online=false;ST.err=e.message;if(first){const c=LS.get('el_cache_'+CONF.s,null);if(c){ST.pk=c.pk;ST.ret=c.ret||[];}}}
+  if(first||ST.view==='home')render();else renderSync();}
+function send(items){const l=LOC();items.forEach(it=>{l.queue=l.queue.filter(q=>!(q.type===it.type&&q.ref===it.ref));l.queue.push(it);});saveLoc(l);flush();}
+async function flush(){const l=LOC();if(!l.queue.length||ST.busy)return;ST.busy=true;const items=l.queue.slice();
+  try{const j=await apiPut(items);const l2=LOC();l2.queue=l2.queue.filter(q=>!items.some(x=>x.type===q.type&&x.ref===q.ref&&x.t===q.t));saveLoc(l2);ST.ret=j.retours||ST.ret;ST.online=true;ST.err='';}
+  catch(e){ST.online=false;ST.err=e.message;}finally{ST.busy=false;renderSync();}}
+setInterval(()=>{if(document.visibilityState!=='visible'||!CONF)return;flush();if(ST.view==='home')load(false);},25000);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&CONF){flush();if(ST.view==='home')load(false);}});
+// ── données dérivées ──
+const PK=()=>ST.pk||{};
+function club(){return LS.sget('el_club_'+CONF.s);}
+function setClub(id){LS.sset('el_club_'+CONF.s,id);render();}
+function clubOf(id){return (PK().clubs||[]).find(c=>c.id===id)||{id:id,nom:'?',col:'#475569'};}
+function abs(){return PK().abs||[];}
+function membersOf(cid,fi){const E=PK().eleves||{};const F=fi==null?null:((PK().formes||[])[fi]||{}).ids;
+  return Object.keys(E).filter(n=>E[n].club===cid&&abs().indexOf(n)<0&&(!F||F.indexOf(E[n].cat)>=0)).sort((a,b)=>a.localeCompare(b,'fr'));}
+function formLab(fi){const f=(PK().formes||[])[fi];return f?f.lab:'';}
+function projAll(){const P={};const put=(k,v)=>{if(!v||typeof v!=='object')return;if(!P[k]||(+v.t||0)>=(+P[k].t||0))P[k]=v;};
+  Object.keys(PK().projets||{}).forEach(k=>put(k,PK().projets[k]));ST.ret.filter(r=>r.type==='projet').forEach(r=>put(r.ref,r.data));const l=LOC();Object.keys(l.projets).forEach(k=>put(k,l.projets[k]));return P;}
+function colKey(cid){return clubOf(cid).nom+' · projet collectif';}
+function binsOf(cid){const P=projAll();return Object.keys(P).filter(k=>P[k]&&P[k].club===cid&&P[k].kind==='bin').sort((a,b)=>(P[a].t0||0)-(P[b].t0||0));}
+function oeById(id){return (PK().oes||[]).find(o=>o.id===id)||null;}
+function microOf(p){const o=oeById(p&&p.oe);return o&&(o.micro||[]).find(m=>m.id===p.frm)||null;}
+function exoOf(p){if(!p||!p.exoId)return null;if(String(p.exoId).indexOf('lib:')===0){const x=(PK().lib||[]).find(z=>'lib:'+z.id===p.exoId);return x?{titre:x.titre,desc:x.desc,video:x.video,crit:[]}:null;}
+  for(const o of PK().oes||[])for(const m of o.micro||[])for(const c of m.cps||[])if(c.path===p.cpPath){const x=(c.ex||[]).find(e=>e.id===p.exoId);if(x)return x;}
+  for(const o of PK().oes||[])for(const m of o.micro||[])for(const c of m.cps||[]){const x=(c.ex||[]).find(e=>e.id===p.exoId);if(x)return x;}return null;}
+function pjStatus(p){if(!p||!p.ind)return '<i class="dim">pas encore de projet</i>';const x=exoOf(p);return '🎯 '+esc(p.ind)+(x?' · '+esc(x.titre)+(p.scoreAt?' · <b>'+p.score+'/10</b>':''):' · exercice à choisir');}
+function scoreOf(ref){const l=LOC();const mine=l.scores[ref];const ok=ST.ret.filter(r=>r.type==='score'&&r.ref===ref&&r.data&&r.data.ok);
+  if(mine&&mine.ok)return mine;if(ok.length)return ok[ok.length-1].data;const m=(PK().matchs||[]).find(x=>x.ref===ref);if(m&&m.sa!==''&&m.sa!=null)return {sa:m.sa,sb:m.sb,ok:true,prof:true};return null;}
+function hm(t){const m=/(\d{1,2})h(\d{2})/.exec(t||'');return m?(+m[1])*60+(+m[2]):null;}
+function curBloc(){const B=PK().blocs||[];const d=new Date();const n=d.getHours()*60+d.getMinutes();return B.find(b=>{const a=hm(b.start),e=hm(b.end);return a!=null&&e!=null&&n>=a&&n<e;})||null;}
+function matchByRef(ref){return (PK().matchs||[]).find(m=>m.ref===ref)||null;}
+function refClubOf(m){const o=(PK().clubs||[]).filter(c=>c.id!==m.a&&c.id!==m.b);return o.length?o[0].id:null;}
+function roleIn(m,cid,fi){if(!m)return 'train';if(m.niv===fi&&(m.a===cid||m.b===cid))return 'play';if(m.niv===fi&&refClubOf(m)===cid)return 'ref';return 'train';}
+// ── rendu ──
+function renderSync(){const b=$('sync');if(!b)return;const q=LOC().queue.length;b.className='sync'+(ST.online===false?' bad':'');
+  b.textContent=ST.online===false?'⚠️ hors ligne'+(q?' · '+q+' en attente':''):(q?'⏳ envoi ('+q+')':'☁️ à jour');b.title=ST.err||'';}
+function topHtml(){const c=club()?clubOf(club()):null;return '<div class="top"><h1>'+esc(PK().titre||'Séance')+(c?'<small>Club <b style="color:'+esc(c.col)+'">'+esc(c.nom)+'</b></small>':'')+'</h1><button class="sync" id="sync" onclick="flush();load(false)"></button></div>';}
+function render(){ST.view='home';const app=$('app');
+  if(!CONF){app.innerHTML='<div class="err"><b>Lien incomplet.</b><br>Scanne le QR code donné par ton prof (onglet Séance → 📲 App élève).</div>';return;}
+  if(!ST.pk){app.innerHTML='<div class="err"><b>Séance introuvable.</b><br>'+esc(ST.err||'')+'<br><br><button class="big grey" onclick="load(true)">Réessayer</button></div>';return;}
+  const cid=club();
+  if(!cid||!(PK().clubs||[]).some(c=>c.id===cid)){app.innerHTML=topHtml()+'<div class="card"><h2><span>🏳 Quel est votre club ?</span></h2><div class="clubs">'+(PK().clubs||[]).map(c=>'<button class="clubbtn" style="background:'+esc(c.col)+'" onclick="setClub(\''+esc(c.id)+'\')">'+esc(c.nom)+'</button>').join('')+'</div>'
+      +((PK().clubs||[]).length?'':'<div class="dim">Aucun club dans cette séance : le prof doit d\'abord créer les clubs (championnat ou colonne Club de la liste).</div>')+'</div>';renderSync();return;}
+  const c=clubOf(cid);document.documentElement.style.setProperty('--cc',c.col);
+  let h=topHtml();
+  // maintenant
+  const B=curBloc();if(B)h+='<div class="card now"><h2><span>⏱ Maintenant · '+esc(B.lab)+'</span><span class="dim" style="flex:0">'+esc(B.start)+'–'+esc(B.end)+'</span></h2>'+blocRolesHtml(B,cid,true)+'</div>';
+  // matchs
+  const M=(PK().matchs||[]).filter(m=>m.a===cid||m.b===cid);
+  if(M.length){h+='<div class="card"><h2><span>⚽ Nos matchs du jour</span></h2>'+M.map(m=>{const sc=scoreOf(m.ref);const opp=clubOf(m.a===cid?m.b:m.a);
+      return '<div class="item"><b>'+esc(formLab(m.niv))+' · contre '+esc(opp.nom)+'</b><div class="who">'+esc(membersOf(cid,m.niv).join(', '))+'</div>'+(sc?'<div><span class="tag ok">✅ '+esc(clubOf(m.a).nom)+' '+sc.sa+' – '+sc.sb+' '+esc(clubOf(m.b).nom)+'</span></div>':'')
+        +'<button class="big blue" onclick="mOpen(\''+esc(m.ref)+'\')">▶ Observer ce match</button></div>';}).join('')+'</div>';}
+  else if(!(PK().formes||[]).length)h+='<div class="card"><h2><span>⚽ Match</span></h2><div class="dim">Pas de match prévu dans le championnat pour aujourd\'hui.</div><div class="row">'+(PK().clubs||[]).filter(k=>k.id!==cid).map(k=>'<button class="big blue" style="background:'+esc(k.col)+'" onclick="mOpenFree(\''+esc(k.id)+'\')">▶ Match contre '+esc(k.nom)+'</button>').join('')+'</div></div>';
+  // projets
+  const P=projAll();const ck=colKey(cid);
+  h+='<div class="card club"><h2><span>🎯 Nos projets</span></h2>';
+  h+='<div class="item"><b>Projet collectif — tout le club</b><div class="who">'+esc(membersOf(cid).join(', '))+'</div><div class="pj">'+pjStatus(P[ck])+'</div>'+pjBtns(ck,P[ck])+'</div>';
+  h+='<div class="lab">👥 Projets individuels en binôme</div>';
+  binsOf(cid).forEach(k=>{const p=P[k];h+='<div class="item"><b>'+esc((p.members||[]).join(' & '))+'</b><div class="pj">'+pjStatus(p)+'</div>'+pjBtns(k,p)+'</div>';});
+  h+='<button class="big grey" onclick="binNew()">＋ Nouveau binôme</button></div>';
+  // séance
+  h+='<div class="card"><h2><span>📋 Notre séance</span></h2>'+(PK().blocs||[]).map(b=>'<div class="item'+(B&&B.key===b.key?' now':'')+'"><b>'+esc(b.start||'')+' '+esc(b.lab)+'</b>'+blocRolesHtml(b,cid,false)+'</div>').join('')+'</div>';
+  h+='<button class="small" onclick="if(confirm(\'Changer de club ?\'))setClub(null)" style="align-self:center">Ce n\'est pas notre club</button>';
+  app.innerHTML=h;renderSync();}
+function blocRolesHtml(b,cid,btns){const m=b.match?matchByRef(b.match):null;
+  if(m){const F=PK().formes||[];return '<div class="dim">⚽ '+esc(clubOf(m.a).nom)+' – '+esc(clubOf(m.b).nom)+' · '+esc(formLab(m.niv))+'</div>'+F.map((f,fi)=>{const r=roleIn(m,cid,fi);return '<div>'+'<span class="tag '+r+'">'+esc(f.lab)+' · '+(r==='play'?'⚽ on joue':r==='ref'?'🟨 on arbitre':'🏋 projet')+'</span></div>';}).join('')
+    +(btns&&(m.a===cid||m.b===cid)?'<button class="big blue" onclick="mOpen(\''+esc(m.ref)+'\')">▶ Observer notre match</button>':'')+(btns?'<div class="dim">Les autres : exercice du projet collectif ou de votre binôme (plus bas).</div>':'');}
+  if(b.base==='remediation')return '<div class="dim">🏋 Exercice du projet collectif ou de votre binôme</div>';
+  if(b.base==='match')return '<div class="dim">⚽ Match</div>';return '<div class="dim">Tous ensemble</div>';}
+function pjBtns(k,p){const kk=esc(k).replace(/'/g,"\\'");if(p&&p.exoId)return '<div class="row"><button class="big" style="flex:2" onclick="pjOpen(\''+kk+'\',4)">▶ Notre exercice</button><button class="big grey" onclick="pjOpen(\''+kk+'\',1)">Modifier</button></div>';
+  return '<button class="big" onclick="pjOpen(\''+kk+'\','+(p&&p.frm?3:1)+')">'+(p&&p.frm?'Choisir notre exercice':'🎯 Faire notre projet')+'</button>';}
+// ── binôme ──
+const BIN={sel:[]};
+function binNew(){const cid=club();const P=projAll();const taken={};binsOf(cid).forEach(k=>(P[k].members||[]).forEach(n=>taken[n]=1));BIN.sel=[];ST.view='bin';
+  ovShow('<div class="top"><h1>👥 Qui est dans votre binôme ?<small>Touchez vos 2 noms (3 si vous êtes un nombre impair).</small></h1><button class="small" onclick="ovClose()">✕</button></div><div class="names">'+membersOf(cid).map(n=>'<button class="'+(taken[n]?'tk':'')+'" data-n="'+esc(n)+'" onclick="binTog(this)">'+esc(n)+'</button>').join('')+'</div><button class="big green" id="binok" disabled onclick="binOk()">Valider notre binôme</button>');}
+function binTog(b){const n=b.dataset.n;const i=BIN.sel.indexOf(n);if(i>=0)BIN.sel.splice(i,1);else if(BIN.sel.length<3)BIN.sel.push(n);b.classList.toggle('on',BIN.sel.indexOf(n)>=0);$('binok').disabled=BIN.sel.length<2;}
+function binOk(){const cid=club();const key=clubOf(cid).nom+' · '+BIN.sel.join(' & ');const P=projAll();if(!P[key])pjPut(key,{club:cid,kind:'bin',members:BIN.sel.slice(),t0:Date.now(),t:Date.now()});pjOpen(key,1);}
+// ── projet : objectif → problèmes → exercice → score ──
+const PJ={key:null,step:1,p:null,sel:[]};
+function pjPut(key,p){const l=LOC();l.projets[key]=p;saveLoc(l);send([{type:'projet',ref:key,club:clubOf(p.club||club()).nom,data:p,t:Date.now()}]);}
+function pjOpen(key,step){const P=projAll();const cid=club();PJ.key=key;PJ.p=JSON.parse(JSON.stringify(P[key]||{club:cid,kind:'col',t0:Date.now()}));PJ.sel=(PJ.p.rank||[]).slice();PJ.step=step;
+  if(step===1&&(PK().oes||[]).length===1){PJ.p.oe=PK().oes[0].id;PJ.step=2;}if(step>=2&&!PJ.p.oe)PJ.step=1;if(step>=3&&!PJ.p.frm)PJ.step=PJ.p.oe?2:1;if(step===4&&!PJ.p.exoId)PJ.step=3;ST.view='pj';pjRender();}
+function pjSave(){PJ.p.t=Date.now();PJ.p.club=PJ.p.club||club();pjPut(PJ.key,PJ.p);}
+function pjRender(){const p=PJ.p;const o=oeById(p.oe);let h='<div class="top"><h1>🎯 '+esc(PJ.key.replace(/^.*? · /,''))+'<small>'+esc(['','Sur quoi progresser ?','Nos problèmes','Notre exercice','Faire l\'exercice'][PJ.step])+'</small></h1><button class="small" onclick="ovClose()">✕ Fermer</button></div><div class="steps">'+[1,2,3,4].map(i=>'<i class="'+(i<=PJ.step?'on':'')+'"></i>').join('')+'</div>';
+  if(PJ.step===1){h+='<div class="card"><h2><span>Sur quoi voulez-vous progresser ?</span></h2>'+(PK().oes||[]).map(x=>'<button class="opt'+(p.oe===x.id?' on':'')+'" onclick="pjOe(\''+esc(x.id)+'\')"><b>'+esc(x.short||x.label)+'</b><span>'+esc(x.label)+'</span></button>').join('')+'</div>';}
+  else if(PJ.step===2&&o){h+='<div class="card"><h2><span>Quels problèmes avez-vous eus ?</span></h2><div class="dim">Touchez ceux que vous reconnaissez, puis classez-les : le n°1 devient votre fil rouge.</div>'+(o.micro||[]).map(m=>{const on=PJ.sel.indexOf(m.id)>=0;return '<button class="opt'+(on?' on':'')+'" onclick="pjTog(\''+esc(m.id)+'\')"><b>'+(on?'✓ ':'')+esc(m.neg)+'</b></button>';}).join('')+'</div>';
+    if(PJ.sel.length){h+='<div class="card"><h2><span>Notre classement</span></h2>'+PJ.sel.map((id,i)=>{const m=(o.micro||[]).find(x=>x.id===id);return '<div class="rk'+(i===0?' top':'')+'"><span class="n">'+(i+1)+'</span><span class="t">'+esc(m?m.neg:id)+'</span><button onclick="pjMv('+i+',-1)">↑</button><button onclick="pjMv('+i+',1)">↓</button></div>';}).join('')+'<button class="big green" onclick="pjRank()">Valider : notre fil rouge est le n°1</button></div>';}}
+  else if(PJ.step===3&&o){const m=microOf(p);h+='<div class="card"><div class="lab">Notre fil rouge</div><b>'+esc(m?m.neg:'')+'</b></div>';h+=exListHtml(o,m);}
+  else if(PJ.step===4){const x=exoOf(p);h+='<div class="card"><div class="lab">Notre fil rouge</div><b>'+esc(p.frmLab||p.ind||'')+'</b></div><div class="card"><h2><span>'+esc(x?x.titre:'Exercice')+'</span></h2>'+(x&&x.desc?'<div style="white-space:pre-wrap">'+esc(x.desc)+'</div>':'')+(x&&x.video?'<a class="vid" href="'+esc(x.video)+'" target="_blank" rel="noopener">🎬 Voir la vidéo</a>':'')+((x&&x.crit||[]).length?'<div class="dim">Critères : '+x.crit.map(esc).join(' · ')+'</div>':'')+'</div>'
+    +'<div class="card"><h2><span>Nos réussites sur 10 essais</span></h2><div class="ctr"><button onclick="pjSc(-1)">−</button><div class="v">'+(+p.score||0)+'<small style="font-size:1rem;color:var(--dim)">/10</small></div><button onclick="pjSc(1)">+</button></div><button class="big green" onclick="pjValSc()">✓ Enregistrer notre score</button><button class="big ghost" onclick="PJ.step=3;pjRender()">Changer d\'exercice</button></div>';}
+  ovShow(h);}
+function exBtn(path,id,t,d,tag){const on=PJ.p.exoId===id&&PJ.p.cpPath===path;return '<button class="opt'+(on?' on':'')+'" onclick="pjEx(\''+esc(path)+'\',\''+esc(id)+'\')"><b>'+esc(t)+'</b>'+(tag?'<em>'+esc(tag)+'</em>':'')+(d?'<span>'+esc(String(d).slice(0,200))+'</span>':'')+'</button>';}
+function exListHtml(o,m){const used={};const L=PK().lib||[];let h='';const cps=(m&&m.cps)||[];
+  if(cps.length)h+='<div class="card"><h2><span>Ce qu\'il faut travailler</span></h2>'+cps.map((c,i)=>'<div class="cp"><span>'+(i+1)+'</span>'+esc(c.label)+'</div>').join('')+'</div>';
+  h+='<div class="card"><h2><span>Choisissez un exercice</span></h2>';
+  cps.forEach((c,i)=>{h+='<div class="lab">CP '+(i+1)+' · '+esc(c.label)+'</div>';let n=0;(c.ex||[]).forEach(x=>{used['r:'+x.id+'|'+x.titre]=1;n++;h+=exBtn(c.path,x.id,x.titre,x.desc,'');});
+    L.filter(x=>(x.cps||[]).indexOf(c.path)>=0).forEach(x=>{if(used['l:'+x.id])return;used['l:'+x.id]=1;n++;h+=exBtn(c.path,'lib:'+x.id,x.titre,x.desc,'📚 bibliothèque');});
+    if(!n)h+='<div class="dim">Pas d\'exercice rangé sur ce CP : choisissez-en un plus bas.</div>';});
+  const p0=cps[0]?cps[0].path:'';const rest=L.filter(x=>!used['l:'+x.id]).map(x=>({x:x,sc:(x.oe===o.id?2:0)+((x.cps||[]).some(c=>m&&c.indexOf('|'+m.id+'|')>=0)?3:0)})).sort((a,b)=>b.sc-a.sc);
+  if(rest.length){h+='<div class="lab">📚 Autres situations de la bibliothèque</div>';rest.forEach(r=>{h+=exBtn(p0,'lib:'+r.x.id,r.x.titre,r.x.desc,r.sc>=2?'même objectif':(r.x.oeLab||''));});}
+  let first=true;(PK().oes||[]).slice().sort((a,b)=>(b.id===o.id)-(a.id===o.id)).forEach(o2=>(o2.micro||[]).forEach(mm=>{if(m&&mm.id===m.id&&o2.id===o.id)return;(mm.cps||[]).forEach(c=>(c.ex||[]).forEach(x=>{const k='r:'+x.id+'|'+x.titre;if(used[k])return;used[k]=1;if(first){h+='<div class="lab">🧭 Exercices des autres fils rouges</div>';first=false;}h+=exBtn(c.path,x.id,x.titre,x.desc,(o2.short||'')+' · '+c.label);}));}));
+  return h+'</div>';}
+function pjOe(id){if(PJ.p.oe!==id){PJ.p.oe=id;PJ.sel=[];PJ.p.rank=[];PJ.p.frm=null;PJ.p.exoId=null;}pjSave();PJ.step=2;pjRender();}
+function pjTog(id){const i=PJ.sel.indexOf(id);if(i>=0)PJ.sel.splice(i,1);else PJ.sel.push(id);pjRender();}
+function pjMv(i,d){const j=i+d;if(j<0||j>=PJ.sel.length)return;const t=PJ.sel[i];PJ.sel[i]=PJ.sel[j];PJ.sel[j]=t;pjRender();}
+function pjRank(){const o=oeById(PJ.p.oe);const m=(o.micro||[]).find(x=>x.id===PJ.sel[0]);PJ.p.rank=PJ.sel.slice();if(PJ.p.frm!==PJ.sel[0]){PJ.p.exoId=null;PJ.p.cpPath=null;}PJ.p.frm=PJ.sel[0];PJ.p.frmLab=m?m.neg:'';PJ.p.ind=m?m.ind:'';pjSave();PJ.step=3;pjRender();}
+function pjEx(path,id){PJ.p.cpPath=path;PJ.p.exoId=id;PJ.p.score=0;delete PJ.p.scoreAt;pjSave();PJ.step=4;pjRender();}
+function pjSc(d){PJ.p.score=Math.max(0,Math.min(10,(+PJ.p.score||0)+d));pjRender();}
+function pjValSc(){PJ.p.scoreAt=Date.now();pjSave();toast('🎯 Score enregistré : '+PJ.p.score+'/10');ovClose();}
+// ── overlays ──
+function ovShow(h){let o=$('ov');if(!o){o=document.createElement('div');o.id='ov';o.className='ov';document.body.appendChild(o);}o.innerHTML='<div class="in">'+h+'</div>';document.body.style.overflow='hidden';}
+function ovClose(){const o=$('ov');if(o)o.remove();document.body.style.overflow='';render();}
+// ── match ──
+let MT=null;
+function mKey(){return 'el_match_'+CONF.s;}
+function mOpen(ref){const m=matchByRef(ref);const cid=club();if(!m)return;const mineA=m.a===cid;const opp=mineA?m.b:m.a;
+  const sv=LS.get(mKey(),null);if(sv&&sv.ref===ref&&sv.club===cid){MT=sv;}else MT={ref:ref,club:cid,opp:opp,mineA:mineA,niv:m.niv,us:0,them:0,log:[],lineup:membersOf(cid,m.niv),t0:Date.now()};mRender();}
+function mOpenFree(opp){const cid=club();const ref='L'+new Date().toISOString().slice(11,16).replace(':','')+'-'+cid+'-'+opp;MT={ref:ref,club:cid,opp:opp,mineA:true,niv:null,us:0,them:0,log:[],lineup:membersOf(cid),t0:Date.now(),free:true};mRender();}
+function mBtns(){const P=projAll();const cid=MT.club;const fr=[];const add=(k,lab)=>{const p=P[k];if(p&&p.ind&&fr.length<4)fr.push({k:k,label:lab+p.ind});};
+  add(colKey(cid),'🎯 ');binsOf(cid).forEach(k=>{if((P[k].members||[]).some(n=>MT.lineup.indexOf(n)>=0))add(k,'👥 ');});return fr;}
+function mCount(type,k){return MT.log.filter(e=>e.type===type&&(k==null||e.k===k)).length;}
+function mRender(){LS.set(mKey(),MT);ST.view='match';const c=clubOf(MT.club),o=clubOf(MT.opp);const tg=PK().target||15;const end=MT.us>=tg||MT.them>=tg;
+  let h='<div class="top"><h1>⚽ '+esc(c.nom)+(MT.niv!=null?' '+esc(formLab(MT.niv)):'')+' contre '+esc(o.nom)+'<small>Match en '+tg+' points · '+esc(MT.lineup.join(', '))+'</small></h1><button class="small" onclick="mQuit()">✕</button></div>';
+  h+='<div class="score"><div class="us"><b>Nous · '+esc(c.nom)+'</b><div class="pts">'+MT.us+'</div></div><div><b>Eux · '+esc(o.nom)+'</b><div class="pts">'+MT.them+'</div></div></div>';
+  if(end)h+='<div class="banner"><span>🏁 '+tg+' points : fin du match !</span><button class="big green" onclick="vOpen()">Valider le score</button></div>';
+  h+='<div class="mbtns"><button class="mb" style="background:#16a34a" onclick="mHit(\'bp\',true)">🌟 Beau point<small>pour nous · qui ?</small><span class="c">'+mCount('bp')+'</span></button>'
+    +'<button class="mb" style="background:#7c3aed" onclick="mHit(\'ap\',false)">🎁 Autre point<small>pour nous</small><span class="c">'+mCount('ap')+'</span></button>'
+    +'<button class="mb" style="background:#dc2626" onclick="mHit(\'bpa\',false)">Beau point<small>pour eux</small><span class="c">'+mCount('bpa')+'</span></button>'
+    +'<button class="mb" style="background:#ea580c" onclick="mHit(\'apa\',true)">Autre point pour eux<small>notre faute · qui ?</small><span class="c">'+mCount('apa')+'</span></button></div>';
+  const fr=mBtns();if(fr.length)h+='<div class="lab">Nos fils rouges (sans changer le score)</div>'+fr.map((f,i)=>'<button class="fr" onclick="mFr('+i+')">'+esc(f.label)+'<span class="c">'+mCount('fr',f.k)+'</span></button>').join('');
+  h+='<div class="row"><button class="big grey" onclick="mUndo()"'+(MT.log.length?'':' disabled')+'>↩ Annuler le dernier</button><button class="big green" onclick="vOpen()">🏁 Fin du match</button></div>';
+  ovShow(h);}
+function mHit(type,who){if(who&&MT.lineup.length){mWho(type);return;}mAdd({type:type});}
+function mAdd(e){e.t=Date.now();MT.log.push(e);if(e.type==='bp'||e.type==='ap')MT.us++;if(e.type==='bpa'||e.type==='apa')MT.them++;try{if(navigator.vibrate)navigator.vibrate(30);}catch(x){}mRender();}
+function mWho(type){ovShow('<div class="top"><h1>'+(type==='bp'?'🌟 Qui a marqué ce beau point ?':'Qui a fait la faute ?')+'</h1><button class="small" onclick="mRender()">✕</button></div><div class="names">'+MT.lineup.map(n=>'<button data-n="'+esc(n)+'" onclick="mAdd({type:\''+type+'\',n:this.dataset.n})">'+esc(n)+'</button>').join('')+'<button onclick="mAdd({type:\''+type+'\'})">On ne sait pas</button></div>');}
+function mFr(i){const f=mBtns()[i];if(!f)return;MT.log.push({type:'fr',k:f.k,lab:f.label,t:Date.now()});mRender();}
+function mUndo(){const e=MT.log.pop();if(!e)return;if(e.type==='bp'||e.type==='ap')MT.us--;if(e.type==='bpa'||e.type==='apa')MT.them--;mRender();}
+function mQuit(){if(MT.log.length&&!confirm('Quitter le match ? Il reste en mémoire : vous pourrez le reprendre avec « Observer ce match ».'))return;ovClose();}
+// ── validation par les deux capitaines ──
+let VS=null;
+function vOpen(){const a=MT.mineA?MT.us:MT.them,b=MT.mineA?MT.them:MT.us;VS={sa:a,sb:b};vRender();}
+function vRender(){const m=matchByRef(MT.ref);const A=clubOf(m?m.a:MT.club),B=clubOf(m?m.b:MT.opp);
+  const side=(k,cl)=>'<div class="side" style="border-color:'+esc(cl.col)+'"><b>'+esc(cl.nom)+'</b><div class="v">'+VS[k]+'</div><div class="pm"><button onclick="vAdj(\''+k+'\',-1)">−</button><button onclick="vAdj(\''+k+'\',1)">+</button></div></div>';
+  ovShow('<div class="top"><h1>🏆 Score du match'+(MT.niv!=null?' · '+esc(formLab(MT.niv)):'')+'</h1></div><div class="card vbox"><div class="row" style="align-items:center">'+side('sa',A)+'<b style="flex:0;font-size:2rem">–</b>'+side('sb',B)+'</div>'
+    +'<div style="text-align:center"><b>Les deux capitaines sont-ils d\'accord avec ce score ?</b><div class="dim">Corrigez avec − / + si besoin, puis validez.</div></div>'
+    +'<button class="big green" onclick="vOk(true)">✅ Nous sommes d\'accord : on valide</button><button class="big ghost" onclick="vOk(false)">Pas d\'accord : le prof décidera</button><button class="big ghost" onclick="mRender()">↩ Revenir au match</button></div>');}
+function vAdj(k,d){VS[k]=Math.max(0,VS[k]+d);vRender();}
+function vOk(ok){const c=clubOf(MT.club);const pl={};MT.log.forEach(e=>{if(!e.n)return;pl[e.n]=pl[e.n]||{bp:0,apa:0};pl[e.n][e.type]=(pl[e.n][e.type]||0)+1;});
+  const fr={};MT.log.filter(e=>e.type==='fr').forEach(e=>{fr[e.lab]=(fr[e.lab]||0)+1;});
+  const obs={club:MT.club,opp:MT.opp,niv:MT.niv,us:MT.us,them:MT.them,bp:mCount('bp'),ap:mCount('ap'),bpa:mCount('bpa'),apa:mCount('apa'),joueurs:pl,filsRouges:fr,lineup:MT.lineup,debut:MT.t0,fin:Date.now()};
+  const sc={sa:VS.sa,sb:VS.sb,ok:!!ok,club:MT.club};const l=LOC();l.scores[MT.ref]=sc;saveLoc(l);
+  send([{type:'score',ref:MT.ref,club:c.nom,data:sc,t:Date.now()},{type:'obs',ref:MT.ref,club:c.nom,data:obs,t:Date.now()}]);
+  try{localStorage.removeItem(mKey());}catch(e){}MT=null;toast(ok?'🏆 Score validé et envoyé':'Score envoyé au prof (non validé)');ovClose();}
+// ── démarrage ──
+if(CONF){const c=LS.get('el_cache_'+CONF.s,null);if(c){ST.pk=c.pk;ST.ret=c.ret||[];render();}load(true).then(()=>{flush();const sv=LS.get(mKey(),null);if(sv&&sv.club===club()&&sv.log&&sv.log.length){MT=sv;mRender();}});}else render();
+</script>
+</body>
+</html>
