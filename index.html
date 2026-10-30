@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v321</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v322</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v321</title>
+<title>Gribouillis EPS v322</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -24430,6 +24430,103 @@ async function syncPanelRun(a){const now=Date.now();
 +'html body #sync-pan .sp-st{font-weight:800;margin-bottom:6px;}html body #sync-pan .sp-err{background:#3f1212;border:1px solid #b91c1c;border-radius:8px;padding:6px 8px;margin:4px 0 8px;word-break:break-word;}html body #sync-pan .sp-err span{color:#fde68a;}'
 +'html body #sync-pan .sp-l{margin:4px 0;}html body #sync-pan .sp-dim{color:#94a3b8;font-size:.74rem;}html body #sync-pan .sp-k{display:inline-block;background:#1e293b;border-radius:6px;padding:1px 6px;margin:1px;}html body #sync-pan .sp-k.bad{background:#7f1d1d;}'
 +'html body #sync-pan .sp-b{display:flex;flex-direction:column;gap:6px;margin-top:8px;}html body #sync-pan .sp-b button{min-height:40px;border:none;border-radius:9px;background:#334155;color:#fff;font-weight:700;cursor:pointer;}html body #sync-pan .sp-b .sp-go{background:#15803d;}';
+document.head.appendChild(st);})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v322 — Tablette de club (mode élève, séquence avec championnat A/B/C) :
+// la tablette choisit son club une fois ; elle montre les équipes du club
+// (une par forme : A/B, B/C, A/C). Chaque équipe fait son projet.
+// Étape match : « Quelle équipe joue ? » → l'outil d'observation se lance
+// directement (bonnes compositions, adversaire du tour du jour, bouton du
+// fil rouge) et le score revient dans le championnat.
+// Étape entraînement : chaque équipe ouvre SON exercice et note son score.
+// ══════════════════════════════════════════════════════════════════════
+const CT={pend:null};
+function ctSeq(s){try{const q=trnSeqOf(s);if(q&&q.champ&&q.champ.on&&q.champ.mix&&(q.champ.clubs||[]).length&&(q.champ.formes||[]).length)return q;}catch(e){}return null;}
+function ctGet(s){try{const o=JSON.parse(localStorage.getItem('grib_clubtab_v1')||'null');if(o&&s&&o.sid===s.id)return o;}catch(e){}return null;}
+function ctSet(club){const s=getActiveSeance();if(!s)return;try{localStorage.setItem('grib_clubtab_v1',JSON.stringify({sid:s.id,club:club}));}catch(e){}renderSeanceTab();}
+function ctClub(s){const o=ctGet(s);return o&&o.club?o.club:null;}
+function ctOn(s){return !!(s&&SEANCE_STATE.mode==='eleve'&&!GRIB_EXPORT_MODE&&ctSeq(s)&&ctClub(s));}
+function ctDay(q,s){const c=q.champ;const ji=(c.jours||[]).findIndex(j=>j.date===s.date);return ji;}
+function ctMembers(q,s,club,fi){const c=q.champ;const F=c.formes[fi]||[];const ji=ctDay(q,s);const abs=ji>=0?((c.jours[ji].abs)||[]):[];
+  return Object.keys(c.aff||{}).filter(n=>{const a=c.aff[n];return a&&a.club===club&&F.indexOf(+a.cat)>=0&&abs.indexOf(n)<0;});}
+function ctGrp(q,club,fi){const c=q.champ;return chpClub(c,club).nom+' '+chpFormLab(c,c.formes[fi]||[]);}
+function ctTeamsHtml(s,q,mode){const c=q.champ;const club=ctClub(s);const cl=chpClub(c,club);const P=pjStore(s);
+  let h='<'+'div class="ct-box" style="--cc:'+esc(cl.col||'#475569')+'"><'+'div class="ct-hd"><b>🏳 Club '+esc(cl.nom)+'</b><button type="button" class="ct-chg" onclick="if(confirm(\'Changer le club de cette tablette ?\'))ctSet(null)">changer</button></'+'div>';
+  if(mode==='train')h+='<'+'div class="ct-q">Entraînement : chaque équipe ouvre son exercice</'+'div>';
+  c.formes.forEach((f,fi)=>{const g=ctGrp(q,club,fi);const p=P[g]||{};const M=ctMembers(q,s,club,fi);let ex=null;try{if(p.exoId){const r=exoByKey(p.cpPath+'#'+p.exoId);ex=r&&r.exo;}}catch(e){}
+    const gi=esc(g).replace(/'/g,"\\'");
+    h+='<'+'div class="ct-team"><'+'div class="ct-tt"><b>'+esc(chpFormLab(c,f))+'</b><span>'+esc(M.join(', ')||'—')+'</span></'+'div>'
+      +'<'+'div class="ct-pj">'+(p.ind?'🎯 '+esc(p.ind)+(ex?' · '+esc(ex.titre)+(p.scoreAt?' · '+p.score+'/10':''):''):'<i>pas encore de projet</i>')+'</'+'div>';
+    if(mode==='train')h+='<button type="button" class="ct-go" onclick="ctTrain(\''+gi+'\')">'+(p.exoId?'▶ Notre exercice':(p.frm?'Choisir notre exercice':'Faire notre projet'))+'</button>';
+    else h+='<button type="button" class="ct-go2" onclick="pjOpen(\''+gi+'\')">'+(p.ind?'Voir / modifier notre projet':'🎯 Faire notre projet')+'</button>';
+    h+='</'+'div>';});
+  return h+'</'+'div>';}
+function ctPickHtml(s,q){const c=q.champ;return '<'+'div class="ct-box"><'+'div class="ct-hd"><b>📱 Cette tablette est celle de quel club ?</b></'+'div>'
+  +'<'+'div class="ct-clubs">'+c.clubs.map(k=>'<button type="button" class="ct-club" style="background:'+esc(k.col||'#475569')+'" onclick="ctSet(\''+esc(k.id)+'\')">'+esc(k.nom)+'</button>').join('')+'</'+'div>'
+  +'<button type="button" class="ct-chg" onclick="ctSet(\'\')">Pas de club sur cette tablette</button></'+'div>';}
+function ctTrain(g){pjOpen(g);const s=pjS();const p=s&&pjStore(s)[g];if(p&&p.exoId){PJ.score=p.scoreAt?(+p.score||0):0;pjGo(5);}}
+renderSeanceEleve=(function(o){return function(s){const r=o.apply(this,arguments);try{if(!s||GRIB_EXPORT_MODE)return r;const q=ctSeq(s);if(!q)return r;const host=E('seance-tab-content');const card=host&&host.querySelector('.seance-eleve');if(!card)return r;
+  const ct=ctGet(s);const d=document.createElement('div');
+  if(!ct){const pe0=host.querySelector('.pj-entry');if(pe0)pe0.remove();d.innerHTML=ctPickHtml(s,q);card.insertAdjacentElement('afterbegin',d.firstChild);return r;}
+  if(!ct.club)return r;
+  const pe=host.querySelector('.pj-entry');if(pe)pe.remove();
+  let st=null;try{const nm=card.querySelector('.sel-stepname');const cur=SEANCE_ELEVE_VIEW?s.steps.find(x=>x.key===SEANCE_ELEVE_VIEW):null;st=cur||s.steps.find(x=>x.status==='current')||s.steps[s.steps.length-1];}catch(e){}
+  const base=st?seanceStepBase(st.key):'';const nm=card.querySelector('.sel-stepname');
+  if(base==='remediation'){d.innerHTML=ctTeamsHtml(s,q,'train');const blk=d.firstChild;
+    const det=document.createElement('details');det.className='ct-more';det.innerHTML='<summary>Autres exercices de la séance</summary>';
+    let n=nm?nm.nextElementSibling:null;while(n&&n.classList&&n.classList.contains('sel-redo'))n=n.nextElementSibling;
+    const rest=[];while(n){rest.push(n);n=n.nextElementSibling;}rest.forEach(x=>det.appendChild(x));
+    card.appendChild(blk);if(rest.length)card.appendChild(det);}
+  else{d.innerHTML=ctTeamsHtml(s,q,'pj');const roadEl=card.querySelector('.seance-roadmap');if(roadEl)roadEl.insertAdjacentElement('beforebegin',d.firstChild);else card.insertAdjacentElement('afterbegin',d.firstChild);}
+}catch(e){console.warn('club tab',e);}return r;};})(renderSeanceEleve);
+// étape match : quelle équipe joue ?
+eleveOpenMatch=(function(o){return function(key){const s=getActiveSeance();if(!ctOn(s)||seanceStepBase(key)!=='match'||CT.pend)return o.apply(this,arguments);
+  const st=s.steps.find(x=>x.key===key);if(!st||st.status==='pending')return o.apply(this,arguments);ctMatchAsk(key);};})(eleveOpenMatch);
+function ctMatchAsk(key){const s=getActiveSeance();const q=ctSeq(s);const c=q.champ;const club=ctClub(s);const ji=ctDay(q,s);
+  let ov=E('ct-ov');if(!ov){ov=document.createElement('div');ov.id=['ct','ov'].join('-');document.body.appendChild(ov);}
+  let h='<'+'div class="ct-dlg"><'+'div class="ct-hd"><b>⚽ Quelle équipe du club '+esc(chpClub(c,club).nom)+' joue ?</b><button type="button" class="prm-x" aria-label="Fermer" onclick="E(\'ct-ov\').remove()">✕</button></'+'div>';
+  c.formes.forEach((f,fi)=>{const g=ctGrp(q,club,fi);let mi=-1;if(ji>=0)mi=(c.jours[ji].m||[]).findIndex(m=>+m.niv===fi&&(m.a===club||m.b===club));
+    const m=mi>=0?c.jours[ji].m[mi]:null;const opp=m?(m.a===club?m.b:m.a):null;const done=m&&m.sa!==''&&m.sa!=null;
+    h+='<'+'div class="ct-team"><'+'div class="ct-tt"><b>'+esc(g)+'</b><span>'+esc(ctMembers(q,s,club,fi).join(', '))+'</span></'+'div>';
+    if(m)h+='<button type="button" class="ct-go" onclick="ctLaunch(\''+esc(key)+'\','+fi+',\''+esc(opp)+'\','+mi+')">contre '+esc(chpClub(c,opp).nom)+' '+esc(chpFormLab(c,f))+(done?' (déjà joué : '+m.sa+'–'+m.sb+')':'')+'</button>';
+    else h+='<'+'div class="ct-opps">'+c.clubs.filter(k=>k.id!==club).map(k=>'<button type="button" class="ct-go" style="background:'+esc(k.col||'#475569')+'" onclick="ctLaunch(\''+esc(key)+'\','+fi+',\''+esc(k.id)+'\',-1)">contre '+esc(k.nom)+'</button>').join('')+'</'+'div>';
+    h+='</'+'div>';});
+  ov.innerHTML=h+'</'+'div>';}
+function ctTeamFor(nom){let t=teams.find(x=>pjNorm(x.name)===pjNorm(nom));if(!t){const id=teams.length?Math.max(...teams.map(x=>+x.id||0))+1:1;t={id:id,name:nom,pal:Math.floor(Math.random()*PALETTE.length)};teams.push(t);saveTeams();try{renderTeams();}catch(e){}}return t;}
+function ctLaunch(key,fi,opp,mi){const s=getActiveSeance();const q=ctSeq(s);if(!q)return;const c=q.champ;const club=ctClub(s);const ov=E('ct-ov');if(ov)ov.remove();
+  const ji=ctDay(q,s);let A=club,B=opp;if(mi>=0){const m=c.jours[ji].m[mi];A=m.a;B=m.b;}
+  CT.pend={qid:q.id,fi:fi,A:A,B:B,ji:ji,mi:mi,grp:ctGrp(q,club,fi)};
+  o_ctOpen(key);}
+function o_ctOpen(key){const p=CT.pend;try{eleveOpenMatch(key);}catch(e){console.warn(e);}
+  setTimeout(()=>{if(CT.pend===p){const h=E('t-home');if(h&&h.classList.contains('active'))ctStart();else{try{goTab('t-home');}catch(e){}setTimeout(()=>{if(CT.pend===p)ctStart();},200);}}},450);}
+prmDirect=(function(o){return function(extra){if(CT.pend)return ctStart();return o.apply(this,arguments);};})(prmDirect);
+function ctStart(){const p=CT.pend;CT.pend=null;if(!p)return;const s=getActiveSeance();const q=seqGet(p.qid);if(!q||!s)return;const c=q.champ;
+  const tA=ctTeamFor(chpClub(c,p.A).nom),tB=ctTeamFor(chpClub(c,p.B).nom);
+  [[tA,'sel-t1'],[tB,'sel-t2']].forEach(([t,id])=>{const el=E(id);if(el){el.value=String(t.id);try{el.dispatchEvent(new Event('change',{bubbles:true}));}catch(e){}}});
+  CFG.gameMode='2eq';
+  const ovr={};ovr[cleanVal(tA.name)]=ctMembers(q,s,p.A,p.fi);ovr[cleanVal(tB.name)]=ctMembers(q,s,p.B,p.fi);
+  const P=pjStore(s);const pj=P[p.grp];const extra=pj&&pj.ind?[{label:'🎯 '+pj.ind,color:'#6d28d9',pj:p.grp}]:[];
+  if(p.mi>=0){CRS.tour={qid:q.id,ji:p.ji,mi:p.mi};}
+  PRM.c=prmCfg();PRM.temp=null;
+  if(extra.length){const base=JSON.parse(JSON.stringify(getTeamDialogBtns(0)||CFG.dialogBtns||[])).filter(b=>!b.pj);PRM.temp=base.concat(extra);
+    PRM.restore=JSON.parse(JSON.stringify(CFG.dialogBtns||[]));try{localStorage.setItem('grib_prm_restore',JSON.stringify(PRM.restore));}catch(e){}CFG.dialogBtns=PRM.temp;}
+  CFG.countdownMode=(PRM.c.end==='time');try{applyConfigToUI();}catch(e){}
+  PRM.override=ovr;PRM.run=(PRM.c.end==='score');PRM.dismiss='';PRM.bypass=true;try{startMatch();}finally{PRM.bypass=false;}}
+(function(){const st=document.createElement('style');st.textContent=
+ 'html body .ct-box{background:#111827;border:2px solid var(--cc,#475569);border-radius:14px;padding:10px 12px;margin:0 0 12px;display:flex;flex-direction:column;gap:8px;color:#e8e8ea;}'
++'html body .ct-hd{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:1rem;}'
++'html body .ct-chg{background:transparent;border:1px solid #475569;color:#cbd5e1;border-radius:8px;padding:4px 10px;font-size:.75rem;cursor:pointer;min-height:32px;}'
++'html body .ct-q{font-weight:800;font-size:1rem;}'
++'html body .ct-team{background:#1a1d24;border:1px solid #2d323d;border-radius:12px;padding:8px 10px;display:flex;flex-direction:column;gap:6px;}'
++'html body .ct-tt{display:flex;flex-direction:column;}html body .ct-tt b{font-size:1.05rem;}html body .ct-tt span{font-size:.8rem;color:#a3a7b0;}'
++'html body .ct-pj{font-size:.85rem;color:#c4b5fd;}html body .ct-pj i{color:#a3a7b0;}'
++'html body .ct-go,html body .ct-go2{min-height:48px;border:none;border-radius:10px;background:#6d28d9;color:#fff;font-weight:800;font-size:.95rem;cursor:pointer;padding:0 12px;}html body .ct-go2{background:#334155;}'
++'html body .ct-opps{display:flex;gap:6px;flex-wrap:wrap;}html body .ct-opps .ct-go{flex:1;}'
++'html body .ct-clubs{display:flex;gap:8px;flex-wrap:wrap;}html body .ct-club{flex:1;min-height:64px;border:none;border-radius:12px;color:#fff;font-weight:900;font-size:1.2rem;cursor:pointer;}'
++'html body .ct-more{margin-top:10px;border:1px solid #2d3f55;border-radius:10px;padding:6px 10px;}html body .ct-more summary{cursor:pointer;color:#a3a7b0;font-size:.82rem;min-height:30px;}'
++'html body #ct-ov{position:fixed;inset:0;z-index:9660;background:rgba(0,0,0,.75);display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:14px;}'
++'html body #ct-ov .ct-dlg{background:#0f172a;border:1px solid #334155;border-radius:14px;padding:12px;max-width:560px;width:100%;display:flex;flex-direction:column;gap:8px;color:#e8e8ea;}';
 document.head.appendChild(st);})();
 </script>
 </body>
