@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v347</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v348</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v347</title>
+<title>Gribouillis EPS v348</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -25785,6 +25785,71 @@ cfUndo=(function(f){return function(){const s=getActiveSeance();const r=f.apply(
 +'html body .chs-sub{font-weight:800;margin:10px 0 4px;}html body .chs-se td{vertical-align:middle;}html body .chs-se tr.today td{background:#0c4a6e;}html body .pln-tab tr.past td{opacity:.6;}html body .chs-day{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline;margin:4px 0;font-size:.85rem;}html body .chs-day small{color:#94a3b8;}'
 +'html body .org-more summary{color:#94a3b8;}html body .org-more[open]{display:flex;flex-direction:column;gap:10px;}html body .org-more > details.org-sec{border-color:#1e293b;}'
 +'@media (max-width:640px){html body .pln-tab table{font-size:.75rem;}html body .pln-tab th,html body .pln-tab td{padding:4px;}html body .chs-se td:first-child{white-space:normal;}}';document.head.appendChild(st);})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v348 — onglet Match (outil d'observation) plus clair :
+// • équipes choisies en touchant des pastilles (1 ou 2 équipes), l'équipe 2
+//   n'est jamais la même que l'équipe 1 ; liste d'édition repliée ;
+// • récap « Prêt à observer » lisible, plus de « changer » qui renvoyait
+//   vers des profils en double ; dans Avancé, la liste des profils en double
+//   est cachée (restent : gérer, enregistrer, profil différent équipe 2) ;
+// • pendant le jeu, la barre du bas ne garde que les boutons de saisie
+//   (Pause, Récup, Annuler…) ; Temps, STOP, Boutons seuls, plein écran et
+//   accueil reviennent quand on met en pause ;
+// • terrain : « ZM » discret en haut de la zone, arcs de surface et de coin.
+// ══════════════════════════════════════════════════════════════════════
+const EQ={prev:{t1:null,t2:null}};
+function eqDistinct(){try{const s1=E('sel-t1'),s2=E('sel-t2');if(!s1||!s2||!Array.isArray(teams)||teams.length<2)return;
+  if(CFG.gameMode==='2eq'&&s1.value===s2.value){const t1changed=EQ.prev.t1!=null&&s1.value!==EQ.prev.t1;let v=t1changed&&EQ.prev.t1!==s1.value?EQ.prev.t1:null;
+    if(!v||!teams.some(t=>String(t.id)===v)){const i=teams.findIndex(t=>String(t.id)===s1.value);const o=teams[(i+1)%teams.length];v=String(o.id);}s2.value=v;}
+  EQ.prev={t1:s1.value,t2:s2.value};}catch(e){}}
+updateFooter=(function(f){return function(){eqDistinct();const r=f.apply(this,arguments);try{eqChips();}catch(e){}return r;};})(updateFooter);
+renderTeams=(function(f){return function(){const s1=E('sel-t1'),s2=E('sel-t2');const v1=s1&&s1.value,v2=s2&&s2.value;const r=f.apply(this,arguments);
+  try{const ok=v=>v&&teams.some(t=>String(t.id)===v);if(ok(v1))s1.value=v1;if(ok(v2))s2.value=v2;EQ.prev={t1:null,t2:null};updateFooter();}catch(e){}return r;};})(renderTeams);
+onModeChange=(function(f){return function(){const r=f.apply(this,arguments);try{updateFooter();qjStatus();}catch(e){}return r;};})(onModeChange);
+function eqMode(m){const gm=E('game-mode');if(gm){gm.value=m;onModeChange();}else{CFG.gameMode=m;try{saveConfig();}catch(e){}}try{qjStatus();}catch(e){}}
+function eqPick(slot,id){const s=E('sel-t'+slot);if(!s)return;s.value=String(id);if(slot===1)EQ.prev.t2=null;updateFooter();try{qjStatus();}catch(e){}}
+function eqChips(){const s1=E('sel-t1'),s2=E('sel-t2');if(!s1)return;const card=s1.closest('.card');if(!card)return;
+  let box=E('eq-chips');if(!box){box=document.createElement('div');box.id=['eq','chips'].join('-');const fr=card.querySelector('.form-row');if(fr){fr.classList.add('eq-hide');fr.insertAdjacentElement('afterend',box);}else card.appendChild(box);
+    // édition repliée
+    const ed=E('team-editor');const add=ed&&ed.previousElementSibling;if(ed){const d=document.createElement('details');d.className='eq-edit';d.innerHTML='<summary>✏️ Modifier, ajouter ou supprimer des équipes</summary>';ed.insertAdjacentElement('beforebegin',d);if(add&&/addTeam/.test(add.innerHTML))d.appendChild(add);d.appendChild(ed);}}
+  const two=CFG.gameMode==='2eq';const col=t=>{const p=PALETTE[t.pal||0]||PALETTE[0];return (p.stroke==='#111111'||p.stroke==='#000000')?'#444':p.stroke;};
+  const n=t=>{try{return (getPlayersForTeam(t.name)||[]).length;}catch(e){return 0;}};
+  const chip=(t,slot,on,dis)=>'<button type="button" class="eq-c'+(on?' on':'')+'"'+(dis?' disabled':'')+' style="--ec:'+esc(col(t))+'" onclick="eqPick('+slot+','+t.id+')"><span class="eq-dot"></span>'+esc(t.name)+(n(t)?' <small>'+n(t)+'</small>':'')+'</button>';
+  box.innerHTML='<'+'div class="eq-mode"><button type="button" class="'+(two?'':'on')+'" onclick="eqMode(\'1eq\')">👤 Une équipe</button><button type="button" class="'+(two?'on':'')+'" onclick="eqMode(\'2eq\')">👥 Deux équipes</button></'+'div>'
+    +'<'+'div class="eq-lab" style="color:#60a5fa">'+(two?'Équipe 1':'Équipe observée')+'</'+'div><'+'div class="eq-row">'+teams.map(t=>chip(t,1,String(t.id)===s1.value,false)).join('')+'</'+'div>'
+    +(two?'<'+'div class="eq-lab" style="color:#fb923c">Équipe 2</'+'div><'+'div class="eq-row">'+teams.map(t=>chip(t,2,String(t.id)===s2.value,String(t.id)===s1.value)).join('')+'</'+'div>':'');}
+// récap lisible
+qjStatus=(function(f){return function(){const r=f.apply(this,arguments);try{const el=E('qj-status');const s=el&&el.querySelector('.qj-s');if(!s)return r;
+  s.querySelectorAll('button').forEach(b=>{if(/qjOpenProfils/.test(b.getAttribute('onclick')||''))b.remove();});
+  const sp=s.querySelector('span');if(sp){sp.innerHTML=sp.innerHTML.replace('✅ ','✅ <span class="cal-vs">Prêt à observer :</span> ').replace(/<span class="cal-vs">\((\d+)\)<\/span>/g,'<span class="cal-vs">($1 joueurs)</span>').replace('<span class="cal-vs">(1 équipe)</span>','<span class="cal-vs">· une seule équipe</span>');}
+  const pr=[...s.querySelectorAll('.cal-vs')].find(x=>/^⭐/.test(x.textContent));if(pr)pr.innerHTML=pr.innerHTML.replace('⭐ ','⭐ Profil : ');}catch(e){}return r;};})(qjStatus);
+// barre du bas pendant le jeu
+setInterval(function(){try{const fc=E('float-ctl');if(fc)fc.classList.toggle('run',typeof timerOn!=='undefined'&&!!timerOn);}catch(e){}},400);
+// terrain
+drawFieldOnCtx=(function(f){return function(C,cx2,sport,isTeam2,forBilan){const ft=cx2.fillText;let zmAt=null;
+  cx2.fillText=function(t,x,y){if(t==='ZM'){zmAt=x;return;}return ft.apply(this,arguments);};
+  let r;try{r=f.apply(this,arguments);}finally{cx2.fillText=ft;}
+  try{const W=C.width,H=C.height;if(!W||!H)return r;sport=sport||CFG.apsa;
+    if(sport!=='handball'&&sport!=='basketball'&&sport!=='volley'&&sport!=='badminton'){
+      cx2.save();cx2.strokeStyle='rgba(255,255,255,.9)';cx2.lineWidth=1.5;cx2.setLineDash([]);
+      const srW=Math.round(16.5/105*W),pX=Math.round(11/105*W),rx=9.15/105*W,ry=9.15/68*H;
+      [[4+pX,4+srW,W/2,1],[W-4-pX,W/2,W-4-srW,-1]].forEach(a=>{cx2.save();cx2.beginPath();cx2.rect(Math.min(a[1],a[2]),0,Math.abs(a[2]-a[1]),H);cx2.clip();cx2.beginPath();cx2.ellipse(a[0],H/2,rx,ry,0,0,2*Math.PI);cx2.stroke();cx2.restore();});
+      const cr=Math.max(4,W/105);[[4,4,0],[W-4,4,Math.PI/2],[W-4,H-4,Math.PI],[4,H-4,1.5*Math.PI]].forEach(c=>{cx2.beginPath();cx2.arc(c[0],c[1],cr,c[2],c[2]+Math.PI/2);cx2.stroke();});cx2.restore();}
+    if(zmAt!=null){cx2.save();cx2.globalAlpha=.55;cx2.fillStyle='#fde68a';cx2.font='bold '+Math.max(11,Math.round(H*.045))+'px Arial';cx2.textAlign='center';cx2.textBaseline='top';ft.call(cx2,'ZM',zmAt,Math.round(H*.02)+4);cx2.restore();}}catch(e){}
+  return r;};})(drawFieldOnCtx);
+(function(){const st=document.createElement('style');st.textContent=
+ 'html body .eq-hide{display:none !important;}html body #eq-chips{display:flex;flex-direction:column;gap:6px;}html body .eq-mode{display:flex;gap:6px;}html body .eq-mode button{flex:1;min-height:42px;border-radius:10px;border:1px solid #334155;background:#0f172a;color:#cbd5e1;font-weight:700;cursor:pointer;}html body .eq-mode button.on{background:#1d4ed8;border-color:#60a5fa;color:#fff;}'
++'html body .eq-lab{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;margin-top:4px;}html body .eq-row{display:flex;flex-wrap:wrap;gap:6px;}'
++'html body .eq-c{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 12px;border-radius:20px;border:2px solid #334155;background:#111827;color:#e2e8f0;font-weight:700;cursor:pointer;}html body .eq-c small{color:#94a3b8;font-weight:400;}html body .eq-c .eq-dot{width:12px;height:12px;border-radius:50%;background:var(--ec);}'
++'html body .eq-c.on{border-color:var(--ec);background:color-mix(in srgb,var(--ec) 25%,#111827);color:#fff;}html body .eq-c:disabled{opacity:.3;cursor:default;}'
++'html body .eq-edit{margin-top:8px;}html body .eq-edit summary{cursor:pointer;color:#94a3b8;font-size:.82rem;min-height:32px;display:flex;align-items:center;}html body .eq-edit #team-editor{max-height:none !important;}'
+// profils en double dans Avancé
++'html body #qj-adv-body #presets-display,html body #qj-adv-body #presets-display-t1-label,html body #qj-adv-body #preset-filter{display:none !important;}html body #qj-adv-body label[for="preset-filter"]{display:none;}'
+// barre du bas pendant le jeu
++'html body #float-ctl.run #btn-mt,html body #float-ctl.run button[onclick="stopMatch()"],html body #float-ctl.run #btn-obssimple,html body #float-ctl.run #btn-rkcloud,html body #float-ctl.run button[onclick="toggleFS()"],html body #float-ctl.run button[onclick="quitToSetup()"]{display:none !important;}';
+document.head.appendChild(st);})();
+try{setTimeout(function(){try{const f=E('preset-filter');if(f&&f.parentElement)f.parentElement.style.display='none';updateFooter();}catch(e){}},500);}catch(e){}
 </script>
 </body>
 </html>
