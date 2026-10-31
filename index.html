@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v340</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v341</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v340</title>
+<title>Gribouillis EPS v341</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -25430,6 +25430,44 @@ orgRender=(function(o){return function(){const c=clsActive();if(c&&!c.csv){const
       +'<'+'div class="org-sec"><b>La liste des élèves de '+esc(c.nom)+' n\'est pas encore chargée.</b><p class="cc-dim">Elle vient du Google Sheets '+(q&&q.gs&&q.gs.url?'de la séquence « '+esc(q.nom||'')+' » (onglet Élèves)':'de la classe')+'.</p>'
       +'<button type="button" class="org-go" onclick="orgLoadList()"'+(ORGL.busy?' disabled':'')+'>'+(ORGL.busy?'⏳ Chargement…':'⤵ Charger la liste')+'</button>'+(ORGL.msg?'<p style="color:#fca5a5">'+esc(ORGL.msg)+'</p>':'')+'</'+'div></'+'div>';return;}
   return o.apply(this,arguments);};})(orgRender);
+
+// ══════════════════════════════════════════════════════════════════════
+// v341 — Organisation ④ : « Composer sur le terrain » comme avant. Les
+// clubs (ou leurs sous-groupes de niveau) d'Organisation sont placés sur le
+// dessin du terrain de l'onglet Composition (effectif et formation au
+// choix, échanges de joueurs, postes vacants) ; changer d'effectif recompose
+// avec les mêmes groupes.
+// ══════════════════════════════════════════════════════════════════════
+function orgComposeBuild(){const F=COMPO.fromOrg;if(!F)return false;const q=seqGet(F.qid);if(!q)return false;const o=orgOf(q);const R=orgClassRoster();if(!R.length)return false;
+  const sp=(q.sport&&FORMATIONS_BY_SPORT[q.sport])?q.sport:COMPO.sport;COMPO.sport=sp;COMPO.roster=R;
+  const byN={};R.forEach(r=>byN[r.name]=r);const G=o.fam.groups||[];const units=[];
+  G.forEach(g=>{const M=(g.members||[]).filter(n=>byN[n]);if(F.mode==='niveau'){o.levels.slice().reverse().forEach((l,ri)=>{const li=o.levels.length-1-ri;const N=M.filter(n=>o.niv[n]===li);if(N.length)units.push({label:g.nom+' '+l,col:g.col,M:N});});}else units.push({label:g.nom,col:g.col,M:M});});
+  if(!units.length)return false;
+  const effs=getCompoEffectifOptions();if(!effs.includes(COMPO.effectif)){const mins=Math.min(...units.map(u=>u.M.filter(n=>!byN[n].absent).length));COMPO.effectif=effs.filter(e=>e<=mins).pop()||effs[0];}
+  const list=getCompoFormationsForEffectif(COMPO.effectif);if(!list.some(f=>f.id===COMPO.formationId))COMPO.formationId=list[0]&&list[0].id;const formation=list.find(f=>f.id===COMPO.formationId)||list[0];
+  const lvOf=n=>o.niv[n]!=null?+o.niv[n]:-1;
+  const teamsR=units.map(u=>{const el=u.M.map(n=>byN[n]).filter(p=>!p.absent&&!p.arriveLater);const forced=u.M.map(n=>byN[n]).filter(p=>p.absent||p.arriveLater);
+    const sorted=el.slice().sort((a,b)=>(lvOf(b.name)-lvOf(a.name))||(b.note-a.note));const pool=sorted.slice(0,COMPO.effectif);const over=sorted.slice(COMPO.effectif);
+    const assigned=formation?assignRolesFromPool(pool,formation.roles):[];return {label:u.label,color:u.col,formationId:formation&&formation.id,starters:assigned.map(a=>({name:a.player?a.player.name:null,role:a.role})),subs:over.map(p=>p.name).concat(forced.map(p=>p.name))};});
+  COMPO.lastResult={teams:teamsR};COMPO.numTeams=teamsR.length;try{compoSelected=null;}catch(e){}try{saveCompoRoster();}catch(e){}return true;}
+function orgCompose(mode){const q=orgQ();if(!q)return;const o=orgOf(q);if(!(o.fam.groups||[]).length){alert('Fais d\'abord les groupes (②).');return;}
+  COMPO.fromOrg={qid:q.id,mode:mode||'club',cls:(clsActive()||{}).nom||''};try{const sp=(q.sport&&FORMATIONS_BY_SPORT[q.sport])?q.sport:COMPO.sport;COMPO.sport=sp;const R=orgClassRoster();const ab={};R.forEach(r=>{if(r.absent)ab[r.name]=1;});
+  const sizes=(mode==='niveau'?[].concat(...o.fam.groups.map(g=>o.levels.map((l,li)=>(g.members||[]).filter(n=>o.niv[n]===li&&!ab[n]).length).filter(x=>x>0))):o.fam.groups.map(g=>(g.members||[]).filter(n=>!ab[n]).length));const effs=getCompoEffectifOptions();const mn=Math.min(...sizes);COMPO.effectif=effs.filter(e=>e<=mn).pop()||effs[0];}catch(e){}
+  if(!orgComposeBuild()){alert('Composition impossible : liste de la classe vide ?');return;}
+  try{ensureMasterTeamsForClubs((o.fam.groups||[]).map(g=>g.nom));renderTeams();}catch(e){}
+  goTab('t-compo');orgComposeShow();}
+function orgComposeShow(){try{renderCompoSportBadge();}catch(e){}try{renderCompoEffectifOptions();}catch(e){}try{renderCompoFormationGrid();}catch(e){}try{renderCompoImportStatus();}catch(e){}try{renderCompoTeamsResult();}catch(e){}orgComposeBanner();
+  setTimeout(()=>{const r=E('compo-teams-result');if(r)r.scrollIntoView({behavior:'smooth',block:'start'});},80);}
+function orgComposeBanner(){const p=E('t-compo');if(!p)return;let b=p.querySelector('.org-cbanner');if(!COMPO.fromOrg){if(b)b.remove();return;}
+  if(!b){b=document.createElement('div');b.className='org-cbanner';p.insertAdjacentElement('afterbegin',b);}const F=COMPO.fromOrg;const q=seqGet(F.qid);
+  b.innerHTML='🧭 Composition des '+(F.mode==='niveau'?'sous-groupes de niveau':'clubs')+' d\'Organisation · '+esc(F.cls)+(q?' · '+esc(q.nom||''):'')+'<span>Change l\'effectif ou la formation ci-dessous ; touche deux joueurs pour les échanger.</span>'
+    +'<button type="button" class="btn-xs" style="background:#7c3aed;color:#fff" onclick="if(orgComposeBuild())orgComposeShow()">↻ Recomposer</button><button type="button" class="btn-xs" style="background:#334155;color:#fff" onclick="COMPO.fromOrg=null;orgComposeBanner();goTab(\'t-org\')">← Organisation</button>';}
+onCompoEffectifChange=(function(o){return function(){const r=o.apply(this,arguments);try{if(COMPO.fromOrg&&orgComposeBuild())orgComposeShow();}catch(e){}return r;};})(onCompoEffectifChange);
+generateCompoTeams=(function(o){return function(){COMPO.fromOrg=null;try{orgComposeBanner();}catch(e){}return o.apply(this,arguments);};})(generateCompoTeams);
+orgRender=(function(o){return function(){o.apply(this,arguments);try{const host=E('t-org');const q=orgQ();if(!host||!q)return;const og=orgOf(q);if(!(og.fam.groups||[]).length)return;const card=host.querySelector('.card.org');if(!card||card.querySelector('.org-comp'))return;
+  const d=document.createElement('details');d.className='org-sec org-comp';d.innerHTML='<summary>④ Composition sur le terrain</summary><'+'div class="cc-dim">Place les joueurs de chaque groupe sur le dessin du terrain (postes, gardien, remplaçants), comme dans l\'onglet Composition.</'+'div><'+'div class="org-row"><button type="button" class="org-go" style="flex:1" onclick="orgCompose(\'club\')">📐 Composer les clubs</button>'
+    +(og.fam.sub==='niveau'?'<button type="button" class="org-go" style="flex:1;background:#0e7490" onclick="orgCompose(\'niveau\')">📐 Composer les sous-groupes de niveau</button>':'')+'</'+'div>';card.appendChild(d);}catch(e){console.warn('org comp',e);}};})(orgRender);
+(function(){const st=document.createElement('style');st.textContent='html body .org-cbanner{display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:#1c1530;border:1px solid #7c3aed;border-radius:12px;padding:8px 12px;margin:0 0 10px;color:#ede9fe;font-weight:700;}html body .org-cbanner span{flex:1 1 260px;font-weight:400;font-size:.8rem;color:#c4b5fd;}';document.head.appendChild(st);})();
 </script>
 </body>
 </html>
