@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v333</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v334</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v333</title>
+<title>Gribouillis EPS v334</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -25063,6 +25063,22 @@ function chgSync(s,ak){try{const c=(trnSeqOf(s)||{}).champ;if(!c||!c.on)return;c
   else{if(s.chpBloc)delete s.chpBloc[ak];s._chgHors=s._chgHors||{};s._chgHors[ak]=1;}}catch(e){}}
 sbAtelierInner=(function(o){return function(s,st,a,single){try{if(seanceStepBase(st.key)==='match')chgSync(s,a.key);}catch(e){}let h=o.apply(this,arguments);
   try{const G=atelierGroups(s,a.key,'match').map(chgParse).filter(Boolean);if(seanceStepBase(st.key)==='match'&&G.length===2&&!cfBloc(s,a.key)&&G[0].fi!=null&&G[0].fi===G[1].fi)h='<'+'div class="cf-mt" style="color:#fbbf24">⚠ match pas prévu au calendrier du jour</'+'div>'+h;}catch(e){}return h;};})(sbAtelierInner);
+
+// ══════════════════════════════════════════════════════════════════════
+// v334 — app élève : la séance publiée contient aussi l'objectif du jour
+// (avec ses clés pour réussir, mises en avant comme dans le mode élève) et
+// l'échauffement, pour que la tablette déroule toute la séance au même
+// endroit que les matchs et les projets.
+// ══════════════════════════════════════════════════════════════════════
+elPack=(function(o){return function(s){const P=o.apply(this,arguments);
+  try{if(s.customOeMode)P.objectif={oe:String(s.customOeText||''),cps:[]};else{const sd=seanceSportDef(s);const res=allowedOes(s);let id=null;
+    if(res.mode==='impose')id=res.ids[0];else id=(s.oeId&&res.ids.indexOf(s.oeId)>=0)?s.oeId:(res.ids[0]||null);
+    const oe=id&&sd?(sd.oe||[]).find(x=>x.id===id):null;
+    if(oe){const cps=[];const seen={};(seanceAllCpPaths(s,[oe.id])||[]).forEach(pp=>{const c=getCpByPath(pp);if(!c)return;const t=eleveCp(c);if(seen[t])return;seen[t]=1;cps.push({t:t,f:cpFocusOf(s,pp)||0,video:elNoData(c.media&&c.media.video)});});
+      P.objectif={oe:eleveOe(oe),video:elNoData(oe.media&&oe.media.video),cps:cps};}}}catch(e){console.warn('elPack objectif',e);}
+  try{const e=warmEnsure(s);let budget=600000;P.echauffement=(e.phases||[]).map(ph=>{let img=null;const im=String(ph.image||'');if(im&&(im.indexOf('data:')!==0||(im.length<160000&&budget>im.length))){img=im;if(im.indexOf('data:')===0)budget-=im.length;}
+    return {titre:String(ph.titre||''),desc:String(ph.desc||'').slice(0,1200),video:elNoData(ph.video),image:img};});}catch(e){console.warn('elPack échauffement',e);}
+  return P;};})(elPack);
 </script>
 </body>
 </html>

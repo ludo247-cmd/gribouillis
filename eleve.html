@@ -72,6 +72,12 @@ button{font-family:inherit;cursor:pointer;}
 .fr .c{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:1.1rem;font-weight:900;}
 .banner{background:#14532d;border:1px solid #22c55e;border-radius:12px;padding:10px;display:flex;gap:8px;align-items:center;}
 .banner span{flex:1;font-weight:700;}
+.step{border:1px solid var(--line);border-radius:12px;background:var(--card2);overflow:hidden;}.step.now{border-color:#0e7490;}.step.open{border-color:var(--cc);}
+.step .sh{display:flex;align-items:center;gap:10px;width:100%;min-height:58px;padding:8px 12px;background:none;border:none;color:var(--tx);text-align:left;}
+.step .sn{flex:0 0 28px;height:28px;border-radius:50%;background:#262a33;display:flex;align-items:center;justify-content:center;font-weight:800;}.step.now .sn{background:#0e7490;}
+.step .st{flex:1;display:flex;flex-direction:column;gap:2px;}.step .st small{color:var(--dim);font-size:.8rem;}.step .sc{color:var(--dim);}
+.step .sb{padding:4px 12px 12px;display:flex;flex-direction:column;gap:8px;}
+.cp.f3{border-color:#dc2626;background:#2a1416;font-weight:800;}
 .err{background:#3f1212;border:1px solid #b91c1c;border-radius:12px;padding:12px;}
 .toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#111827;border:1px solid #334155;color:#fff;padding:10px 14px;border-radius:12px;z-index:99;font-size:.9rem;max-width:92vw;}
 .vbox .side{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;border:2px solid var(--line);border-radius:14px;padding:10px;}
@@ -168,26 +174,57 @@ function render(){ST.view='home';const app=$('app');
   if(!cid||!(PK().clubs||[]).some(c=>c.id===cid)){app.innerHTML=topHtml()+'<div class="card"><h2><span>🏳 Quel est votre club ?</span></h2><div class="clubs">'+(PK().clubs||[]).map(c=>'<button class="clubbtn" style="background:'+esc(c.col)+'" onclick="setClub(\''+esc(c.id)+'\')">'+esc(c.nom)+'</button>').join('')+'</div>'
       +((PK().clubs||[]).length?'':'<div class="dim">Aucun club dans cette séance : le prof doit d\'abord créer les clubs (championnat ou colonne Club de la liste).</div>')+'</div>';renderSync();return;}
   const c=clubOf(cid);document.documentElement.style.setProperty('--cc',c.col);
+  const BL=PK().blocs||[];const cur=curBloc();if(OPEN.k===undefined)OPEN.k=cur?cur.key:(BL[0]&&BL[0].key);
   let h=topHtml();
-  // maintenant
-  const B=curBloc();if(B)h+='<div class="card now"><h2><span>⏱ Maintenant · '+esc(B.lab)+'</span><span class="dim" style="flex:0">'+esc(B.start)+'–'+esc(B.end)+'</span></h2>'+blocRolesHtml(B,cid,true)+'</div>';
-  // matchs
-  const M=(PK().matchs||[]).filter(m=>m.a===cid||m.b===cid);
-  if(M.length){h+='<div class="card"><h2><span>⚽ Nos matchs du jour</span></h2>'+M.map(m=>{const sc=scoreOf(m.ref);const opp=clubOf(m.a===cid?m.b:m.a);
-      return '<div class="item"><b>'+esc(formLab(m.niv))+' · contre '+esc(opp.nom)+'</b><div class="who">'+esc(membersOf(cid,m.niv).join(', '))+'</div>'+(sc?'<div><span class="tag ok">✅ '+esc(clubOf(m.a).nom)+' '+sc.sa+' – '+sc.sb+' '+esc(clubOf(m.b).nom)+'</span></div>':'')
-        +'<button class="big blue" onclick="mOpen(\''+esc(m.ref)+'\')">▶ Observer ce match</button></div>';}).join('')+'</div>';}
-  else if(!(PK().formes||[]).length)h+='<div class="card"><h2><span>⚽ Match</span></h2><div class="dim">Pas de match prévu dans le championnat pour aujourd\'hui.</div><div class="row">'+(PK().clubs||[]).filter(k=>k.id!==cid).map(k=>'<button class="big blue" style="background:'+esc(k.col)+'" onclick="mOpenFree(\''+esc(k.id)+'\')">▶ Match contre '+esc(k.nom)+'</button>').join('')+'</div></div>';
-  // projets
+  // une seule frise : chaque étape de la séance, avec ce que fait le club (et ses projets)
+  h+='<div class="card"><h2><span>📋 Notre séance</span>'+(cur?'<span class="tag ok" style="flex:0 0 auto">⏱ maintenant : '+esc(cur.lab)+'</span>':'')+'</h2>';
+  BL.forEach((bl,i)=>{const on=OPEN.k===bl.key;const isNow=cur&&cur.key===bl.key;
+    h+='<div class="step'+(on?' open':'')+(isNow?' now':'')+'"><button class="sh" onclick="stepTog(\''+esc(bl.key)+'\')"><span class="sn">'+(i+1)+'</span><span class="st"><b>'+esc(bl.lab)+'</b><small>'+esc(bl.start||'')+(bl.end?'–'+esc(bl.end):'')+' · '+stepSum(bl,cid)+'</small></span><span class="sc">'+(on?'▲':'▼')+'</span></button>'
+      +(on?'<div class="sb">'+stepBody(bl,cid)+'</div>':'')+'</div>';});
+  if(!BL.length)h+='<div class="dim">Le déroulé de la séance n\'a pas été publié.</div>';
+  h+='</div>';
+  // projets (création / modification)
   const P=projAll();const ck=colKey(cid);
-  h+='<div class="card club"><h2><span>🎯 Nos projets</span></h2>';
+  h+='<div class="card club" id="projets"><h2><span>🎯 Nos projets d\'entraînement</span></h2>';
   h+='<div class="item"><b>Projet collectif — tout le club</b><div class="who">'+esc(membersOf(cid).join(', '))+'</div><div class="pj">'+pjStatus(P[ck])+'</div>'+pjBtns(ck,P[ck])+'</div>';
   h+='<div class="lab">👥 Projets individuels en binôme</div>';
   binsOf(cid).forEach(k=>{const p=P[k];h+='<div class="item"><b>'+esc((p.members||[]).join(' & '))+'</b><div class="pj">'+pjStatus(p)+'</div>'+pjBtns(k,p)+'</div>';});
   h+='<button class="big grey" onclick="binNew()">＋ Nouveau binôme</button></div>';
-  // séance
-  h+='<div class="card"><h2><span>📋 Notre séance</span></h2>'+(PK().blocs||[]).map(b=>'<div class="item'+(B&&B.key===b.key?' now':'')+'"><b>'+esc(b.start||'')+' '+esc(b.lab)+'</b>'+blocRolesHtml(b,cid,false)+'</div>').join('')+'</div>';
+  // matchs du jour qui ne sont dans aucun bloc
+  const inB={};BL.forEach(b=>(b.matches||(b.match?[b.match]:[])).forEach(r=>inB[r]=1));
+  const M=(PK().matchs||[]).filter(m=>(m.a===cid||m.b===cid)&&!inB[m.ref]);
+  if(M.length)h+='<div class="card"><h2><span>⚽ Autres matchs du jour</span></h2>'+M.map(m=>matchItem(m,cid)).join('')+'</div>';
+  else if(!(PK().matchs||[]).length&&!(PK().formes||[]).length)h+='<div class="card"><h2><span>⚽ Match</span></h2><div class="row">'+(PK().clubs||[]).filter(k=>k.id!==cid).map(k=>'<button class="big blue" style="background:'+esc(k.col)+'" onclick="mOpenFree(\''+esc(k.id)+'\')">▶ Match contre '+esc(k.nom)+'</button>').join('')+'</div></div>';
   h+='<div class="row" style="justify-content:center"><button class="small" style="flex:0 1 auto" onclick="if(confirm(\'Changer de club ?\'))setClub(null)">Ce n\'est pas notre club</button>'+classSwitch()+'</div>';
   app.innerHTML=h;renderSync();}
+const OPEN={};
+function stepTog(k){OPEN.k=OPEN.k===k?null:k;render();}
+function blMatches(bl){return (bl.matches&&bl.matches.length?bl.matches:(bl.match?[bl.match]:[])).map(matchByRef).filter(Boolean);}
+function stepSum(bl,cid){const MS=blMatches(bl);if(MS.length){const mine=MS.filter(m=>m.a===cid||m.b===cid);const ref=MS.some(m=>refClubOf(m)===cid&&!(m.a===cid||m.b===cid));
+    return mine.length?'⚽ on joue'+(mine.length>1?' (2 terrains)':'')+' · les autres : projet':(ref?'🟨 on arbitre · les autres : projet':'🏋 projets');}
+  return {presentation:'objectif du jour',echauffement:'échauffement',remediation:'🏋 nos projets',match:'⚽ match',fin:'bilan'}[bl.base]||'';}
+function matchItem(m,cid){const sc=scoreOf(m.ref);const opp=clubOf(m.a===cid?m.b:m.a);
+  return '<div class="item"><b>'+esc(formLab(m.niv))+' · contre '+esc(opp.nom)+'</b><div class="who">'+esc(membersOf(cid,m.niv).join(', '))+'</div>'+(sc?'<div><span class="tag ok">✅ '+esc(clubOf(m.a).nom)+' '+sc.sa+' – '+sc.sb+' '+esc(clubOf(m.b).nom)+'</span></div>':'')
+    +'<button class="big blue" onclick="mOpen(\''+esc(m.ref)+'\')">'+(sc?'↻ Observer à nouveau':'▶ Observer ce match')+'</button></div>';}
+function pjQuick(cid){const P=projAll();const L=[[colKey(cid),'Collectif']].concat(binsOf(cid).map(k=>[k,(P[k].members||[]).join(' & ')]));
+  return '<div class="lab">🏋 Nos exercices</div>'+L.map(([k,lab])=>{const p=P[k];const x=exoOf(p);const kk=esc(k).replace(/'/g,"\\'");
+    return x?'<button class="big" onclick="pjOpen(\''+kk+'\',4)">▶ '+esc(lab)+' : '+esc(x.titre)+(p.scoreAt?' · '+p.score+'/10':'')+'</button>':'<button class="big ghost" onclick="pjOpen(\''+kk+'\','+(p&&p.frm?3:1)+')">🎯 '+esc(lab)+' : '+(p&&p.frm?'choisir l\'exercice':'faire le projet')+'</button>';}).join('')
+    +'<button class="small" style="align-self:flex-start" onclick="binNew()">＋ binôme</button>';}
+function stepBody(bl,cid){const pk=PK();
+  if(bl.base==='presentation'){const o=pk.objectif;if(!o)return '<div class="dim">Écoutez votre enseignant.</div>';
+    return '<div class="lab">Notre objectif</div><b style="font-size:1.05rem">'+esc(o.oe||'')+'</b>'+(o.video?vidHtml(o.video):'')+((o.cps||[]).length?'<div class="lab">🎯 Nos clés pour réussir</div>'+o.cps.map(c=>'<div class="cp'+(c.f===3?' f3':'')+'"><span>'+(c.f===3?'●':'•')+'</span>'+esc(c.t)+'</div>'+(c.video?vidHtml(c.video):'')).join(''):'')
+      +'<div class="dim" style="margin-top:6px">Ensuite : choisissez vos projets (collectif et binômes) avec cet objectif en tête.</div><button class="big grey" onclick="document.getElementById(\'projets\').scrollIntoView({behavior:\'smooth\'})">🎯 Aller à nos projets</button>';}
+  if(bl.base==='echauffement'){const W=pk.echauffement||[];if(!W.length)return '<div class="dim">Écoutez les consignes de votre enseignant pour l\'échauffement.</div>';
+    return W.map((w,i)=>'<div class="item"><b>'+(i+1)+'. '+esc(w.titre||'Phase')+'</b>'+(w.desc?'<div style="white-space:pre-wrap;font-size:.9rem">'+esc(w.desc)+'</div>':'')+(w.video?vidHtml(w.video):(w.image?'<img src="'+esc(w.image)+'" alt="" style="max-width:100%;border-radius:10px">':''))+'</div>').join('');}
+  const MS=blMatches(bl);
+  if(MS.length){const mine=MS.filter(m=>m.a===cid||m.b===cid);let h=blocRolesHtml(bl,cid,false);
+    h+=mine.map(m=>{const sc=scoreOf(m.ref);return '<button class="big blue" onclick="mOpen(\''+esc(m.ref)+'\')">'+(sc?'✅ '+sc.sa+'–'+sc.sb+' · ↻ observer':'▶ Observer')+' : '+esc(formLab(m.niv))+' contre '+esc(clubOf(m.a===cid?m.b:m.a).nom)+'</button>';}).join('');
+    return h+pjQuick(cid);}
+  if(bl.base==='remediation'||bl.base==='match')return pjQuick(cid);
+  if(bl.base==='fin'){const R=(pk.matchs||[]).filter(m=>m.a===cid||m.b===cid).map(m=>{const sc=scoreOf(m.ref);return '<div>'+esc(formLab(m.niv))+' contre '+esc(clubOf(m.a===cid?m.b:m.a).nom)+' : '+(sc?'<b>'+(m.a===cid?sc.sa+'–'+sc.sb:sc.sb+'–'+sc.sa)+'</b>':'—')+'</div>';}).join('');
+    const P=projAll();const J=[[colKey(cid),'Collectif']].concat(binsOf(cid).map(k=>[k,(P[k].members||[]).join(' & ')])).map(([k,l])=>{const p=P[k];return '<div>'+esc(l)+' : '+(p&&p.ind?esc(p.ind)+(p.scoreAt?' · <b>'+p.score+'/10</b>':''):'—')+'</div>';}).join('');
+    return '<div class="lab">Nos matchs</div>'+(R||'<div class="dim">—</div>')+'<div class="lab">Nos projets</div>'+J+'<div class="dim" style="margin-top:6px">Pensez à toucher 📤 en haut si des résultats attendent.</div>';}
+  return '<div class="dim">Tous ensemble.</div>';}
 function classSwitch(){const L=LS.get('el_confs',{});const K=Object.keys(L).filter(k=>k!==confId(CONF));if(!K.length)return '';return K.map(k=>'<button class="small" style="flex:0 1 auto" onclick="useConf(\''+esc(k)+'\')">↔ '+esc(L[k].titre||'autre classe')+'</button>').join('');}
 function blocRolesHtml(b,cid,btns){const MS=(b.matches&&b.matches.length?b.matches:(b.match?[b.match]:[])).map(matchByRef).filter(Boolean);
   if(MS.length){const F=PK().formes||[];const role=fi=>{if(MS.some(m=>m.niv===fi&&(m.a===cid||m.b===cid)))return 'play';if(MS.some(m=>m.niv===fi&&refClubOf(m)===cid))return 'ref';return 'train';};
