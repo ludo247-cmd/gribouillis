@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v338</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v339</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v338</title>
+<title>Gribouillis EPS v339</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -25225,7 +25225,7 @@ function orgRender(){const host=E('t-org');if(!host)return;const c=clsActive();
     if(ORG.sel.length)h+='<'+'div class="cc-dim">Touche un groupe pour y mettre : '+esc(ORG.sel.join(', '))+'</'+'div>';
     h+='<'+'div class="org-row"><button type="button" class="btn-xs" style="background:#a16207;color:#fff" onclick="orgToChamp()">🏆 Utiliser ces groupes comme clubs du championnat</button></'+'div>';}
   h+='</'+'details>';
-  h+='<'+'div class="cc-dim" style="margin-top:8px">③ Planning (prochaine étape) : terrains, blocs, matchs et entraînement, arbitres.</'+'div></'+'div>';
+  h+=plnHtml(q,o,S)+'</'+'div>';
   host.innerHTML=h;}
 function orgMembersHtml(o,M){const sub=o.fam.sub==='niveau';const one=x=>'<span class="org-m">'+(x.sx==='F'?'♀ ':x.sx==='M'?'♂ ':'')+esc(x.n)+'</span>';
   if(!sub)return '<'+'div class="org-ms">'+M.map(one).join('')+'</'+'div>';
@@ -25291,6 +25291,126 @@ function orgClassSel(c){const L=clsData().list||[];return '<select class="org-cl
 function orgClass(id){ORG.qid=null;ORG.gen=null;ORG.sel=[];clsActivate(id);orgRender();setTimeout(()=>{try{if(E('t-org')&&E('t-org').classList.contains('active'))orgRender();}catch(e){}},1500);}
 renderClassBar=(function(o){return function(){const r=o.apply(this,arguments);try{if(E('t-org')&&E('t-org').classList.contains('active')){ORG.qid=null;ORG.gen=null;orgRender();}}catch(e){}return r;};})(renderClassBar);
 (function(){const st=document.createElement('style');st.textContent='html body .org-hd select.org-cls{font-weight:800;}';document.head.appendChild(st);})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v339 — Organisation ③ PLANNING : terrains (chacun avec son format et
+// « qui s'affronte » : clubs entiers ou groupes du même niveau), nombre de
+// blocs, arbitres ; règles avec priorités (temps de jeu équitable, chaque
+// élève sur chaque terrain, toutes les rencontres, pas 2 blocs de suite
+// sans jouer, arbitre). Jamais un élève à 2 endroits (toujours obligatoire).
+// Le générateur cherche le meilleur planning, dit ce qu'il n'a pas pu tenir,
+// puis remplit le déroulé de la séance choisie (et le championnat).
+// ══════════════════════════════════════════════════════════════════════
+const PLN={res:null,seed:1};
+const PLN_RULES=[['equite','Temps de jeu équitable (à 1 match près)','I'],['surface','Chaque élève joue au moins une fois sur chaque terrain','I'],['rencontres','Chaque club rencontre chaque club','I'],['repos','Pas deux blocs de suite sans jouer','S'],['arbitre','Un arbitre libre pour chaque match','S'],['plein','Tous les terrains occupés à chaque bloc','S']];
+function plnOf(o){const p=Object.assign({sid:null,blocs:4,dur:12,ref:'own',terrains:null,rules:{}},o.plan||{});
+  if(!p.terrains)p.terrains=[{id:'t1',nom:'Petit terrain',fmt:'hand à 4',unit:'niveau'},{id:'t2',nom:'Grand terrain',fmt:'hand à 5 (4 + gardien)',unit:'club'}];
+  PLN_RULES.forEach(r=>{if(!p.rules[r[0]])p.rules[r[0]]=r[2];});return p;}
+function plnSave(fn){orgSave((o)=>{const p=plnOf(o);fn(p,o);o.plan=p;});}
+function plnSeances(q){return (SEANCES||[]).filter(x=>x.seqId===q.id).sort((a,b)=>String(a.date).localeCompare(String(b.date)));}
+// équipes et matchs possibles
+function plnTeams(o,S){const pres={};S.forEach(x=>{if(!x.abs)pres[x.n]=x;});const T={};
+  (o.fam.groups||[]).forEach(g=>{const M=(g.members||[]).filter(n=>pres[n]);T['C:'+g.id]={key:'C:'+g.id,g:g,lv:null,lab:g.nom,M:M};
+    o.levels.forEach((l,li)=>{const N=M.filter(n=>o.niv[n]===li);if(N.length)T['L:'+g.id+':'+li]={key:'L:'+g.id+':'+li,g:g,lv:li,lab:g.nom+' '+l,M:N};});});return T;}
+function plnCands(o,T,ter){const G=o.fam.groups||[];const out=[];for(let i=0;i<G.length;i++)for(let j=i+1;j<G.length;j++){
+    if(ter.unit==='club'){const a=T['C:'+G[i].id],b=T['C:'+G[j].id];if(a&&b&&a.M.length&&b.M.length)out.push({a:a.key,b:b.key,ga:G[i].id,gb:G[j].id,lv:null});}
+    else o.levels.forEach((l,li)=>{const a=T['L:'+G[i].id+':'+li],b=T['L:'+G[j].id+':'+li];if(a&&b)out.push({a:a.key,b:b.key,ga:G[i].id,gb:G[j].id,lv:li});});}
+  return out;}
+function plnEval(o,p,T,C,X,detail){const W=r=>ORG_W[p.rules[r]||'X'];const nb=X.length,nt=p.terrains.length;let cost=0;
+  const all={};Object.values(T).forEach(t=>{if(t.lv==null)t.M.forEach(n=>all[n]=1);});const names=Object.keys(all);
+  const play={},onT={},meet={},rest={};names.forEach(n=>{play[n]=0;onT[n]={};rest[n]=[];});let over=0,empty=0,noRef=0;const refs=[];
+  for(let b=0;b<nb;b++){const busy={};const ms=[];for(let t=0;t<nt;t++){const ci=X[b][t];if(ci<0){empty++;continue;}const m=C[t][ci];ms.push([t,m]);
+      [m.a,m.b].forEach(k=>T[k].M.forEach(n=>{if(busy[n])over++;busy[n]=1;play[n]++;onT[n][p.terrains[t].nom]=1;}));meet[[m.ga,m.gb].sort().join('|')]=1;}
+    names.forEach(n=>rest[n].push(!busy[n]));
+    // arbitres
+    const used={};const R=[];ms.forEach(([t,m])=>{let cand=[];const free=n=>!busy[n]&&!used[n];
+      if(p.ref==='own')cand=T['C:'+m.ga].M.concat(T['C:'+m.gb].M).filter(free);else if(p.ref==='other')cand=Object.values(T).filter(x=>x.lv==null&&x.g.id!==m.ga&&x.g.id!==m.gb).reduce((a,x)=>a.concat(x.M),[]).filter(free);else cand=null;
+      if(cand===null){R.push(null);return;}if(!cand.length){noRef++;R.push(null);return;}
+      const pick=cand.slice().sort((x,y)=>(refs.flat().filter(z=>z===x).length)-(refs.flat().filter(z=>z===y).length))[0];used[pick]=1;R.push(pick);});refs.push(R);}
+  cost+=over*1e5;
+  const pv=names.map(n=>play[n]);const spread=pv.length?Math.max(...pv)-Math.min(...pv):0;const eq=Math.max(0,spread-1);cost+=eq*W('equite')*2;
+  const tnames=[...new Set(p.terrains.map(t=>t.nom))];let miss=0;if(tnames.length>1)names.forEach(n=>tnames.forEach(tn=>{if(!onT[n][tn])miss++;}));cost+=miss*W('surface')/3;
+  const G=o.fam.groups||[];let nm=0;for(let i=0;i<G.length;i++)for(let j=i+1;j<G.length;j++)if(!meet[[G[i].id,G[j].id].sort().join('|')])nm++;cost+=nm*W('rencontres');
+  let r2=0;names.forEach(n=>{for(let b=1;b<nb;b++)if(rest[n][b]&&rest[n][b-1])r2++;});cost+=r2*W('repos')/4;
+  cost+=noRef*W('arbitre');cost+=empty*W('plein')/2;
+  if(detail)Object.assign(detail,{over,eq,spread,miss,nm,r2,noRef,empty,play,refs,minP:pv.length?Math.min(...pv):0,maxP:pv.length?Math.max(...pv):0});return cost;}
+function plnGenerate(){const q=orgQ();if(!q)return;const o=orgOf(q);const p=plnOf(o);const S=orgStudents(o);
+  if(!(o.fam.groups||[]).length){alert('Fais d\'abord les groupes (②).');return;}
+  const T=plnTeams(o,S);const C=p.terrains.map(t=>plnCands(o,T,t));const nb=Math.max(1,Math.min(10,+p.blocs||4)),nt=p.terrains.length;
+  const rnd=orgRng(PLN.seed*104729+nb*31+nt);let X=[];for(let b=0;b<nb;b++){const row=[];for(let t=0;t<nt;t++)row.push(C[t].length?Math.floor(rnd()*C[t].length):-1);X.push(row);}
+  let cur=plnEval(o,p,T,C,X);let best=X.map(r=>r.slice()),bc=cur;
+  for(let it=0;it<25000;it++){const temp=50*Math.pow(0.9996,it);const b=Math.floor(rnd()*nb),t=Math.floor(rnd()*nt);if(!C[t].length)continue;const Y=X.map(r=>r.slice());
+    Y[b][t]=rnd()<0.08?-1:Math.floor(rnd()*C[t].length);if(Y[b][t]===X[b][t])continue;const nc=plnEval(o,p,T,C,Y);
+    if(nc<=cur||rnd()<Math.exp((cur-nc)/Math.max(temp,1e-6))){X=Y;cur=nc;if(nc<bc){bc=nc;best=Y.map(r=>r.slice());}}}
+  const d={};plnEval(o,p,T,C,best,d);PLN.res={X:best,C:C,T:T,d:d,nb:nb,qid:q.id};orgRender();}
+function plnReport(o,p,d){const R=[];const pr=r=>({O:'Obligatoire',I:'Important',S:'Si possible',X:'ignorée'}[p.rules[r]]);
+  const line=(r,ok,txt)=>R.push('<'+'div class="org-rp'+(r&&p.rules[r]==='X'?' off':(ok?' ok':' ko'))+'"><b>'+(r&&p.rules[r]==='X'?'–':(ok?'✓':'⚠'))+'</b><span>'+(r?'<i>'+esc(pr(r))+'</i> ':'<i>Obligatoire</i> ')+txt+'</span></'+'div>');
+  line(null,!d.over,d.over?'⛔ '+d.over+' fois un élève attendu à deux endroits : ajoute un bloc ou enlève un terrain':'Personne n\'est attendu à deux endroits');
+  line('equite',!d.eq,'Matchs par élève : de '+d.minP+' à '+d.maxP);
+  line('surface',!d.miss,d.miss?d.miss+' fois un élève ne passe pas sur un des terrains':'Chaque élève joue sur chaque terrain');
+  line('rencontres',!d.nm,d.nm?d.nm+' rencontre'+(d.nm>1?'s':'')+' entre clubs manquante'+(d.nm>1?'s':''):'Chaque club rencontre chaque club');
+  line('repos',!d.r2,d.r2?d.r2+' fois un élève reste 2 blocs de suite sans jouer':'Personne ne reste 2 blocs de suite sans jouer');
+  if(p.ref!=='none')line('arbitre',!d.noRef,d.noRef?d.noRef+' match'+(d.noRef>1?'s':'')+' sans arbitre libre':'Un arbitre libre pour chaque match');
+  line('plein',!d.empty,d.empty?d.empty+' créneau'+(d.empty>1?'x':'')+' de terrain vide'+(d.empty>1?'s':''):'Tous les terrains occupés');
+  return R.join('');}
+function plnHtml(q,o,S){const p=plnOf(o);const SE=plnSeances(q);const G=o.fam.groups||[];
+  let h='<'+'details class="org-sec"'+(PLN.res||p.open?' open':'')+'><summary>③ Planning d\'une séance</summary>';
+  if(!G.length)return h+'<'+'div class="cc-dim">Fais d\'abord les groupes (②).</'+'div></'+'details>';
+  h+='<'+'div class="org-row"><span class="cc-dim">Séance</span><select onchange="plnSet(\'sid\',this.value)">'+(SE.length?SE.map(x=>'<option value="'+esc(x.id)+'"'+((p.sid||'')===x.id?' selected':'')+'>'+esc(seanceDateFr(x.date))+'</option>').join(''):'<option value="">aucune séance dans cette séquence</option>')+'</select>'
+    +'<span class="cc-dim">Blocs</span><button type="button" class="btn-xs" onclick="plnSet(\'blocs\',-1)">－</button><b>'+p.blocs+'</b><button type="button" class="btn-xs" onclick="plnSet(\'blocs\',1)">＋</button>'
+    +'<span class="cc-dim">de</span><button type="button" class="btn-xs" onclick="plnSet(\'dur\',-1)">－</button><b>'+p.dur+' min</b><button type="button" class="btn-xs" onclick="plnSet(\'dur\',1)">＋</button></'+'div>';
+  h+='<'+'div class="pln-ters">'+p.terrains.map((t,i)=>'<'+'div class="pln-ter"><input value="'+esc(t.nom)+'" onchange="plnTer('+i+',\'nom\',this.value)" title="Nom du terrain"><input value="'+esc(t.fmt||'')+'" onchange="plnTer('+i+',\'fmt\',this.value)" placeholder="format (ex. hand à 4)">'
+     +'<select onchange="plnTer('+i+',\'unit\',this.value)"><option value="niveau"'+(t.unit==='niveau'?' selected':'')+'>groupes du même niveau s\'affrontent</option><option value="club"'+(t.unit==='club'?' selected':'')+'>clubs entiers s\'affrontent</option></select>'
+     +(p.terrains.length>1?'<button type="button" class="btn-xs red" onclick="plnTerDel('+i+')">✕</button>':'')+'</'+'div>').join('')
+    +(p.terrains.length<4?'<button type="button" class="btn-xs" onclick="plnTerAdd()">＋ terrain</button>':'')+'</'+'div>';
+  h+='<'+'div class="org-rules"><b>Règles du planning</b>'+PLN_RULES.map(r=>'<'+'div class="org-rule"><span>'+esc(r[1])+'</span><select onchange="plnRule(\''+r[0]+'\',this.value)">'+[['O','Obligatoire'],['I','Important'],['S','Si possible'],['X','Ne pas en tenir compte']].map(x=>'<option value="'+x[0]+'"'+(p.rules[r[0]]===x[0]?' selected':'')+'>'+x[1]+'</option>').join('')+'</select></'+'div>').join('')
+    +'<'+'div class="org-rule"><span>Arbitre pris dans…</span><select onchange="plnSet(\'ref\',this.value)">'+[['own','un des deux clubs qui jouent'],['other','un club qui ne joue pas'],['none','pas d\'arbitre']].map(x=>'<option value="'+x[0]+'"'+(p.ref===x[0]?' selected':'')+'>'+x[1]+'</option>').join('')+'</select></'+'div>'
+    +'<button type="button" class="org-go" onclick="plnGenerate()">⚙ Générer le planning</button></'+'div>';
+  const R=PLN.res&&PLN.res.qid===q.id?PLN.res:null;
+  if(R){const d=R.d;const T=R.T;h+='<'+'div class="org-prop"><b>Proposition</b>'+plnReport(o,p,d)+'<'+'div class="pln-tab"><table><tr><th>Bloc</th>'+p.terrains.map(t=>'<th>'+esc(t.nom)+'<small>'+esc(t.fmt||'')+'</small></th>').join('')+'<th>Libres (projet / entraînement)</th></tr>';
+    R.X.forEach((row,b)=>{const busy={};h+='<tr><td><b>'+(b+1)+'</b></td>';row.forEach((ci,t)=>{if(ci<0){h+='<td class="cc-dim">—</td>';return;}const m=R.C[t][ci];const A=T[m.a],B=T[m.b];[A,B].forEach(x=>x.M.forEach(n=>busy[n]=1));const rf=(d.refs[b]||[])[row.slice(0,t).filter(z=>z>=0).length];
+        h+='<td><span class="pln-t" style="--gc:'+esc(A.g.col)+'">'+esc(A.lab)+'</span> – <span class="pln-t" style="--gc:'+esc(B.g.col)+'">'+esc(B.lab)+'</span><small>'+A.M.length+' contre '+B.M.length+(rf?' · 🟨 '+esc(rf):'')+'</small></td>';});
+      const free=Object.keys(d.play).filter(n=>!busy[n]&&!(d.refs[b]||[]).includes(n));h+='<td><small>'+esc(free.join(', ')||'—')+'</small></td></tr>';});
+    h+='</table></'+'div><'+'div class="org-row"><button type="button" class="btn-xs green" onclick="plnApply()"'+(p.sid&&!d.over?'':' disabled')+'>✓ Remplir la séance du '+esc(p.sid?seanceDateFr((SE.find(x=>x.id===p.sid)||{}).date):'?')+'</button><button type="button" class="btn-xs" style="background:#334155;color:#fff" onclick="PLN.seed++;plnGenerate()">↻ Autre essai</button><button type="button" class="btn-xs" style="background:#334155;color:#fff" onclick="PLN.res=null;orgRender()">Annuler</button></'+'div></'+'div>';}
+  return h+'</'+'details>';}
+function plnSet(k,v){plnSave(p=>{p.open=true;if(k==='blocs')p.blocs=Math.max(1,Math.min(10,p.blocs+v));else if(k==='dur')p.dur=Math.max(4,Math.min(40,p.dur+v));else p[k]=v;});}
+function plnTer(i,k,v){plnSave(p=>{p.open=true;if(p.terrains[i])p.terrains[i][k]=v;});}
+function plnTerAdd(){plnSave(p=>{p.open=true;p.terrains.push({id:'t'+Date.now().toString(36),nom:'Terrain '+(p.terrains.length+1),fmt:'',unit:'niveau'});});}
+function plnTerDel(i){plnSave(p=>{p.open=true;p.terrains.splice(i,1);});}
+function plnRule(r,v){plnSave(p=>{p.open=true;p.rules[r]=v;});}
+// remplir la séance + le championnat (résultats seulement)
+function plnApply(){const q0=orgQ();const R=PLN.res;if(!q0||!R)return;const o=orgOf(q0);const p=plnOf(o);const s=(SEANCES||[]).find(x=>x.id===p.sid);if(!s){alert('Choisis la séance à remplir.');return;}
+  if(!(q0.champ&&q0.champ.fromOrg)){seqUpdate(q0.id,qq=>{const c=chpEnsure(qq);c.on=true;chpEnsure(qq);const G=o.fam.groups;c.clubs=G.map(g=>({id:g.id,nom:g.nom,col:g.col}));c.mix=false;c.niv=o.levels.slice();c.aff={};G.forEach(g=>(g.members||[]).forEach(n=>{c.aff[n]={club:g.id,niv:o.niv[n]!=null?+o.niv[n]:0};}));c.fromOrg=true;});}
+  const q=seqGet(q0.id);const c=q.champ;let ji=(c.jours||[]).findIndex(j=>j.date===s.date);
+  if(ji>=0&&(c.jours[ji].m||[]).some(m=>m.sa!==''&&m.sa!=null)){alert('Des scores sont déjà notés pour ce jour dans le championnat : je ne remplace pas ses matchs.');return;}
+  if(!confirm('Remplir la séance du '+seanceDateFr(s.date)+' avec ce planning ('+R.nb+' blocs) ? Présentation, échauffement et bilan sont gardés ; tu pourras annuler.'))return;
+  // matchs du jour au championnat
+  let allIdx=-1;seqUpdate(q.id,qq=>{const cc=qq.champ;if(!cc.niv.includes('Club entier'))cc.niv.push('Club entier');allIdx=cc.niv.indexOf('Club entier');if(!cc.mix){cc.cats=cc.niv.slice();cc.formes=cc.niv.map((x,i)=>[i]);}let j=(cc.jours||[]).findIndex(x=>x.date===s.date);if(j<0){cc.jours.push({date:s.date,m:[],abs:[]});j=cc.jours.length-1;}ji=j;
+    const M=[];R.X.forEach((row,b)=>{let k=0;row.forEach((ci,t)=>{if(ci<0)return;const m=R.C[t][ci];const rf=(R.d.refs[b]||[])[k++];const rc=rf?((o.fam.groups.find(g=>(g.members||[]).includes(rf))||{}).id):null;
+      M.push({niv:m.lv==null?allIdx:m.lv,a:m.ga,b:m.gb,sa:'',sb:'',ba:0,bb:0,arb:rc||undefined,arbCat:rf&&o.niv[rf]!=null?+o.niv[rf]:undefined,arbNom:rf||undefined,ter:p.terrains[t].nom,bloc:b});});});cc.jours[j].m=M;});
+  // déroulé
+  if(!s.fillBackup)s.fillBackup=JSON.parse(JSON.stringify({steps:s.steps,matchCfg:s.matchCfg||{},stepExos:s.stepExos||{},par:s.par||null,parGroups:s.parGroups||null,parEleves:s.parEleves||null,chpBloc:s.chpBloc||null,at:Date.now()}));
+  const keep=s.steps.filter(st=>{const b=seanceStepBase(st.key);return b!=='match'&&b!=='remediation';});const old=s.steps.filter(st=>{const b=seanceStepBase(st.key);return b==='match'||b==='remediation';}).map(st=>st.key);
+  old.forEach(k=>{if(s.matchCfg)Object.keys(s.matchCfg).forEach(x=>{if(x===k||x.indexOf(k+'~')===0)delete s.matchCfg[x];});if(s.stepExos)Object.keys(s.stepExos).forEach(x=>{if(x===k||x.indexOf(k+'~')===0)delete s.stepExos[x];});if(s.par)delete s.par[k];});
+  const fin=keep.findIndex(st=>seanceStepBase(st.key)==='fin');const blocks=[];for(let b=0;b<R.nb;b++)blocks.push({key:'match-'+(b+1),status:'pending',dur:p.dur});
+  s.steps=fin<0?keep.concat(blocks):keep.slice(0,fin).concat(blocks,keep.slice(fin));if(!s.matchCfg)s.matchCfg={};s.par={};s.chpBloc={};
+  let fps=null;try{fps=JSON.parse(JSON.stringify(matchCfgOf(s,'match-1')));}catch(e){}
+  let mi=0;R.X.forEach((row,b)=>{let pi=0;row.forEach((ci,t)=>{if(ci<0)return;const m=R.C[t][ci];const sk='match-'+(b+1);const ak=pi?sk+'~'+(pi+1):sk;if(pi)(s.par[sk]=s.par[sk]||[]).push(String(pi+1));
+    const gid=k=>k.indexOf('C:')===0?'org_'+k.slice(2):'org_'+k.slice(2).replace(/:(\d+)$/,'_$1');
+    const cfg=JSON.parse(JSON.stringify(fps||{nom:'',points:[]}));cfg.groupes=[gid(m.a),gid(m.b)];cfg.eleves=[];if(pi)cfg.scoreOnly=true;else delete cfg.scoreOnly;cfg.terrain=p.terrains[t].nom;s.matchCfg[ak]=cfg;
+    s.chpBloc[ak]={qid:q.id,ji:ji,mi:mi};mi++;pi++;});});
+  if(!Object.keys(s.par).length)delete s.par;recomputeSeanceStatuses(s);saveSeances();
+  try{toast2('✅ Séance remplie : '+R.nb+' blocs, '+mi+' matchs');}catch(e){}PLN.res=null;orgRender();}
+// arbitre nommé dans les blocs
+sbAtelierInner=(function(o){return function(s,st,a,single){let h=o.apply(this,arguments);try{const B=cfBloc(s,a.key);if(B&&B.m.arbNom)h=h.replace(/🟨 [^<·]*/,'🟨 '+esc(B.m.arbNom));if(B&&B.m.ter)h=h.replace('<'+'div class="cf-mt">','<'+'div class="cf-mt"><span class="cf-ter">📍 '+esc(B.m.ter)+'</span> ');}catch(e){}return h;};})(sbAtelierInner);
+// tablettes : niveaux comme « formes » quand le championnat vient d'Organisation
+elPack=(function(o){return function(s){const P=o.apply(this,arguments);try{const q=trnSeqOf(s);const c=q&&q.champ;if(c&&c.fromOrg&&!c.mix){const L=c.niv.length;P.formes=c.niv.map((l,i)=>({ids:l==='Club entier'?c.niv.map((x,j)=>j).filter(j=>c.niv[j]!=='Club entier'):[i],lab:l}));
+  Object.keys(P.eleves||{}).forEach(n=>{const a=c.aff[n];if(a)P.eleves[n].cat=+a.niv||0;});(P.matchs||[]).forEach(x=>{const m=c.jours[x.ji]&&c.jours[x.ji].m[x.mi];if(m&&m.arbNom)x.arbNom=m.arbNom;});}}catch(e){console.warn(e);}return P;};})(elPack);
+(function(){const st=document.createElement('style');st.textContent=
+ 'html body .pln-ters{display:flex;flex-direction:column;gap:6px;margin:6px 0;}html body .pln-ter{display:flex;gap:6px;flex-wrap:wrap;align-items:center;background:#0f172a;border:1px solid #1e3a5f;border-radius:10px;padding:6px;}html body .pln-ter input{min-height:34px;background:#111827;color:#fff;border:1px solid #334155;border-radius:8px;padding:0 8px;width:160px !important;}html body .pln-ter select{width:auto !important;min-height:34px;}'
++'html body .pln-tab{overflow-x:auto;}html body .pln-tab table{border-collapse:collapse;width:100%;font-size:.85rem;}html body .pln-tab th,html body .pln-tab td{border:1px solid #334155;padding:6px;vertical-align:top;text-align:left;}html body .pln-tab th small,html body .pln-tab td small{display:block;color:#94a3b8;font-weight:400;}'
++'html body .pln-t{font-weight:800;color:var(--gc);}html body .cf-ter{display:block;font-size:.68rem;color:#93c5fd;font-weight:600;}';
+document.head.appendChild(st);})();
 </script>
 </body>
 </html>
