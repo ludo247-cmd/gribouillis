@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v344</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v345</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v344</title>
+<title>Gribouillis EPS v345</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -25535,6 +25535,63 @@ libImportText=(function(f){return function(t){try{const o=JSON.parse(String(t||'
   if(q.org&&q.org.fam&&(q.org.fam.groups||[]).length&&!confirm('La séquence « '+(q.nom||'')+' » a déjà des groupes dans Organisation. Les remplacer ?'))return 0;
   seqUpdate(q.id,qq=>{qq.org=Object.assign({},qq.org||{},JSON.parse(JSON.stringify(o.org)));});
   alert('✅ Organisation importée dans « '+(q.nom||'séquence')+' » : '+(o.org.fam&&o.org.fam.groups||[]).length+' clubs.');try{ORG.qid=q.id;clsActivate(c.id);goTab('t-org');}catch(e){}return 1;}}catch(e){}return f.apply(this,arguments);};})(libImportText);
+
+// ══════════════════════════════════════════════════════════════════════
+// v345 — Organisation : RÔLES TRANSVERSAUX (croisements de groupes : 🧤
+// gardiens, 🃏 jokers…) : des élèves de plusieurs clubs réunis sous un rôle,
+// répartis équitablement entre les clubs par le générateur, proposés comme
+// groupe dans la séance (ex. atelier gardiens) ; les gardiens sont placés
+// au poste de gardien dans la composition.
+// + ÉTAPE 6 (ménage) pour les séquences gérées par Organisation : plus de
+// « mode élève » de l'app ni de lien/code élève (remplacés par l'app élève
+// et son aperçu), le championnat n'affiche plus clubs/répartition (gérés dans
+// Organisation), « Générer les groupes » de la séance renvoie vers
+// Organisation. Rien n'est effacé ; les autres classes ne changent pas.
+// ══════════════════════════════════════════════════════════════════════
+// planning : occuper les terrains passe avant l'arbitre libre (tout le monde joue)
+try{const pr=PLN_RULES.find(r=>r[0]==='plein');if(pr)pr[2]='I';}catch(e){}
+plnEval=(function(f){return function(o,p,T,C,X,detail){const d=detail||{};const c=f.call(this,o,p,T,C,X,d);const W=ORG_W[p.rules.plein||'X'];return c+(d.empty||0)*W/2;};})(plnEval);
+ORG_RULES.push(['roles','Rôles (gardiens, jokers…) répartis équitablement entre les groupes','I']);
+function orgRoles(o){return Array.isArray(o.roles)?o.roles:[];}
+orgCost=(function(f){return function(o,S,A,k,prev,detail){let c=f.apply(this,arguments);try{const W=ORG_W[o.rules.roles||'I'];const R=orgRoles(o).filter(r=>r.repartir!==false&&(r.members||[]).length);if(!R.length){if(detail&&detail.d)detail.d.roles=0;return c;}
+  const idx={};S.forEach((x,i)=>idx[x.n]=i);let dr=0;R.forEach(r=>{const cnt=Array(k).fill(0);(r.members||[]).forEach(n=>{if(idx[n]!=null)cnt[A[idx[n]]]++;});const tot=cnt.reduce((a,b)=>a+b,0);dr+=Math.max(0,Math.max(...cnt)-Math.min(...cnt)-1);if(tot>=k&&cnt.some(v=>v===0))dr+=1;});
+  c+=dr*W;if(detail&&detail.d)detail.d.roles=dr;}catch(e){}return c;};})(orgCost);
+orgReport=(function(f){return function(o,S,A,k,d,names){let h=f.apply(this,arguments);try{const R=orgRoles(o).filter(r=>(r.members||[]).length);if(!R.length)return h;const idx={};S.forEach((x,i)=>idx[x.n]=i);
+  const txt=R.map(r=>{const cnt=Array(k).fill(0);(r.members||[]).forEach(n=>{if(idx[n]!=null)cnt[A[idx[n]]]++;});return esc((r.logo?r.logo+' ':'')+r.nom)+' : '+cnt.map((v,i)=>esc(names[i]||('G'+(i+1)))+' '+v).join(' · ');}).join(' — ');
+  const ok=!d.roles;h+='<'+'div class="org-rp'+(o.rules.roles==='X'?' off':(ok?' ok':' ko'))+'"><b>'+(o.rules.roles==='X'?'–':(ok?'✓':'⚠'))+'</b><span><i>'+esc({O:'Obligatoire',I:'Important',S:'Si possible',X:'ignorée'}[o.rules.roles||'I'])+'</i> '+txt+'</span></'+'div>';}catch(e){}return h;};})(orgReport);
+// interface des rôles
+function orgRoleAdd(){const nom=prompt('Nom du rôle (ex. Gardiens, Jokers, Capitaines)');if(!nom)return;const L=/gard/i.test(nom)?'🧤':/joker/i.test(nom)?'🃏':/capit/i.test(nom)?'©️':'⭐';orgSave(o=>{o.roles=orgRoles(o);o.roles.push({id:'or'+Date.now().toString(36),nom:String(nom).trim(),logo:L,members:ORG.sel.slice(),repartir:true});});ORG.sel=[];orgRender();}
+function orgRoleAddSel(i){const L=ORG.sel.slice();ORG.sel=[];orgSave(o=>{const r=orgRoles(o)[i];if(!r)return;L.forEach(n=>{if(r.members.indexOf(n)<0)r.members.push(n);});});}
+function orgRoleDelM(i,n){orgSave(o=>{const r=orgRoles(o)[i];if(r)r.members=r.members.filter(x=>x!==n);});}
+function orgRoleTog(i){orgSave(o=>{const r=orgRoles(o)[i];if(r)r.repartir=r.repartir===false;});}
+function orgRoleDel(i){if(!confirm('Supprimer ce rôle ?'))return;orgSave(o=>{o.roles=orgRoles(o);o.roles.splice(i,1);});}
+orgRender=(function(f){return function(){f.apply(this,arguments);try{const host=E('t-org');const q=orgQ();if(!host||!q)return;const o=orgOf(q);const sec=[...host.querySelectorAll('.org-sec')].find(x=>/^②/.test((x.querySelector('summary')||{}).textContent||''));if(!sec)return;
+  const R=orgRoles(o);const G=o.fam.groups||[];const gOf=n=>G.find(g=>(g.members||[]).includes(n));
+  const d=document.createElement('div');d.className='org-roles';
+  d.innerHTML='<b>🔀 Rôles transversaux (croisements)</b><span class="cc-dim"> des élèves de plusieurs clubs réunis sous un rôle (gardiens, jokers…). Coche des élèves en ①, puis ajoute-les à un rôle.</span>'
+    +R.map((r,i)=>'<'+'div class="org-role"><b>'+esc((r.logo||'')+' '+r.nom)+'</b>'+(r.members||[]).map(n=>{const g=gOf(n);return '<span class="org-m" style="border-left:4px solid '+esc(g?g.col:'#475569')+'">'+esc(n)+' <a onclick="orgRoleDelM('+i+',\''+esc(n).replace(/'/g,"\\'")+'\')">✕</a></span>';}).join('')
+      +'<label class="org-ck"><input type="checkbox"'+(r.repartir!==false?' checked':'')+' onchange="orgRoleTog('+i+')"> répartir entre les clubs</label>'
+      +(ORG.sel.length?'<button type="button" class="btn-xs" style="background:#0e7490;color:#fff" onclick="orgRoleAddSel('+i+')">＋ ajouter '+ORG.sel.length+' élève(s)</button>':'')+'<button type="button" class="btn-xs red" onclick="orgRoleDel('+i+')">✕</button></'+'div>').join('')
+    +'<button type="button" class="btn-xs" style="background:#334155;color:#fff" onclick="orgRoleAdd()">＋ Nouveau rôle'+(ORG.sel.length?' avec les '+ORG.sel.length+' élèves cochés':'')+'</button>';
+  const rules=sec.querySelector('.org-rules');if(rules)rules.insertAdjacentElement('beforebegin',d);else sec.appendChild(d);
+  // rôle visible à côté des élèves
+  host.querySelectorAll('.org-e').forEach(el=>{const nm=(el.querySelector('label')||{}).textContent;if(!nm)return;const n=nm.trim();const rr=R.filter(r=>(r.members||[]).includes(n));if(rr.length){const sp=document.createElement('small');sp.textContent=rr.map(r=>r.logo||r.nom).join(' ');el.appendChild(sp);}});}catch(e){console.warn('org roles',e);}};})(orgRender);
+// la séance propose aussi les rôles (ex. atelier des gardiens de tous les clubs)
+seanceGroupChips=(function(f){return function(s){const L=f.apply(this,arguments);try{s=s||getActiveSeance();const q=s&&trnSeqOf(s);if(!q||!q.org)return L;const abs={};((COMPO&&COMPO.roster)||[]).forEach(r=>{if(r&&r.absent)abs[r.name]=1;});
+  orgRoles(q.org).forEach(r=>{const M=(r.members||[]).filter(n=>!abs[n]);if(M.length&&!L.some(g=>g.id==='org_role_'+r.id))L.push({id:'org_role_'+r.id,label:(r.logo?r.logo+' ':'')+r.nom,color:'#64748b',members:M,org:true});});}catch(e){}return L;};})(seanceGroupChips);
+// composition : les gardiens au poste de gardien
+orgComposeBuild=(function(f){return function(){const F=COMPO.fromOrg;let keep=null;try{const q=F&&seqGet(F.qid);const R=q&&q.org?orgRoles(q.org).filter(r=>/gard/i.test(r.nom)):[];if(R.length){const gk={};R.forEach(r=>(r.members||[]).forEach(n=>gk[n]=1));
+    const orig=orgClassRoster;keep=orig;orgClassRoster=function(){return orig().map(p=>gk[p.name]?Object.assign({},p,{postes:['GK'].concat((p.postes||[]).filter(x=>x!=='GK'))}):p);};}}catch(e){}
+  try{return f.apply(this,arguments);}finally{if(keep)orgClassRoster=keep;}};})(orgComposeBuild);
+// ── ÉTAPE 6 : ménage pour les séquences gérées par Organisation ──
+function orgManaged(s){try{const q=s&&trnSeqOf(s);return !!(q&&q.org&&q.org.fam&&(q.org.fam.groups||[]).length);}catch(e){return false;}}
+renderSeanceTab=(function(f){return function(){const r=f.apply(this,arguments);try{if(SEANCE_STATE.mode==='eleve'||GRIB_EXPORT_MODE)return r;const s=getActiveSeance();if(!orgManaged(s))return r;const host=E('seance-tab-content');if(!host)return r;
+  host.querySelectorAll('button').forEach(b=>{const oc=b.getAttribute('onclick')||'';const t=b.textContent||'';if(/setSeanceMode\('eleve'\)/.test(oc)||/Envoyer aux élèves|Lien \+ code pour les élèves/.test(t))b.style.display='none';});}catch(e){}return r;};})(renderSeanceTab);
+chpHtml=(function(f){return function(q){let h=f.apply(this,arguments);try{if(!(q.champ&&q.champ.fromOrg))return h;const w=document.createElement('div');w.innerHTML=h;const box=w.firstChild;if(!box||!box.querySelectorAll)return h;
+  box.querySelectorAll(':scope > details.cz').forEach(dd=>{const t=(dd.querySelector('summary')||{}).textContent||'';if(/Clubs|Répartition|Niveaux/i.test(t))dd.style.display='none';});box.querySelectorAll('.chp-mix').forEach(x=>x.style.display='none');
+  const n=document.createElement('div');n.className='cc-dim';n.style.margin='4px 0';n.innerHTML='🧭 Clubs, élèves et niveaux : gérés dans l\'onglet <b>Organisation</b>. Le championnat ne garde que les matchs, les résultats et le classement.';box.insertBefore(n,box.children[1]||null);return box.outerHTML;}catch(e){return h;}};})(chpHtml);
+planGoGroups=(function(f){return function(){const s=getActiveSeance();if(orgManaged(s)){const q=trnSeqOf(s);ORG.qid=q.id;goTab('t-org');return;}return f.apply(this,arguments);};})(planGoGroups);
+(function(){const st=document.createElement('style');st.textContent='html body .org-roles{display:flex;flex-direction:column;gap:6px;margin:8px 0;padding:8px 10px;border:1px dashed #475569;border-radius:10px;}html body .org-role{display:flex;flex-wrap:wrap;gap:6px;align-items:center;}html body .org-role a{cursor:pointer;color:#fca5a5;margin-left:3px;}';document.head.appendChild(st);})();
 </script>
 </body>
 </html>
