@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v353</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v354</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v353</title>
+<title>Gribouillis EPS v354</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -26109,6 +26109,30 @@ chsSuivi=(function(f){return function(q,o){let h=f.apply(this,arguments);try{con
 +'html body .sof-r{display:flex;gap:8px;align-items:flex-start;flex-wrap:wrap;font-size:.8rem;}html body .sof-r > span{width:150px;color:#cbd5e1;padding-top:6px;}html body .sof-r textarea,html body .sof-r > select{flex:1 1 300px;background:#0f172a;border:1px solid #334155;color:#fff;border-radius:8px;padding:6px 8px;font-size:.8rem;min-height:34px;}'
 +'html body .sof-jeu{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}html body .sof-jeu input{width:62px;min-height:32px;background:#0f172a;border:1px solid #334155;color:#fff;border-radius:6px;padding:0 6px;}html body .sof-jeu small{color:#94a3b8;}html body .sof-jeu select{min-height:34px;max-width:100%;}'
 +'@media (max-width:640px){html body .sof-r > span,html body .sof-l span{width:100%;padding:0;}}';document.head.appendChild(st);})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v354 — Séquence › Championnat : les bonus (points en plus) se règlent ici,
+// avec un bouton pour créer un bonus par critère de réussite de la FPS.
+// Séance : le 2ᵉ objet choisi s'allume comme le 1ᵉʳ.
+// ══════════════════════════════════════════════════════════════════════
+function seqBonMut(qid,fn){seqUpdate(qid,q=>{chpEnsure(q);const S=chpSc(q.champ);if(!Array.isArray(S.bon))S.bon=[];fn(S,q);});renderSeqTab();}
+function seqBonSet(qid,i,k,v){seqBonMut(qid,S=>{const b=S.bon[i];if(!b)return;if(k==='lab')b.lab=String(v||'').trim()||b.lab;else b[k]=Math.max(0,+v||0);});}
+function seqBonDel(qid,i){seqBonMut(qid,S=>{S.bon.splice(i,1);});}
+function seqBonAdd(qid){seqBonMut(qid,S=>{S.bon.push({id:chpUid(),lab:'Nouveau bonus',pts:1});});}
+function seqBonFromFps(qid){seqBonMut(qid,(S,q)=>{const F=seqFpsIds(q).map(id=>fpsEff(q,id)).filter(Boolean);F.forEach(e=>e.criteres.forEach(c=>{const lab='🎯 '+fpsCrTxt(c);if(!S.bon.some(b=>b.lab===lab))S.bon.push({id:chpUid(),lab:lab,pts:1});}));});}
+function seqBonMode(qid,v){seqBonMut(qid,S=>{S.bonMode=v;});}
+seqOeFpsHtml=(function(f){return function(q){let h=f.apply(this,arguments);try{const c=q.champ&&q.champ.on?q.champ:null;const S=c?chpSc(c):{bon:[]};const qi=esc(q.id);
+  const rows=(S.bon||[]).map((b,i)=>'<'+'div class="sof-bon"><input value="'+esc(b.lab)+'" onchange="seqBonSet(\''+qi+'\','+i+',\'lab\',this.value)"><label>+ <input type="number" min="0" value="'+esc(String(b.pts||0))+'" onchange="seqBonSet(\''+qi+'\','+i+',\'pts\',this.value)"> pt(s)</label><button type="button" class="btn-xs red" onclick="seqBonDel(\''+qi+'\','+i+')">✕</button></'+'div>').join('');
+  const add='<'+'div class="sof-bonbox"><b>⭐ Bonus quand un objectif est atteint</b><small class="cc-dim">Cochés match par match (championnat de la séquence, tablettes) ; ils s\'ajoutent aux points du classement.</small>'+rows
+    +'<'+'div class="sof-jeu"><button type="button" class="btn-xs" style="background:#166534;color:#fff;" onclick="seqBonFromFps(\''+qi+'\')">＋ Un bonus par critère de la FPS</button><button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="seqBonAdd(\''+qi+'\')">＋ Autre bonus</button>'
+    +'<label>Plusieurs bonus : <select onchange="seqBonMode(\''+qi+'\',this.value)"><option value="sum"'+(S.bonMode!=='max'?' selected':'')+'>ils s\'additionnent</option><option value="max"'+(S.bonMode==='max'?' selected':'')+'>seul le plus fort compte</option></select></label></'+'div></'+'div>';
+  h=h.replace('<small class="cc-dim">Les clubs, groupes et le planning',add+'<small class="cc-dim">Les clubs, groupes et le planning');}catch(e){console.warn('bon',e);}return h;};})(seqOeFpsHtml);
+seqBarSet=(function(f){return function(qid,k,v){seqUpdate(qid,q=>{chpEnsure(q);});return f.apply(this,arguments);};})(seqBarSet);
+// séance : le 2ᵉ objet s'allume
+function seOeLight(){try{document.querySelectorAll('#seance-tab-content .remed-chip[data-oe]').forEach(ch=>{const r=ch.querySelector('.rsub');ch.classList.toggle('sel2',!!(r&&/^✓/.test(r.textContent.trim())));});}catch(e){}}
+renderSeanceTab=(function(f){return function(){const r=f.apply(this,arguments);seOeLight();return r;};})(renderSeanceTab);
+(function(){const st=document.createElement('style');st.textContent='html body .remed-chip.sel2{border:3px solid var(--oe,#22c55e) !important;background:color-mix(in srgb,var(--oe,#22c55e) 32%,#0f172a) !important;color:#fff !important;}'
++'html body .sof-bonbox{display:flex;flex-direction:column;gap:6px;margin:8px 0;padding:8px;border:1px dashed #a16207;border-radius:10px;}html body .sof-bon{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}html body .sof-bon > input{flex:1 1 260px;min-height:32px;background:#0f172a;border:1px solid #334155;color:#fff;border-radius:6px;padding:0 8px;}html body .sof-bon label input{width:56px;min-height:32px;background:#0f172a;border:1px solid #334155;color:#fff;border-radius:6px;}';document.head.appendChild(st);})();
 </script>
 </body>
 </html>
