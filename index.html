@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v330</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v331</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v330</title>
+<title>Gribouillis EPS v331</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -24936,6 +24936,37 @@ document.head.appendChild(st);})();
 // app élève : un QR code pour toute la séquence (la tablette ouvre la dernière séance publiée)
 elLink=function(s){const q=elSeq(s);const g=gsCfg();return elAppUrl()+'#p='+encodeURIComponent(String(g.passerelle||'').trim())+'&f='+encodeURIComponent(elFileId(q))+'&k='+encodeURIComponent(q.elk||'')+'&s=last';};
 elShowLink=(function(o){return function(){o.apply(this,arguments);try{const d=E('el-ov')&&E('el-ov').querySelector('.cc-dim');if(d)d.innerHTML='Scannez ce code <b>une seule fois</b> avec chaque tablette : il sert pour toute la séquence (la tablette ouvre toujours la dernière séance publiée). Ensuite, « Ajouter à l\'écran d\'accueil » pour avoir l\'icône <b>Grib. Élèves</b>.';}catch(e){}};})(elShowLink);
+
+// ══════════════════════════════════════════════════════════════════════
+// v331 — avant-match tout simple : les équipes, puis 3 lignes résumées
+// (Fin du match · Observation · Boutons). Toucher une ligne ouvre ses
+// options. Fin du match selon le sport : volley / badminton au score,
+// foot / basket / hand… au temps (ton dernier choix par sport est gardé).
+// ══════════════════════════════════════════════════════════════════════
+prmCfg=(function(o){return function(){const c=o.apply(this,arguments);try{const m=c.endBy||{};c.end=m[CFG.apsa]||(isRacket()?'score':'time');}catch(e){}return c;};})(prmCfg);
+prmKick=(function(o){return function(){try{PRM.c.endBy=Object.assign({},PRM.c.endBy||{});PRM.c.endBy[CFG.apsa]=PRM.c.end;}catch(e){}return o.apply(this,arguments);};})(prmKick);
+prmOpen=(function(o){return function(){PRM.open=null;return o.apply(this,arguments);};})(prmOpen);
+function psTog(k){PRM.open=PRM.open===k?null:k;prmRender();}
+function psEndTxt(){const c=PRM.c||{};if(c.end==='score'){const tg=prmTarget();return 'Au score · '+tg+' points'+(c.smode==='sum'?' disputés':'')+(isRacket()&&rkCfg().n>1?' · '+rkCfg().n+' sets':'');}
+  if(c.end==='time'){const n=+CFG.nbPeriods||1;return 'Au temps · '+(n>1?n+' × ':'')+String(CFG.periodDur).replace('.',',')+' min';}return 'Chrono libre';}
+prmRender=(function(o){return function(){o.apply(this,arguments);try{const ov=E('prm-ov');if(!ov)return;const box=ov.querySelector('.prm-box');if(!box)return;
+  const cards=[...box.querySelectorAll(':scope > .prm-card')];const lab=c=>((c.querySelector('.prm-lab')||{}).textContent||'');
+  const fin=cards.find(c=>/^Fin du match/.test(lab(c))),obs=cards.find(c=>/^Observation/.test(lab(c))),pb=box.querySelector(':scope > .pb-card');
+  const L=prmBtnsNow();
+  const rows=[['end','⏱','Fin du match',psEndTxt(),fin],['obs','👁','Observation',(CFG.indivObsEnabled?'Individuelle + collective':'Collective')+' · '+(CFG.obsSimple?'✋ boutons seuls':'✏️ gribouillis'),obs],
+    ['btn','🔘','Boutons',L.length+' : '+L.map(b=>b.label).join(' · '),pb]];
+  rows.forEach(([k,ico,t,v,card])=>{if(!card)return;const r=document.createElement('button');r.type='button';r.className='ps-row'+(PRM.open===k?' on':'');
+    r.innerHTML='<span class="ps-i">'+ico+'</span><span class="ps-t"><b>'+esc(t)+'</b><span>'+esc(v)+'</span></span><span class="ps-c">'+(PRM.open===k?'▲':'Modifier')+'</span>';
+    r.onclick=()=>psTog(k);card.insertAdjacentElement('beforebegin',r);card.classList.add('ps-body');if(PRM.open!==k)card.style.display='none';
+    const l=card.querySelector('.prm-lab');if(l&&k!=='btn')l.style.display='none';});
+}catch(e){console.warn('ps',e);}};})(prmRender);
+(function(){const st=document.createElement('style');st.textContent=
+ '#prm-ov .ps-row{display:flex;align-items:center;gap:10px;width:100%;min-height:58px;padding:8px 12px;border-radius:12px;border:1px solid #2d323d;background:#1a1d24;color:#e8e8ea;text-align:left;cursor:pointer;font-family:inherit;}'
++'#prm-ov .ps-row.on{border-color:#dc2626;border-bottom-left-radius:4px;border-bottom-right-radius:4px;}'
++'#prm-ov .ps-i{font-size:20px;width:28px;text-align:center;}#prm-ov .ps-t{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0;}#prm-ov .ps-t b{font-size:12px;color:#a3a7b0;font-weight:600;text-transform:uppercase;letter-spacing:.04em;}'
++'#prm-ov .ps-t span{font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}#prm-ov .ps-c{font-size:12px;color:#fca5a5;flex:0 0 auto;}'
++'#prm-ov .ps-body{margin-top:-6px;border-top-left-radius:4px;border-top-right-radius:4px;border-color:#dc2626;}';
+document.head.appendChild(st);})();
 </script>
 </body>
 </html>
