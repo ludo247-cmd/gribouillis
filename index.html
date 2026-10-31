@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v346</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v347</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v346</title>
+<title>Gribouillis EPS v347</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -25625,6 +25625,166 @@ orgRender=(function(f){return function(){f.apply(this,arguments);try{const host=
 +'@media (max-width:640px){html body .org-el{grid-template-columns:1fr;gap:4px;}html body .org-e{min-height:38px;padding:2px 6px;gap:4px;}html body .org-sx,html body .org-lv{min-height:30px;min-width:30px;padding:0 6px;font-size:.75rem;}html body .org-g{font-size:.7rem;padding:1px 6px;}'
 +'html body .org-hd{font-size:.95rem;gap:6px;}html body .org-tools{margin-left:0;width:100%;}html body .org-row input{width:110px;}html body .org-rule{flex-wrap:wrap;}html body .org-rule select{flex:1 1 100%;width:100% !important;max-width:none !important;}html body .org-sec{padding:6px 8px;}}';
 document.head.appendChild(st);})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v347 — Organisation = un seul parcours : ① élèves ② clubs (faits à la
+// main : ＋ Club, cocher puis toucher un club ; générateur replié)
+// ③ CHAMPIONNAT DE SÉQUENCE : une FILE de blocs de matchs créée une fois
+// pour toute la séquence ; chaque séance prend les prochains blocs ; les
+// matchs non joués (pas de score) reviennent en tête à la séance suivante.
+// ④ SUIVI : classement, résultats par séance, fils rouges des projets.
+// Le reste (planning d'une séance, composition, rôles) passe dans
+// « Plus d'options ». Rien n'est effacé ; AS et autres classes intactes.
+// ══════════════════════════════════════════════════════════════════════
+function chsOf(o){const p=plnOf(o);const c=Object.assign({perS:3,seed:1,dur:p.dur||12,terrains:null,prog:[],ok:false,at:0},o.cal||{});
+  if(!c.terrains)c.terrains=p.terrains.map(t=>({nom:t.nom,fmt:t.fmt||''}));if(!Array.isArray(c.prog))c.prog=[];return c;}
+function chsSave(fn){orgSave(o=>{const c=chsOf(o);fn(c,o);o.cal=c;});}
+function chsLv(o){return o.fam&&o.fam.sub==='niveau';}
+function chsLab(o,m){const G=o.fam.groups||[];const g=id=>G.find(x=>x.id===id)||{nom:'?',col:'#475569'};return {A:g(m.a),B:g(m.b),R:m.arb?g(m.arb):null,lv:m.niv>=0?(o.levels[m.niv]||''):'clubs entiers'};}
+// création de la file
+function chsBuild(o,c){const G=(o.fam.groups||[]).map(g=>g.id);const k=G.length;const nt=Math.max(1,c.terrains.length);const LV=chsLv(o)?o.levels.map((x,i)=>i):[-1];
+  const pairs=[];for(let i=0;i<k;i++)for(let j=i+1;j<k;j++)pairs.push([G[i],G[j]]);if(!pairs.length)return [];
+  const nS=Math.max(1,plnSeances(orgQ()||{id:''}).length||6);const need=nS*c.perS+c.perS;
+  const rnd=orgRng((c.seed||1)*7919+k*31+nt);const tc={},rc={};const key=(g,l)=>g+':'+l;const out=[];let r=0,pend=[];let guard=0;
+  while(out.length<need&&guard++<500){if(!pend.length){const P=pairs.map((p,i)=>pairs[(i+r)%pairs.length]);LV.forEach(l=>P.forEach(p=>{const sw=(r%2)?[p[1],p[0]]:p;pend.push({a:sw[0],b:sw[1],niv:l});}));if(rnd()<.5)pend.reverse();r++;}
+    const bloc=[];const busy={};for(let i=0;i<pend.length&&bloc.length<nt;){const m=pend[i];const ka=key(m.a,m.niv),kb=key(m.b,m.niv);const clash=m.niv<0?(busy[m.a]||busy[m.b]||Object.keys(busy).some(x=>x.indexOf(m.a+':')===0||x.indexOf(m.b+':')===0)):(busy[ka]||busy[kb]||busy[m.a]||busy[m.b]);
+      if(clash){i++;continue;}if(m.niv<0){busy[m.a]=busy[m.b]=1;}else{busy[ka]=busy[kb]=1;}bloc.push(m);pend.splice(i,1);}
+    if(!bloc.length){pend=[];continue;}
+    // terrains : chaque équipe passe sur chaque terrain
+    const perm=a=>a.length<=1?[a]:a.reduce((acc,x,i)=>acc.concat(perm(a.slice(0,i).concat(a.slice(i+1))).map(p=>[x].concat(p))),[]);const T=[];for(let t=0;t<nt;t++)T.push(t);
+    let best=null,bv=1e9;perm(T).forEach(P=>{let v=0;bloc.forEach((m,i)=>{const t=P[i];v+=(tc[key(m.a,m.niv)+'@'+t]||0)+(tc[key(m.b,m.niv)+'@'+t]||0);});if(v<bv){bv=v;best=P;}});
+    bloc.forEach((m,i)=>{m.ter=best[i];tc[key(m.a,m.niv)+'@'+m.ter]=(tc[key(m.a,m.niv)+'@'+m.ter]||0)+1;tc[key(m.b,m.niv)+'@'+m.ter]=(tc[key(m.b,m.niv)+'@'+m.ter]||0)+1;});
+    bloc.sort((x,y)=>x.ter-y.ter);
+    // arbitre : un club qui ne joue pas ce match et qui a des joueurs libres
+    bloc.forEach(m=>{const cand=G.filter(g=>g!==m.a&&g!==m.b&&!busy[g]&&!(m.niv>=0&&busy[key(g,m.niv)]&&LV.every(l=>busy[key(g,l)])));cand.sort((x,y)=>(rc[x]||0)-(rc[y]||0));const a=cand[0]||null;m.arb=a;if(a)rc[a]=(rc[a]||0)+1;});
+    out.push(bloc);}
+  let n=0;out.forEach(b=>b.forEach(m=>{m.id='p'+(n++).toString(36)+'_'+Date.now().toString(36);}));return out;}
+function chsGen(){const q=orgQ();if(!q)return;const o0=orgOf(q);if((o0.fam.groups||[]).length<2){alert('Fais d\'abord au moins 2 clubs (②).');return;}
+  const st=chsStatus(q);const any=Object.keys(st).some(k=>st[k].sc);if(chsOf(o0).prog.length&&!confirm(any?'Refaire le championnat ? Les scores déjà notés restent dans le classement.':'Refaire le championnat ?'))return;
+  chsSave((c,o)=>{if(c.prog.length)c.seed=(c.seed||1)+1;c.prog=chsBuild(o,c);c.ok=false;c.at=Date.now();});}
+function chsValid(){chsSave(c=>{c.ok=true;c.at=Date.now();});try{toast2('✅ Championnat validé : il remplit les séances avec ⚡');}catch(e){}}
+function chsSet(k,v){chsSave(c=>{if(k==='perS')c.perS=Math.max(1,Math.min(8,c.perS+v));else if(k==='dur')c.dur=Math.max(4,Math.min(40,c.dur+v));});}
+function chsTer(i,k,v){chsSave(c=>{if(c.terrains[i])c.terrains[i][k]=v;});}
+function chsTerAdd(d){chsSave(c=>{if(d>0&&c.terrains.length<4)c.terrains.push({nom:'Terrain '+(c.terrains.length+1),fmt:''});else if(d<0&&c.terrains.length>1)c.terrains.pop();});}
+// où en est chaque match de la file
+function chsStatus(q){const R={};const c=q&&q.champ;if(!c||!Array.isArray(c.jours))return R;c.jours.forEach((J,ji)=>(J.m||[]).forEach((m,mi)=>{if(!m.pid)return;const sc=m.sa!==''&&m.sa!=null&&m.sb!==''&&m.sb!=null;const r=R[m.pid]=R[m.pid]||{sc:false,dates:[]};if(sc){r.sc=true;r.date=J.date;r.m=m;}r.dates.push({date:J.date,sc:sc});}));return R;}
+function chsQueue(q,o,forDate,skip){const c=chsOf(o);const st=chsStatus(q);const t=edtToday();skip=skip||{};
+  return c.prog.map((b,bi)=>b.filter(m=>{const r=st[m.id];if(skip[m.id])return false;if(!r)return true;if(r.sc)return false;return !r.dates.some(d=>d.date>=t&&d.date!==forDate);}).map(m=>Object.assign({bi:bi},m))).filter(b=>b.length);}
+function chsChamp(qq,o){const c=chpEnsure(qq);c.on=true;chpEnsure(qq);const G=o.fam.groups||[];const had=(c.niv||[]).includes('Club entier');c.clubs=G.map(g=>{const x={id:g.id,nom:g.nom,col:g.col};if(g.logo)x.logo=g.logo;return x;});c.mix=false;c.niv=o.levels.slice();
+  if(had||!chsLv(o))c.niv.push('Club entier');c.cats=c.niv.slice();c.formes=c.niv.map((x,i)=>[i]);c.aff={};G.forEach(g=>(g.members||[]).forEach(n=>{c.aff[n]={club:g.id,niv:o.niv[n]!=null?+o.niv[n]:0};}));c.fromOrg=true;return c;}
+// remplir une séance avec les prochains blocs
+function chsFill(sid){const s=(SEANCES||[]).find(x=>x.id===sid);if(!s)return;const q0=trnSeqOf(s);if(!q0)return;const o=orgOf(q0);const cal=chsOf(o);
+  if(!cal.prog.length){alert('Crée d\'abord le championnat (onglet Organisation, ③).');return;}
+  const c0=q0.champ;const j0=c0&&Array.isArray(c0.jours)?c0.jours.findIndex(j=>j.date===s.date):-1;
+  if(j0>=0&&(c0.jours[j0].m||[]).some(m=>m.sa!==''&&m.sa!=null)){alert('Des scores sont déjà notés pour cette séance : je ne change pas ses matchs.');return;}
+  const Q=chsQueue(q0,o,s.date).slice(0,cal.perS);if(!Q.length){alert('Tous les matchs du championnat sont déjà joués ou prévus dans d\'autres séances. Tu peux prolonger avec « Refaire le championnat ».');return;}
+  if(s.chpBloc&&Object.keys(s.chpBloc).length&&!confirm('Mettre à jour les matchs de la séance du '+seanceDateFr(s.date)+' ('+Q.length+' bloc'+(Q.length>1?'s':'')+') ? Présentation, échauffement et bilan sont gardés.'))return;
+  let ji=-1,lvAll=-1;seqUpdate(q0.id,qq=>{const cc=chsChamp(qq,o);lvAll=cc.niv.indexOf('Club entier');let j=cc.jours.findIndex(x=>x.date===s.date);if(j<0){cc.jours.push({date:s.date,m:[],abs:[]});j=cc.jours.length-1;}ji=j;
+    const M=[];Q.forEach((b,bi)=>b.forEach(m=>{M.push({pid:m.id,niv:m.niv>=0?m.niv:lvAll,a:m.a,b:m.b,sa:'',sb:'',ba:0,bb:0,arb:m.arb||null,ter:(cal.terrains[m.ter]||{}).nom||'',fmt:(cal.terrains[m.ter]||{}).fmt||'',bloc:bi});}));cc.jours[j].m=M;});
+  if(!s.fillBackup)s.fillBackup=JSON.parse(JSON.stringify({steps:s.steps,matchCfg:s.matchCfg||{},stepExos:s.stepExos||{},par:s.par||null,parGroups:s.parGroups||null,parEleves:s.parEleves||null,chpBloc:s.chpBloc||null,at:Date.now()}));
+  let fps=null;try{const fm=s.steps.find(st=>seanceStepBase(st.key)==='match');fps=JSON.parse(JSON.stringify(matchCfgOf(s,fm?fm.key:'match-1')));}catch(e){}
+  const keep=s.steps.filter(st=>{const b=seanceStepBase(st.key);return b!=='match'&&b!=='remediation';});const old=s.steps.filter(st=>{const b=seanceStepBase(st.key);return b==='match'||b==='remediation';}).map(st=>st.key);
+  old.forEach(k=>{if(s.matchCfg)Object.keys(s.matchCfg).forEach(x=>{if(x===k||x.indexOf(k+'~')===0)delete s.matchCfg[x];});if(s.stepExos)Object.keys(s.stepExos).forEach(x=>{if(x===k||x.indexOf(k+'~')===0)delete s.stepExos[x];});if(s.par)delete s.par[k];});
+  const fin=keep.findIndex(st=>seanceStepBase(st.key)==='fin');const blocks=Q.map((b,i)=>({key:'match-'+(i+1),status:'pending',dur:cal.dur}));
+  s.steps=fin<0?keep.concat(blocks):keep.slice(0,fin).concat(blocks,keep.slice(fin));if(!s.matchCfg)s.matchCfg={};s.par={};s.chpBloc={};
+  const gid=(g,l)=>(l>=0&&chsLv(o))?'org_'+g+'_'+l:'org_'+g;let mi=0;
+  Q.forEach((b,bi)=>b.forEach((m,pi)=>{const sk='match-'+(bi+1);const ak=pi?sk+'~'+(pi+1):sk;if(pi)(s.par[sk]=s.par[sk]||[]).push(String(pi+1));
+    const cfg=JSON.parse(JSON.stringify(fps||{nom:'',points:[]}));cfg.groupes=[gid(m.a,m.niv),gid(m.b,m.niv)];cfg.eleves=[];if(pi)cfg.scoreOnly=true;else delete cfg.scoreOnly;cfg.terrain=(cal.terrains[m.ter]||{}).nom||'';s.matchCfg[ak]=cfg;
+    s.chpBloc[ak]={qid:q0.id,ji:ji,mi:mi};mi++;}));
+  if(!Object.keys(s.par).length)delete s.par;recomputeSeanceStatuses(s);saveSeances();
+  try{toast2('⚡ Séance du '+seanceDateFr(s.date)+' : '+Q.length+' bloc'+(Q.length>1?'s':'')+', '+mi+' matchs');}catch(e){}
+  try{if(E('t-org')&&E('t-org').classList.contains('active'))orgRender();}catch(e){}try{renderSeanceTab();}catch(e){}}
+// l'arbitre prévu par le championnat (ou personne) remplace « le 3e club »
+cfRef=(function(f){return function(c,m){if(m&&m.pid)return m.arb||null;return f.apply(this,arguments);};})(cfRef);
+// le bouton ⚡ de la séance utilise la file quand le championnat est validé
+cfFill=(function(f){return function(){try{const s=getActiveSeance();const q=s&&trnSeqOf(s);if(q&&q.org){const cal=chsOf(orgOf(q));if(cal.ok&&cal.prog.length){chsFill(s.id);return;}}}catch(e){console.warn(e);}return f.apply(this,arguments);};})(cfFill);
+// ── affichage ③ ──
+function chsMatchTxt(o,cal,m,st){const L=chsLab(o,m);const r=st&&st[m.id];const sc=r&&r.sc?' <b>'+esc(String(r.m.sa))+'–'+esc(String(r.m.sb))+'</b>':'';
+  return '<span class="pln-t" style="--gc:'+esc(L.A.col)+'">'+esc(L.A.nom)+'</span> – <span class="pln-t" style="--gc:'+esc(L.B.col)+'">'+esc(L.B.nom)+'</span>'+sc+'<small>'+esc(L.lv)+(L.R?' · 🟨 '+esc(L.R.nom):' · 🟨 un joueur')+'</small>';}
+function chsHtml(q,o){const cal=chsOf(o);const G=o.fam.groups||[];const st=chsStatus(q);const t=edtToday();const nP=cal.prog.reduce((a,b)=>a+b.length,0);const nJ=cal.prog.reduce((a,b)=>a+b.filter(m=>st[m.id]&&st[m.id].sc).length,0);
+  let h='<'+'details class="org-sec org-chs" open><summary>③ Championnat · '+(cal.prog.length?(cal.ok?'✅ validé':'brouillon')+' · '+nJ+' / '+nP+' matchs joués':'pas encore créé')+'</summary>';
+  if(G.length<2)return h+'<'+'div class="cc-dim">Fais d\'abord au moins 2 clubs (②).</'+'div></'+'details>';
+  h+='<'+'div class="cc-dim">Le championnat dure toute la séquence. Chaque séance prend les prochains blocs ; un match sans score revient en tête à la séance suivante.</'+'div>';
+  h+='<'+'div class="pln-ters">'+cal.terrains.map((tt,i)=>'<'+'div class="pln-ter"><b>'+(i+1)+'</b><input value="'+esc(tt.nom)+'" onchange="chsTer('+i+',\'nom\',this.value)"><input value="'+esc(tt.fmt)+'" placeholder="format (ex. hand à 4)" onchange="chsTer('+i+',\'fmt\',this.value)"></'+'div>').join('')
+    +'<'+'div class="org-row"><span class="cc-dim">Terrains</span><button type="button" class="btn-xs" onclick="chsTerAdd(-1)">－</button><b>'+cal.terrains.length+'</b><button type="button" class="btn-xs" onclick="chsTerAdd(1)">＋</button>'
+    +'<span class="cc-dim">Blocs par séance</span><button type="button" class="btn-xs" onclick="chsSet(\'perS\',-1)">－</button><b>'+cal.perS+'</b><button type="button" class="btn-xs" onclick="chsSet(\'perS\',1)">＋</button>'
+    +'<span class="cc-dim">de</span><button type="button" class="btn-xs" onclick="chsSet(\'dur\',-1)">－</button><b>'+cal.dur+' min</b><button type="button" class="btn-xs" onclick="chsSet(\'dur\',1)">＋</button></'+'div></'+'div>';
+  h+='<'+'div class="org-row"><button type="button" class="org-go" onclick="chsGen()">'+(cal.prog.length?'↻ Refaire le championnat':'🏆 Créer le championnat de la séquence')+'</button>'
+    +(cal.prog.length&&!cal.ok?'<button type="button" class="org-go" style="background:#15803d" onclick="chsValid()">✓ Valider</button>':'')+'</'+'div>';
+  if(!cal.prog.length)return h+'</'+'details>';
+  h+=cal.ok?'<'+'div class="chs-ok">✅ Validé. Dans chaque séance, le bouton ⚡ Remplir met les matchs prévus. Tu peux aussi le faire ici, séance par séance.</'+'div>'
+    :'<'+'div class="chs-draft">Brouillon : vérifie le tableau puis touche ✓ Valider. Tant que ce n\'est pas validé, tes séances ne changent pas.</'+'div>';
+  // séances
+  const SE=plnSeances(q);const used={};const C=q.champ;let rows='';
+  SE.forEach(s=>{const J=C&&Array.isArray(C.jours)?C.jours.find(j=>j.date===s.date):null;const M=J?(J.m||[]).filter(m=>m.pid):[];const past=s.date<t;
+    let txt='',btn='';if(M.length){const pl=M.filter(m=>m.sa!==''&&m.sa!=null).length;const bl=new Set(M.map(m=>m.bloc)).size;txt=bl+' bloc'+(bl>1?'s':'')+' · '+M.length+' matchs'+(pl?' · '+pl+' joué'+(pl>1?'s':''):'')+(past&&pl<M.length?(function(){const un=M.filter(m=>!(m.sa!==''&&m.sa!=null));const rep=un.filter(m=>st[m.pid]&&(st[m.pid].sc||st[m.pid].dates.some(d=>d.date>s.date))).length;return (rep?' · '+rep+' repris ensuite':'')+(un.length-rep?' · <b class="chs-warn">'+(un.length-rep)+' à reprendre</b>':'');})():'');
+        if(!past&&!pl){const Q=chsQueue(q,o,s.date);const mine=new Set(M.map(m=>m.pid));const first=Math.min.apply(null,cal.prog.map((b,bi)=>b.some(m=>mine.has(m.id))?bi:1e9));const late=Q.filter(b=>b[0].bi<first).reduce((a,b)=>a+b.length,0);
+          if(late)txt+=' · <b class="chs-warn">'+late+' match'+(late>1?'s':'')+' en retard à reprendre</b>';btn=cal.ok?'<button type="button" class="btn-xs" onclick="chsFill(\''+esc(s.id)+'\')">↻ Mettre à jour</button>':'';}
+        M.forEach(m=>used[m.pid]=1);}
+      else if(!past){const Q=chsQueue(q,o,s.date,used).slice(0,cal.perS);if(Q.length){const late=Q.reduce((a,b)=>a+b.filter(m=>st[m.id]).length,0);txt='<i>prévu</i> : blocs '+(Q[0][0].bi+1)+(Q.length>1?' à '+(Q[Q.length-1][0].bi+1):'')+(late?' (dont '+late+' repris)':'');Q.forEach(b=>b.forEach(m=>used[m.id]=1));}else txt='<i>plus de match prévu</i>';
+        btn=cal.ok?'<button type="button" class="btn-xs green" onclick="chsFill(\''+esc(s.id)+'\')">⚡ Remplir</button>':'';}
+      else txt='<i>pas de match</i>';
+    rows+='<tr class="'+(s.date===t?'today':(past?'past':''))+'"><td><b>'+esc(seanceDateFr(s.date))+'</b>'+(s.date===t?' <small>aujourd\'hui</small>':'')+'</td><td>'+txt+'</td><td>'+btn+'</td></tr>';});
+  h+='<'+'div class="chs-sub">Séances</'+'div>'+(SE.length?'<'+'div class="pln-tab"><table class="chs-se">'+rows+'</table></'+'div>':'<'+'div class="cc-dim">Pas encore de séance dans cette séquence.</'+'div>');
+  // tableau des blocs
+  const pl={};Object.keys(st).forEach(k=>{const r=st[k];const d=r.sc?r.date:(r.dates.length?r.dates[r.dates.length-1].date:null);if(d)pl[k]=d;});
+  h+='<'+'details class="chs-prog"><summary>Tous les blocs ('+cal.prog.length+')</summary><'+'div class="pln-tab"><table><tr><th>Bloc</th>'+cal.terrains.map(tt=>'<th>'+esc(tt.nom)+'<small>'+esc(tt.fmt)+'</small></th>').join('')+'</tr>';
+  cal.prog.forEach((b,bi)=>{const done=b.every(m=>st[m.id]&&st[m.id].sc);h+='<tr class="'+(done?'past':'')+'"><td><b>'+(bi+1)+'</b>'+(done?' ✅':'')+'</td>';cal.terrains.forEach((tt,ti)=>{const m=b.find(x=>x.ter===ti);h+='<td>'+(m?chsMatchTxt(o,cal,m,st)+(pl[m.id]&&!(st[m.id]&&st[m.id].sc)?'<small>📅 '+esc(seanceDateFr(pl[m.id]))+'</small>':''):'<span class="cc-dim">—</span>')+'</td>';});h+='</tr>';});
+  return h+'</table></'+'div></'+'details></'+'details>';}
+// ── ④ suivi ──
+function chsSuivi(q,o){const c=q.champ;let h='<'+'details class="org-sec org-suivi"><summary>④ Suivi : classement et fils rouges</summary>';
+  if(!c||!c.on||!Array.isArray(c.jours)||!c.clubs){return h+'<'+'div class="cc-dim">Les résultats apparaîtront ici dès le premier score.</'+'div></'+'details>';}
+  const T=chpStand(c);const lv=c.niv.map((n,i)=>i).filter(i=>c.clubs.some(k=>T[k.id]&&T[k.id].niv[i]&&T[k.id].niv[i].j));const rank=c.clubs.filter(k=>T[k.id]).slice().sort((a,b)=>T[b.id].tot-T[a.id].tot);
+  h+='<'+'div class="chs-sub">Classement</'+'div><'+'div class="pln-tab"><table><tr><th>Club</th>'+lv.map(i=>'<th>'+esc(c.niv[i])+'<small>J V N D · pts</small></th>').join('')+'<th>Total</th></tr>'
+    +rank.map((k,ri)=>'<tr><td><b class="pln-t" style="--gc:'+esc(k.col)+'">'+(ri+1)+'. '+esc(k.nom)+'</b></td>'+lv.map(i=>{const x=T[k.id].niv[i];return '<td>'+x.j+' '+x.v+' '+x.n+' '+x.d+' · <b>'+x.pts+'</b><small>buts '+x.bp+'–'+x.bc+'</small></td>';}).join('')+'<td><b>'+T[k.id].tot+'</b></td></tr>').join('')+'</table></'+'div>';
+  const days=c.jours.filter(J=>(J.m||[]).some(m=>chpRes(c,m)));
+  if(days.length)h+='<'+'div class="chs-sub">Résultats par séance</'+'div>'+days.map(J=>'<'+'div class="chs-day"><b>'+esc(seanceDateFr(J.date))+'</b>'+(J.m||[]).filter(m=>chpRes(c,m)).map(m=>{const A=chpClub(c,m.a),B=chpClub(c,m.b);return '<span><b class="pln-t" style="--gc:'+esc(A.col)+'">'+esc(A.nom)+'</b> '+esc(String(m.sa))+'–'+esc(String(m.sb))+' <b class="pln-t" style="--gc:'+esc(B.col)+'">'+esc(B.nom)+'</b> <small>'+esc(c.niv[m.niv]||'')+'</small></span>';}).join('')+'</'+'div>').join('');
+  else h+='<'+'div class="cc-dim">Pas encore de score.</'+'div>';
+  const SE=plnSeances(q).filter(s=>s.projets&&Object.keys(s.projets).length);
+  if(SE.length){const keys=[];SE.forEach(s=>Object.keys(s.projets).forEach(k=>{if(keys.indexOf(k)<0)keys.push(k);}));
+    h+='<'+'div class="chs-sub">Fils rouges des projets</'+'div><'+'div class="pln-tab"><table><tr><th>Groupe</th>'+SE.map(s=>'<th>'+esc(seanceDateFr(s.date))+'</th>').join('')+'</tr>'
+      +keys.map(k=>'<tr><td><b>'+esc(k)+'</b></td>'+SE.map(s=>{const p=s.projets[k];return '<td>'+(p?(p.ind?'🎯 '+esc(p.ind):'<i>en cours</i>')+(p.scoreAt?'<small>exercice '+esc(String(p.score))+'/10</small>':''):'')+'</td>';}).join('')+'</tr>').join('')+'</table></'+'div>';}
+  else h+='<'+'div class="cc-dim">Les fils rouges choisis par les élèves (projets d\'entraînement) apparaîtront ici, séance par séance.</'+'div>';
+  return h+'</'+'details>';}
+// ── ② clubs à la main ──
+function orgClubAdd(){const L=ORG.sel.slice();ORG.sel=[];ORG.gen=null;orgSave(o=>{const G=o.fam.groups=o.fam.groups||[];const used=G.map(g=>g.nom);let i=0;while(i<ORG_NOMS.length-1&&used.indexOf(ORG_NOMS[i])>=0)i++;
+  G.forEach(g=>{g.members=(g.members||[]).filter(n=>L.indexOf(n)<0);});G.push({id:'og'+Date.now().toString(36),nom:ORG_NOMS[i],col:ORG_COLS[i%ORG_COLS.length],locked:false,members:L});o.fam.k=G.length;});}
+function orgClubDel(i){const q=orgQ();const g=q&&orgOf(q).fam.groups[i];if(!g)return;if(!confirm('Supprimer le club « '+g.nom+' » ? Ses élèves redeviennent sans club. (↩ Annuler possible)'))return;orgSave(o=>{o.fam.groups.splice(i,1);o.fam.k=Math.max(2,o.fam.groups.length);});}
+orgRender=(function(f){return function(){f.apply(this,arguments);try{const host=E('t-org');const card=host&&host.querySelector('.card.org');const q=orgQ();if(!card||!q)return;const o=orgOf(q);const G=o.fam.groups||[];
+  const secs=[...card.querySelectorAll(':scope > details.org-sec')];const by=p=>secs.find(x=>((x.querySelector('summary')||{}).textContent||'').trim().indexOf(p)===0);
+  const s2=by('②'),s3=by('③'),s4=by('④');
+  if(s2){const sm=s2.querySelector('summary');sm.textContent='② Clubs · '+(G.length?G.length+' clubs':'pas encore faits')+(G.length?' · '+o.fam.groups.reduce((a,g)=>a+(g.members||[]).length,0)+' élèves placés':'');
+    // générateur replié
+    const gen=document.createElement('details');gen.className='org-gen';if(ORG.gen)gen.open=true;gen.innerHTML='<summary>⚙ Générer automatiquement (facultatif)</summary>';
+    const row=s2.querySelector(':scope > .org-row');const rules=s2.querySelector(':scope > .org-rules');const prop=s2.querySelector(':scope > .org-prop');[row,rules,prop].forEach(x=>{if(x)gen.appendChild(x);});
+    // bouton club du championnat devenu inutile
+    [...s2.querySelectorAll('button')].forEach(b=>{if(/orgToChamp/.test(b.getAttribute('onclick')||'')){const r=b.closest('.org-row');(r||b).remove();}});
+    const man=document.createElement('div');man.className='org-row';man.innerHTML='<button type="button" class="org-go" style="background:#0e7490" onclick="orgClubAdd()">＋ Club'+(ORG.sel.length?' avec les '+ORG.sel.length+' élèves cochés':'')+'</button><span class="cc-dim">Coche des élèves en ①, puis touche un club pour les y mettre.</span>';
+    s2.insertBefore(man,sm.nextSibling);man.insertAdjacentElement('afterend',gen);
+    const nz=orgStudents(o).filter(x=>!orgGroupOf(o,x.n));if(G.length&&nz.length){const w=document.createElement('div');w.className='chs-warn';w.textContent='Sans club : '+nz.map(x=>x.n).join(', ');gen.insertAdjacentElement('afterend',w);}
+    s2.querySelectorAll('.org-gc .org-gh').forEach((gh,i)=>{if(gh.querySelector('.org-del'))return;const b=document.createElement('button');b.type='button';b.className='org-del';b.title='Supprimer ce club';b.textContent='✕';b.onclick=e=>{e.stopPropagation();orgClubDel(i);};gh.appendChild(b);});}
+  // plus d'options
+  const more=document.createElement('details');more.className='org-sec org-more';more.innerHTML='<summary>Plus d\'options (rôles gardiens/jokers, planning d\'une seule séance, composition)</summary>';
+  const roles=card.querySelector('.org-roles');if(roles)more.appendChild(roles);
+  if(s3){const sm=s3.querySelector('summary');if(sm)sm.textContent='Planning d\'une seule séance (à la main)';s3.open=false;more.appendChild(s3);}
+  if(s4){const sm=s4.querySelector('summary');if(sm)sm.textContent='Composition sur le terrain';s4.open=false;more.appendChild(s4);}
+  const w=document.createElement('div');w.innerHTML=chsHtml(q,o)+chsSuivi(q,orgOf(q));const anchor=s2||secs[secs.length-1];let at=anchor;[...w.children].forEach(x=>{at.insertAdjacentElement('afterend',x);at=x;});at.insertAdjacentElement('afterend',more);
+  if(G.length){const s1=by('①');if(s1&&!ORG.sel.length&&!ORG.open1)s1.open=false;if(s1)s1.addEventListener('toggle',()=>{ORG.open1=s1.open;});}
+}catch(e){console.warn('org v347',e);}};})(orgRender);
+
+// bandeau de la séance : dire d'où viennent les matchs
+function chsActive(s){try{const q=s&&trnSeqOf(s);if(!q||!q.org)return null;const cal=chsOf(orgOf(q));return cal.ok&&cal.prog.length?q:null;}catch(e){return null;}}
+cfBoxHtml=(function(f){return function(s){const h=f.apply(this,arguments);try{const q=chsActive(s);if(!q||!h)return h;const ji=ctDay(q,s);const M=ji>=0?(q.champ.jours[ji].m||[]).filter(m=>m.pid):[];const bl=new Set(M.map(m=>m.bloc)).size;
+  return h.replace(/<span class="cc-dim">[\s\S]*?<\/span>/,'<span class="cc-dim">'+(M.length?bl+' bloc'+(bl>1?'s':'')+' · '+M.length+' matchs du championnat de la séquence. Un match sans score reviendra à la séance suivante.':'Les prochains matchs du championnat de la séquence (ceux pas encore joués d\'abord).')+'</span>')
+   .replace(/⚡ (Remplir à nouveau|Remplir les blocs de la séance)/,M.length?'↻ Mettre à jour':'⚡ Mettre les matchs');}catch(e){return h;}};})(cfBoxHtml);
+// annuler le remplissage libère les matchs (ils repartent dans la file)
+cfUndo=(function(f){return function(){const s=getActiveSeance();const r=f.apply(this,arguments);try{if(s&&!(s.chpBloc&&Object.keys(s.chpBloc).length)&&chsActive(s)){const q=trnSeqOf(s);seqUpdate(q.id,qq=>{const J=(qq.champ.jours||[]).find(j=>j.date===s.date);if(J)J.m=(J.m||[]).filter(m=>!m.pid||(m.sa!==''&&m.sa!=null));});}}catch(e){console.warn(e);}return r;};})(cfUndo);
+(function(){const st=document.createElement('style');st.textContent=
+ 'html body .org-gen{border:1px dashed #334155;border-radius:10px;padding:4px 10px;}html body .org-gen summary,html body .chs-prog summary{cursor:pointer;color:#94a3b8;min-height:34px;display:flex;align-items:center;}html body .org-gen[open]{display:flex;flex-direction:column;gap:8px;padding-bottom:8px;}'
++'html body .org-del{background:none;border:none;color:#fca5a5;font-size:1rem;cursor:pointer;margin-left:auto;}html body .chs-warn{color:#fbbf24;font-weight:700;}html body .chs-ok{background:#052e16;border:1px solid #15803d;color:#bbf7d0;border-radius:10px;padding:8px 10px;}html body .chs-draft{background:#422006;border:1px solid #a16207;color:#fde68a;border-radius:10px;padding:8px 10px;}'
++'html body .chs-sub{font-weight:800;margin:10px 0 4px;}html body .chs-se td{vertical-align:middle;}html body .chs-se tr.today td{background:#0c4a6e;}html body .pln-tab tr.past td{opacity:.6;}html body .chs-day{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline;margin:4px 0;font-size:.85rem;}html body .chs-day small{color:#94a3b8;}'
++'html body .org-more summary{color:#94a3b8;}html body .org-more[open]{display:flex;flex-direction:column;gap:10px;}html body .org-more > details.org-sec{border-color:#1e293b;}'
++'@media (max-width:640px){html body .pln-tab table{font-size:.75rem;}html body .pln-tab th,html body .pln-tab td{padding:4px;}html body .chs-se td:first-child{white-space:normal;}}';document.head.appendChild(st);})();
 </script>
 </body>
 </html>
