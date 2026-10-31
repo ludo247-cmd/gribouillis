@@ -4,6 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Gribouillis Élèves</title>
+<meta name="theme-color" content="#e11d2e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Grib. Élèves">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-eleve-32.png">
+<link rel="icon" type="image/svg+xml" href="icon-eleve.svg">
+<link rel="apple-touch-icon" href="apple-touch-icon-eleve.png">
+<link rel="manifest" href="eleve.webmanifest">
 <style>
 :root{--bg:#0b0c0f;--card:#15171c;--card2:#1a1d24;--line:#2d323d;--tx:#e8e8ea;--dim:#a3a7b0;--ok:#15803d;--blue:#1d4ed8;--violet:#6d28d9;--red:#dc2626;--cc:#475569;}
 *{box-sizing:border-box;}
@@ -69,6 +78,9 @@ button{font-family:inherit;cursor:pointer;}
 .vbox .side .v{font-size:2.8rem;font-weight:900;}
 .vbox .side .pm{display:flex;gap:10px;}.vbox .side .pm button{width:56px;height:56px;border:none;border-radius:12px;background:#334155;color:#fff;font-size:1.6rem;}
 a.vid{color:#93c5fd;}
+.vid2{width:100%;max-height:60vh;border-radius:12px;background:#000;}
+.vbox2{position:relative;width:100%;padding-top:56.25%;border-radius:12px;overflow:hidden;background:#000;}.vbox2 iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
+.sync.wait{color:#fff;background:#0e7490;border-color:#0e7490;font-weight:700;}
 </style>
 </head>
 <body>
@@ -86,32 +98,43 @@ const LS={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.par
   sget(k){try{return sessionStorage.getItem(k);}catch(e){return null;}},sset(k,v){try{if(v==null)sessionStorage.removeItem(k);else sessionStorage.setItem(k,v);}catch(e){}}};
 function toast(t){const d=document.createElement('div');d.className='toast';d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),2600);}
 // ── configuration (lien / QR) ──
-function readConf(){const h=new URLSearchParams(location.hash.replace(/^#/,''));const c={p:h.get('p'),f:h.get('f'),k:h.get('k'),s:h.get('s')};
-  if(c.p&&c.f&&c.k&&c.s){LS.set('el_conf',c);try{history.replaceState(null,'',location.pathname);}catch(e){}return c;}return LS.get('el_conf',null);}
-const CONF=readConf();
+function parseConf(t){const i=String(t||'').indexOf('#');if(i<0)return null;const h=new URLSearchParams(String(t).slice(i+1));const c={p:h.get('p'),f:h.get('f'),k:h.get('k'),s:h.get('s')||'last'};return (c.p&&c.f&&c.k)?c:null;}
+function confId(c){return c.f+'|'+c.k;}
+function rememberConf(c){LS.set('el_conf',c);const L=LS.get('el_confs',{});L[confId(c)]=Object.assign({},L[confId(c)]||{},{c:c,at:Date.now()});LS.set('el_confs',L);}
+function readConf(){const c=parseConf(location.href);if(c){rememberConf(c);return c;}return LS.get('el_conf',null);}
+let CONF=readConf();
+function useConf(id){const L=LS.get('el_confs',{});const x=L[id];if(!x)return;LS.set('el_conf',x.c);location.hash='';location.reload();}
+function pasteConf(){const t=($('cfin')||{}).value||'';const c=parseConf(t);if(!c){toast('Ce n\'est pas un lien de séance Gribouillis');return;}rememberConf(c);CONF=c;ST.pk=null;load(true);}
 let TAB=LS.get('el_tab',null);if(!TAB){TAB='tab-'+Math.random().toString(36).slice(2,8);LS.set('el_tab',TAB);}
 const ST={pk:null,ret:[],online:null,err:'',view:'home',busy:false};
-function locKey(){return 'el_loc_'+(CONF&&CONF.s);}
+function SID(){return (ST.pk&&ST.pk.sid)||(CONF&&CONF.s);}
+function cacheKey(){return 'el_cache_'+confId(CONF);}
+function locKey(){return 'el_loc_'+SID();}
 function LOC(){const l=LS.get(locKey(),null)||{};l.projets=l.projets||{};l.queue=l.queue||[];l.scores=l.scores||{};return l;}
 function saveLoc(l){LS.set(locKey(),l);}
 // ── réseau ──
-async function apiGet(){const u=CONF.p+(CONF.p.indexOf('?')<0?'?':'&')+'action=eleve&fichier='+encodeURIComponent(CONF.f)+'&k='+encodeURIComponent(CONF.k)+'&s='+encodeURIComponent(CONF.s)+'&t='+Date.now();
+async function apiGet(){const u=CONF.p+(CONF.p.indexOf('?')<0?'?':'&')+'action=eleve&fichier='+encodeURIComponent(CONF.f)+'&k='+encodeURIComponent(CONF.k)+'&s='+encodeURIComponent(CONF.s||'last')+'&t='+Date.now();
   const r=await fetch(u,{redirect:'follow'});const j=JSON.parse(await r.text());if(j.erreur)throw new Error(j.erreur==='cle'?'lien périmé : demande le nouveau QR code au prof':j.erreur==='seance'?'séance pas encore publiée par le prof':j.erreur);return j;}
-async function apiPut(items){const r=await fetch(CONF.p,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},redirect:'follow',body:JSON.stringify({action:'eleve_put',fichier:CONF.f,k:CONF.k,s:CONF.s,tab:TAB,items:items})});
+async function apiPut(items,sid){const r=await fetch(CONF.p,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},redirect:'follow',body:JSON.stringify({action:'eleve_put',fichier:CONF.f,k:CONF.k,s:sid,tab:TAB,items:items})});
   const j=JSON.parse(await r.text());if(j.erreur)throw new Error(j.erreur);return j;}
-async function load(first){try{const j=await apiGet();ST.pk=j.paquet;ST.ret=j.retours||[];ST.online=true;ST.err='';LS.set('el_cache_'+CONF.s,{pk:ST.pk,ret:ST.ret});}
-  catch(e){ST.online=false;ST.err=e.message;if(first){const c=LS.get('el_cache_'+CONF.s,null);if(c){ST.pk=c.pk;ST.ret=c.ret||[];}}}
+async function load(first){try{const j=await apiGet();ST.pk=j.paquet;ST.ret=j.retours||[];ST.online=true;ST.err='';LS.set(cacheKey(),{pk:ST.pk,ret:ST.ret});const L=LS.get('el_confs',{});if(L[confId(CONF)]){L[confId(CONF)].titre=ST.pk.titre;LS.set('el_confs',L);}}
+  catch(e){ST.online=false;ST.err=e.message;if(first){const c=LS.get(cacheKey(),null);if(c){ST.pk=c.pk;ST.ret=c.ret||[];}}}
   if(first||ST.view==='home')render();else renderSync();}
-function send(items){const l=LOC();items.forEach(it=>{l.queue=l.queue.filter(q=>!(q.type===it.type&&q.ref===it.ref));l.queue.push(it);});saveLoc(l);flush();}
-async function flush(){const l=LOC();if(!l.queue.length||ST.busy)return;ST.busy=true;const items=l.queue.slice();
-  try{const j=await apiPut(items);const l2=LOC();l2.queue=l2.queue.filter(q=>!items.some(x=>x.type===q.type&&x.ref===q.ref&&x.t===q.t));saveLoc(l2);ST.ret=j.retours||ST.ret;ST.online=true;ST.err='';}
-  catch(e){ST.online=false;ST.err=e.message;}finally{ST.busy=false;renderSync();}}
+function QK(){return 'el_queue_'+confId(CONF);}
+function queue(){return LS.get(QK(),[]);}
+function send(items){let Q=queue();const sid=SID();items.forEach(it=>{it.s=sid;Q=Q.filter(q=>!(q.s===sid&&q.type===it.type&&q.ref===it.ref));Q.push(it);});LS.set(QK(),Q);renderSync();flush();}
+async function flush(manual){const Q=queue();if(!Q.length||ST.busy){if(manual&&!Q.length)toast('☁️ Tout est déjà envoyé');return;}ST.busy=true;renderSync();let sent=0;
+  try{const by={};Q.forEach(q=>{(by[q.s]=by[q.s]||[]).push(q);});
+    for(const sid of Object.keys(by)){const items=by[sid].slice(0,150);const j=await apiPut(items,sid);sent+=items.length;LS.set(QK(),queue().filter(q=>!items.some(x=>x.s===q.s&&x.type===q.type&&x.ref===q.ref&&x.t===q.t)));if(sid===SID())ST.ret=j.retours||ST.ret;}
+    ST.online=true;ST.err='';if(manual)toast('☁️ '+sent+' résultat'+(sent>1?'s':'')+' envoyé'+(sent>1?'s':''));}
+  catch(e){ST.online=false;ST.err=e.message;if(manual)toast('⚠️ Pas d\'internet : les résultats restent gardés sur la tablette');}finally{ST.busy=false;renderSync();}}
+window.addEventListener('online',()=>{if(CONF)flush();});
 setInterval(()=>{if(document.visibilityState!=='visible'||!CONF)return;flush();if(ST.view==='home')load(false);},25000);
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&CONF){flush();if(ST.view==='home')load(false);}});
 // ── données dérivées ──
 const PK=()=>ST.pk||{};
-function club(){return LS.sget('el_club_'+CONF.s);}
-function setClub(id){LS.sset('el_club_'+CONF.s,id);render();}
+function club(){return LS.sget('el_club_'+SID());}
+function setClub(id){LS.sset('el_club_'+SID(),id);render();}
 function clubOf(id){return (PK().clubs||[]).find(c=>c.id===id)||{id:id,nom:'?',col:'#475569'};}
 function abs(){return PK().abs||[];}
 function membersOf(cid,fi){const E=PK().eleves||{};const F=fi==null?null:((PK().formes||[])[fi]||{}).ids;
@@ -135,11 +158,11 @@ function matchByRef(ref){return (PK().matchs||[]).find(m=>m.ref===ref)||null;}
 function refClubOf(m){const o=(PK().clubs||[]).filter(c=>c.id!==m.a&&c.id!==m.b);return o.length?o[0].id:null;}
 function roleIn(m,cid,fi){if(!m)return 'train';if(m.niv===fi&&(m.a===cid||m.b===cid))return 'play';if(m.niv===fi&&refClubOf(m)===cid)return 'ref';return 'train';}
 // ── rendu ──
-function renderSync(){const b=$('sync');if(!b)return;const q=LOC().queue.length;b.className='sync'+(ST.online===false?' bad':'');
-  b.textContent=ST.online===false?'⚠️ hors ligne'+(q?' · '+q+' en attente':''):(q?'⏳ envoi ('+q+')':'☁️ à jour');b.title=ST.err||'';}
-function topHtml(){const c=club()?clubOf(club()):null;return '<div class="top"><h1>'+esc(PK().titre||'Séance')+(c?'<small>Club <b style="color:'+esc(c.col)+'">'+esc(c.nom)+'</b></small>':'')+'</h1><button class="sync" id="sync" onclick="flush();load(false)"></button></div>';}
+function renderSync(){const b=$('sync');if(!b)return;const q=CONF?queue().length:0;b.className='sync'+(ST.online===false?' bad':'')+(q?' wait':'');
+  b.textContent=ST.busy?'⏳ envoi…':(q?'📤 Envoyer ('+q+')':(ST.online===false?'⚠️ hors ligne':'☁️ à jour'));b.title=(q?q+' résultat(s) gardé(s) sur la tablette. ':'')+(ST.err||'');}
+function topHtml(){const c=club()?clubOf(club()):null;return '<div class="top"><h1>'+esc(PK().titre||'Séance')+(c?'<small>Club <b style="color:'+esc(c.col)+'">'+esc(c.nom)+'</b></small>':'')+'</h1><button class="sync" id="sync" onclick="flush(true);load(false)"></button></div>';}
 function render(){ST.view='home';const app=$('app');
-  if(!CONF){app.innerHTML='<div class="err"><b>Lien incomplet.</b><br>Scanne le QR code donné par ton prof (onglet Séance → 📲 App élève).</div>';return;}
+  if(!CONF){app.innerHTML='<div class="top"><h1>Gribouillis Élèves</h1></div><div class="card"><h2><span>📲 Ouvrir la séance</span></h2><div class="dim">Scanne le QR code de ton prof avec l\'appareil photo, ou colle ici le lien qu\'il t\'a envoyé :</div><textarea id="cfin" rows="3" style="width:100%;border-radius:10px;background:#0f1115;color:#fff;border:1px solid var(--line);padding:8px;font-size:.9rem"></textarea><button class="big green" onclick="pasteConf()">Ouvrir</button></div>';return;}
   if(!ST.pk){app.innerHTML='<div class="err"><b>Séance introuvable.</b><br>'+esc(ST.err||'')+'<br><br><button class="big grey" onclick="load(true)">Réessayer</button></div>';return;}
   const cid=club();
   if(!cid||!(PK().clubs||[]).some(c=>c.id===cid)){app.innerHTML=topHtml()+'<div class="card"><h2><span>🏳 Quel est votre club ?</span></h2><div class="clubs">'+(PK().clubs||[]).map(c=>'<button class="clubbtn" style="background:'+esc(c.col)+'" onclick="setClub(\''+esc(c.id)+'\')">'+esc(c.nom)+'</button>').join('')+'</div>'
@@ -163,8 +186,9 @@ function render(){ST.view='home';const app=$('app');
   h+='<button class="big grey" onclick="binNew()">＋ Nouveau binôme</button></div>';
   // séance
   h+='<div class="card"><h2><span>📋 Notre séance</span></h2>'+(PK().blocs||[]).map(b=>'<div class="item'+(B&&B.key===b.key?' now':'')+'"><b>'+esc(b.start||'')+' '+esc(b.lab)+'</b>'+blocRolesHtml(b,cid,false)+'</div>').join('')+'</div>';
-  h+='<button class="small" onclick="if(confirm(\'Changer de club ?\'))setClub(null)" style="align-self:center">Ce n\'est pas notre club</button>';
+  h+='<div class="row" style="justify-content:center"><button class="small" style="flex:0 1 auto" onclick="if(confirm(\'Changer de club ?\'))setClub(null)">Ce n\'est pas notre club</button>'+classSwitch()+'</div>';
   app.innerHTML=h;renderSync();}
+function classSwitch(){const L=LS.get('el_confs',{});const K=Object.keys(L).filter(k=>k!==confId(CONF));if(!K.length)return '';return K.map(k=>'<button class="small" style="flex:0 1 auto" onclick="useConf(\''+esc(k)+'\')">↔ '+esc(L[k].titre||'autre classe')+'</button>').join('');}
 function blocRolesHtml(b,cid,btns){const m=b.match?matchByRef(b.match):null;
   if(m){const F=PK().formes||[];return '<div class="dim">⚽ '+esc(clubOf(m.a).nom)+' – '+esc(clubOf(m.b).nom)+' · '+esc(formLab(m.niv))+'</div>'+F.map((f,fi)=>{const r=roleIn(m,cid,fi);return '<div>'+'<span class="tag '+r+'">'+esc(f.lab)+' · '+(r==='play'?'⚽ on joue':r==='ref'?'🟨 on arbitre':'🏋 projet')+'</span></div>';}).join('')
     +(btns&&(m.a===cid||m.b===cid)?'<button class="big blue" onclick="mOpen(\''+esc(m.ref)+'\')">▶ Observer notre match</button>':'')+(btns?'<div class="dim">Les autres : exercice du projet collectif ou de votre binôme (plus bas).</div>':'');}
@@ -189,19 +213,24 @@ function pjRender(){const p=PJ.p;const o=oeById(p.oe);let h='<div class="top"><h
   else if(PJ.step===2&&o){h+='<div class="card"><h2><span>Quels problèmes avez-vous eus ?</span></h2><div class="dim">Touchez ceux que vous reconnaissez, puis classez-les : le n°1 devient votre fil rouge.</div>'+(o.micro||[]).map(m=>{const on=PJ.sel.indexOf(m.id)>=0;return '<button class="opt'+(on?' on':'')+'" onclick="pjTog(\''+esc(m.id)+'\')"><b>'+(on?'✓ ':'')+esc(m.neg)+'</b></button>';}).join('')+'</div>';
     if(PJ.sel.length){h+='<div class="card"><h2><span>Notre classement</span></h2>'+PJ.sel.map((id,i)=>{const m=(o.micro||[]).find(x=>x.id===id);return '<div class="rk'+(i===0?' top':'')+'"><span class="n">'+(i+1)+'</span><span class="t">'+esc(m?m.neg:id)+'</span><button onclick="pjMv('+i+',-1)">↑</button><button onclick="pjMv('+i+',1)">↓</button></div>';}).join('')+'<button class="big green" onclick="pjRank()">Valider : notre fil rouge est le n°1</button></div>';}}
   else if(PJ.step===3&&o){const m=microOf(p);h+='<div class="card"><div class="lab">Notre fil rouge</div><b>'+esc(m?m.neg:'')+'</b></div>';h+=exListHtml(o,m);}
-  else if(PJ.step===4){const x=exoOf(p);h+='<div class="card"><div class="lab">Notre fil rouge</div><b>'+esc(p.frmLab||p.ind||'')+'</b></div><div class="card"><h2><span>'+esc(x?x.titre:'Exercice')+'</span></h2>'+(x&&x.desc?'<div style="white-space:pre-wrap">'+esc(x.desc)+'</div>':'')+(x&&x.video?'<a class="vid" href="'+esc(x.video)+'" target="_blank" rel="noopener">🎬 Voir la vidéo</a>':'')+((x&&x.crit||[]).length?'<div class="dim">Critères : '+x.crit.map(esc).join(' · ')+'</div>':'')+'</div>'
+  else if(PJ.step===4){const x=exoOf(p);h+='<div class="card"><div class="lab">Notre fil rouge</div><b>'+esc(p.frmLab||p.ind||'')+'</b></div><div class="card"><h2><span>'+esc(x?x.titre:'Exercice')+'</span></h2>'+(x&&x.desc?'<div style="white-space:pre-wrap">'+esc(x.desc)+'</div>':'')+(x&&x.video?vidHtml(x.video):'')+((x&&x.crit||[]).length?'<div class="dim">Critères : '+x.crit.map(esc).join(' · ')+'</div>':'')+'</div>'
     +'<div class="card"><h2><span>Nos réussites sur 10 essais</span></h2><div class="ctr"><button onclick="pjSc(-1)">−</button><div class="v">'+(+p.score||0)+'<small style="font-size:1rem;color:var(--dim)">/10</small></div><button onclick="pjSc(1)">+</button></div><button class="big green" onclick="pjValSc()">✓ Enregistrer notre score</button><button class="big ghost" onclick="PJ.step=3;pjRender()">Changer d\'exercice</button></div>';}
   ovShow(h);}
-function exBtn(path,id,t,d,tag){const on=PJ.p.exoId===id&&PJ.p.cpPath===path;return '<button class="opt'+(on?' on':'')+'" onclick="pjEx(\''+esc(path)+'\',\''+esc(id)+'\')"><b>'+esc(t)+'</b>'+(tag?'<em>'+esc(tag)+'</em>':'')+(d?'<span>'+esc(String(d).slice(0,200))+'</span>':'')+'</button>';}
+function vidHtml(u){u=String(u||'');const yt=/(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/)|youtu\.be\/)([A-Za-z0-9_-]{6,})/.exec(u);
+  const off=navigator.onLine===false?'<div class="dim">📶 La vidéo s\'affiche quand la tablette a internet.</div>':'';
+  if(yt)return off+'<div class="vbox2"><iframe src="https://www.youtube-nocookie.com/embed/'+yt[1]+'" allow="fullscreen; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>';
+  if(/\.(mp4|webm|mov|m4v)(\?|#|$)/i.test(u))return off+'<video class="vid2" src="'+esc(u)+'" controls playsinline preload="metadata"></video>';
+  return '<a class="vid" href="'+esc(u)+'" target="_blank" rel="noopener">🎬 Voir la vidéo</a>';}
+function exBtn(path,id,t,d,tag,v){const on=PJ.p.exoId===id&&PJ.p.cpPath===path;return '<button class="opt'+(on?' on':'')+'" onclick="pjEx(\''+esc(path)+'\',\''+esc(id)+'\')"><b>'+(v?'🎬 ':'')+esc(t)+'</b>'+(tag?'<em>'+esc(tag)+'</em>':'')+(d?'<span>'+esc(String(d).slice(0,200))+'</span>':'')+'</button>';}
 function exListHtml(o,m){const used={};const L=PK().lib||[];let h='';const cps=(m&&m.cps)||[];
   if(cps.length)h+='<div class="card"><h2><span>Ce qu\'il faut travailler</span></h2>'+cps.map((c,i)=>'<div class="cp"><span>'+(i+1)+'</span>'+esc(c.label)+'</div>').join('')+'</div>';
   h+='<div class="card"><h2><span>Choisissez un exercice</span></h2>';
-  cps.forEach((c,i)=>{h+='<div class="lab">CP '+(i+1)+' · '+esc(c.label)+'</div>';let n=0;(c.ex||[]).forEach(x=>{used['r:'+x.id+'|'+x.titre]=1;n++;h+=exBtn(c.path,x.id,x.titre,x.desc,'');});
-    L.filter(x=>(x.cps||[]).indexOf(c.path)>=0).forEach(x=>{if(used['l:'+x.id])return;used['l:'+x.id]=1;n++;h+=exBtn(c.path,'lib:'+x.id,x.titre,x.desc,'📚 bibliothèque');});
+  cps.forEach((c,i)=>{h+='<div class="lab">CP '+(i+1)+' · '+esc(c.label)+'</div>';let n=0;(c.ex||[]).forEach(x=>{used['r:'+x.id+'|'+x.titre]=1;n++;h+=exBtn(c.path,x.id,x.titre,x.desc,'',x.video);});
+    L.filter(x=>(x.cps||[]).indexOf(c.path)>=0).forEach(x=>{if(used['l:'+x.id])return;used['l:'+x.id]=1;n++;h+=exBtn(c.path,'lib:'+x.id,x.titre,x.desc,'📚 bibliothèque',x.video);});
     if(!n)h+='<div class="dim">Pas d\'exercice rangé sur ce CP : choisissez-en un plus bas.</div>';});
   const p0=cps[0]?cps[0].path:'';const rest=L.filter(x=>!used['l:'+x.id]).map(x=>({x:x,sc:(x.oe===o.id?2:0)+((x.cps||[]).some(c=>m&&c.indexOf('|'+m.id+'|')>=0)?3:0)})).sort((a,b)=>b.sc-a.sc);
-  if(rest.length){h+='<div class="lab">📚 Autres situations de la bibliothèque</div>';rest.forEach(r=>{h+=exBtn(p0,'lib:'+r.x.id,r.x.titre,r.x.desc,r.sc>=2?'même objectif':(r.x.oeLab||''));});}
-  let first=true;(PK().oes||[]).slice().sort((a,b)=>(b.id===o.id)-(a.id===o.id)).forEach(o2=>(o2.micro||[]).forEach(mm=>{if(m&&mm.id===m.id&&o2.id===o.id)return;(mm.cps||[]).forEach(c=>(c.ex||[]).forEach(x=>{const k='r:'+x.id+'|'+x.titre;if(used[k])return;used[k]=1;if(first){h+='<div class="lab">🧭 Exercices des autres fils rouges</div>';first=false;}h+=exBtn(c.path,x.id,x.titre,x.desc,(o2.short||'')+' · '+c.label);}));}));
+  if(rest.length){h+='<div class="lab">📚 Autres situations de la bibliothèque</div>';rest.forEach(r=>{h+=exBtn(p0,'lib:'+r.x.id,r.x.titre,r.x.desc,r.sc>=2?'même objectif':(r.x.oeLab||''),r.x.video);});}
+  let first=true;(PK().oes||[]).slice().sort((a,b)=>(b.id===o.id)-(a.id===o.id)).forEach(o2=>(o2.micro||[]).forEach(mm=>{if(m&&mm.id===m.id&&o2.id===o.id)return;(mm.cps||[]).forEach(c=>(c.ex||[]).forEach(x=>{const k='r:'+x.id+'|'+x.titre;if(used[k])return;used[k]=1;if(first){h+='<div class="lab">🧭 Exercices des autres fils rouges</div>';first=false;}h+=exBtn(c.path,x.id,x.titre,x.desc,(o2.short||'')+' · '+c.label,x.video);}));}));
   return h+'</div>';}
 function pjOe(id){if(PJ.p.oe!==id){PJ.p.oe=id;PJ.sel=[];PJ.p.rank=[];PJ.p.frm=null;PJ.p.exoId=null;}pjSave();PJ.step=2;pjRender();}
 function pjTog(id){const i=PJ.sel.indexOf(id);if(i>=0)PJ.sel.splice(i,1);else PJ.sel.push(id);pjRender();}
@@ -215,7 +244,7 @@ function ovShow(h){let o=$('ov');if(!o){o=document.createElement('div');o.id='ov
 function ovClose(){const o=$('ov');if(o)o.remove();document.body.style.overflow='';render();}
 // ── match ──
 let MT=null;
-function mKey(){return 'el_match_'+CONF.s;}
+function mKey(){return 'el_match_'+SID();}
 function mOpen(ref){const m=matchByRef(ref);const cid=club();if(!m)return;const mineA=m.a===cid;const opp=mineA?m.b:m.a;
   const sv=LS.get(mKey(),null);if(sv&&sv.ref===ref&&sv.club===cid){MT=sv;}else MT={ref:ref,club:cid,opp:opp,mineA:mineA,niv:m.niv,us:0,them:0,log:[],lineup:membersOf(cid,m.niv),t0:Date.now()};mRender();}
 function mOpenFree(opp){const cid=club();const ref='L'+new Date().toISOString().slice(11,16).replace(':','')+'-'+cid+'-'+opp;MT={ref:ref,club:cid,opp:opp,mineA:true,niv:null,us:0,them:0,log:[],lineup:membersOf(cid),t0:Date.now(),free:true};mRender();}
@@ -255,7 +284,8 @@ function vOk(ok){const c=clubOf(MT.club);const pl={};MT.log.forEach(e=>{if(!e.n)
   send([{type:'score',ref:MT.ref,club:c.nom,data:sc,t:Date.now()},{type:'obs',ref:MT.ref,club:c.nom,data:obs,t:Date.now()}]);
   try{localStorage.removeItem(mKey());}catch(e){}MT=null;toast(ok?'🏆 Score validé et envoyé':'Score envoyé au prof (non validé)');ovClose();}
 // ── démarrage ──
-if(CONF){const c=LS.get('el_cache_'+CONF.s,null);if(c){ST.pk=c.pk;ST.ret=c.ret||[];render();}load(true).then(()=>{flush();const sv=LS.get(mKey(),null);if(sv&&sv.club===club()&&sv.log&&sv.log.length){MT=sv;mRender();}});}else render();
+try{if('serviceWorker' in navigator&&/^https?:/.test(location.protocol))navigator.serviceWorker.register('sw-eleve.js',{scope:'./eleve.html'}).catch(()=>{});}catch(e){}
+if(CONF){const c=LS.get(cacheKey(),null);if(c){ST.pk=c.pk;ST.ret=c.ret||[];render();}load(true).then(()=>{flush();const sv=LS.get(mKey(),null);if(sv&&sv.club===club()&&sv.log&&sv.log.length){MT=sv;mRender();}});}else render();
 </script>
 </body>
 </html>
