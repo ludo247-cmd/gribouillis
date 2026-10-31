@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v331</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v332</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v331</title>
+<title>Gribouillis EPS v332</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -24966,6 +24966,73 @@ prmRender=(function(o){return function(){o.apply(this,arguments);try{const ov=E(
 +'#prm-ov .ps-i{font-size:20px;width:28px;text-align:center;}#prm-ov .ps-t{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0;}#prm-ov .ps-t b{font-size:12px;color:#a3a7b0;font-weight:600;text-transform:uppercase;letter-spacing:.04em;}'
 +'#prm-ov .ps-t span{font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}#prm-ov .ps-c{font-size:12px;color:#fca5a5;flex:0 0 auto;}'
 +'#prm-ov .ps-body{margin-top:-6px;border-top-left-radius:4px;border-top-right-radius:4px;border-color:#dc2626;}';
+document.head.appendChild(st);})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v332 — Remplir les blocs : on choisit combien de matchs se jouent en même
+// temps (1, 2 ou 3 terrains) ; chaque bloc affiche ses matchs (équipes,
+// forme, arbitres). + « Programme ABC sur 2 terrains » : à chaque bloc, un
+// match à 2 catégories (A/B…) et, à côté, le match de la catégorie restante
+// (C…) : aucun élève n'est attendu sur deux terrains, et le 3e club arbitre.
+// ══════════════════════════════════════════════════════════════════════
+function cfParDef(){try{return (JSON.parse(localStorage.getItem('grib_cf_par')||'{}')||{})[CFG.apsa]||1;}catch(e){return 1;}}
+function cfParSave(n){try{const o=JSON.parse(localStorage.getItem('grib_cf_par')||'{}')||{};o[CFG.apsa]=n;localStorage.setItem('grib_cf_par',JSON.stringify(o));}catch(e){}}
+function cfAbcOk(c){return !!(c&&c.mix&&(c.clubs||[]).length===3&&(c.cats||[]).length===3);}
+cfFill=function(){const s=getActiveSeance();const q=s&&trnSeqOf(s);if(!q||!q.champ||!q.champ.on){alert('Pas de championnat dans la séquence de cette séance.');return;}
+  let ji=ctDay(q,s);const c=q.champ;const J=ji>=0?c.jours[ji]:null;const n0=J?(J.m||[]).length:0;const par=cfParDef();
+  let ov=E('cf-ov');if(ov)ov.remove();ov=document.createElement('div');ov.id=['cf','ov'].join('-');ov.className='lib-pick-ov';ov.onclick=e=>{if(e.target===ov)ov.remove();};
+  ov.innerHTML='<'+'div class="lib-pick-box"><'+'div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;"><b style="flex:1;">⚡ Remplir les blocs avec le championnat</b><button type="button" class="btn-xs red" onclick="E(\'cf-ov\').remove()">✕</button></'+'div>'
+   +'<'+'div class="cc-dim">Tour du jour : '+(n0?n0+' match'+(n0>1?'s':''):'pas encore créé (il sera créé)')+'. Présentation, échauffement et bilan sont gardés ; tu pourras annuler.</'+'div>'
+   +'<'+'div class="remed-edit-label" style="margin-top:10px;">Combien de matchs en même temps ?</'+'div><'+'div class="cf-par">'+[1,2,3].map(n=>'<button type="button" class="cf-n'+(n===par?' on':'')+'" onclick="cfGo('+n+')"><b>'+n+'</b><span>'+(n===1?'1 terrain':n+' terrains')+'</span></button>').join('')+'</'+'div>'
+   +(cfAbcOk(c)?'<'+'div class="remed-edit-label" style="margin-top:12px;">Ou bien</'+'div><button type="button" class="cf-abc" onclick="cfAbc()"><b>🧩 Programme ABC sur 2 terrains</b><span>à chaque bloc : un match à 2 catégories (ex. A/B) et, à côté, le match de la catégorie qui reste (C contre C). Personne n\'est attendu sur deux terrains, le 3e club arbitre les deux matchs.</span></button>':'')
+   +'</'+'div>';document.body.appendChild(ov);};
+function cfGo(n){const o=E('cf-ov');if(o)o.remove();cfParSave(n);cfFillN(n);}
+function cfFillN(n){const s=getActiveSeance();const q=s&&trnSeqOf(s);if(!q)return;
+  let ji=ctDay(q,s);if(ji<0){try{trnNewDay(q.id);}catch(e){console.warn(e);}ji=ctDay(seqGet(q.id),s);}
+  const c=seqGet(q.id).champ;const J=ji>=0?c.jours[ji]:null;const M=J?(J.m||[]):[];if(!M.length){alert('Le tour du jour n\'a pas de match.');return;}
+  n=Math.max(1,Math.min(3,n||1));const nb=Math.ceil(M.length/n);
+  if(s.chpBloc&&Object.keys(s.chpBloc).length&&!confirm('Refaire les '+nb+' bloc'+(nb>1?'s':'')+' ('+M.length+' matchs, '+n+' en même temps) ?'))return;
+  if(!s.fillBackup)s.fillBackup=JSON.parse(JSON.stringify({steps:s.steps,matchCfg:s.matchCfg||{},stepExos:s.stepExos||{},par:s.par||null,parGroups:s.parGroups||null,parEleves:s.parEleves||null,chpBloc:s.chpBloc||null,at:Date.now()}));
+  const firstM=s.steps.find(st=>seanceStepBase(st.key)==='match');let fps=null;try{fps=JSON.parse(JSON.stringify(matchCfgOf(s,firstM?firstM.key:'match-1')));}catch(e){}
+  const keep=s.steps.filter(st=>{const b=seanceStepBase(st.key);return b!=='match'&&b!=='remediation';});
+  const old=s.steps.filter(st=>{const b=seanceStepBase(st.key);return b==='match'||b==='remediation';}).map(st=>st.key);
+  old.forEach(k=>{if(s.matchCfg)Object.keys(s.matchCfg).forEach(x=>{if(x===k||x.indexOf(k+'~')===0)delete s.matchCfg[x];});if(s.stepExos)Object.keys(s.stepExos).forEach(x=>{if(x===k||x.indexOf(k+'~')===0)delete s.stepExos[x];});if(s.par)delete s.par[k];if(s.eleveChoix)delete s.eleveChoix[k];});
+  const fin=keep.findIndex(st=>seanceStepBase(st.key)==='fin');const blocks=[];for(let i=0;i<nb;i++)blocks.push({key:'match-'+(i+1),status:'pending'});
+  s.steps=fin<0?keep.concat(blocks):keep.slice(0,fin).concat(blocks,keep.slice(fin));
+  if(!s.matchCfg||typeof s.matchCfg!=='object')s.matchCfg={};if(!s.par||typeof s.par!=='object')s.par={};s.chpBloc={};const qq=seqGet(q.id);
+  M.forEach((m,i)=>{const bi=Math.floor(i/n),pi=i%n;const sk='match-'+(bi+1);const ak=pi?sk+'~'+(pi+1):sk;if(pi){(s.par[sk]=s.par[sk]||[]).push(String(pi+1));}
+    s.chpBloc[ak]={qid:q.id,ji:ji,mi:i};const cfg=JSON.parse(JSON.stringify(fps||matchCfgOf(s,ak)));cfg.groupes=[];if(pi)cfg.scoreOnly=true;else delete cfg.scoreOnly;
+    cfg.eleves=ctMembers(qq,s,m.a,+m.niv).concat(ctMembers(qq,s,m.b,+m.niv));s.matchCfg[ak]=cfg;});
+  if(!Object.keys(s.par).length)delete s.par;
+  recomputeSeanceStatuses(s);saveSeances();try{renderSeanceTab();}catch(e){}try{if(E('crs-ov'))crsRender();}catch(e){}
+  try{toast2('⚡ '+nb+' bloc'+(nb>1?'s':'')+' · '+M.length+' matchs'+(n>1?' ('+n+' en même temps)':''));}catch(e){}}
+// programme ABC : 3 blocs × (match à 2 catégories + match de la catégorie restante)
+function cfFormIdx(c,f){const k=f.slice().sort().join('-');return c.formes.findIndex(x=>x.slice().sort().join('-')===k);}
+function cfAbc(){const s=getActiveSeance();const q=s&&trnSeqOf(s);if(!q)return;const o=E('cf-ov');if(o)o.remove();
+  let ji=ctDay(q,s);const c0=q.champ;const J0=ji>=0?c0.jours[ji]:null;
+  if(J0&&(J0.m||[]).some(m=>m.sa!==''&&m.sa!=null)){alert('Des scores sont déjà notés dans le tour du jour : je ne le remplace pas.');return;}
+  if(J0&&(J0.m||[]).length&&!confirm('Remplacer les '+J0.m.length+' matchs du tour du jour par le programme ABC (6 matchs : 3 blocs × 2 terrains) ?'))return;
+  const added=[];
+  seqUpdate(q.id,qq=>{chpEnsure(qq);const c=qq.champ;[[0],[1],[2],[0,1],[1,2],[0,2]].forEach(f=>{if(cfFormIdx(c,f)<0){c.formes.push(f);added.push(chpFormLab(c,f));}});c.niv=c.formes.map(f=>chpFormLab(c,f));
+    let j=(c.jours||[]).findIndex(x=>x.date===s.date);if(j<0){c.jours.push({date:s.date,m:[],abs:[]});j=c.jours.length-1;}
+    const r=j%3;const K=c.clubs.map(k=>k.id);const C=i=>K[(i+r)%3];
+    const plan=[[[0,1],C(0),C(1)],[[2],C(1),C(2)],[[1,2],C(1),C(2)],[[0],C(2),C(0)],[[0,2],C(2),C(0)],[[1],C(0),C(1)]];
+    c.jours[j].m=plan.map(p=>({niv:cfFormIdx(c,p[0]),a:p[1],b:p[2],sa:'',sb:'',ba:0,bb:0}));});
+  if(added.length)try{toast2('Formes ajoutées au championnat : '+added.join(', '));}catch(e){}
+  cfParSave(2);cfFillN(2);}
+// les matchs apparaissent dans les blocs
+function cfBlocRef(c,m,busy){const o=c.clubs.filter(k=>k.id!==m.a&&k.id!==m.b).map(k=>k.id);return o.length?o[0]:null;}
+sbAtelierInner=(function(o){return function(s,st,a,single){let h=o.apply(this,arguments);try{const B=cfBloc(s,a.key);if(!B)return h;const c=B.c,m=B.m;const A=chpClub(c,m.a),Bc=chpClub(c,m.b);const r=B.ref?chpClub(c,B.ref):null;
+  const sc=(m.sa!==''&&m.sa!=null)?' <b>'+m.sa+'–'+m.sb+'</b>':'';
+  const top='<'+'div class="cf-mt"><span style="color:'+esc(A.col||'#fff')+'">'+esc(A.nom)+'</span> – <span style="color:'+esc(Bc.col||'#fff')+'">'+esc(Bc.nom)+'</span>'+sc+'<small>'+esc(chpFormLab(c,c.formes[+m.niv]||[]))+(r?' · 🟨 '+esc(r.nom):'')+'</small></'+'div>';
+  h=h.replace(/<span class="sb-meta">(«[^<]*»|FPS à choisir)<\/span>/,function(x){return top+x.replace('FPS à choisir','FPS du profil');});if(h.indexOf('cf-mt')<0)h=top+h;
+  h=h.replace(/👥 Qui \? (tout le monde)?/,'👥 Joueurs ');return h;}catch(e){return h;}};})(sbAtelierInner);
+// tablettes : tous les matchs d'un bloc
+elPack=(function(o){return function(s){const P=o.apply(this,arguments);try{(P.blocs||[]).forEach(b=>{const L=[];Object.keys(s.chpBloc||{}).forEach(k=>{if(k===b.key||k.indexOf(b.key+'~')===0){const x=s.chpBloc[k];L.push('J'+x.ji+'M'+x.mi);}});b.matches=L;if(L.length&&!b.match)b.match=L[0];});}catch(e){}return P;};})(elPack);
+(function(){const st=document.createElement('style');st.textContent=
+ 'html body .cf-par{display:flex;gap:8px;}html body .cf-n{flex:1;min-height:70px;border-radius:12px;border:1px solid #334155;background:#1a1d24;color:#fff;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;}html body .cf-n b{font-size:1.6rem;}html body .cf-n span{font-size:.75rem;color:#a3a7b0;}html body .cf-n.on{border-color:#a16207;background:#2a1f06;}'
++'html body .cf-abc{display:flex;flex-direction:column;gap:4px;text-align:left;width:100%;padding:10px 12px;border-radius:12px;border:1px solid #7c3aed;background:#1c1530;color:#fff;cursor:pointer;}html body .cf-abc span{font-size:.78rem;color:#c4b5fd;}'
++'html body .cf-mt{font-weight:800;font-size:.82rem;line-height:1.25;margin:2px 0;}html body .cf-mt small{display:block;font-weight:600;color:#a3a7b0;font-size:.7rem;}';
 document.head.appendChild(st);})();
 </script>
 </body>

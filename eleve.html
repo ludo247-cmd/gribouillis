@@ -189,9 +189,12 @@ function render(){ST.view='home';const app=$('app');
   h+='<div class="row" style="justify-content:center"><button class="small" style="flex:0 1 auto" onclick="if(confirm(\'Changer de club ?\'))setClub(null)">Ce n\'est pas notre club</button>'+classSwitch()+'</div>';
   app.innerHTML=h;renderSync();}
 function classSwitch(){const L=LS.get('el_confs',{});const K=Object.keys(L).filter(k=>k!==confId(CONF));if(!K.length)return '';return K.map(k=>'<button class="small" style="flex:0 1 auto" onclick="useConf(\''+esc(k)+'\')">↔ '+esc(L[k].titre||'autre classe')+'</button>').join('');}
-function blocRolesHtml(b,cid,btns){const m=b.match?matchByRef(b.match):null;
-  if(m){const F=PK().formes||[];return '<div class="dim">⚽ '+esc(clubOf(m.a).nom)+' – '+esc(clubOf(m.b).nom)+' · '+esc(formLab(m.niv))+'</div>'+F.map((f,fi)=>{const r=roleIn(m,cid,fi);return '<div>'+'<span class="tag '+r+'">'+esc(f.lab)+' · '+(r==='play'?'⚽ on joue':r==='ref'?'🟨 on arbitre':'🏋 projet')+'</span></div>';}).join('')
-    +(btns&&(m.a===cid||m.b===cid)?'<button class="big blue" onclick="mOpen(\''+esc(m.ref)+'\')">▶ Observer notre match</button>':'')+(btns?'<div class="dim">Les autres : exercice du projet collectif ou de votre binôme (plus bas).</div>':'');}
+function blocRolesHtml(b,cid,btns){const MS=(b.matches&&b.matches.length?b.matches:(b.match?[b.match]:[])).map(matchByRef).filter(Boolean);
+  if(MS.length){const F=PK().formes||[];const role=fi=>{if(MS.some(m=>m.niv===fi&&(m.a===cid||m.b===cid)))return 'play';if(MS.some(m=>m.niv===fi&&refClubOf(m)===cid))return 'ref';return 'train';};
+    const used=F.map((f,fi)=>fi).filter(fi=>role(fi)!=='train'||(F[fi].ids||[]).length>1);
+    return MS.map(m=>'<div class="dim">⚽ '+esc(clubOf(m.a).nom)+' – '+esc(clubOf(m.b).nom)+' · '+esc(formLab(m.niv))+(refClubOf(m)?' · 🟨 '+esc(clubOf(refClubOf(m)).nom):'')+'</div>').join('')
+    +used.map(fi=>{const r=role(fi);return '<div><span class="tag '+r+'">'+esc(F[fi].lab)+' · '+(r==='play'?'⚽ on joue':r==='ref'?'🟨 on arbitre':'🏋 projet')+'</span></div>';}).join('')
+    +(btns?MS.filter(m=>m.a===cid||m.b===cid).map(m=>'<button class="big blue" onclick="mOpen(\''+esc(m.ref)+'\')">▶ Observer : '+esc(formLab(m.niv))+' contre '+esc(clubOf(m.a===cid?m.b:m.a).nom)+'</button>').join(''):'')+(btns?'<div class="dim">Les autres : exercice du projet collectif ou de votre binôme (plus bas).</div>':'');}
   if(b.base==='remediation')return '<div class="dim">🏋 Exercice du projet collectif ou de votre binôme</div>';
   if(b.base==='match')return '<div class="dim">⚽ Match</div>';return '<div class="dim">Tous ensemble</div>';}
 function pjBtns(k,p){const kk=esc(k).replace(/'/g,"\\'");if(p&&p.exoId)return '<div class="row"><button class="big" style="flex:2" onclick="pjOpen(\''+kk+'\',4)">▶ Notre exercice</button><button class="big grey" onclick="pjOpen(\''+kk+'\',1)">Modifier</button></div>';
