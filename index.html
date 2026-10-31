@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v351</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v352</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v351</title>
+<title>Gribouillis EPS v352</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -25983,6 +25983,54 @@ orgRender=(function(f){return function(){const r=f.apply(this,arguments);try{con
 function seAttach(v){const s=getActiveSeance();if(!s||!v)return;const q=seqGet(v);if(!q)return;s.seqId=q.id;if(q.sport&&s.sport!==q.sport)s.sport=q.sport;saveSeances();try{renderSeanceTab();}catch(e){}try{toast2('🔗 Séance rattachée à « '+(q.nom||'')+' »');}catch(e){}}
 elBoxHtml=(function(f){return function(s){let h=f.apply(this,arguments);try{if(s&&!elSeq(s)){const c=clsActive();const L=c?seqOfClass(c):[];if(L.length)h=h.replace(/<\/div>$/,'<'+'div class="el-att">🔗 Rattacher cette séance à : <select onchange="seAttach(this.value)"><option value="">— choisir une séquence —</option>'+L.map(q=>'<option value="'+esc(q.id)+'">'+esc(q.nom||q.sport||'')+'</option>').join('')+'</select></'+'div></'+'div>');}}catch(e){}return h;};})(elBoxHtml);
 (function(){const st=document.createElement('style');st.textContent='html body .el-att{flex-basis:100%;font-size:.8rem;}html body .el-att select{margin-left:6px;min-height:32px;}';document.head.appendChild(st);})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v352 — la FPS se choisit dans la SÉQUENCE (une pour toute la séquence,
+// deux si deux objets d'enseignement). Organisation › Championnat : chaque
+// terrain joue une FPS de la séquence (durée reprise de la FPS) ; les blocs
+// des séances reçoivent la FPS (profil d'observation, critères) ; un match
+// lancé depuis Qui joue › Championnat prend le profil de la FPS ; Suivi
+// rappelle les critères de réussite des FPS.
+// ══════════════════════════════════════════════════════════════════════
+function fpsNormSp(x){return stripAccents(String(x||'')).toLowerCase().replace(/[^a-z]/g,'').slice(0,5);}
+function seqFpsCands(q){const sp=fpsNormSp(q&&q.sport);return libLoad().filter(x=>x&&x.kind==='match'&&fpsNormSp(x.apsa)===sp);}
+function seqFpsIds(q){if(!q)return [];const C=seqFpsCands(q);if(Array.isArray(q.fps))return q.fps.filter(id=>C.some(x=>x.id===id));const oe=q.oeIds||[];const out=[];oe.forEach(o=>{const f=C.find(x=>x.oe===o);if(f&&out.indexOf(f.id)<0)out.push(f.id);});return out;}
+function seqFpsList(q){const L=libLoad();return seqFpsIds(q).map(id=>L.find(x=>x.id===id)).filter(Boolean);}
+function fpsMin(it){const m=/(\d+)\s*(?:à\s*(\d+)\s*)?min/.exec(String(it&&(it.desc||(it.cfg&&it.cfg.format))||''));return m?+(m[2]||m[1]):null;}
+function fpsFmt(it){const d=String(it&&it.desc||'');const p=d.split('·');return (p[1]||'').split(',')[0].trim().slice(0,50);}
+function seqFpsTog(qid,id){seqUpdate(qid,q=>{const cur=seqFpsIds(q);const i=cur.indexOf(id);if(i>=0)cur.splice(i,1);else{cur.push(id);if(cur.length>3)cur.shift();}q.fps=cur;});renderSeqTab();}
+function seqFpsHtml(q){if(!q||q.ref)return '';const C=seqFpsCands(q);if(!C.length)return '';const sel=seqFpsIds(q);const L=seqFpsList(q);
+  let h='<'+'div class="seq-fps"><b>⚽ FPS de la séquence</b><span class="cc-dim">Une FPS pour toute la séquence (deux si deux objets d\'enseignement). Le championnat, ses terrains et l\'observation des matchs en découlent.</span><'+'div class="seq-fps-row">'
+    +C.map(x=>'<button type="button" class="'+(sel.indexOf(x.id)>=0?'on':'')+'" onclick="seqFpsTog(\''+esc(q.id)+'\',\''+esc(x.id)+'\')">'+(sel.indexOf(x.id)>=0?'✔ ':'')+esc(x.titre||'FPS')+'</button>').join('')+'</'+'div>';
+  L.forEach(it=>{let cr=[];try{cr=Array.isArray(it.criteres)?it.criteres:[];}catch(e){}h+='<'+'div class="seq-fps-it"><b>'+esc(it.titre)+'</b><small>'+esc(it.desc||'')+'</small>'+(cr.length?'<small>🎯 '+cr.map(c=>esc(c.label)+(c.cible!=null&&c.cible!==''?' '+(c.neg?'≤':'≥')+' '+esc(String(c.cible)):'')).join(' · ')+'</small>':'')+'</'+'div>';});
+  return h+'</'+'div>';}
+seqGsRowHtml=(function(f){return function(q){let a='';try{a=seqFpsHtml(q);}catch(e){console.warn('seqFps',e);}return a+f.apply(this,arguments);};})(seqGsRowHtml);
+// ── Organisation › Championnat : une FPS par terrain ──
+function chsTerFps(q,cal,i){const F=seqFpsIds(q);const t=cal.terrains[i]||{};if(t.fps&&F.indexOf(t.fps)>=0)return t.fps;return F.length?F[i%F.length]:null;}
+function chsSetFps(i,id){const q=orgQ();const it=libLoad().find(x=>x.id===id);chsSave(c=>{if(c.terrains[i])c.terrains[i].fps=id;const m=fpsMin(it);if(m&&i===0)c.dur=m;});}
+orgRender=(function(f){return function(){const r=f.apply(this,arguments);try{const c0=clsActive();if(c0&&!c0.csv){document.querySelectorAll('#t-org .org-chs,#t-org .org-suivi,#t-org .org-more').forEach(x=>x.remove());return r;}}catch(e){}try{const q=orgQ();const box=document.querySelector('#t-org .org-chs');if(!q||!box)return r;const o=orgOf(q);const cal=chsOf(o);const F=seqFpsList(q);
+  const rows=box.querySelectorAll('.pln-ter');
+  if(!F.length){const n=document.createElement('div');n.className='chs-warn';n.innerHTML='⚠ Choisis d\'abord la FPS de la séquence (onglet Séquences) : les terrains, la durée et l\'observation des matchs en découlent.';const t=box.querySelector('.pln-ters');if(t)t.insertAdjacentElement('beforebegin',n);return r;}
+  rows.forEach((row,i)=>{const cur=chsTerFps(q,cal,i);const it=F.find(x=>x.id===cur);const sl=document.createElement('select');sl.className='chs-fps';sl.innerHTML=F.map(x=>'<option value="'+esc(x.id)+'"'+(x.id===cur?' selected':'')+'>⚽ '+esc(x.titre)+'</option>').join('');sl.onchange=function(){chsSetFps(i,this.value);};
+    row.appendChild(sl);const fm=row.querySelectorAll('input')[1];if(fm)fm.placeholder=it?fpsFmt(it)||'format':'format';
+    const sm=document.createElement('small');sm.className='chs-fps-f';sm.textContent=it?[fpsFmt(it),fpsMin(it)?fpsMin(it)+' min':''].filter(Boolean).join(' · '):'';row.appendChild(sm);});}catch(e){console.warn('chs fps',e);}return r;};})(orgRender);
+// les blocs de la séance reçoivent la FPS de leur terrain
+chsFill=(function(f){return function(sid){const r=f.apply(this,arguments);try{const s=(SEANCES||[]).find(x=>x.id===sid);const q=s&&trnSeqOf(s);if(!s||!q||!s.chpBloc)return r;const o=orgOf(q);const cal=chsOf(o);const L=libLoad();const c=seqGet(q.id).champ;let ch=false;
+  Object.keys(s.chpBloc).forEach(ak=>{const b=s.chpBloc[ak];const m=c&&c.jours[b.ji]&&c.jours[b.ji].m[b.mi];if(!m)return;const ti=cal.terrains.findIndex(t=>t.nom===m.ter);const fid=chsTerFps(q,cal,ti<0?0:ti);const it=L.find(x=>x.id===fid);if(!it)return;
+    const old=s.matchCfg[ak]||{};const cfg=JSON.parse(JSON.stringify(it.cfg||{}));['points','emblematiques','etayage'].forEach(k=>{if(!Array.isArray(cfg[k]))cfg[k]=[];});if(!cfg.nom)cfg.nom=it.titre;if(!cfg.profile&&it.profile)cfg.profile=it.profile;
+    cfg.groupes=old.groupes||[];cfg.eleves=old.eleves||[];if(old.scoreOnly)cfg.scoreOnly=true;cfg.terrain=old.terrain||m.ter||'';cfg.fpsId=it.id;s.matchCfg[ak]=cfg;ch=true;
+    if(m.fps!==it.id){seqUpdate(q.id,qq=>{const mm=qq.champ.jours[b.ji]&&qq.champ.jours[b.ji].m[b.mi];if(mm)mm.fps=it.id;});}});
+  if(ch){saveSeances();try{renderSeanceTab();}catch(e){}}}catch(e){console.warn('chs fill fps',e);}return r;};})(chsFill);
+// Qui joue › Championnat : le profil de la FPS
+function fpsApplyProfile(it){try{if(!it||!it.profile)return;const P=CFG.savedPresets||[];const i=P.findIndex(p=>p&&p.name===it.profile);if(i>=0)applyNamedPreset(i);}catch(e){console.warn('fps profile',e);}}
+chqGo=(function(f){return function(ji,mi){try{const q=seqGet(CHQ.qid);const m=q&&q.champ.jours[ji]&&q.champ.jours[ji].m[mi];if(q&&m){const o=orgOf(q);const cal=chsOf(o);const ti=cal.terrains.findIndex(t=>t.nom===m.ter);const id=m.fps||chsTerFps(q,cal,ti<0?0:ti);fpsApplyProfile(libLoad().find(x=>x.id===id));}}catch(e){}return f.apply(this,arguments);};})(chqGo);
+// Suivi : critères des FPS
+chsSuivi=(function(f){return function(q,o){let h=f.apply(this,arguments);try{const F=seqFpsList(q);if(F.length){const add='<'+'div class="chs-sub">Critères de réussite (FPS de la séquence)</'+'div>'+F.map(it=>{const cr=Array.isArray(it.criteres)?it.criteres:[];return '<'+'div class="chs-day"><b>⚽ '+esc(it.titre)+'</b>'+cr.map(c=>'<span>🎯 '+esc(c.label)+(c.cible!=null&&c.cible!==''?' '+(c.neg?'≤':'≥')+' '+esc(String(c.cible)):'')+'</span>').join('')+'</'+'div>';}).join('');
+  h=h.replace(/<\/details>$/,add+'</'+'details>');}}catch(e){}return h;};})(chsSuivi);
+(function(){const st=document.createElement('style');st.textContent='html body .seq-fps{display:flex;flex-direction:column;gap:6px;margin:10px 0;padding:10px;border:1px solid #1e3a5f;border-radius:12px;background:#0b1730;}html body .seq-fps .cc-dim{font-size:.74rem;}'
++'html body .seq-fps-row{display:flex;flex-wrap:wrap;gap:6px;}html body .seq-fps-row button{min-height:38px;border-radius:19px;border:1px solid #334155;background:#111827;color:#e2e8f0;padding:0 12px;cursor:pointer;font-weight:600;}html body .seq-fps-row button.on{background:#166534;border-color:#22c55e;color:#fff;}'
++'html body .seq-fps-it{display:flex;flex-direction:column;gap:2px;padding:6px 8px;border-left:3px solid #22c55e;background:#0f172a;border-radius:6px;}html body .seq-fps-it small{color:#94a3b8;font-size:.74rem;}'
++'html body .chs-fps{min-height:34px;max-width:100%;}html body .chs-fps-f{flex-basis:100%;color:#93c5fd;font-size:.74rem;}';document.head.appendChild(st);})();
 </script>
 </body>
 </html>
