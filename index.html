@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v350</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v351</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v350</title>
+<title>Gribouillis EPS v351</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -25960,6 +25960,29 @@ elBoxHtml=(function(f){return function(s){let h=f.apply(this,arguments);try{cons
   h=h.replace(/<\/div>$/,app+set+'</'+'div>');}catch(e){console.warn('el setup',e);}return h;};})(elBoxHtml);
 (function(){const st=document.createElement('style');st.textContent='html body .el-app{flex-basis:100%;font-size:.78rem;}html body .el-app a{color:#67e8f9;font-weight:700;}html body .el-app span{color:#94a3b8;}'
 +'html body .el-set{flex-basis:100%;}html body .el-set summary{cursor:pointer;font-weight:700;}html body .el-st{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;margin-top:6px;font-size:.78rem;color:#cbd5e1;}html body .el-st span{flex:1 1 260px;}html body .el-st input{flex:1 1 260px;min-height:34px;background:#0f172a;border:1px solid #334155;color:#fff;border-radius:8px;padding:0 8px;}html body .el-st .ok{color:#4ade80;}html body .el-st .ko{color:#64748b;}';document.head.appendChild(st);})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v351 — CORRECTIF : la liste d'une classe ne peut plus être vidée quand
+// on change de sport (ex. passer en football dans Match alors que la liste
+// des 3C venait du Sheets de la séquence de handball). + Organisation :
+// récupérer les élèves déjà saisis si la liste a été vidée. + Séance :
+// rattacher une séance à une séquence de sa classe.
+// ══════════════════════════════════════════════════════════════════════
+clsResolveGs=(function(f){return function(id,noSync,apsa){let before=null,cid=null;try{const d=clsData();const c=d.list.find(x=>x.id===(id||d.active));if(c&&c.csv){cid=c.id;before={csv:c.csv,gs:JSON.parse(JSON.stringify(c.gs||{})),maj:c.maj};}}catch(e){}
+  const r=f.apply(this,arguments);
+  try{if(before){const d2=clsData();const c2=d2.list.find(x=>x.id===cid);if(c2&&!c2.csv&&!(c2.gs&&c2.gs.url)){c2.csv=before.csv;c2.gs=before.gs;c2.maj=before.maj;clsSave(d2);if(d2.active===cid){try{clsApply(c2);}catch(e){}}try{renderClassBar();}catch(e){}return false;}}}catch(e){console.warn('cls keep',e);}
+  return r;};})(clsResolveGs);
+function orgKnownNames(){const c=clsActive();if(!c)return [];const N=[];const add=n=>{n=String(n||'').trim();if(n&&N.indexOf(n)<0)N.push(n);};
+  seqOfClass(c).forEach(q=>{const o=q.org;if(o){Object.keys(o.niv||{}).forEach(add);Object.keys(o.sexe||{}).forEach(add);((o.fam||{}).groups||[]).forEach(g=>(g.members||[]).forEach(add));}if(q.champ&&q.champ.aff)Object.keys(q.champ.aff).forEach(add);});return N;}
+function orgRestoreList(){const c=clsActive();if(!c)return;const N=orgKnownNames();if(!N.length)return;let sx={};seqOfClass(c).forEach(q=>{if(q.org&&q.org.sexe)Object.assign(sx,q.org.sexe);});
+  if(!confirm('Remettre les '+N.length+' élèves déjà saisis dans la liste de '+c.nom+' ?\n\nTu pourras recharger la liste complète depuis le Google Sheets plus tard.'))return;
+  const d=clsData();const cc=d.list.find(x=>x.id===c.id);if(!cc)return;cc.csv='Prénom;Sexe\n'+N.map(n=>n.replace(/;/g,',')+';'+(sx[n]==='F'?'F':sx[n]==='M'?'G':'')).join('\n');cc.maj=Date.now();clsSave(d);try{clsApply(cc);}catch(e){}ORGL.key='';ORGL.msg='';try{renderClassBar();}catch(e){}orgRender();try{toast2('↺ '+N.length+' élèves remis dans la liste');}catch(e){}}
+orgRender=(function(f){return function(){const r=f.apply(this,arguments);try{const c=clsActive();if(c&&!c.csv){const host=E('t-org');const sec=host&&host.querySelector('.org-sec');const N=orgKnownNames();
+  if(sec&&N.length&&!sec.querySelector('.org-restore')){const b=document.createElement('button');b.type='button';b.className='org-go org-restore';b.style.background='#15803d';b.style.marginLeft='8px';b.textContent='↺ Reprendre les '+N.length+' élèves déjà saisis ici';b.onclick=orgRestoreList;const go=sec.querySelector('.org-go');if(go)go.insertAdjacentElement('afterend',b);else sec.appendChild(b);}}}catch(e){}return r;};})(orgRender);
+// séance : la rattacher à une séquence de sa classe
+function seAttach(v){const s=getActiveSeance();if(!s||!v)return;const q=seqGet(v);if(!q)return;s.seqId=q.id;if(q.sport&&s.sport!==q.sport)s.sport=q.sport;saveSeances();try{renderSeanceTab();}catch(e){}try{toast2('🔗 Séance rattachée à « '+(q.nom||'')+' »');}catch(e){}}
+elBoxHtml=(function(f){return function(s){let h=f.apply(this,arguments);try{if(s&&!elSeq(s)){const c=clsActive();const L=c?seqOfClass(c):[];if(L.length)h=h.replace(/<\/div>$/,'<'+'div class="el-att">🔗 Rattacher cette séance à : <select onchange="seAttach(this.value)"><option value="">— choisir une séquence —</option>'+L.map(q=>'<option value="'+esc(q.id)+'">'+esc(q.nom||q.sport||'')+'</option>').join('')+'</select></'+'div></'+'div>');}}catch(e){}return h;};})(elBoxHtml);
+(function(){const st=document.createElement('style');st.textContent='html body .el-att{flex-basis:100%;font-size:.8rem;}html body .el-att select{margin-left:6px;min-height:32px;}';document.head.appendChild(st);})();
 </script>
 </body>
 </html>
