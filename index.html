@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v332</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v333</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v332</title>
+<title>Gribouillis EPS v333</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -25034,6 +25034,35 @@ elPack=(function(o){return function(s){const P=o.apply(this,arguments);try{(P.bl
 +'html body .cf-abc{display:flex;flex-direction:column;gap:4px;text-align:left;width:100%;padding:10px 12px;border-radius:12px;border:1px solid #7c3aed;background:#1c1530;color:#fff;cursor:pointer;}html body .cf-abc span{font-size:.78rem;color:#c4b5fd;}'
 +'html body .cf-mt{font-weight:800;font-size:.82rem;line-height:1.25;margin:2px 0;}html body .cf-mt small{display:block;font-weight:600;color:#a3a7b0;font-size:.7rem;}';
 document.head.appendChild(st);})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v333 — les équipes du championnat deviennent des groupes de la séance
+// (palette « Groupes » sous les blocs) : Rouge A/B, Bleu B/C… et chaque
+// club entier. « Remplir » place les deux équipes de chaque match dans son
+// bloc ; tu peux les glisser ailleurs, le bloc retrouve le match du jour
+// correspondant (ou te dit qu'il n'est pas au calendrier).
+// ══════════════════════════════════════════════════════════════════════
+function chgId(club,fi){return 'chp_'+club+'_'+fi;}
+function chgParse(id){const m=/^chp_(.+)_(\d+|all)$/.exec(String(id||''));return m?{club:m[1],fi:m[2]==='all'?null:+m[2]}:null;}
+seanceGroupChips=(function(o){return function(s){const L=o.apply(this,arguments);try{s=s||getActiveSeance();const q=s&&trnSeqOf(s);const c=q&&q.champ;if(!c||!c.on||!(c.clubs||[]).length)return L;
+  const out=L.slice();const ji=(c.jours||[]).findIndex(j=>j.date===s.date);const abs=ji>=0?((c.jours[ji].abs)||[]):[];
+  const mem=(club,fi)=>Object.keys(c.aff||{}).filter(n=>{const a=c.aff[n];if(!a||a.club!==club||abs.indexOf(n)>=0)return false;if(fi==null)return true;if(c.mix)return (c.formes[fi]||[]).indexOf(+a.cat)>=0;return (+a.niv||0)===fi;});
+  const nF=c.mix?(c.formes||[]).length:(c.niv||[]).length;
+  c.clubs.forEach(k=>{for(let fi=0;fi<nF;fi++){const M=mem(k.id,fi);if(M.length)out.push({id:chgId(k.id,fi),label:k.nom+' '+(c.mix?chpFormLab(c,c.formes[fi]):c.niv[fi]),color:k.col||'#64748b',members:M,chp:true});}
+    const A=mem(k.id,null);if(A.length)out.push({id:chgId(k.id,'all'),label:'Club '+k.nom,color:k.col||'#64748b',members:A,chp:true});});
+  return out;}catch(e){console.warn('chp groupes',e);return L;}};})(seanceGroupChips);
+// Remplir : les deux équipes dans le bloc (groupes), plus la liste d'élèves
+cfFillN=(function(o){return function(n){o.apply(this,arguments);try{const s=getActiveSeance();if(!s||!s.chpBloc)return;let ch=false;
+  Object.keys(s.chpBloc).forEach(ak=>{const B=cfBloc(s,ak);if(!B||!s.matchCfg||!s.matchCfg[ak])return;const fi=+B.m.niv;s.matchCfg[ak].groupes=[chgId(B.m.a,fi),chgId(B.m.b,fi)];s.matchCfg[ak].eleves=[];ch=true;});
+  if(ch){saveSeances();try{renderSeanceTab();}catch(e){}}}catch(e){console.warn(e);}};})(cfFillN);
+// un bloc dont on a changé les équipes retrouve son match du jour
+function chgSync(s,ak){try{const c=(trnSeqOf(s)||{}).champ;if(!c||!c.on)return;const G=atelierGroups(s,ak,'match').map(chgParse).filter(Boolean);if(G.length!==2||G[0].fi==null||G[0].fi!==G[1].fi||G[0].club===G[1].club){if(s.chpBloc&&s.chpBloc[ak]&&G.length){delete s.chpBloc[ak];}return;}
+  const q=trnSeqOf(s);let ji=(c.jours||[]).findIndex(j=>j.date===s.date);if(ji<0)return;const M=c.jours[ji].m||[];
+  const mi=M.findIndex(m=>+m.niv===G[0].fi&&((m.a===G[0].club&&m.b===G[1].club)||(m.a===G[1].club&&m.b===G[0].club)));
+  if(mi>=0){const cur=s.chpBloc&&s.chpBloc[ak];if(!cur||cur.mi!==mi||cur.ji!==ji){if(!s.chpBloc)s.chpBloc={};s.chpBloc[ak]={qid:q.id,ji:ji,mi:mi};}}
+  else{if(s.chpBloc)delete s.chpBloc[ak];s._chgHors=s._chgHors||{};s._chgHors[ak]=1;}}catch(e){}}
+sbAtelierInner=(function(o){return function(s,st,a,single){try{if(seanceStepBase(st.key)==='match')chgSync(s,a.key);}catch(e){}let h=o.apply(this,arguments);
+  try{const G=atelierGroups(s,a.key,'match').map(chgParse).filter(Boolean);if(seanceStepBase(st.key)==='match'&&G.length===2&&!cfBloc(s,a.key)&&G[0].fi!=null&&G[0].fi===G[1].fi)h='<'+'div class="cf-mt" style="color:#fbbf24">⚠ match pas prévu au calendrier du jour</'+'div>'+h;}catch(e){}return h;};})(sbAtelierInner);
 </script>
 </body>
 </html>
