@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v342</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v343</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v342</title>
+<title>Gribouillis EPS v343</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -25221,7 +25221,7 @@ function orgRender(){const host=E('t-org');if(!host)return;const c=clsActive();
     h+='</'+'div><'+'div class="org-row"><button type="button" class="btn-xs green" onclick="orgKeep()">✓ Garder cette proposition</button><button type="button" class="btn-xs" style="background:#334155;color:#fff" onclick="ORG.seed++;orgGenerate()">↻ Autre essai</button><button type="button" class="btn-xs" style="background:#334155;color:#fff" onclick="ORG.gen=null;orgRender()">Annuler</button></'+'div></'+'div>';}
   // groupes actuels
   if(G.length){h+='<'+'div class="org-gs">'+G.map((g,i)=>{const M=(g.members||[]).map(n=>S.find(x=>x.n===n)||{n:n,lv:null,sx:''});
-      return '<'+'div class="org-gc'+(ORG.sel.length?' tgt':'')+'" style="--gc:'+esc(g.col)+'"'+(ORG.sel.length?' onclick="orgMoveTo('+i+')"':'')+'><'+'div class="org-gh"><input value="'+esc(g.nom)+'" onclick="event.stopPropagation()" onchange="orgGName('+i+',this.value)"><button type="button" title="Bloquer ce groupe" onclick="event.stopPropagation();orgLock('+i+')">'+(g.locked?'🔒':'🔓')+'</button><small>'+M.length+'</small></'+'div>'+orgMembersHtml(o,M)+'</'+'div>';}).join('')+'</'+'div>';
+      return '<'+'div class="org-gc'+(ORG.sel.length?' tgt':'')+'" style="--gc:'+esc(g.col)+'"'+(ORG.sel.length?' onclick="orgMoveTo('+i+')"':'')+'><'+'div class="org-gh"><button type="button" class="org-logo" title="Logo du club" onclick="event.stopPropagation();orgLogoPick('+i+')">'+orgLogoHtml(g)+'</button><input type="color" class="org-col" value="'+esc(g.col)+'" title="Couleur du club" onclick="event.stopPropagation()" onchange="orgGCol('+i+',this.value)"><input value="'+esc(g.nom)+'" onclick="event.stopPropagation()" onchange="orgGName('+i+',this.value)"><button type="button" title="Bloquer ce groupe" onclick="event.stopPropagation();orgLock('+i+')">'+(g.locked?'🔒':'🔓')+'</button><small>'+M.length+'</small></'+'div>'+orgMembersHtml(o,M)+'</'+'div>';}).join('')+'</'+'div>';
     if(ORG.sel.length)h+='<'+'div class="cc-dim">Touche un groupe pour y mettre : '+esc(ORG.sel.join(', '))+'</'+'div>';
     h+='<'+'div class="org-row"><button type="button" class="btn-xs" style="background:#a16207;color:#fff" onclick="orgToChamp()">🏆 Utiliser ces groupes comme clubs du championnat</button></'+'div>';}
   h+='</'+'details>';
@@ -25476,6 +25476,56 @@ orgRender=(function(o){return function(){o.apply(this,arguments);try{const host=
 seanceGroupChips=(function(o){return function(s){const L=o.apply(this,arguments);try{s=s||getActiveSeance();const q=s&&trnSeqOf(s);if(!q||!q.org||!(q.org.fam&&(q.org.fam.groups||[]).length))return L;
   if(!L.some(g=>g.org))return L;let used={};try{used=sbUsedGroupIds(s)||{};}catch(e){}const own=((s.groupes||[]).map(g=>g.id));
   return L.filter(g=>g.org||used[g.id]||own.indexOf(g.id)>=0);}catch(e){return L;}};})(seanceGroupChips);
+
+// ══════════════════════════════════════════════════════════════════════
+// v343 — clubs personnalisés (nom, couleur, logo : emoji ou image) partout :
+// Organisation, séance, championnat, app élève. + étape 5 de la refonte :
+// l'app élève reçoit directement les clubs et niveaux d'Organisation, et
+// « Recopier dans le Sheets » écrit les clubs (et le planning appliqué)
+// dans le Google Sheets de la séquence, dans des onglets à part.
+// ══════════════════════════════════════════════════════════════════════
+const ORG_EMO=['🦁','🐺','🦅','🐯','🐻','🦈','🐉','🦊','🐝','🦉','🐼','🐍','🔥','⚡','🌪️','⭐','🌊','🌋','🚀','🛡️','⚔️','👑','💎','🍀'];
+function orgLogoHtml(g){const l=g&&g.logo;if(!l)return '<span class="org-nologo">＋</span>';if(String(l).indexOf('data:')===0)return '<img src="'+l+'" alt="">';return '<span>'+esc(l)+'</span>';}
+function orgChampSync(q){try{if(!q.champ||!q.champ.fromOrg||!q.org)return;const G=q.org.fam.groups||[];q.champ.clubs.forEach(k=>{const g=G.find(x=>x.id===k.id);if(g){k.nom=g.nom;k.col=g.col;if(g.logo)k.logo=g.logo;else delete k.logo;}});}catch(e){}}
+function orgGEdit(i,fn){const q=orgQ();if(!q)return;seqUpdate(q.id,qq=>{const o=orgOf(qq);const g=o.fam.groups[i];if(!g)return;fn(g);qq.org=o;orgChampSync(qq);});orgRender();}
+orgGName=function(i,v){v=String(v||'').trim();if(!v)return;orgGEdit(i,g=>{g.nom=v;});};
+function orgGCol(i,v){orgGEdit(i,g=>{g.col=v;});}
+function orgLogoPick(i){let o=E('orglogo-ov');if(o)o.remove();o=document.createElement('div');o.id=['orglogo','ov'].join('-');o.className='lib-pick-ov';o.onclick=e=>{if(e.target===o)o.remove();};
+  o.innerHTML='<'+'div class="lib-pick-box"><'+'div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;"><b style="flex:1">Logo du club</b><button type="button" class="btn-xs red" onclick="E(\'orglogo-ov\').remove()">✕</button></'+'div>'
+    +'<'+'div class="org-emos">'+ORG_EMO.map(e=>'<button type="button" onclick="orgLogoSet('+i+',\''+e+'\')">'+e+'</button>').join('')+'</'+'div>'
+    +'<'+'div class="org-row"><label class="btn-xs" style="background:#0e7490;color:#fff;cursor:pointer">🖼 Choisir une image<input type="file" accept="image/*" style="display:none" onchange="orgLogoFile('+i+',this)"></label><button type="button" class="btn-xs" style="background:#334155;color:#fff" onclick="orgLogoSet('+i+',\'\')">Sans logo</button></'+'div></'+'div>';
+  document.body.appendChild(o);}
+function orgLogoSet(i,v){const o=E('orglogo-ov');if(o)o.remove();orgGEdit(i,g=>{if(v)g.logo=v;else delete g.logo;});}
+function orgLogoFile(i,inp){const f=inp.files&&inp.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{const im=new Image();im.onload=()=>{const S=96;const c=document.createElement('canvas');c.width=S;c.height=S;const x=c.getContext('2d');const r=Math.max(S/im.width,S/im.height);const w=im.width*r,h=im.height*r;x.drawImage(im,(S-w)/2,(S-h)/2,w,h);
+    let url='';try{url=c.toDataURL('image/png');if(url.length>60000)url=c.toDataURL('image/jpeg',0.8);}catch(e){}if(url)orgLogoSet(i,url);};im.src=rd.result;};rd.readAsDataURL(f);}
+// logo dans les pastilles de la séance (emoji seulement : ce sont des textes)
+seanceGroupChips=(function(o){return function(s){const L=o.apply(this,arguments);try{s=s||getActiveSeance();const q=s&&trnSeqOf(s);if(!q||!q.org)return L;const G=q.org.fam&&q.org.fam.groups||[];
+  return L.map(g=>{if(!g.org)return g;const id=String(g.id).replace(/^org_/,'').replace(/_\d+$/,'');const og=G.find(x=>x.id===id);if(og&&og.logo&&String(og.logo).indexOf('data:')!==0&&g.label.indexOf(og.logo)!==0)return Object.assign({},g,{label:og.logo+' '+g.label});return g;});}catch(e){return L;}};})(seanceGroupChips);
+// élèves : la pastille du club montre le logo
+orgRender=(function(o){return function(){o.apply(this,arguments);try{const q=orgQ();const host=E('t-org');if(!q||!host||!q.org)return;const G=q.org.fam.groups||[];host.querySelectorAll('.org-g').forEach(el=>{const g=G.find(x=>x.nom===el.textContent);if(g&&g.logo&&String(g.logo).indexOf('data:')!==0)el.textContent=g.logo+' '+g.nom;});
+  // bouton Sheets
+  const card=host.querySelector('.card.org');if(card&&G.length&&!card.querySelector('.org-sheets')){const d=document.createElement('div');d.className='org-row org-sheets';d.innerHTML='<button type="button" class="btn-xs" style="background:#15803d;color:#fff" onclick="orgToSheets()">📤 Recopier les clubs'+((q.org.plan&&q.org.plan.lastApplied)?' et le planning':'')+' dans le Google Sheets</button><span class="cc-dim" id="org-sh-msg"></span>';card.appendChild(d);}}catch(e){}};})(orgRender);
+// étape 5 : app élève alimentée par Organisation
+elPack=(function(o){return function(s){const P=o.apply(this,arguments);try{const q=trnSeqOf(s);const og=q&&q.org;const G=og&&og.fam&&og.fam.groups||[];if(!G.length)return P;
+  const abs=(P.abs||[]);P.clubs=G.map(g=>({id:g.id,nom:g.nom,col:g.col,logo:g.logo||null}));const lv=og.levels||[];
+  if(!(q.champ&&q.champ.fromOrg)){P.cats=lv.slice();P.formes=lv.map((l,i)=>({ids:[i],lab:l}));}
+  P.eleves={};G.forEach(g=>(g.members||[]).forEach(n=>{P.eleves[n]={club:g.id,cat:og.niv&&og.niv[n]!=null?+og.niv[n]:0};}));}catch(e){console.warn('elPack org',e);}return P;};})(elPack);
+// planning appliqué : on le garde pour le Sheets
+plnApply=(function(o){return function(){const R=PLN.res;const q=orgQ();let snap=null;try{if(R&&q){const og=orgOf(q);const p=plnOf(og);snap={sid:p.sid,date:((SEANCES||[]).find(x=>x.id===p.sid)||{}).date,rows:[]};R.X.forEach((row,b)=>{let k=0;row.forEach((ci,t)=>{if(ci<0)return;const m=R.C[t][ci];const rf=(R.d.refs[b]||[])[k++];snap.rows.push([b+1,p.terrains[t].nom,R.T[m.a].lab,R.T[m.b].lab,rf||'']);});});}}catch(e){}
+  const r=o.apply(this,arguments);try{if(snap&&!PLN.res){seqUpdate(q.id,qq=>{qq.org=qq.org||{};qq.org.plan=qq.org.plan||{};qq.org.plan.lastApplied=snap;});}}catch(e){}return r;};})(plnApply);
+async function orgToSheets(){const q=orgQ();if(!q)return;const msg=t=>{const m=E('org-sh-msg');if(m)m.textContent=t;};
+  if(!(q.gs&&q.gs.url)){alert('La séquence n\'est pas reliée à son Google Sheets.');return;}if(!String(gsCfg().passerelle||'').trim()){alert('La passerelle n\'est pas réglée (⚙ Classes → Passerelle).');return;}
+  const og=orgOf(q);const S=orgStudents(og);const by={};S.forEach(x=>by[x.n]=x);const L=[];(og.fam.groups||[]).forEach(g=>(g.members||[]).forEach(n=>{const x=by[n]||{};L.push([n,g.nom,og.niv[n]!=null?og.levels[og.niv[n]]:'',x.sx==='F'?'F':x.sx==='M'?'G':'']);}));
+  msg('⏳ envoi…');const post=async b=>{const r=await fetch(q.gs.url,{method:'POST',body:JSON.stringify(Object.assign({cle:gsCfg().cle},b)),headers:{'Content-Type':'text/plain;charset=utf-8'},redirect:'follow'});const j=JSON.parse(await r.text());if(j.erreur)throw new Error(j.erreur);return j;};
+  try{await post({action:'lignes',onglet:'Clubs (app)',entetes:['Élève','Club','Niveau','Sexe'],cles:['Élève'],lignes:L});let n2=0;
+    const pa=og.plan&&og.plan.lastApplied;if(pa&&pa.rows&&pa.rows.length){const rows=pa.rows.map(r=>[pa.date||'',r[0],r[1],r[2]+' – '+r[3],r[4]]);await post({action:'lignes',onglet:'Planning (app)',entetes:['Date','Bloc','Terrain','Match','Arbitre'],cles:['Date','Bloc','Terrain'],lignes:rows});n2=rows.length;}
+    msg('✅ '+L.length+' élèves'+(n2?' et '+n2+' matchs':'')+' recopiés (onglets « Clubs (app) »'+(n2?' et « Planning (app) »':'')+')');}
+  catch(e){msg('⚠️ '+e.message);}}
+(function(){const st=document.createElement('style');st.textContent=
+ 'html body .org-logo{width:40px;height:40px;border-radius:10px;border:1px dashed #475569;background:#111827;display:flex;align-items:center;justify-content:center;font-size:1.4rem;padding:0;overflow:hidden;cursor:pointer;flex:0 0 40px;}html body .org-logo img{width:100%;height:100%;object-fit:cover;}html body .org-nologo{color:#64748b;font-size:1rem;}'
++'html body .org-col{width:34px !important;height:34px;border:none;background:none;padding:0;cursor:pointer;flex:0 0 34px;}'
++'html body .org-emos{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;margin-bottom:10px;}html body .org-emos button{font-size:1.6rem;min-height:48px;border-radius:10px;border:1px solid #334155;background:#111827;cursor:pointer;}';
+document.head.appendChild(st);})();
 </script>
 </body>
 </html>
