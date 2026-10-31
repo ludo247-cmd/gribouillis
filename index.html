@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v348</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v349</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v348</title>
+<title>Gribouillis EPS v349</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -25850,6 +25850,94 @@ drawFieldOnCtx=(function(f){return function(C,cx2,sport,isTeam2,forBilan){const 
 +'html body #float-ctl.run #btn-mt,html body #float-ctl.run button[onclick="stopMatch()"],html body #float-ctl.run #btn-obssimple,html body #float-ctl.run #btn-rkcloud,html body #float-ctl.run button[onclick="toggleFS()"],html body #float-ctl.run button[onclick="quitToSetup()"]{display:none !important;}';
 document.head.appendChild(st);})();
 try{setTimeout(function(){try{const f=E('preset-filter');if(f&&f.parentElement)f.parentElement.style.display='none';updateFooter();}catch(e){}},500);}catch(e){}
+
+// ══════════════════════════════════════════════════════════════════════
+// v349 — outil d'observation :
+// • TEMPS sans bouton dédié : la possession démarre seule (2 équipes : à la
+//   perte de l'autre ; 1 équipe : dès qu'on commence à tracer) ; bouton
+//   « Récup » retiré de la barre ; nouveaux observables pour les ratios
+//   perso : « Tirs rapides » / « Buts rapides » (≤ N s après la récup,
+//   N réglable) → objectifs liés au temps ;
+// • pause : bouton « Boutons seuls », stats individuelles sous les équipes ;
+// • écran « boutons seuls » plein cadre ; bilan : Accueil plus caché ;
+// • Qui joue › Libres : seulement les équipes génériques (couleurs) ;
+//   « Profil différent pour l'équipe 2 » visible en mode 2 équipes ;
+// • Qui joue › 🏆 Championnat : les matchs du jour du championnat de la
+//   séquence ; un match = joueurs des 2 équipes (observation individuelle)
+//   et score renvoyé au championnat à la fin.
+// ══════════════════════════════════════════════════════════════════════
+if(CFG.rapSec==null)CFG.rapSec=6;
+function rapSec(){return Math.max(1,+CFG.rapSec||6);}
+CR_CRITERIA.push({key:'tirsRap',label:'⏱ Tirs rapides (≤ N s après la récup)'},{key:'butsRap',label:'⏱ Buts rapides (≤ N s après la récup)'});
+obsTimeMark=(function(f){return function(ti,btn){const r=f.apply(this,arguments);try{const ev=tEvents[ti][tEvents[ti].length-1];const s=tStats[ti];if(ev&&s&&ev.t0!=null&&ev.tt!=null&&(ev.k==='tir'||ev.k==='but')){const d=ev.tt-ev.t0;ev.rd=d;if(d<=rapSec()){s.tirsRap=(s.tirsRap||0)+1;if(ev.k==='but')s.butsRap=(s.butsRap||0)+1;}}
+  if(ev&&s){ev.tirsRap=s.tirsRap||0;ev.butsRap=s.butsRap||0;}}catch(e){}return r;};})(obsTimeMark);
+obsTimeStats=(function(f){return function(ti,evs,open){const r=f.apply(this,arguments);try{if(r){let n=0,t=0;(evs||[]).forEach(e=>{if(e.t0==null||e.tt==null)return;if(e.k==='tir'||e.k==='but'){t++;if(e.tt-e.t0<=rapSec())n++;}});r.rap={n:n,of:t};}}catch(e){}return r;};})(obsTimeStats);
+obsTimeLine=(function(f){return function(t){const L=f.apply(this,arguments);try{if(t&&t.rap&&t.rap.of&&Array.isArray(L))L.push('Tirs en ≤ '+rapSec()+' s : <b>'+t.rap.n+' / '+t.rap.of+'</b>');}catch(e){}return L;};})(obsTimeLine);
+getCriteriaLabel=(function(f){return function(k){if(k==='tirsRap')return '⏱ Tirs en ≤ '+rapSec()+' s';if(k==='butsRap')return '⏱ Buts en ≤ '+rapSec()+' s';return f.apply(this,arguments);};})(getCriteriaLabel);
+renderCustomRatios=(function(f){return function(){const r=f.apply(this,arguments);try{const el=E('custom-ratios-list');if(el){el.querySelectorAll('option').forEach(o=>{if(o.value==='tirsRap')o.textContent='⏱ Tirs en ≤ '+rapSec()+' s après la récup';if(o.value==='butsRap')o.textContent='⏱ Buts en ≤ '+rapSec()+' s après la récup';});
+  const d=document.createElement('div');d.className='rap-set';d.innerHTML='⏱ « Rapide » = en moins de <input type="number" min="1" max="60" value="'+rapSec()+'" onchange="CFG.rapSec=Math.max(1,+this.value||6);saveConfig();renderCustomRatios()"> s après la récupération du ballon <span>(temps mesuré tout seul : pas de bouton à toucher)</span>';el.insertBefore(d,el.firstChild);}}catch(e){}return r;};})(renderCustomRatios);
+// la possession démarre toute seule quand on commence à tracer
+(function(){function hook(){try{if(typeof canvas==='undefined'||!canvas||canvas._rapHook)return;canvas._rapHook=true;canvas.addEventListener('pointerdown',function(){try{if(!timerOn||obsSimpleOn()||isRacket())return;if(OBS_T.start[curT]==null)OBS_T.start[curT]=obsNow();}catch(e){}},true);}catch(e){}}hook();setTimeout(hook,1500);})();
+// pause : boutons seuls + stats individuelles visibles d'emblée
+function pzSimpleSync(){const b=E('pz-simple');if(b){const on=obsSimpleOn();b.textContent=on?'✋ Boutons seuls : OUI':'✋ Boutons seuls : non';b.style.background=on?'rgba(22,163,74,.92)':'rgba(51,65,85,.92)';}}
+(function(){try{const pb=document.querySelector('#pause-ov .pause-btns');if(pb&&!E('pz-simple')){const b=document.createElement('button');b.className='btn-fp';b.id=['pz','simple'].join('-');b.onclick=function(){obsSimpleToggle();pzSimpleSync();};pb.appendChild(b);pzSimpleSync();}}catch(e){}})();
+obsSimpleRefresh=(function(f){return function(){const r=f.apply(this,arguments);try{pzSimpleSync();}catch(e){}return r;};})(obsSimpleRefresh);
+buildPauseStats=(function(f){return function(showResume){if(pauseStatsMode==='indiv')return f.apply(this,arguments);let ind=null;
+  try{const m=computePlayerStatsMap();if(m&&Object.keys(m).length){pauseStatsMode='indiv';f.apply(this,arguments);ind=[...E('pause-grid').childNodes];}}catch(e){ind=null;}pauseStatsMode='team';
+  const r=f.apply(this,arguments);try{pzSimpleSync();if(ind&&ind.length){const g=E('pause-grid');const h=document.createElement('div');h.className='pz-ind-t';h.textContent='📊 Statistiques individuelles';g.appendChild(h);ind.forEach(n=>{if(n.style)n.style.flexBasis='100%';g.appendChild(n);});}}catch(e){}return r;};})(buildPauseStats);
+// Qui joue › Libres : équipes génériques
+const LIBT_KEY='grib_lib_teams';
+function libtIds(){let L=null;try{L=JSON.parse(localStorage.getItem(LIBT_KEY)||'null');}catch(e){}if(Array.isArray(L))return L.filter(id=>teams.some(t=>t.id===id));
+  const G=['jaune','rouge','bleu','vert','orange','blanc','noir','violet','rose','gris'];L=teams.filter(t=>G.indexOf(stripAccents(String(t.name)).trim().toLowerCase())>=0).slice(0,4).map(t=>t.id);
+  if(L.length<2){['Rouge','Bleu'].forEach(n=>{if(L.length<2){const t=calEnsureTeam(n,n);if(L.indexOf(t.id)<0)L.push(t.id);}});try{saveTeams();}catch(e){}}
+  try{localStorage.setItem(LIBT_KEY,JSON.stringify(L));}catch(e){}return L;}
+function libtSave(L){try{localStorage.setItem(LIBT_KEY,JSON.stringify(L));}catch(e){}}
+addTeam=(function(f){return function(){const before=teams.map(t=>t.id);const r=f.apply(this,arguments);try{const L=libtIds();teams.forEach(t=>{if(before.indexOf(t.id)<0&&L.indexOf(t.id)<0)L.push(t.id);});libtSave(L);eqChips();renderTeams();}catch(e){}return r;};})(addTeam);
+eqChips=(function(f){return function(){const all=teams;let r;try{const L=libtIds();const s1=E('sel-t1'),s2=E('sel-t2');const keep=[s1&&s1.value,CFG.gameMode==='2eq'&&s2&&s2.value].filter(Boolean);
+  teams=all.filter(t=>L.indexOf(t.id)>=0||keep.indexOf(String(t.id))>=0);r=f.apply(this,arguments);}finally{teams=all;}
+  try{const L=libtIds();const ed=E('team-editor');if(ed){const rows=ed.querySelectorAll('.team-row');all.forEach((t,i)=>{if(rows[i])rows[i].style.display=L.indexOf(t.id)>=0?'':'none';});}
+    const box=E('eq-chips');if(box&&!box.querySelector('.eq-note')){const n=document.createElement('div');n.className='eq-note';n.textContent='Équipes génériques. Les équipes des compositions, du calendrier et du championnat se choisissent dans leurs onglets.';box.appendChild(n);}}catch(e){}return r;};})(eqChips);
+// profil différent pour l'équipe 2 : sous les profils, en mode 2 équipes
+function qjSplitMount(){try{let w=E('qj-split');if(!w){const st=E('qj-status');if(!st)return;w=document.createElement('div');w.id=['qj','split'].join('-');st.insertAdjacentElement('afterend',w);
+    const cb=E('split-teams-settings');const row=cb&&cb.closest('.check-row');if(row)w.appendChild(row);const t2=E('team2-preset-wrap');if(t2)w.appendChild(t2);}
+  w.style.display=CFG.gameMode==='2eq'?'':'none';}catch(e){}}
+qjStatus=(function(f){return function(){const r=f.apply(this,arguments);qjSplitMount();return r;};})(qjStatus);
+// Qui joue › 🏆 Championnat
+const CHQ={qid:null,ji:null};
+function chqSeqs(){const c=clsActive();if(!c)return [];return seqAll().filter(q=>q.classeId===c.id&&q.champ&&q.champ.on&&Array.isArray(q.champ.jours)&&q.champ.jours.some(J=>(J.m||[]).length));}
+qjTabsAvail=(function(f){return function(){const L=f.apply(this,arguments);try{if(chqSeqs().length)L.unshift(['chq','🏆 Championnat']);}catch(e){}return L;};})(qjTabsAvail);
+function chqRender(){let p=E('qj-p-chq');if(!p){const lib=E('qj-p-libre');if(!lib)return;p=document.createElement('div');p.className='qj-pane';p.id=['qj','p','chq'].join('-');lib.insertAdjacentElement('beforebegin',p);}
+  const L=chqSeqs();if(!L.length){p.innerHTML='';return;}let q=L.find(x=>x.id===CHQ.qid)||L[0];CHQ.qid=q.id;const c=q.champ;const t=edtToday();
+  const idx=c.jours.map((J,i)=>i).filter(i=>(c.jours[i].m||[]).length);let ji=CHQ.ji!=null&&idx.indexOf(CHQ.ji)>=0?CHQ.ji:(idx.find(i=>c.jours[i].date===t)??idx.find(i=>c.jours[i].date>t)??idx[idx.length-1]);CHQ.ji=ji;
+  const J=c.jours[ji];const k=idx.indexOf(ji);
+  let h=(L.length>1?'<select onchange="CHQ.qid=this.value;CHQ.ji=null;chqRender()">'+L.map(x=>'<option value="'+esc(x.id)+'"'+(x.id===q.id?' selected':'')+'>'+esc(x.nom||x.sport)+'</option>').join('')+'</select>':'')
+    +'<'+'div class="chq-day"><button type="button" class="btn-xs"'+(k>0?'':' disabled')+' onclick="CHQ.ji='+(idx[k-1])+';chqRender()">◀</button><b>'+esc(seanceDateFr(J.date))+(J.date===t?' · aujourd\'hui':'')+'</b><button type="button" class="btn-xs"'+(k<idx.length-1?'':' disabled')+' onclick="CHQ.ji='+(idx[k+1])+';chqRender()">▶</button></'+'div>'
+    +'<'+'div class="cal-vs" style="font-size:.78rem;">Touchez un match : les joueurs des 2 équipes sont chargés (observation individuelle) et le score revient au championnat à la fin.</'+'div>';
+  let lastB=null;(J.m||[]).forEach((m,mi)=>{const A=chpClub(c,m.a),B=chpClub(c,m.b);const sc=(m.sa!==''&&m.sa!=null);if(m.bloc!=null&&m.bloc!==lastB){lastB=m.bloc;h+='<'+'div class="chq-bl">Bloc '+(m.bloc+1)+'</'+'div>';}
+    h+='<button type="button" class="qj-team chq-m'+(sc?' done':'')+'" onclick="chqGo('+ji+','+mi+')"><span class="qj-n"><span style="color:'+esc(A.col||'#fff')+'">'+esc(A.nom)+'</span> – <span style="color:'+esc(B.col||'#fff')+'">'+esc(B.nom)+'</span></span><span class="cal-vs">'+esc(c.niv[+m.niv]||'')+(m.ter?' · '+esc(m.ter):'')+'</span>'+(sc?'<span class="qj-badge" style="background:#15803d;">'+esc(String(m.sa))+' – '+esc(String(m.sb))+'</span>':'')+'</button>';});
+  p.innerHTML=h;}
+function chqGo(ji,mi){const q=seqGet(CHQ.qid);if(!q)return;const c=q.champ;const m=c.jours[ji]&&c.jours[ji].m[mi];if(!m)return;
+  if(m.sa!==''&&m.sa!=null&&!confirm('Ce match a déjà un score ('+m.sa+' – '+m.sb+'). L\'observer quand même ? (le score noté ne sera pas remplacé)'))return;
+  try{if(q.sport&&CFG.apsa!==q.sport&&document.querySelector('.apsa-btn[data-apsa="'+q.sport+'"]'))qjGoSport(q.sport);}catch(e){}
+  try{[m.a,m.b].forEach(id=>{const k=chpClub(c,id);calEnsureTeam(k.nom,k.nom);});saveTeams();renderTeams();}catch(e){}trnLaunch(q.id,ji,mi);}
+qjRender=(function(f){return function(){const r=f.apply(this,arguments);try{chqRender();const on=!!document.querySelector('#qj-tabs button.on')&&/Championnat/.test(document.querySelector('#qj-tabs button.on').textContent);const p=E('qj-p-chq');if(p)p.classList.toggle('on',on);
+  if(on)['cal','clubs','compo','libre'].forEach(k=>{const x=E('qj-p-'+k);if(x)x.classList.remove('on');});}catch(e){console.warn('chq',e);}return r;};})(qjRender);
+// joueurs d'un match du championnat d'Organisation : clubs et niveaux d'Organisation
+trnSides=(function(f){return function(q,k,t,J,m){try{if(k==='chp'&&q&&q.org&&t.fromOrg){const o=orgOf(q);const abs=J.abs||[];const all=t.niv[+m.niv]==='Club entier';
+  const M=id=>{const g=(o.fam.groups||[]).find(x=>x.id===id);return g?(g.members||[]).filter(n=>abs.indexOf(n)<0&&(all||(o.niv[n]!=null?+o.niv[n]:0)===+m.niv)):[];};return [M(m.a),M(m.b)];}}catch(e){}return f.apply(this,arguments);};})(trnSides);
+
+eqDistinct=(function(f){return function(){try{const s1=E('sel-t1'),s2=E('sel-t2');if(CFG.gameMode==='2eq'&&s1&&s2&&s1.value===s2.value&&!(EQ.prev.t1!=null&&s1.value!==EQ.prev.t1)){const L=libtIds();const id=L.find(x=>String(x)!==s1.value);if(id!=null){s2.value=String(id);EQ.prev={t1:s1.value,t2:s2.value};return;}}}catch(e){}return f.apply(this,arguments);};})(eqDistinct);
+// boutons seuls en 2 équipes : la possession se mesure seule, pas de bouton « Récup »
+obsSimpleHtml=(function(f){return function(){let h=f.apply(this,arguments);try{if(CFG.gameMode==='2eq')h=h.replace(/<button type="button" class="os-rec" onclick="obsRecup\(\)">[\s\S]*?<\/button>/,'');else h=h.replace('⚡ Récupération : début de la possession','⚡ Nous récupérons le ballon <small>(facultatif : pour mesurer le temps des possessions)</small>');}catch(e){}return h;};})(obsSimpleHtml);
+(function(){const st=document.createElement('style');st.textContent=
+ 'html body #btn-recup{display:none !important;}'
++'html body .rap-set{background:#0f172a;border:1px solid #1e3a5f;border-radius:10px;padding:8px 10px;margin-bottom:8px;font-size:.8rem;}html body .rap-set input{width:56px;display:inline-block;margin:0 4px;}html body .rap-set span{display:block;color:var(--dim2);font-size:.7rem;margin-top:3px;}'
++'html body .pz-ind-t{flex-basis:100%;text-align:center;font-weight:800;color:#e2e8f0;margin:10px 0 2px;}'
++'html body #obs-simple:not(.rk){left:0;right:0;top:0;bottom:0;border-radius:0;background:#0b1220;padding:58px 14px 78px;}html body #obs-simple:not(.rk) .os-g{flex:1;grid-auto-rows:minmax(96px,1fr);}'
++'html body #s-summary .sum-hdr{padding-right:52px;}'
++'html body .eq-note{font-size:.7rem;color:var(--dim2);margin-top:2px;}html body #qj-split{margin-top:8px;}'
++'html body .chq-day{display:flex;align-items:center;gap:10px;margin:4px 0 6px;}html body .chq-bl{font-size:.7rem;font-weight:800;color:#93c5fd;text-transform:uppercase;margin-top:8px;}html body .chq-m.done{opacity:.6;}html body #qj-p-chq select{margin-bottom:6px;}';
+document.head.appendChild(st);})();
 </script>
 </body>
 </html>
