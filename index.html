@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v352</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v353</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v352</title>
+<title>Gribouillis EPS v353</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -26031,6 +26031,84 @@ chsSuivi=(function(f){return function(q,o){let h=f.apply(this,arguments);try{con
 +'html body .seq-fps-row{display:flex;flex-wrap:wrap;gap:6px;}html body .seq-fps-row button{min-height:38px;border-radius:19px;border:1px solid #334155;background:#111827;color:#e2e8f0;padding:0 12px;cursor:pointer;font-weight:600;}html body .seq-fps-row button.on{background:#166534;border-color:#22c55e;color:#fff;}'
 +'html body .seq-fps-it{display:flex;flex-direction:column;gap:2px;padding:6px 8px;border-left:3px solid #22c55e;background:#0f172a;border-radius:6px;}html body .seq-fps-it small{color:#94a3b8;font-size:.74rem;}'
 +'html body .chs-fps{min-height:34px;max-width:100%;}html body .chs-fps-f{flex-basis:100%;color:#93c5fd;font-size:.74rem;}';document.head.appendChild(st);})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v353 — la FPS se règle SOUS L'OBJET D'ENSEIGNEMENT (onglet Séquences) :
+// FPS de l'objet, aménagements propres à la séquence (format, règles et
+// contraintes, comptage des points, rôles, critères, temps de jeu), profil
+// d'observation, barème du championnat, liens Drive / NotebookLM de l'APSA.
+// Les blocs de match durent : périodes × durée + pauses + 5 min de mise en
+// place. Séance : plus d'horaires affichés.
+// ══════════════════════════════════════════════════════════════════════
+seqFpsHtml=(function(f){return function(){return '';};})(seqFpsHtml);
+function fpsA(q,oe){return ((q&&q.fpsA)||{})[oe]||null;}
+function fpsForOe(q,oe){const C=seqFpsCands(q);const a=fpsA(q,oe);if(a&&a.id&&C.some(x=>x.id===a.id))return a.id;const f=C.find(x=>x.oe===oe);return f?f.id:(C[0]?C[0].id:null);}
+seqFpsIds=(function(f){return function(q){try{if(q&&!q.ref&&(q.oeIds||[]).length){const out=[];(q.oeIds||[]).forEach(oe=>{const id=fpsForOe(q,oe);if(id&&out.indexOf(id)<0)out.push(id);});if(out.length)return out;}}catch(e){}return f.apply(this,arguments);};})(seqFpsIds);
+function fpsLines(v){return Array.isArray(v)?v.map(x=>String(x)):(v?String(v).split('\n'):[]);}
+// FPS effective = FPS de la bibliothèque + aménagements de la séquence
+function fpsEff(q,libId){const it=libLoad().find(x=>x.id===libId);if(!it)return null;const oe=(q.oeIds||[]).find(o=>fpsForOe(q,o)===libId);const a=(oe&&fpsA(q,oe)&&fpsA(q,oe).id===libId)?(fpsA(q,oe).adapt||{}):{};
+  const cfg=JSON.parse(JSON.stringify(it.cfg||{}));['points','emblematiques','etayage'].forEach(k=>{if(!Array.isArray(cfg[k]))cfg[k]=[];if(Array.isArray(a[k]))cfg[k]=a[k].slice();});
+  if(!cfg.nom)cfg.nom=it.titre;if(a.format!=null)cfg.format=a.format;cfg.profile=a.profile||cfg.profile||it.profile;
+  let cr=[];try{cr=Array.isArray(it.criteres)?JSON.parse(JSON.stringify(it.criteres)):[];}catch(e){}if(Array.isArray(a.criteres))cr=a.criteres;
+  const m=fpsMin(it)||5;const jeu=Object.assign({p:1,d:m,pause:0},a.jeu||{});
+  return {it:it,oe:oe,cfg:cfg,criteres:cr,jeu:jeu,titre:it.titre,format:cfg.format||it.desc||''};}
+function fpsBlocMin(e){if(!e)return null;const j=e.jeu;return Math.round((+j.p||1)*(+j.d||0)+Math.max(0,(+j.p||1)-1)*(+j.pause||0)+5);}
+function fpsCrTxt(c){return String(c.label||'')+(c.cible!=null&&c.cible!==''?' '+(c.neg?'≤':'≥')+' '+c.cible:'');}
+function fpsCrParse(t){return String(t||'').split('\n').map(x=>x.trim()).filter(Boolean).map(x=>{const m=/^(.*?)\s*(≥|≤|>=|<=)\s*([\d.,]+)\s*%?\s*$/.exec(x);return m?{label:m[1].trim(),cible:+m[3].replace(',','.'),neg:/≤|<=/.test(m[2]),collectif:true}:{label:x,cible:'',neg:false,collectif:true};});}
+function fpsSet(qid,oe,k,v){seqUpdate(qid,q=>{q.fpsA=q.fpsA||{};const cur=q.fpsA[oe]||{};
+  if(k==='id'){q.fpsA[oe]={id:v,adapt:{}};return;}
+  if(!cur.id)cur.id=fpsForOe(q,oe);cur.adapt=cur.adapt||{};const a=cur.adapt;
+  if(k==='reset'){cur.adapt={};}
+  else if(k==='format')a.format=String(v||'');
+  else if(k==='points'||k==='emblematiques'||k==='etayage')a[k]=String(v||'').split('\n').map(x=>x.trim()).filter(Boolean);
+  else if(k==='criteres')a.criteres=fpsCrParse(v);
+  else if(k==='profile')a.profile=v;
+  else if(/^jeu\./.test(k)){a.jeu=a.jeu||{};a.jeu[k.slice(4)]=Math.max(0,+String(v).replace(',','.')||0);}
+  q.fpsA[oe]=cur;});renderSeqTab();}
+function apsaRes(sp){CFG.apsaRes=CFG.apsaRes||{};return CFG.apsaRes[fpsNormSp(sp)]||{};}
+function apsaResSet(sp,k,v){CFG.apsaRes=CFG.apsaRes||{};const key=fpsNormSp(sp);CFG.apsaRes[key]=Object.assign({},CFG.apsaRes[key]||{});CFG.apsaRes[key][k]=String(v||'').trim();try{saveConfig();}catch(e){}renderSeqTab();}
+function seqBarSet(qid,k,v){seqUpdate(qid,q=>{chpEnsure(q);const c=q.champ;if(!c.bar)c.bar={v:4,n:2,d:1,b1:1,b2:2,seuil:4};c.bar[k]=Math.max(0,+v||0);});renderSeqTab();}
+function fpsProfEdit(name){try{const P=CFG.savedPresets||[];const i=P.findIndex(p=>p&&p.name===name);if(i>=0)applyNamedPreset(i);}catch(e){}goToProfilesConsole();}
+function seqOeFpsHtml(q){const C=seqFpsCands(q);const qi=esc(q.id);const sd=seqSd(q);const r=apsaRes(q.sport);const sp=esc(q.sport||'');
+  const link=(k,lab,ph)=>'<'+'div class="sof-l"><span>'+lab+'</span><input value="'+esc(r[k]||'')+'" placeholder="'+esc(ph)+'" onchange="apsaResSet(\''+sp+'\',\''+k+'\',this.value)">'+(r[k]?'<a class="btn-xs" href="'+esc(r[k])+'" target="_blank" rel="noopener">Ouvrir ↗</a>':'')+'</'+'div>';
+  let h='<'+'div class="sof"><'+'div class="sof-res"><b>📚 Mes ressources '+esc(q.sport||'')+'</b>'+link('drive','📁 Google Drive','lien du dossier Drive de l\'APSA')+link('nb','📓 NotebookLM','lien du carnet NotebookLM')+'</'+'div>';
+  (q.oeIds||[]).forEach(oe=>{const o=(sd&&sd.oe||[]).find(x=>x.id===oe);const id=fpsForOe(q,oe);const e=id?fpsEff(q,id):null;const oi=esc(oe);
+    h+='<'+'details class="sof-oe" open><summary>⚽ FPS de « '+esc(o?(o.short||o.label):oe)+' »'+(e?' : <b>'+esc(e.titre)+'</b>':'')+'</summary>';
+    if(!C.length){h+='<'+'div class="cc-dim">Aucune FPS de '+esc(q.sport||'')+' dans ta bibliothèque.</'+'div></'+'details>';return;}
+    h+='<'+'div class="sof-r"><span>FPS</span><select onchange="fpsSet(\''+qi+'\',\''+oi+'\',\'id\',this.value)">'+C.map(x=>'<option value="'+esc(x.id)+'"'+(x.id===id?' selected':'')+'>'+esc(x.titre)+(x.oe===oe?' ★':'')+'</option>').join('')+'</select></'+'div>';
+    if(!e){h+='</'+'details>';return;}
+    const ta=(k,lab,v,rows)=>'<'+'div class="sof-r"><span>'+lab+'</span><textarea rows="'+(rows||3)+'" onchange="fpsSet(\''+qi+'\',\''+oi+'\',\''+k+'\',this.value)">'+esc(v)+'</textarea></'+'div>';
+    const num=(k,lab,v,u)=>'<label>'+lab+' <input type="number" min="0" step="0.5" value="'+esc(String(v))+'" onchange="fpsSet(\''+qi+'\',\''+oi+'\',\'jeu.'+k+'\',this.value)"> '+u+'</label>';
+    h+='<'+'div class="sof-r"><span>Temps de jeu</span><'+'div class="sof-jeu">'+num('p','',e.jeu.p,'période(s) de')+num('d','',e.jeu.d,'min')+num('pause','· pause',e.jeu.pause,'min')+'<b>→ bloc ≈ '+fpsBlocMin(e)+' min</b><small>(avec 5 min de mise en place)</small></'+'div></'+'div>';
+    h+=ta('format','Format, terrain',e.cfg.format||'',2)+ta('emblematiques','Règles et contraintes',fpsLines(e.cfg.emblematiques).join('\n'),4)+ta('points','Comptage des points',fpsLines(e.cfg.points).join('\n'),3)+ta('etayage','Rôles, étayage',fpsLines(e.cfg.etayage).join('\n'),3)
+      +ta('criteres','Critères de réussite <small>(une ligne : « critère ≥ 60 »)</small>',e.criteres.map(fpsCrTxt).join('\n'),3);
+    const P=(CFG.savedPresets||[]).filter(p=>p&&p.name&&(!p.apsaKey||fpsNormSp(p.apsaKey)===fpsNormSp(q.sport)));
+    h+='<'+'div class="sof-r"><span>Profil d\'observation</span><'+'div class="sof-jeu"><select onchange="fpsSet(\''+qi+'\',\''+oi+'\',\'profile\',this.value)">'+P.map(p=>'<option'+(p.name===e.cfg.profile?' selected':'')+'>'+esc(p.name)+'</option>').join('')+(P.some(p=>p.name===e.cfg.profile)?'':'<option selected>'+esc(e.cfg.profile||'—')+'</option>')+'</select><button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="fpsProfEdit(\''+esc(String(e.cfg.profile||'')).replace(/'/g,"\\'")+'\')">✏️ Modifier ce profil</button></'+'div></'+'div>';
+    h+='<'+'div class="sof-r"><span></span><button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="if(confirm(\'Revenir à la FPS de la bibliothèque (sans tes aménagements) ?\'))fpsSet(\''+qi+'\',\''+oi+'\',\'reset\')">↺ Revenir à la FPS d\'origine</button><small class="cc-dim">Tes aménagements ne valent que pour cette séquence.</small></'+'div></'+'details>';});
+  const B=(q.champ&&q.champ.bar)||{v:4,n:2,d:1};const bn=(k,lab)=>'<label>'+lab+' <input type="number" min="0" value="'+esc(String(B[k]!=null?B[k]:''))+'" onchange="seqBarSet(\''+qi+'\',\''+k+'\',this.value)"></label>';
+  h+='<'+'div class="sof-ch"><b>🏆 Championnat : points au classement</b><'+'div class="sof-jeu">'+bn('v','Victoire')+bn('n','Nul')+bn('d','Défaite')+'</'+'div><small class="cc-dim">Les clubs, groupes et le planning des matchs se font dans l\'onglet Organisation.</small></'+'div>';
+  return h+'</'+'div>';}
+renderSeqTab=(function(f){return function(){const r=f.apply(this,arguments);try{const q=SEQ_UI.open?seqGet(SEQ_UI.open):null;if(!q||q.ref||!(q.oeIds||[]).length)return r;const host=E('seq-console');if(!host||host.querySelector('.sof'))return r;
+  const row=[...host.querySelectorAll('.remed-chip-row')].find(x=>x.querySelector('[data-oe]'));if(!row)return r;const d=document.createElement('div');d.innerHTML=seqOeFpsHtml(q);row.insertAdjacentElement('afterend',d.firstChild);}catch(e){console.warn('sof',e);}return r;};})(renderSeqTab);
+// les blocs reçoivent la FPS aménagée et durent le temps de jeu de la FPS
+chsFill=(function(f){return function(sid){const r=f.apply(this,arguments);try{const s=(SEANCES||[]).find(x=>x.id===sid);const q=s&&trnSeqOf(s);if(!s||!q||!s.chpBloc)return r;const qq=seqGet(q.id);let ch=false;const durs={};
+  Object.keys(s.chpBloc).forEach(ak=>{const cfg=s.matchCfg&&s.matchCfg[ak];if(!cfg||!cfg.fpsId)return;const e=fpsEff(qq,cfg.fpsId);if(!e)return;const keep={groupes:cfg.groupes,eleves:cfg.eleves,scoreOnly:cfg.scoreOnly,terrain:cfg.terrain,fpsId:cfg.fpsId};
+    const c=JSON.parse(JSON.stringify(e.cfg));Object.keys(keep).forEach(k=>{if(keep[k]!==undefined)c[k]=keep[k];});c.criteres=e.criteres;c.jeu=e.jeu;s.matchCfg[ak]=c;ch=true;const sk=ak.split('~')[0];durs[sk]=Math.max(durs[sk]||0,fpsBlocMin(e)||0);});
+  s.steps.forEach(st=>{if(durs[st.key])st.dur=durs[st.key];});if(ch){saveSeances();try{renderSeanceTab();}catch(e){}}}catch(e){console.warn('fps adapt fill',e);}return r;};})(chsFill);
+fpsApplyProfile=(function(f){return function(it){try{const q=seqGet(CHQ.qid);if(q&&it){const e=fpsEff(q,it.id);if(e)return f.call(this,{profile:e.cfg.profile});}}catch(e){}return f.apply(this,arguments);};})(fpsApplyProfile);
+// Organisation : la durée des blocs vient de la FPS
+orgRender=(function(f){return function(){const r=f.apply(this,arguments);try{const q=orgQ();const box=document.querySelector('#t-org .org-chs');if(!q||!box)return r;const F=seqFpsIds(q).map(id=>fpsEff(q,id)).filter(Boolean);if(!F.length)return r;
+  const mx=Math.max.apply(null,F.map(fpsBlocMin));box.querySelectorAll('.org-row').forEach(rw=>{if(/de/.test(rw.textContent)&&/min/.test(rw.textContent)&&rw.querySelector('[onclick*="dur"]')){[...rw.childNodes].forEach(n=>{const t=n.textContent||'';if((n.getAttribute&&/dur/.test(n.getAttribute('onclick')||''))||/^\s*de\s*$/.test(t)||/min$/.test(t.trim()))n.remove();});const sp=document.createElement('span');sp.className='cc-dim';sp.textContent='· blocs de ≈ '+mx+' min (temps de jeu de la FPS + 5 min)';rw.appendChild(sp);}});
+  box.querySelectorAll('.chs-fps-f').forEach((sm,i)=>{const sel=sm.parentElement.querySelector('.chs-fps');const e=sel?fpsEff(q,sel.value):null;if(e)sm.textContent=[e.cfg.format?String(e.cfg.format).split('·').slice(0,2).join('·'):'',e.jeu.p+' × '+e.jeu.d+' min'].filter(Boolean).join(' · ');});}catch(e){console.warn('org fps dur',e);}return r;};})(orgRender);
+chsSuivi=(function(f){return function(q,o){let h=f.apply(this,arguments);try{const F=seqFpsIds(q).map(id=>fpsEff(q,id)).filter(Boolean);h=h.replace(new RegExp('<'+'div class="chs-sub">Critères de réussite[\\s\\S]*</details>$'),'</'+'details>');
+  if(F.length)h=h.replace(/<\/details>$/,'<'+'div class="chs-sub">Critères de réussite (FPS de la séquence)</'+'div>'+F.map(e=>'<'+'div class="chs-day"><b>⚽ '+esc(e.titre)+'</b>'+e.criteres.map(c=>'<span>🎯 '+esc(fpsCrTxt(c))+'</span>').join('')+'</'+'div>').join('')+'</'+'details>');}catch(e){}return h;};})(chsSuivi);
+(function(){const st=document.createElement('style');st.textContent='html body .sb-title .sb-start,html body .sb-title .sb-end,html body #sb-root .sb-time{display:none !important;}'
++'html body .sof{display:flex;flex-direction:column;gap:10px;margin:10px 0;}html body .sof-res,html body .sof-ch{padding:10px;border:1px solid #1e3a5f;border-radius:12px;background:#0b1730;display:flex;flex-direction:column;gap:6px;}'
++'html body .sof-l{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:.8rem;}html body .sof-l span{width:130px;}html body .sof-l input{flex:1 1 240px;min-height:34px;background:#0f172a;border:1px solid #334155;color:#fff;border-radius:8px;padding:0 8px;}html body .sof-l a{background:#1d4ed8;color:#fff;text-decoration:none;}'
++'html body .sof-oe{border:2px solid #166534;border-radius:12px;padding:8px 10px;background:#06170e;}html body .sof-oe summary{cursor:pointer;font-weight:700;min-height:34px;}html body .sof-oe[open]{display:flex;flex-direction:column;gap:8px;}'
++'html body .sof-r{display:flex;gap:8px;align-items:flex-start;flex-wrap:wrap;font-size:.8rem;}html body .sof-r > span{width:150px;color:#cbd5e1;padding-top:6px;}html body .sof-r textarea,html body .sof-r > select{flex:1 1 300px;background:#0f172a;border:1px solid #334155;color:#fff;border-radius:8px;padding:6px 8px;font-size:.8rem;min-height:34px;}'
++'html body .sof-jeu{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}html body .sof-jeu input{width:62px;min-height:32px;background:#0f172a;border:1px solid #334155;color:#fff;border-radius:6px;padding:0 6px;}html body .sof-jeu small{color:#94a3b8;}html body .sof-jeu select{min-height:34px;max-width:100%;}'
++'@media (max-width:640px){html body .sof-r > span,html body .sof-l span{width:100%;padding:0;}}';document.head.appendChild(st);})();
 </script>
 </body>
 </html>

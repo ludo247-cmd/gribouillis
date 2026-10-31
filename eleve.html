@@ -122,11 +122,16 @@ function locKey(){return PREVIEW?'el_loc_apercu':'el_loc_'+SID();}
 function LOC(){const l=LS.get(locKey(),null)||{};l.projets=l.projets||{};l.queue=l.queue||[];l.scores=l.scores||{};return l;}
 function saveLoc(l){LS.set(locKey(),l);}
 // ── réseau ──
-async function apiGet(){if(PREVIEW){if(!ST.pk)throw new Error('aperçu en attente de la séance');return {paquet:ST.pk,retours:ST.ret||[]};}const u=CONF.p+(CONF.p.indexOf('?')<0?'?':'&')+'action=eleve&fichier='+encodeURIComponent(CONF.f)+'&k='+encodeURIComponent(CONF.k)+'&s='+encodeURIComponent(CONF.s||'last')+'&t='+Date.now();
-  const r=await fetch(u,{redirect:'follow'});const j=JSON.parse(await r.text());if(j.erreur)throw new Error(j.erreur==='cle'?'lien périmé : demande le nouveau QR code au prof':j.erreur==='seance'?'séance pas encore publiée par le prof':j.erreur);return j;}
+async function apiGet1(s){const u=CONF.p+(CONF.p.indexOf('?')<0?'?':'&')+'action=eleve&fichier='+encodeURIComponent(CONF.f)+'&k='+encodeURIComponent(CONF.k)+'&s='+encodeURIComponent(s)+'&t='+Date.now();
+  let txt='';try{const r=await fetch(u,{redirect:'follow'});txt=await r.text();}catch(e){throw new Error('pas de connexion à la passerelle (internet coupé ?)');}
+  let j=null;try{j=JSON.parse(txt);}catch(e){throw new Error(/<html|<!DOCTYPE/i.test(txt)?'la passerelle ne répond pas comme prévu : dans Apps Script, vérifie « Déployer → Gérer les déploiements » (accès « Tout le monde », nouvelle version)':'réponse illisible de la passerelle');}return j;}
+async function apiGet(){if(PREVIEW){if(!ST.pk)throw new Error('aperçu en attente de la séance');return {paquet:ST.pk,retours:ST.ret||[]};}
+  let j=await apiGet1(CONF.s||'last');
+  if(j.erreur==='seance'&&CONF.s&&CONF.s!=='last'){const j2=await apiGet1('last');if(!j2.erreur){ST.note='Séance du lien pas trouvée : voici la dernière séance publiée par le prof.';return j2;}}
+  if(j.erreur)throw new Error(j.erreur==='cle'?'lien périmé : demande le nouveau QR code au prof':j.erreur==='seance'?'aucune séance publiée dans ce fichier : le prof doit toucher « 📤 Publier pour les tablettes » dans la séance':j.erreur==='paquet'?'séance publiée illisible : le prof doit la republier':j.erreur);return j;}
 async function apiPut(items,sid){if(PREVIEW){return {ok:true,retours:ST.ret||[]};}const r=await fetch(CONF.p,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},redirect:'follow',body:JSON.stringify({action:'eleve_put',fichier:CONF.f,k:CONF.k,s:sid,tab:TAB,items:items})});
   const j=JSON.parse(await r.text());if(j.erreur)throw new Error(j.erreur);return j;}
-async function load(first){try{const j=await apiGet();ST.pk=j.paquet;ST.ret=j.retours||[];ST.online=true;ST.err='';LS.set(cacheKey(),{pk:ST.pk,ret:ST.ret});const L=LS.get('el_confs',{});if(L[confId(CONF)]){L[confId(CONF)].titre=ST.pk.titre;LS.set('el_confs',L);}}
+async function load(first){try{const j=await apiGet();ST.pk=j.paquet;ST.ret=j.retours||[];ST.online=true;ST.err='';LS.set(cacheKey(),{pk:ST.pk,ret:ST.ret});if(ST.note){const n=ST.note;ST.note='';setTimeout(()=>{try{toast(n);}catch(e){}},300);}const L=LS.get('el_confs',{});if(L[confId(CONF)]){L[confId(CONF)].titre=ST.pk.titre;LS.set('el_confs',L);}}
   catch(e){ST.online=false;ST.err=e.message;if(first){const c=LS.get(cacheKey(),null);if(c){ST.pk=c.pk;ST.ret=c.ret||[];}}}
   if(first||ST.view==='home')render();else renderSync();}
 function QK(){return 'el_queue_'+confId(CONF);}
