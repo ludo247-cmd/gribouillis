@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v337</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v338</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v337</title>
+<title>Gribouillis EPS v338</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -25193,7 +25193,7 @@ function orgRender(){const host=E('t-org');if(!host)return;const c=clsActive();
   if(!c){host.innerHTML='<'+'div class="card org"><b>🧭 Organisation</b><p class="cc-dim">Choisis d\'abord une classe (onglet Classes).</p></'+'div>';return;}
   const L=orgSeqs();const q=orgQ();if(!q){host.innerHTML='<'+'div class="card org"><b>🧭 Organisation · '+esc(c.nom)+'</b><p class="cc-dim">Cette classe n\'a pas encore de séquence (onglet Séquences).</p></'+'div>';return;}
   const o=orgOf(q);const S=orgStudents(o);const G=o.fam.groups||[];const pres=S.filter(x=>!x.abs);
-  let h='<'+'div class="card org"><'+'div class="org-hd"><b>🧭 Organisation</b><span>'+esc(c.nom)+'</span><select onchange="ORG.qid=this.value;ORG.gen=null;orgRender()">'+L.map(x=>'<option value="'+esc(x.id)+'"'+(x.id===q.id?' selected':'')+'>'+esc(x.nom||x.sport||'séquence')+'</option>').join('')+'</select></'+'div>'
+  let h='<'+'div class="card org"><'+'div class="org-hd"><b>🧭 Organisation</b>'+orgClassSel(c)+'<select onchange="ORG.qid=this.value;ORG.gen=null;orgRender()">'+L.map(x=>'<option value="'+esc(x.id)+'"'+(x.id===q.id?' selected':'')+'>'+esc(x.nom||x.sport||'séquence')+'</option>').join('')+'</select></'+'div>'
     +'<'+'div class="cc-dim">Les groupes faits ici valent pour toute la séquence. Ils apparaissent dans la séance (palette « Groupes ») et peuvent servir au championnat.</'+'div>';
   // 1. élèves
   h+='<'+'details class="org-sec" open><summary>① Élèves · '+pres.length+' présents sur '+S.length+' · '+pres.filter(x=>x.sx==='F').length+' F / '+pres.filter(x=>x.sx==='M').length+' G</summary>';
@@ -25284,6 +25284,13 @@ seanceGroupChips=(function(o){return function(s){let L=o.apply(this,arguments);t
 +'html body .org-ms{display:flex;flex-wrap:wrap;gap:4px;margin:4px 0;}html body .org-m{background:#1f2937;border-radius:8px;padding:3px 8px;font-size:.82rem;}html body .org-sub small{color:#94a3b8;text-transform:uppercase;font-size:.68rem;letter-spacing:.04em;}'
 +'html body .org-ck{display:flex;gap:6px;align-items:center;font-size:.85rem;}';
 document.head.appendChild(st);})();
+
+// v338 — Organisation : on choisit la classe directement dans l'onglet
+// (avant, il suivait la classe active de l'app, souvent une autre).
+function orgClassSel(c){const L=clsData().list||[];return '<select class="org-cls" onchange="orgClass(this.value)">'+L.map(x=>'<option value="'+esc(x.id)+'"'+(x.id===c.id?' selected':'')+'>🏫 '+esc(x.nom)+'</option>').join('')+'</select>';}
+function orgClass(id){ORG.qid=null;ORG.gen=null;ORG.sel=[];clsActivate(id);orgRender();setTimeout(()=>{try{if(E('t-org')&&E('t-org').classList.contains('active'))orgRender();}catch(e){}},1500);}
+renderClassBar=(function(o){return function(){const r=o.apply(this,arguments);try{if(E('t-org')&&E('t-org').classList.contains('active')){ORG.qid=null;ORG.gen=null;orgRender();}}catch(e){}return r;};})(renderClassBar);
+(function(){const st=document.createElement('style');st.textContent='html body .org-hd select.org-cls{font-weight:800;}';document.head.appendChild(st);})();
 </script>
 </body>
 </html>
