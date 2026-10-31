@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v345</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v346</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v345</title>
+<title>Gribouillis EPS v346</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -25592,6 +25592,39 @@ chpHtml=(function(f){return function(q){let h=f.apply(this,arguments);try{if(!(q
   const n=document.createElement('div');n.className='cc-dim';n.style.margin='4px 0';n.innerHTML='🧭 Clubs, élèves et niveaux : gérés dans l\'onglet <b>Organisation</b>. Le championnat ne garde que les matchs, les résultats et le classement.';box.insertBefore(n,box.children[1]||null);return box.outerHTML;}catch(e){return h;}};})(chpHtml);
 planGoGroups=(function(f){return function(){const s=getActiveSeance();if(orgManaged(s)){const q=trnSeqOf(s);ORG.qid=q.id;goTab('t-org');return;}return f.apply(this,arguments);};})(planGoGroups);
 (function(){const st=document.createElement('style');st.textContent='html body .org-roles{display:flex;flex-direction:column;gap:6px;margin:8px 0;padding:8px 10px;border:1px dashed #475569;border-radius:10px;}html body .org-role{display:flex;flex-wrap:wrap;gap:6px;align-items:center;}html body .org-role a{cursor:pointer;color:#fca5a5;margin-left:3px;}';document.head.appendChild(st);})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v346 — Organisation plus simple et plus compacte :
+// • la classe n'est plus répétée (elle se choisit en haut de l'app comme
+//   partout) ; la séquence n'est proposée que s'il y en a plusieurs ;
+// • ↩ Annuler (les 30 dernières modifications) et 🗑 Effacer les clubs ;
+// • réglages du générateur repliés (on les ouvre si besoin) ;
+// • affichage resserré sur téléphone.
+// ══════════════════════════════════════════════════════════════════════
+ORG.undo={};
+function orgSnap(){const q=orgQ();if(!q)return;const st=ORG.undo[q.id]=ORG.undo[q.id]||[];st.push(JSON.stringify(q.org||null));if(st.length>30)st.shift();}
+orgSave=(function(f){return function(fn){orgSnap();return f.apply(this,arguments);};})(orgSave);
+orgGEdit=(function(f){return function(i,fn){orgSnap();return f.apply(this,arguments);};})(orgGEdit);
+function orgUndo(){const q=orgQ();if(!q)return;const st=ORG.undo[q.id]||[];if(!st.length)return;const prev=st.pop();ORG.gen=null;PLN.res=null;
+  seqUpdate(q.id,qq=>{const v=JSON.parse(prev);if(v)qq.org=v;else delete qq.org;try{orgChampSync(qq);}catch(e){}});orgRender();try{toast2('↩ Modification annulée');}catch(e){}}
+function orgClear(){const q=orgQ();if(!q)return;if(!confirm('Effacer les clubs de cette séquence ? (les niveaux des élèves sont gardés ; ↩ Annuler reste possible)'))return;ORG.gen=null;orgSave(o=>{o.fam.groups=[];});}
+function orgSeqLabel(q){const c=clsActive();let n=String(q.nom||q.sport||'séquence');if(c){const re=new RegExp('\\s*[—–-]\\s*'+c.nom.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\s*$','i');n=n.replace(re,'');}return n;}
+orgRender=(function(f){return function(){f.apply(this,arguments);try{const host=E('t-org');const card=host&&host.querySelector('.card.org');if(!card)return;const q=orgQ();const L=orgSeqs();
+  const hd=card.querySelector('.org-hd');if(hd){const cs=hd.querySelector('select.org-cls');if(cs)cs.remove();const sel=[...hd.querySelectorAll('select')].find(x=>!x.classList.contains('org-cls'));
+    if(sel&&L.length<2){const sp=document.createElement('span');sp.className='org-seq';sp.textContent=q?orgSeqLabel(q):'';sel.replaceWith(sp);}else if(sel){[...sel.options].forEach(op=>{const qq=L.find(x=>x.id===op.value);if(qq)op.textContent=orgSeqLabel(qq);});}
+    if(q){const st=ORG.undo[q.id]||[];const u=document.createElement('span');u.className='org-tools';u.innerHTML='<button type="button" class="btn-xs" style="background:#334155;color:#fff" onclick="orgUndo()"'+(st.length?'':' disabled')+' title="Annuler la dernière modification">↩ Annuler'+(st.length?' ('+st.length+')':'')+'</button>'
+      +((q.org&&q.org.fam&&(q.org.fam.groups||[]).length)?'<button type="button" class="btn-xs red" onclick="orgClear()" title="Effacer les clubs">🗑 Effacer les clubs</button>':'');hd.appendChild(u);}}
+  const intro=hd&&hd.nextElementSibling;if(intro&&intro.classList.contains('cc-dim'))intro.remove();
+  // réglages du générateur repliés
+  card.querySelectorAll('.org-rules').forEach(box=>{if(box.querySelector('details.org-rd'))return;const rows=[...box.querySelectorAll(':scope > .org-rule, :scope > .cc-dim')];if(!rows.length)return;const title=box.querySelector(':scope > b');
+    const d=document.createElement('details');d.className='org-rd';const sm=document.createElement('summary');sm.textContent='⚙ Réglages ('+rows.filter(r=>r.classList.contains('org-rule')).length+' règles)';d.appendChild(sm);rows.forEach(r=>d.appendChild(r));
+    if(title)title.replaceWith(d);else box.insertAdjacentElement('afterbegin',d);});
+}catch(e){console.warn('org compact',e);}};})(orgRender);
+(function(){const st=document.createElement('style');st.textContent=
+ 'html body .org-seq{color:#94a3b8;font-weight:700;}html body .org-tools{display:flex;gap:6px;margin-left:auto;}html body .org-rd summary{cursor:pointer;color:#94a3b8;font-size:.85rem;min-height:34px;display:flex;align-items:center;}html body .org-rd[open]{display:flex;flex-direction:column;gap:6px;}'
++'@media (max-width:640px){html body .org-el{grid-template-columns:1fr;gap:4px;}html body .org-e{min-height:38px;padding:2px 6px;gap:4px;}html body .org-sx,html body .org-lv{min-height:30px;min-width:30px;padding:0 6px;font-size:.75rem;}html body .org-g{font-size:.7rem;padding:1px 6px;}'
++'html body .org-hd{font-size:.95rem;gap:6px;}html body .org-tools{margin-left:0;width:100%;}html body .org-row input{width:110px;}html body .org-rule{flex-wrap:wrap;}html body .org-rule select{flex:1 1 100%;width:100% !important;max-width:none !important;}html body .org-sec{padding:6px 8px;}}';
+document.head.appendChild(st);})();
 </script>
 </body>
 </html>
