@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v334</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v335</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v334</title>
+<title>Gribouillis EPS v335</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -25079,6 +25079,31 @@ elPack=(function(o){return function(s){const P=o.apply(this,arguments);
   try{const e=warmEnsure(s);let budget=600000;P.echauffement=(e.phases||[]).map(ph=>{let img=null;const im=String(ph.image||'');if(im&&(im.indexOf('data:')!==0||(im.length<160000&&budget>im.length))){img=im;if(im.indexOf('data:')===0)budget-=im.length;}
     return {titre:String(ph.titre||''),desc:String(ph.desc||'').slice(0,1200),video:elNoData(ph.video),image:img};});}catch(e){console.warn('elPack échauffement',e);}
   return P;};})(elPack);
+
+// ══════════════════════════════════════════════════════════════════════
+// v335 — Programme ABC sur 2 terrains, version 2 : 5 blocs ; à chaque
+// séance chaque élève joue au moins un petit match (sa catégorie, 2c2/3c3)
+// et un grand match (2 catégories, 4c4/5c5) ; UN arbitre par match, pris
+// dans un des deux clubs qui jouent (un élève libre à ce moment-là).
+// ══════════════════════════════════════════════════════════════════════
+const CF_ABC2=[[[[0,1],0,1,0,2],[[2],1,2,2,0]],[[[0,1],0,2,2,2],[[2],0,1,1,0]],[[[1,2],0,1,1,0],[[0],0,2,2,1]],[[[0,2],1,2,1,1],[[1],0,2,0,0]],[[[0],0,1,0,1],[[1],1,2,1,2]]];
+cfRef=function(c,m){if(m&&m.arb)return m.arb;const o=c.clubs.filter(k=>k.id!==m.a&&k.id!==m.b);return o.length?o[0].id:null;};
+cfAbc=function(){const s=getActiveSeance();const q=s&&trnSeqOf(s);if(!q)return;const o=E('cf-ov');if(o)o.remove();
+  let ji=ctDay(q,s);const c0=q.champ;const J0=ji>=0?c0.jours[ji]:null;
+  if(J0&&(J0.m||[]).some(m=>m.sa!==''&&m.sa!=null)){alert('Des scores sont déjà notés dans le tour du jour : je ne le remplace pas.');return;}
+  if(J0&&(J0.m||[]).length&&!confirm('Remplacer les '+J0.m.length+' matchs du tour du jour par le programme ABC (10 matchs : 5 blocs × 2 terrains) ?'))return;
+  const added=[];
+  seqUpdate(q.id,qq=>{chpEnsure(qq);const c=qq.champ;[[0],[1],[2],[0,1],[1,2],[0,2]].forEach(f=>{if(cfFormIdx(c,f)<0){c.formes.push(f);added.push(chpFormLab(c,f));}});c.niv=c.formes.map(f=>chpFormLab(c,f));
+    let j=(c.jours||[]).findIndex(x=>x.date===s.date);if(j<0){c.jours.push({date:s.date,m:[],abs:[]});j=c.jours.length-1;}
+    const r=j%3;const K=c.clubs.map(k=>k.id);const C=i=>K[(i+r)%3];const M=[];
+    CF_ABC2.forEach(bl=>bl.forEach(([f,a,b,rc,rx])=>M.push({niv:cfFormIdx(c,f),a:C(a),b:C(b),arb:C(rc),arbCat:rx,sa:'',sb:'',ba:0,bb:0})));c.jours[j].m=M;});
+  if(added.length)try{toast2('Formes ajoutées au championnat : '+added.join(', '));}catch(e){}
+  cfParSave(2);cfFillN(2);};
+cfFill=(function(o){return function(){o.apply(this,arguments);try{const b=E('cf-ov')&&E('cf-ov').querySelector('.cf-abc span');if(b)b.textContent='5 blocs sur 2 terrains : à chaque séance, chaque élève joue au moins un petit match (sa catégorie seule, 2c2/3c3) et un grand match (deux catégories, 4c4/5c5). Un seul arbitre par match, pris dans un des deux clubs qui jouent. Personne n\'est attendu à deux endroits.';}catch(e){}};})(cfFill);
+// l'arbitre affiché avec sa catégorie
+sbAtelierInner=(function(o){return function(s,st,a,single){let h=o.apply(this,arguments);try{const B=cfBloc(s,a.key);if(B&&B.m.arb!=null&&B.m.arbCat!=null){const k=chpClub(B.c,B.m.arb);const cat=(B.c.cats||[])[B.m.arbCat]||'';
+  h=h.replace('🟨 '+esc(k.nom),'🟨 1 arbitre '+esc(k.nom)+' '+esc(cat));}}catch(e){}return h;};})(sbAtelierInner);
+elPack=(function(o){return function(s){const P=o.apply(this,arguments);try{const q=trnSeqOf(s);const c=q&&q.champ;(P.matchs||[]).forEach(x=>{const m=c&&c.jours[x.ji]&&c.jours[x.ji].m[x.mi];if(m&&m.arb){x.arb=m.arb;x.arbCat=m.arbCat;}});}catch(e){}return P;};})(elPack);
 </script>
 </body>
 </html>

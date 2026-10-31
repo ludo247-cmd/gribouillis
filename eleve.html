@@ -155,13 +155,13 @@ function microOf(p){const o=oeById(p&&p.oe);return o&&(o.micro||[]).find(m=>m.id
 function exoOf(p){if(!p||!p.exoId)return null;if(String(p.exoId).indexOf('lib:')===0){const x=(PK().lib||[]).find(z=>'lib:'+z.id===p.exoId);return x?{titre:x.titre,desc:x.desc,video:x.video,crit:[]}:null;}
   for(const o of PK().oes||[])for(const m of o.micro||[])for(const c of m.cps||[])if(c.path===p.cpPath){const x=(c.ex||[]).find(e=>e.id===p.exoId);if(x)return x;}
   for(const o of PK().oes||[])for(const m of o.micro||[])for(const c of m.cps||[]){const x=(c.ex||[]).find(e=>e.id===p.exoId);if(x)return x;}return null;}
-function pjStatus(p){if(!p||!p.ind)return '<i class="dim">pas encore de projet</i>';const x=exoOf(p);return '🎯 '+esc(p.ind)+(x?' · '+esc(x.titre)+(p.scoreAt?' · <b>'+p.score+'/10</b>':''):' · exercice à choisir');}
+function pjStatus(p){if(!p||!p.ind)return (p&&p.hist&&p.hist.length?'<i class="dim">nouveau projet à faire (ancien : '+esc(p.hist[p.hist.length-1].ind||'')+')</i>':'<i class="dim">pas encore de projet</i>');const x=exoOf(p);return '🎯 '+esc(p.ind)+(x?' · '+esc(x.titre)+(p.scoreAt?' · <b>'+p.score+'/10</b>':''):' · exercice à choisir');}
 function scoreOf(ref){const l=LOC();const mine=l.scores[ref];const ok=ST.ret.filter(r=>r.type==='score'&&r.ref===ref&&r.data&&r.data.ok);
   if(mine&&mine.ok)return mine;if(ok.length)return ok[ok.length-1].data;const m=(PK().matchs||[]).find(x=>x.ref===ref);if(m&&m.sa!==''&&m.sa!=null)return {sa:m.sa,sb:m.sb,ok:true,prof:true};return null;}
 function hm(t){const m=/(\d{1,2})h(\d{2})/.exec(t||'');return m?(+m[1])*60+(+m[2]):null;}
 function curBloc(){const B=PK().blocs||[];const d=new Date();const n=d.getHours()*60+d.getMinutes();return B.find(b=>{const a=hm(b.start),e=hm(b.end);return a!=null&&e!=null&&n>=a&&n<e;})||null;}
 function matchByRef(ref){return (PK().matchs||[]).find(m=>m.ref===ref)||null;}
-function refClubOf(m){const o=(PK().clubs||[]).filter(c=>c.id!==m.a&&c.id!==m.b);return o.length?o[0].id:null;}
+function refClubOf(m){if(m&&m.arb)return m.arb;const o=(PK().clubs||[]).filter(c=>c.id!==m.a&&c.id!==m.b);return o.length?o[0].id:null;}
 function roleIn(m,cid,fi){if(!m)return 'train';if(m.niv===fi&&(m.a===cid||m.b===cid))return 'play';if(m.niv===fi&&refClubOf(m)===cid)return 'ref';return 'train';}
 // ── rendu ──
 function renderSync(){const b=$('sync');if(!b)return;const q=CONF?queue().length:0;b.className='sync'+(ST.online===false?' bad':'')+(q?' wait':'');
@@ -227,9 +227,9 @@ function stepBody(bl,cid){const pk=PK();
   return '<div class="dim">Tous ensemble.</div>';}
 function classSwitch(){const L=LS.get('el_confs',{});const K=Object.keys(L).filter(k=>k!==confId(CONF));if(!K.length)return '';return K.map(k=>'<button class="small" style="flex:0 1 auto" onclick="useConf(\''+esc(k)+'\')">↔ '+esc(L[k].titre||'autre classe')+'</button>').join('');}
 function blocRolesHtml(b,cid,btns){const MS=(b.matches&&b.matches.length?b.matches:(b.match?[b.match]:[])).map(matchByRef).filter(Boolean);
-  if(MS.length){const F=PK().formes||[];const role=fi=>{if(MS.some(m=>m.niv===fi&&(m.a===cid||m.b===cid)))return 'play';if(MS.some(m=>m.niv===fi&&refClubOf(m)===cid))return 'ref';return 'train';};
+  if(MS.length){const F=PK().formes||[];const role=fi=>{if(MS.some(m=>m.niv===fi&&(m.a===cid||m.b===cid)))return 'play';if(MS.some(m=>refClubOf(m)===cid&&(m.arbCat!=null?(F[fi].ids||[]).length===1&&F[fi].ids[0]===m.arbCat:m.niv===fi)))return 'ref';return 'train';};
     const used=F.map((f,fi)=>fi).filter(fi=>role(fi)!=='train'||(F[fi].ids||[]).length>1);
-    return MS.map(m=>'<div class="dim">⚽ '+esc(clubOf(m.a).nom)+' – '+esc(clubOf(m.b).nom)+' · '+esc(formLab(m.niv))+(refClubOf(m)?' · 🟨 '+esc(clubOf(refClubOf(m)).nom):'')+'</div>').join('')
+    return MS.map(m=>'<div class="dim">⚽ '+esc(clubOf(m.a).nom)+' – '+esc(clubOf(m.b).nom)+' · '+esc(formLab(m.niv))+(refClubOf(m)?' · 🟨 '+(m.arb&&m.arbCat!=null?'1 arbitre '+esc(clubOf(m.arb).nom)+' '+esc((PK().cats||[])[m.arbCat]||''):esc(clubOf(refClubOf(m)).nom)):'')+'</div>').join('')
     +used.map(fi=>{const r=role(fi);return '<div><span class="tag '+r+'">'+esc(F[fi].lab)+' · '+(r==='play'?'⚽ on joue':r==='ref'?'🟨 on arbitre':'🏋 projet')+'</span></div>';}).join('')
     +(btns?MS.filter(m=>m.a===cid||m.b===cid).map(m=>'<button class="big blue" onclick="mOpen(\''+esc(m.ref)+'\')">▶ Observer : '+esc(formLab(m.niv))+' contre '+esc(clubOf(m.a===cid?m.b:m.a).nom)+'</button>').join(''):'')+(btns?'<div class="dim">Les autres : exercice du projet collectif ou de votre binôme (plus bas).</div>':'');}
   if(b.base==='remediation')return '<div class="dim">🏋 Exercice du projet collectif ou de votre binôme</div>';
@@ -322,7 +322,16 @@ function vOk(ok){const c=clubOf(MT.club);const pl={};MT.log.forEach(e=>{if(!e.n)
   const obs={club:MT.club,opp:MT.opp,niv:MT.niv,us:MT.us,them:MT.them,bp:mCount('bp'),ap:mCount('ap'),bpa:mCount('bpa'),apa:mCount('apa'),joueurs:pl,filsRouges:fr,lineup:MT.lineup,debut:MT.t0,fin:Date.now()};
   const sc={sa:VS.sa,sb:VS.sb,ok:!!ok,club:MT.club};const l=LOC();l.scores[MT.ref]=sc;saveLoc(l);
   send([{type:'score',ref:MT.ref,club:c.nom,data:sc,t:Date.now()},{type:'obs',ref:MT.ref,club:c.nom,data:obs,t:Date.now()}]);
-  try{localStorage.removeItem(mKey());}catch(e){}MT=null;toast(ok?'🏆 Score validé et envoyé':'Score envoyé au prof (non validé)');ovClose();}
+  try{localStorage.removeItem(mKey());}catch(e){}const lineup=MT.lineup.slice(),cl=MT.club;MT=null;toast(ok?'🏆 Score validé et envoyé':'Score envoyé au prof (non validé)');
+  if(!afterMatch(cl,lineup,fr))ovClose();}
+function afterMatch(cid,lineup,fr){const P=projAll();const keys=[colKey(cid)].concat(binsOf(cid).filter(k=>(P[k].members||[]).some(n=>lineup.indexOf(n)>=0)));const L=keys.filter(k=>P[k]&&P[k].ind);if(!L.length)return false;ST.view='after';
+  ovShow('<div class="top"><h1>🎯 Et maintenant, notre projet ?<small>Après ce match, on garde notre fil rouge ou on en change ?</small></h1></div>'+L.map(k=>{const p=P[k];const kk=esc(k).replace(/'/g,"\\'");const n=fr['🎯 '+p.ind]||fr['👥 '+p.ind]||0;const x=exoOf(p);
+    return '<div class="card"><b>'+esc(k.replace(/^.*? · /,''))+'</b><div class="pj">🎯 '+esc(p.ind)+(x?' · '+esc(x.titre)+(p.scoreAt?' · '+p.score+'/10':''):'')+'</div><div class="dim">Pendant le match, ce fil rouge a été noté '+n+' fois.</div>'
+      +'<div class="row"><button class="big" onclick="pjKeep(\''+kk+'\')">💪 Consolider ce projet</button><button class="big blue" onclick="pjNew(\''+kk+'\')">🆕 Nouveau projet</button></div></div>';}).join('')
+    +'<button class="big ghost" onclick="ovClose()">Plus tard</button>');return true;}
+function pjKeep(k){pjOpen(k,3);}
+function pjNew(k){const P=projAll();const p=P[k]||{};const hist=(p.hist||[]).concat([{oe:p.oe,frm:p.frm,frmLab:p.frmLab,ind:p.ind,exoId:p.exoId,cpPath:p.cpPath,score:p.score,scoreAt:p.scoreAt,fin:Date.now()}]).slice(-10);
+  const np={club:p.club||club(),kind:p.kind||'col',t0:Date.now(),t:Date.now(),hist:hist};if(p.members)np.members=p.members.slice();pjPut(k,np);toast('🆕 Nouveau projet : choisissez votre objectif');pjOpen(k,1);}
 // ── démarrage ──
 try{if('serviceWorker' in navigator&&/^https?:/.test(location.protocol))navigator.serviceWorker.register('sw-eleve.js',{scope:'./eleve.html'}).catch(()=>{});}catch(e){}
 if(CONF){const c=LS.get(cacheKey(),null);if(c){ST.pk=c.pk;ST.ret=c.ret||[];render();}load(true).then(()=>{flush();const sv=LS.get(mKey(),null);if(sv&&sv.club===club()&&sv.log&&sv.log.length){MT=sv;mRender();}});}else render();
