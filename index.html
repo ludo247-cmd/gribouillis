@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v335</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v336</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v335</title>
+<title>Gribouillis EPS v336</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -25104,6 +25104,25 @@ cfFill=(function(o){return function(){o.apply(this,arguments);try{const b=E('cf-
 sbAtelierInner=(function(o){return function(s,st,a,single){let h=o.apply(this,arguments);try{const B=cfBloc(s,a.key);if(B&&B.m.arb!=null&&B.m.arbCat!=null){const k=chpClub(B.c,B.m.arb);const cat=(B.c.cats||[])[B.m.arbCat]||'';
   h=h.replace('🟨 '+esc(k.nom),'🟨 1 arbitre '+esc(k.nom)+' '+esc(cat));}}catch(e){}return h;};})(sbAtelierInner);
 elPack=(function(o){return function(s){const P=o.apply(this,arguments);try{const q=trnSeqOf(s);const c=q&&q.champ;(P.matchs||[]).forEach(x=>{const m=c&&c.jours[x.ji]&&c.jours[x.ji].m[x.mi];if(m&&m.arb){x.arb=m.arb;x.arbCat=m.arbCat;}});}catch(e){}return P;};})(elPack);
+
+// ══════════════════════════════════════════════════════════════════════
+// v336 — 👁 Aperçu élève : pendant qu'on construit la séance, on voit
+// l'app élève telle que les tablettes la verront (format tablette), sans
+// rien publier ni envoyer. « Actualiser » reprend les dernières modifs.
+// ══════════════════════════════════════════════════════════════════════
+function elPvSend(){const f=E('elpv-frame');const s=getActiveSeance();if(!f||!s)return;let pk=null;try{pk=elPack(s);}catch(e){alert('Aperçu impossible : '+e.message);return;}try{f.contentWindow.postMessage({type:'grib-preview',pk:pk},'*');}catch(e){}}
+function elPreview(){const s=getActiveSeance();if(!s)return;let o=E('elpv-ov');if(o)o.remove();o=document.createElement('div');o.id=['elpv','ov'].join('-');
+  const url=(window.__EL_APP_URL||elAppUrl())+'#preview=1';
+  o.innerHTML='<'+'div class="elpv-hd"><b>👁 Aperçu élève</b><span>ce que verra une tablette · rien n\'est publié</span><button type="button" class="btn-xs" style="background:#0e7490;color:#fff;" onclick="elPvSend()">↻ Actualiser</button><button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="E(\'elpv-ov\').remove()">✕ Fermer</button></'+'div>'
+    +'<'+'div class="elpv-dev"><iframe id="elpv-frame" title="Aperçu de l\'app élève" src="'+esc(url)+'"></iframe></'+'div>';
+  document.body.appendChild(o);const f=E('elpv-frame');f.addEventListener('load',()=>setTimeout(elPvSend,150));}
+window.addEventListener('message',ev=>{const d=ev.data;if(d&&d.type==='grib-preview-ready'&&E('elpv-frame'))elPvSend();});
+elBoxHtml=(function(o){return function(s){const h=o.apply(this,arguments);return h.replace(/<\/div>$/,'<button type="button" class="btn-xs" style="background:#7c3aed;color:#fff;" onclick="elPreview()">👁 Aperçu élève</button></'+'div>');};})(elBoxHtml);
+(function(){const st=document.createElement('style');st.textContent=
+ 'html body #elpv-ov{position:fixed;inset:0;z-index:99960;background:rgba(2,6,23,.92);display:flex;flex-direction:column;align-items:center;padding:10px;gap:8px;}'
++'html body .elpv-hd{display:flex;gap:8px;align-items:center;width:100%;max-width:820px;color:#e2e8f0;}html body .elpv-hd span{flex:1;font-size:.8rem;color:#94a3b8;}'
++'html body .elpv-dev{flex:1;width:100%;max-width:820px;border:10px solid #111;border-radius:26px;overflow:hidden;background:#0b0c0f;box-shadow:0 10px 40px rgba(0,0,0,.6);}html body .elpv-dev iframe{width:100%;height:100%;border:0;display:block;}';
+document.head.appendChild(st);})();
 </script>
 </body>
 </html>

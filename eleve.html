@@ -78,6 +78,7 @@ button{font-family:inherit;cursor:pointer;}
 .step .st{flex:1;display:flex;flex-direction:column;gap:2px;}.step .st small{color:var(--dim);font-size:.8rem;}.step .sc{color:var(--dim);}
 .step .sb{padding:4px 12px 12px;display:flex;flex-direction:column;gap:8px;}
 .cp.f3{border-color:#dc2626;background:#2a1416;font-weight:800;}
+.pvbar{background:#0e7490;color:#fff;font-weight:700;text-align:center;border-radius:10px;padding:6px 10px;font-size:.85rem;}
 .err{background:#3f1212;border:1px solid #b91c1c;border-radius:12px;padding:12px;}
 .toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#111827;border:1px solid #334155;color:#fff;padding:10px 14px;border-radius:12px;z-index:99;font-size:.9rem;max-width:92vw;}
 .vbox .side{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;border:2px solid var(--line);border-radius:14px;padding:10px;}
@@ -108,20 +109,21 @@ function parseConf(t){const i=String(t||'').indexOf('#');if(i<0)return null;cons
 function confId(c){return c.f+'|'+c.k;}
 function rememberConf(c){LS.set('el_conf',c);const L=LS.get('el_confs',{});L[confId(c)]=Object.assign({},L[confId(c)]||{},{c:c,at:Date.now()});LS.set('el_confs',L);}
 function readConf(){const c=parseConf(location.href);if(c){rememberConf(c);return c;}return LS.get('el_conf',null);}
-let CONF=readConf();
+const PREVIEW=/(^|[#&])preview=1/.test(location.hash);
+let CONF=PREVIEW?{p:'',f:'apercu',k:'prof',s:'apercu'}:readConf();
 function useConf(id){const L=LS.get('el_confs',{});const x=L[id];if(!x)return;LS.set('el_conf',x.c);location.hash='';location.reload();}
 function pasteConf(){const t=($('cfin')||{}).value||'';const c=parseConf(t);if(!c){toast('Ce n\'est pas un lien de séance Gribouillis');return;}rememberConf(c);CONF=c;ST.pk=null;load(true);}
 let TAB=LS.get('el_tab',null);if(!TAB){TAB='tab-'+Math.random().toString(36).slice(2,8);LS.set('el_tab',TAB);}
 const ST={pk:null,ret:[],online:null,err:'',view:'home',busy:false};
 function SID(){return (ST.pk&&ST.pk.sid)||(CONF&&CONF.s);}
 function cacheKey(){return 'el_cache_'+confId(CONF);}
-function locKey(){return 'el_loc_'+SID();}
+function locKey(){return PREVIEW?'el_loc_apercu':'el_loc_'+SID();}
 function LOC(){const l=LS.get(locKey(),null)||{};l.projets=l.projets||{};l.queue=l.queue||[];l.scores=l.scores||{};return l;}
 function saveLoc(l){LS.set(locKey(),l);}
 // ── réseau ──
-async function apiGet(){const u=CONF.p+(CONF.p.indexOf('?')<0?'?':'&')+'action=eleve&fichier='+encodeURIComponent(CONF.f)+'&k='+encodeURIComponent(CONF.k)+'&s='+encodeURIComponent(CONF.s||'last')+'&t='+Date.now();
+async function apiGet(){if(PREVIEW){if(!ST.pk)throw new Error('aperçu en attente de la séance');return {paquet:ST.pk,retours:ST.ret||[]};}const u=CONF.p+(CONF.p.indexOf('?')<0?'?':'&')+'action=eleve&fichier='+encodeURIComponent(CONF.f)+'&k='+encodeURIComponent(CONF.k)+'&s='+encodeURIComponent(CONF.s||'last')+'&t='+Date.now();
   const r=await fetch(u,{redirect:'follow'});const j=JSON.parse(await r.text());if(j.erreur)throw new Error(j.erreur==='cle'?'lien périmé : demande le nouveau QR code au prof':j.erreur==='seance'?'séance pas encore publiée par le prof':j.erreur);return j;}
-async function apiPut(items,sid){const r=await fetch(CONF.p,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},redirect:'follow',body:JSON.stringify({action:'eleve_put',fichier:CONF.f,k:CONF.k,s:sid,tab:TAB,items:items})});
+async function apiPut(items,sid){if(PREVIEW){return {ok:true,retours:ST.ret||[]};}const r=await fetch(CONF.p,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},redirect:'follow',body:JSON.stringify({action:'eleve_put',fichier:CONF.f,k:CONF.k,s:sid,tab:TAB,items:items})});
   const j=JSON.parse(await r.text());if(j.erreur)throw new Error(j.erreur);return j;}
 async function load(first){try{const j=await apiGet();ST.pk=j.paquet;ST.ret=j.retours||[];ST.online=true;ST.err='';LS.set(cacheKey(),{pk:ST.pk,ret:ST.ret});const L=LS.get('el_confs',{});if(L[confId(CONF)]){L[confId(CONF)].titre=ST.pk.titre;LS.set('el_confs',L);}}
   catch(e){ST.online=false;ST.err=e.message;if(first){const c=LS.get(cacheKey(),null);if(c){ST.pk=c.pk;ST.ret=c.ret||[];}}}
@@ -166,7 +168,8 @@ function roleIn(m,cid,fi){if(!m)return 'train';if(m.niv===fi&&(m.a===cid||m.b===
 // ── rendu ──
 function renderSync(){const b=$('sync');if(!b)return;const q=CONF?queue().length:0;b.className='sync'+(ST.online===false?' bad':'')+(q?' wait':'');
   b.textContent=ST.busy?'⏳ envoi…':(q?'📤 Envoyer ('+q+')':(ST.online===false?'⚠️ hors ligne':'☁️ à jour'));b.title=(q?q+' résultat(s) gardé(s) sur la tablette. ':'')+(ST.err||'');}
-function topHtml(){const c=club()?clubOf(club()):null;return '<div class="top"><h1>'+esc(PK().titre||'Séance')+(c?'<small>Club <b style="color:'+esc(c.col)+'">'+esc(c.nom)+'</b></small>':'')+'</h1><button class="sync" id="sync" onclick="flush(true);load(false)"></button></div>';}
+function previewBar(){return PREVIEW?'<div class="pvbar">👁 Aperçu de l\'app élève — rien n\'est envoyé, rien n\'est gardé</div>':'';}
+function topHtml(){const c=club()?clubOf(club()):null;return previewBar()+'<div class="top"><h1>'+esc(PK().titre||'Séance')+(c?'<small>Club <b style="color:'+esc(c.col)+'">'+esc(c.nom)+'</b></small>':'')+'</h1><button class="sync" id="sync" onclick="flush(true);load(false)"></button></div>';}
 function render(){ST.view='home';const app=$('app');
   if(!CONF){app.innerHTML='<div class="top"><h1>Gribouillis Élèves</h1></div><div class="card"><h2><span>📲 Ouvrir la séance</span></h2><div class="dim">Scanne le QR code de ton prof avec l\'appareil photo, ou colle ici le lien qu\'il t\'a envoyé :</div><textarea id="cfin" rows="3" style="width:100%;border-radius:10px;background:#0f1115;color:#fff;border:1px solid var(--line);padding:8px;font-size:.9rem"></textarea><button class="big green" onclick="pasteConf()">Ouvrir</button></div>';return;}
   if(!ST.pk){app.innerHTML='<div class="err"><b>Séance introuvable.</b><br>'+esc(ST.err||'')+'<br><br><button class="big grey" onclick="load(true)">Réessayer</button></div>';return;}
@@ -284,7 +287,7 @@ function ovShow(h){let o=$('ov');if(!o){o=document.createElement('div');o.id='ov
 function ovClose(){const o=$('ov');if(o)o.remove();document.body.style.overflow='';render();}
 // ── match ──
 let MT=null;
-function mKey(){return 'el_match_'+SID();}
+function mKey(){return PREVIEW?'el_match_apercu':'el_match_'+SID();}
 function mOpen(ref){const m=matchByRef(ref);const cid=club();if(!m)return;const mineA=m.a===cid;const opp=mineA?m.b:m.a;
   const sv=LS.get(mKey(),null);if(sv&&sv.ref===ref&&sv.club===cid){MT=sv;}else MT={ref:ref,club:cid,opp:opp,mineA:mineA,niv:m.niv,us:0,them:0,log:[],lineup:membersOf(cid,m.niv),t0:Date.now()};mRender();}
 function mOpenFree(opp){const cid=club();const ref='L'+new Date().toISOString().slice(11,16).replace(':','')+'-'+cid+'-'+opp;MT={ref:ref,club:cid,opp:opp,mineA:true,niv:null,us:0,them:0,log:[],lineup:membersOf(cid),t0:Date.now(),free:true};mRender();}
@@ -334,7 +337,10 @@ function pjNew(k){const P=projAll();const p=P[k]||{};const hist=(p.hist||[]).con
   const np={club:p.club||club(),kind:p.kind||'col',t0:Date.now(),t:Date.now(),hist:hist};if(p.members)np.members=p.members.slice();pjPut(k,np);toast('🆕 Nouveau projet : choisissez votre objectif');pjOpen(k,1);}
 // ── démarrage ──
 try{if('serviceWorker' in navigator&&/^https?:/.test(location.protocol))navigator.serviceWorker.register('sw-eleve.js',{scope:'./eleve.html'}).catch(()=>{});}catch(e){}
-if(CONF){const c=LS.get(cacheKey(),null);if(c){ST.pk=c.pk;ST.ret=c.ret||[];render();}load(true).then(()=>{flush();const sv=LS.get(mKey(),null);if(sv&&sv.club===club()&&sv.log&&sv.log.length){MT=sv;mRender();}});}else render();
+if(PREVIEW){try{Object.keys(localStorage).filter(k=>/apercu/.test(k)).forEach(k=>localStorage.removeItem(k));}catch(e){}
+  window.addEventListener('message',ev=>{const d=ev.data;if(!d||d.type!=='grib-preview'||!d.pk)return;const keep=ST.pk&&ST.pk.sid===d.pk.sid;ST.pk=d.pk;ST.ret=[];ST.online=true;if(!keep){OPEN.k=undefined;}if(ST.view==='home'||!keep)render();});
+  $('app').innerHTML='<div class="card"><b>Aperçu : chargement de la séance…</b></div>';try{parent.postMessage({type:'grib-preview-ready'},'*');}catch(e){}}
+else if(CONF){const c=LS.get(cacheKey(),null);if(c){ST.pk=c.pk;ST.ret=c.ret||[];render();}load(true).then(()=>{flush();const sv=LS.get(mKey(),null);if(sv&&sv.club===club()&&sv.log&&sv.log.length){MT=sv;mRender();}});}else render();
 </script>
 </body>
 </html>
