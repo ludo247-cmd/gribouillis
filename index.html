@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v343</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v344</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v343</title>
+<title>Gribouillis EPS v344</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -25181,7 +25181,7 @@ function orgReport(o,S,A,k,d,names){const G=[];for(let g=0;g<k;g++)G.push([]);S.
   const pr=r=>({O:'Obligatoire',I:'Important',S:'Si possible',X:'ignorée'}[o.rules[r]]);
   const line=(r,ok,txt)=>R.push('<'+'div class="org-rp'+(o.rules[r]==='X'?' off':(ok?' ok':' ko'))+'"><b>'+(o.rules[r]==='X'?'–':(ok?'✓':'⚠'))+'</b><span><i>'+esc(pr(r))+'</i> '+txt+'</span></'+'div>');
   line('taille',!d.taille,'Tailles : '+G.map((g,i)=>esc(nm(i))+' '+g.length).join(' · '));
-  line('niveau',!d.niveau,'Niveaux : '+G.map((g,i)=>esc(nm(i))+' '+o.levels.map((l,li)=>g.filter(x=>x.lv===li).length+' '+esc(l)).join(' + ')+(g.some(x=>x.lv==null)?' + '+g.filter(x=>x.lv==null).length+' ?':'')).join(' · '));
+  line('niveau',!d.niveau&&!S.some(x=>x.lv==null),(S.some(x=>x.lv==null)?'<b style="color:#fbbf24">'+S.filter(x=>x.lv==null).length+' élève(s) sans niveau : touche leur niveau en ① pour que l\'équilibre se fasse.</b> ':'')+'Niveaux : '+G.map((g,i)=>esc(nm(i))+' '+o.levels.map((l,li)=>g.filter(x=>x.lv===li).length+' '+esc(l)).join(' + ')+(g.some(x=>x.lv==null)?' + '+g.filter(x=>x.lv==null).length+' ?':'')).join(' · '));
   line('mixite',!d.mixite,'Mixité : '+G.map((g,i)=>esc(nm(i))+' '+g.filter(x=>x.sx==='F').length+' F / '+g.filter(x=>x.sx==='M').length+' G').join(' · '));
   line('garder',!d.garder,d.garder?d.garder+' élève'+(d.garder>1?'s changent':' change')+' de groupe':'personne ne change de groupe');
   if((o.pairs.ens||[]).length)line('ensemble',!d.ensemble,d.ensemble?d.ensemble+' paire'+(d.ensemble>1?'s':'')+' « ensemble » séparée'+(d.ensemble>1?'s':''):'toutes les paires « ensemble » sont respectées');
@@ -25526,6 +25526,15 @@ async function orgToSheets(){const q=orgQ();if(!q)return;const msg=t=>{const m=E
 +'html body .org-col{width:34px !important;height:34px;border:none;background:none;padding:0;cursor:pointer;flex:0 0 34px;}'
 +'html body .org-emos{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;margin-bottom:10px;}html body .org-emos button{font-size:1.6rem;min-height:48px;border-radius:10px;border:1px solid #334155;background:#111827;cursor:pointer;}';
 document.head.appendChild(st);})();
+
+// v344 — Organisation : le rapport signale les élèves sans niveau ; import
+// d'un code « org » (clubs + niveaux) dans la séquence de la classe.
+libImportText=(function(f){return function(t){try{const o=JSON.parse(String(t||'').trim());if(o&&o.gribouillis==='org'&&o.org){
+  const c=clsByLooseName(o.classe||'');if(!c){alert('Classe « '+(o.classe||'?')+' » introuvable dans l\'app.');return 0;}
+  const q=seqAll().filter(x=>x.classeId===c.id&&(!o.apsa||x.sport===o.apsa)).slice(-1)[0];if(!q){alert('Pas de séquence '+(o.apsa||'')+' pour la classe '+c.nom+'.');return 0;}
+  if(q.org&&q.org.fam&&(q.org.fam.groups||[]).length&&!confirm('La séquence « '+(q.nom||'')+' » a déjà des groupes dans Organisation. Les remplacer ?'))return 0;
+  seqUpdate(q.id,qq=>{qq.org=Object.assign({},qq.org||{},JSON.parse(JSON.stringify(o.org)));});
+  alert('✅ Organisation importée dans « '+(q.nom||'séquence')+' » : '+(o.org.fam&&o.org.fam.groups||[]).length+' clubs.');try{ORG.qid=q.id;clsActivate(c.id);goTab('t-org');}catch(e){}return 1;}}catch(e){}return f.apply(this,arguments);};})(libImportText);
 </script>
 </body>
 </html>
