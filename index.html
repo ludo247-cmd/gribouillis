@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v355</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v356</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v355</title>
+<title>Gribouillis EPS v356</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -26190,6 +26190,16 @@ chsValid=(function(f){return function(){const q=orgQ();let n=0;try{if(q)n=chsCre
 orgRender=(function(f){return function(){const r=f.apply(this,arguments);try{const q=orgQ();const box=document.querySelector('#t-org .org-chs');if(!q||!box)return r;const K=chsMissing(q);const cal=chsOf(orgOf(q));if(!K.length||!cal.prog.length)return r;
   const sub=[...box.querySelectorAll('.chs-sub')].find(x=>/Séances/.test(x.textContent));const b=document.createElement('button');b.type='button';b.className='org-go';b.style.background='#1d4ed8';b.textContent='📅 Créer les '+K.length+' séances de la séquence (à leurs dates) et les remplir';
   b.onclick=function(){const n=chsCreateSeances(q.id,false);CHSA.last={};if(n)try{toast2('📅 '+n+' séances créées');}catch(e){}chsAutoRun(q.id);orgRender();};(sub||box).insertAdjacentElement('afterend',b);}catch(e){console.warn(e);}return r;};})(orgRender);
+
+// ══════════════════════════════════════════════════════════════════════
+// v356 — RETOUR DU MODE ÉLÈVE partout (il avait été caché pour les
+// séquences gérées par Organisation). L'encart « App tablettes » (nouvelle
+// app, en essai) est replié pour ne plus prendre la place.
+// ══════════════════════════════════════════════════════════════════════
+renderSeanceTab=(function(f){return function(){const r=f.apply(this,arguments);try{if(SEANCE_STATE.mode==='eleve'||GRIB_EXPORT_MODE)return r;const host=E('seance-tab-content');if(!host)return r;
+  host.querySelectorAll('button').forEach(b=>{const oc=b.getAttribute('onclick')||'';const t=b.textContent||'';if((/setSeanceMode\('eleve'\)/.test(oc)||/Envoyer aux élèves|Lien \+ code pour les élèves/.test(t))&&b.style.display==='none')b.style.display='';});
+  const box=host.querySelector('.el-box');if(box&&!box.closest('details.el-wrap')){const d=document.createElement('details');d.className='el-wrap';d.innerHTML='<summary>📲 App tablettes (nouvelle version, en essai)</summary>';box.insertAdjacentElement('beforebegin',d);d.appendChild(box);}}catch(e){console.warn('v356',e);}return r;};})(renderSeanceTab);
+(function(){const st=document.createElement('style');st.textContent='html body details.el-wrap{margin:0 0 10px;}html body details.el-wrap > summary{cursor:pointer;color:#67e8f9;font-size:.8rem;min-height:30px;display:flex;align-items:center;}';document.head.appendChild(st);})();
 </script>
 </body>
 </html>
