@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v341</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v342</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v341</title>
+<title>Gribouillis EPS v342</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -25468,6 +25468,14 @@ orgRender=(function(o){return function(){o.apply(this,arguments);try{const host=
   const d=document.createElement('details');d.className='org-sec org-comp';d.innerHTML='<summary>④ Composition sur le terrain</summary><'+'div class="cc-dim">Place les joueurs de chaque groupe sur le dessin du terrain (postes, gardien, remplaçants), comme dans l\'onglet Composition.</'+'div><'+'div class="org-row"><button type="button" class="org-go" style="flex:1" onclick="orgCompose(\'club\')">📐 Composer les clubs</button>'
     +(og.fam.sub==='niveau'?'<button type="button" class="org-go" style="flex:1;background:#0e7490" onclick="orgCompose(\'niveau\')">📐 Composer les sous-groupes de niveau</button>':'')+'</'+'div>';card.appendChild(d);}catch(e){console.warn('org comp',e);}};})(orgRender);
 (function(){const st=document.createElement('style');st.textContent='html body .org-cbanner{display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:#1c1530;border:1px solid #7c3aed;border-radius:12px;padding:8px 12px;margin:0 0 10px;color:#ede9fe;font-weight:700;}html body .org-cbanner span{flex:1 1 260px;font-weight:400;font-size:.8rem;color:#c4b5fd;}';document.head.appendChild(st);})();
+
+// v342 — étape 3 de la refonte : quand la séquence a ses groupes dans
+// Organisation, la séance ne propose plus QUE ces groupes (plus les
+// doublons Composition / colonnes du Sheets / championnat), sauf ceux déjà
+// placés dans cette séance, qui restent visibles pour ne rien casser.
+seanceGroupChips=(function(o){return function(s){const L=o.apply(this,arguments);try{s=s||getActiveSeance();const q=s&&trnSeqOf(s);if(!q||!q.org||!(q.org.fam&&(q.org.fam.groups||[]).length))return L;
+  if(!L.some(g=>g.org))return L;let used={};try{used=sbUsedGroupIds(s)||{};}catch(e){}const own=((s.groupes||[]).map(g=>g.id));
+  return L.filter(g=>g.org||used[g.id]||own.indexOf(g.id)>=0);}catch(e){return L;}};})(seanceGroupChips);
 </script>
 </body>
 </html>
