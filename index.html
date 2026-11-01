@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v378</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v379</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v378</title>
+<title>Gribouillis EPS v379</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -27403,6 +27403,80 @@ animEleveHtml=(function(f){return function(a,fill){const h=f.apply(this,argument
 eleveCpMediaHtml=(function(f){return function(m){const h=f.apply(this,arguments);try{if(m&&m.video&&m.anim)return va378Lab(h);}catch(e){}return h;};})(eleveCpMediaHtml);
 animLibBtns=(function(f){return function(x){let h=f.apply(this,arguments);try{if(x&&x.kind!=='seance'&&x.video&&String(x.video).indexOf('data:')!==0){
     h='<button type="button" class="btn-xs" style="background:#15803d;color:#fff;" onclick="openVideoLightbox(CP_VID_REG['+cpVidReg(x.video)+'])">▶ Vidéo</button>'+h.replace('>▶ Animation</button>','>🎞 Animation (aide)</button>');}}catch(e){}return h;};})(animLibBtns);
+
+// ══════════════════════════════════════════════════════════════════════
+// v379 — Projet de classe transversal : décrire chaque élève au regard des
+// domaines du socle (collège) ou des objectifs généraux (lycée), lire le
+// profil de la classe, puis écrire le projet (priorités, objectif, apport de
+// chaque séquence, indicateurs, bilan). Ouvert depuis la carte de la classe.
+// ══════════════════════════════════════════════════════════════════════
+const PJC_KEY='grib_projcls_v1';
+try{if(typeof GRIB_BACKUP_KEYS!=='undefined'&&GRIB_BACKUP_KEYS.indexOf(PJC_KEY)<0)GRIB_BACKUP_KEYS.push(PJC_KEY);}catch(e){}
+const PJC_LV=[{l:'—',c:'#334155',t:'#94a3b8'},{l:'Insuffisant',c:'#ef4444',t:'#fff'},{l:'Fragile',c:'#facc15',t:'#111'},{l:'Satisfaisant',c:'#86efac',t:'#111'},{l:'Très bon',c:'#15803d',t:'#fff'}];
+let PJC={cid:null,tab:'el'};
+function pjcAll(){try{return JSON.parse(localStorage.getItem(PJC_KEY)||'{}')||{};}catch(e){return {};}}
+function pjcSaveAll(a){try{localStorage.setItem(PJC_KEY,JSON.stringify(a));}catch(e){alert('Mémoire pleine : projet non enregistré.');}}
+function pjcGuessNiv(c){const n=String((c&&c.nom)||'').trim().toLowerCase();if(/^6/.test(n))return 'c3';if(/^[345]/.test(n))return 'c4';if(/^(2|1|t|seconde|premi|termin)/.test(n))return 'lycee';return 'c4';}
+function pjcOf(cid){const a=pjcAll();const c=clsData().list.find(x=>x.id===cid);const p=a[cid]||{};if(!p.niv)p.niv=pjcGuessNiv(c);p.ev=p.ev||{};p.note=p.note||{};p.prio=p.prio||[];p.act=p.act||{};return p;}
+function pjcSet(cid,fn){const a=pjcAll();const p=pjcOf(cid);fn(p);p.upd=Date.now();a[cid]=p;pjcSaveAll(a);return p;}
+function pjcDoms(niv){try{if(niv==='lycee')return EPS_PROG.lycee.objectifs.map((o,i)=>({k:'OG'+(i+1),t:o.titre.charAt(0).toUpperCase()+o.titre.slice(1),d:'',it:o.items||[]}));
+  return EPS_PROG.socle.map(x=>({k:x.d,t:x.titre,d:niv==='c3'?x.competence_c3:x.competence_c4,it:(niv==='c3'?x.items_c3:x.items_c4)||x.items||[]}));}catch(e){return [];}}
+function pjcNames(c){if(!c||!c.csv)return [];const L=c.csv.replace(/\r/g,'').split('\n').filter(l=>l.trim());if(L.length<2)return [];const sep=L[0].indexOf(';')>=0?';':',';
+  const H=L[0].split(sep).map(h=>stripAccents(h).toLowerCase().trim());let i=H.findIndex(h=>h.includes('prenom'));if(i<0)i=H.findIndex(h=>h.includes('nom'));if(i<0)return [];
+  const out=[];L.slice(1).forEach(l=>{const v=(splitCsvCols(l,sep)[i]||'').trim();if(v&&!/^\d+([.,]\d+)?$/.test(v)&&out.indexOf(v)<0)out.push(v);});return out;}
+function pjcOpen(cid){PJC.cid=cid;pjcClose();const o=document.createElement('div');o.id='pjc-ov';o.style.cssText='position:fixed;inset:0;z-index:30000;background:rgba(2,6,23,.92);overflow:auto;padding:12px;';document.body.appendChild(o);pjcRender();}
+function pjcClose(){const o=document.getElementById('pjc-ov');if(o)o.remove();}
+function pjcTab(t){PJC.tab=t;pjcRender();}
+function pjcStats(p,doms,names){return doms.map(d=>{const n=[0,0,0,0,0];names.forEach(x=>{n[(p.ev[x]||{})[d.k]||0]++;});const done=n[1]+n[2]+n[3]+n[4];const avg=done?(n[1]+2*n[2]+3*n[3]+4*n[4])/done:0;return {d:d,n:n,done:done,avg:avg};});}
+function pjcRender(){const o=document.getElementById('pjc-ov');if(!o)return;const c=clsData().list.find(x=>x.id===PJC.cid);if(!c){pjcClose();return;}
+  const p=pjcOf(c.id),doms=pjcDoms(p.niv),names=pjcNames(c);const T=(k,l)=>'<button type="button" class="btn-xs" style="background:'+(PJC.tab===k?'#7c3aed':'#334155')+';color:#fff;" onclick="pjcTab(\''+k+'\')">'+l+'</button>';
+  let h='<'+'div style="max-width:1100px;margin:0 auto;background:#0f172a;border:1px solid #334155;border-radius:14px;padding:14px;color:#e2e8f0;">'
+   +'<'+'div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px;"><b style="font-size:1.05rem;">🧭 Projet de classe — '+esc(c.nom)+'</b>'
+   +'<select onchange="pjcSet(PJC.cid,p=>{p.niv=this.value});pjcRender()" style="background:#1e293b;color:#e2e8f0;border:1px solid #475569;border-radius:8px;padding:4px 6px;">'+[['c3','Collège · cycle 3 (socle)'],['c4','Collège · cycle 4 (socle)'],['lycee','Lycée (objectifs généraux)']].map(x=>'<option value="'+x[0]+'"'+(p.niv===x[0]?' selected':'')+'>'+x[1]+'</option>').join('')+'</select>'
+   +'<span style="flex:1"></span>'+T('el','👥 Décrire les élèves')+T('pr','📊 Profil de la classe')+T('pj','🎯 Le projet')+'<button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="pjcClose()">✕ Fermer</button></'+'div>';
+  if(PJC.tab==='el')h+=pjcElHtml(c,p,doms,names);else if(PJC.tab==='pr')h+=pjcPrHtml(c,p,doms,names);else h+=pjcPjHtml(c,p,doms,names);
+  o.innerHTML=h+'</'+'div>';}
+function pjcElHtml(c,p,doms,names){
+  if(!names.length)return '<p class="cc-dim">Pas de liste d\'élèves pour cette classe (Google Sheets ou CSV dans « Gérer les classes »).</p>';
+  let h='<'+'div class="cc-dim" style="margin-bottom:8px;">Touche une case pour faire défiler : '+PJC_LV.slice(1).map(l=>'<span style="display:inline-block;padding:1px 7px;border-radius:6px;background:'+l.c+';color:'+l.t+';margin:0 2px;font-size:.72rem;">'+l.l+'</span>').join('')+' · encore une fois = effacer. C\'est un regard global de début d\'année, pas une note.</'+'div>';
+  h+='<'+'div style="overflow:auto;"><table style="border-collapse:collapse;width:100%;font-size:.8rem;"><tr><th style="text-align:left;padding:4px;position:sticky;left:0;background:#0f172a;">Élève</th>'
+   +doms.map(d=>'<th title="'+esc(d.t+(d.d?' — '+d.d:''))+'" style="padding:4px;min-width:84px;"><'+'div style="font-weight:800;">'+esc(d.k)+'</'+'div><'+'div style="font-weight:400;font-size:.66rem;color:#94a3b8;line-height:1.15;">'+esc(d.d||d.t)+'</'+'div></th>').join('')+'<th style="padding:4px;min-width:160px;">Remarque</th></tr>';
+  names.forEach((n,i)=>{const e=p.ev[n]||{};h+='<tr style="border-top:1px solid #1e293b;"><td style="padding:4px;position:sticky;left:0;background:#0f172a;white-space:nowrap;">'+esc(n)+'</td>'
+   +doms.map(d=>{const v=e[d.k]||0,L=PJC_LV[v];return '<td style="padding:3px;text-align:center;"><button type="button" onclick="pjcCycle('+i+',\''+d.k+'\')" style="width:100%;min-height:30px;border:0;border-radius:7px;background:'+L.c+';color:'+L.t+';font-size:.72rem;font-weight:700;cursor:pointer;">'+L.l+'</button></td>';}).join('')
+   +'<td style="padding:3px;"><input value="'+esc(p.note[n]||'')+'" onchange="pjcNote('+i+',this.value)" style="width:100%;background:#1e293b;color:#e2e8f0;border:1px solid #334155;border-radius:6px;padding:5px;" placeholder="…"></td></tr>';});
+  return h+'</table></'+'div>';}
+function pjcCycle(i,k){const c=clsData().list.find(x=>x.id===PJC.cid);const n=pjcNames(c)[i];if(!n)return;pjcSet(PJC.cid,p=>{const e=p.ev[n]=p.ev[n]||{};e[k]=((e[k]||0)+1)%5;if(!e[k])delete e[k];});pjcRender();}
+function pjcNote(i,v){const c=clsData().list.find(x=>x.id===PJC.cid);const n=pjcNames(c)[i];if(!n)return;pjcSet(PJC.cid,p=>{if(v.trim())p.note[n]=v.trim();else delete p.note[n];});}
+function pjcPrHtml(c,p,doms,names){const S=pjcStats(p,doms,names);const tot=names.length||1;
+  const low=S.filter(s=>s.done).slice().sort((a,b)=>a.avg-b.avg).slice(0,2);
+  let h='<'+'div class="cc-dim" style="margin-bottom:8px;">'+names.length+' élèves · '+S.reduce((a,s)=>a+s.done,0)+' appréciations posées.</'+'div>';
+  S.forEach(s=>{h+='<'+'div style="margin:8px 0;"><'+'div style="display:flex;justify-content:space-between;font-size:.82rem;"><span><b>'+esc(s.d.k)+'</b> '+esc(s.d.d||s.d.t)+'</span><span class="cc-dim">'+(s.done?'moyenne '+s.avg.toFixed(1).replace('.',',')+' / 4':'pas encore décrit')+'</span></'+'div>'
+    +'<'+'div style="display:flex;height:16px;border-radius:6px;overflow:hidden;background:#1e293b;margin-top:3px;">'+[1,2,3,4].map(v=>s.n[v]?'<span title="'+PJC_LV[v].l+' : '+s.n[v]+'" style="width:'+(100*s.n[v]/tot)+'%;background:'+PJC_LV[v].c+';"></span>':'').join('')+'</'+'div></'+'div>';});
+  if(low.length)h+='<'+'div style="margin-top:12px;padding:10px;border-radius:10px;background:#1e1b4b;border:1px solid #4c1d95;">💡 <b>Priorités suggérées</b> (domaines les plus fragiles) : '+low.map(s=>'<b>'+esc(s.d.k)+'</b> '+esc(s.d.d||s.d.t)).join(' · ')
+   +'<'+'div style="margin-top:6px;"><button type="button" class="btn-xs" style="background:#7c3aed;color:#fff;" onclick="pjcTakePrio()">Reprendre ces priorités dans le projet</button></'+'div></'+'div>';
+  const frag=names.filter(n=>{const e=p.ev[n]||{};return Object.keys(e).some(k=>e[k]===1);});
+  if(frag.length)h+='<'+'div style="margin-top:10px;font-size:.8rem;"><b>Élèves avec au moins un domaine « insuffisant » :</b> '+frag.map(esc).join(', ')+'</'+'div>';
+  return h;}
+function pjcTakePrio(){const c=clsData().list.find(x=>x.id===PJC.cid);const p=pjcOf(PJC.cid);const doms=pjcDoms(p.niv);const S=pjcStats(p,doms,pjcNames(c)).filter(s=>s.done).sort((a,b)=>a.avg-b.avg).slice(0,2);
+  pjcSet(PJC.cid,q=>{q.prio=S.map(s=>s.d.k);});PJC.tab='pj';pjcRender();}
+function pjcAutoConstat(){const c=clsData().list.find(x=>x.id===PJC.cid);const p=pjcOf(PJC.cid);const doms=pjcDoms(p.niv);const names=pjcNames(c);const S=pjcStats(p,doms,names).filter(s=>s.done);
+  if(!S.length){alert('Décris d\'abord quelques élèves (onglet 👥).');return;}const srt=S.slice().sort((a,b)=>b.avg-a.avg);
+  const t='Points d\'appui : '+srt.slice(0,2).map(s=>s.d.k+' ('+(s.d.d||s.d.t)+')').join(', ')+'.\nPoints fragiles : '+srt.slice(-2).reverse().map(s=>s.d.k+' ('+(s.d.d||s.d.t)+', '+(s.n[1]+s.n[2])+' élèves fragiles ou insuffisants)').join(', ')+'.';
+  pjcSet(PJC.cid,q=>{q.constat=(q.constat?q.constat+'\n':'')+t;});pjcRender();}
+function pjcF(k,v){pjcSet(PJC.cid,p=>{p[k]=v;});}
+function pjcAct(qid,v){pjcSet(PJC.cid,p=>{if(v.trim())p.act[qid]=v;else delete p.act[qid];});}
+function pjcPrio(k,on){pjcSet(PJC.cid,p=>{p.prio=p.prio.filter(x=>x!==k);if(on)p.prio.push(k);});}
+function pjcPjHtml(c,p,doms,names){const TA=(k,ph,rows)=>'<textarea onchange="pjcF(\''+k+'\',this.value)" rows="'+(rows||3)+'" style="width:100%;background:#1e293b;color:#e2e8f0;border:1px solid #334155;border-radius:8px;padding:7px;font:inherit;font-size:.85rem;" placeholder="'+esc(ph)+'">'+esc(p[k]||'')+'</textarea>';
+  const Q=(typeof seqAll==='function'?seqAll():[]).filter(q=>q.classeId===c.id);
+  let h='<h4 style="margin:6px 0;">1. Constat</h4>'+TA('constat','Ce que je vois de la classe en début d\'année…',3)+'<button type="button" class="btn-xs" style="background:#334155;color:#fff;margin-top:4px;" onclick="pjcAutoConstat()">📝 Préremplir depuis le profil</button>';
+  h+='<h4 style="margin:12px 0 6px;">2. Priorités</h4>'+doms.map(d=>'<label style="display:flex;gap:8px;align-items:flex-start;margin:4px 0;font-size:.84rem;"><input type="checkbox" '+(p.prio.indexOf(d.k)>=0?'checked':'')+' onchange="pjcPrio(\''+d.k+'\',this.checked)"><span><b>'+esc(d.k)+'</b> '+esc(d.d||d.t)+'</span></label>').join('');
+  h+='<h4 style="margin:12px 0 6px;">3. Objectif transversal de la classe</h4>'+TA('obj','Ex. : apprendre à coopérer pour progresser ensemble, en tenant de vrais rôles…',2);
+  h+='<h4 style="margin:12px 0 6px;">4. Ce que chaque séquence apporte</h4>'+(Q.length?Q.map(q=>'<'+'div style="margin:6px 0;"><'+'div style="font-size:.82rem;font-weight:700;">🗓 '+esc(q.nom||q.sport||'Séquence')+(q.du?' <span class="cc-dim" style="font-weight:400;">'+esc(q.du)+' → '+esc(q.au||'')+'</span>':'')+'</'+'div><textarea onchange="pjcAct(\''+esc(q.id)+'\',this.value)" rows="2" style="width:100%;background:#1e293b;color:#e2e8f0;border:1px solid #334155;border-radius:8px;padding:6px;font:inherit;font-size:.82rem;" placeholder="Rôles, dispositifs, moments du projet travaillés dans cette séquence…">'+esc(p.act[q.id]||'')+'</textarea></'+'div>').join(''):'<p class="cc-dim">Aucune séquence pour cette classe pour l\'instant.</p>');
+  h+='<h4 style="margin:12px 0 6px;">5. Indicateurs de réussite</h4>'+TA('indic','Comment je saurai que le projet a avancé (observable, chiffré si possible)…',2);
+  h+='<h4 style="margin:12px 0 6px;">6. Bilan</h4>'+TA('bilan','À remplir en fin de période / d\'année…',3);
+  return h;}
+ccCardHtml=(function(f){return function(c){let h=f.apply(this,arguments);try{const mk='<button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="edtOpen(';const i=h.indexOf(mk);
+  if(i>=0){const p=pjcAll()[c.id];const has=p&&((p.ev&&Object.keys(p.ev).length)||p.obj||p.constat);h=h.slice(0,i)+'<button type="button" class="btn-xs" style="background:#6d28d9;color:#fff;" onclick="pjcOpen(\''+esc(c.id)+'\')" title="Décrire les élèves (socle / objectifs généraux) et écrire le projet de classe">🧭 Projet de classe'+(has?' ✓':'')+'</button>'+h.slice(i);}}catch(e){console.warn('pjc',e);}return h;};})(ccCardHtml);
 </script>
 </body>
 </html>
