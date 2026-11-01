@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v380</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v381</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v380</title>
+<title>Gribouillis EPS v381</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -27567,6 +27567,34 @@ function taCreate(){const b=TA_BOOK[TA_SEL.i],sp=TA_SEL.sp;if(!b||!sp)return;let
 function taBookFor(sp){const tok=taTok(String(sp||'')+' '+lx2Name(sp));return tok?TA_BOOK.map((b,i)=>i).filter(i=>taTok(TA_BOOK[i].apsa)===tok):[];}
 function taFill(sp,id){const L=taBookFor(sp);if(!L.length)return;let i=L[0];if(L.length>1){const r=prompt('Quelle proposition du livre ?\n'+L.map((k,j)=>(j+1)+'. '+TA_BOOK[k].apsa).join('\n'),'1');if(r==null)return;i=L[Math.max(0,Math.min(L.length-1,(+r||1)-1))];}
   const b=TA_BOOK[i];enMut(o=>{const F=(enSp(o,sp).fiches||[]).find(x=>x.id===id);if(!F)return;if(!taArr(F.histoires).length)F.histoires=((b.histoire||{}).histoires_possibles||[]).join('\n');if(!F.recit)F.recit=(b.histoire||{}).recit||'';if(!taArr(F.portee).length)F.portee=(b.portee_educative||[]).join('\n');});}
+
+// ══════════════════════════════════════════════════════════════════════
+// v381 — écran Classes simplifié : chaque carte ne montre que le nom de la
+// classe, le lien vers son Drive et l'avancement de la séquence ; tout le
+// reste se déroule en touchant le nom.
+// ══════════════════════════════════════════════════════════════════════
+const CC_OPEN={};
+function ccToggle(id){CC_OPEN[id]=!CC_OPEN[id];renderClassesConsole();}
+function ccDrive(id,edit){const d=clsData();const c=d.list.find(x=>x.id===id);if(!c)return;
+  if(c.drive&&!edit){try{window.open(c.drive,'_blank','noopener');}catch(e){location.href=c.drive;}return;}
+  const v=prompt('Lien du dossier Google Drive de la classe '+(c.nom||'')+' :',c.drive||'');if(v==null)return;
+  const u=String(v).trim();if(u&&!/^https?:\/\//i.test(u)){alert('Colle un lien qui commence par https://');return;}
+  if(u)c.drive=u;else delete c.drive;clsSave(d);renderClassesConsole();}
+ccCardHtml=(function(f){return function(c,active){const h=f.apply(this,arguments);try{
+  const id=esc(c.id);let seq='';try{seq=seqClassLine(c);}catch(e){}
+  let inner=h.replace(new RegExp('^<'+'div class="cc-card[^"]*">'),'').replace(new RegExp('</'+'div>\\s*$'),'');
+  inner=inner.replace(/<h3>[\s\S]*?<\/h3>/,'');if(seq)inner=inner.replace(seq,'');
+  const op=!!CC_OPEN[c.id];
+  return '<'+'div class="cc-card cc-min'+(active?' on':'')+(op?' cc-op':'')+'"><'+'div class="cc-top"><h3 onclick="ccToggle(\''+id+'\')" title="Toucher pour '+(op?'replier':'tout voir')+'"><span class="cc-car">'+(op?'▾':'▸')+'</span> 🏫 '+esc(c.nom)+'</h3>'
+   +'<button type="button" class="btn-xs cc-drv'+(c.drive?' on':'')+'" onclick="ccDrive(\''+id+'\')" title="'+(c.drive?'Ouvrir le Drive de la classe':'Ajouter le lien du Drive de la classe')+'">📁 Drive'+(c.drive?'':' ＋')+'</button>'
+   +(c.drive?'<button type="button" class="btn-xs cc-drv-e" onclick="ccDrive(\''+id+'\',true)" title="Changer le lien du Drive">✎</button>':'')+'</'+'div>'
+   +(seq||'<'+'div class="cc-dim">Pas de séquence en cours.</'+'div>')
+   +(op?'<'+'div class="cc-more">'+inner+'</'+'div>':'')+'</'+'div>';}catch(e){console.warn('cc381',e);return h;}};})(ccCardHtml);
+(function(){const st=document.createElement('style');st.textContent=
+ 'html body .cc-min .cc-top{display:flex;align-items:center;gap:6px;}html body .cc-min .cc-top h3{flex:1;cursor:pointer;margin:0;user-select:none;}'
++'html body .cc-min .cc-car{display:inline-block;width:1em;color:var(--dim2);}html body .cc-min .cc-drv{background:#334155;color:#fff;}html body .cc-min .cc-drv.on{background:#0f766e;}'
++'html body .cc-min .cc-drv-e{background:transparent;color:var(--dim2);border:1px solid #334155;padding:2px 6px;}'
++'html body .cc-grid{align-items:start;}html body .cc-min{min-height:0!important;}html body .cc-min .cc-more{margin-top:8px;border-top:1px dashed #334155;padding-top:6px;}';document.head.appendChild(st);})();
 </script>
 </body>
 </html>
