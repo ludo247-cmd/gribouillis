@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v361</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v362</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v361</title>
+<title>Gribouillis EPS v362</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -26443,6 +26443,50 @@ renderLibTab=(function(f){return function(){const host=E('lib-tab-content');if(!
 +'html body .lx-cps{display:flex;flex-direction:column;gap:6px;margin-top:4px;}html body .lx-cp{border:1px solid rgba(167,139,250,.4);border-radius:10px;padding:7px 9px;background:#0f172a;}html body .lx-cp .lx-mh b{color:#c4b5fd;font-size:.82rem;}html body .lx-att{display:block;color:#94a3b8;font-size:.72rem;}'
 +'html body .lx-pick{display:flex;gap:5px;flex-wrap:wrap;padding:6px;border:1px dashed #334155;border-radius:8px;max-height:180px;overflow:auto;}html body .lx-pick button{border:1px solid #334155;background:#111827;color:#e2e8f0;border-radius:999px;padding:4px 10px;font-size:.74rem;cursor:pointer;}';
 document.head.appendChild(st);})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v362 — Bilan :
+// • seuls les ratios des boutons gardés par l'observateur (indispensables +
+//   facultatifs choisis) ; en boutons seuls, pas de ratio de tracé ;
+// • si 2 équipes : « ce qu'on a concédé » (ratios de l'adversaire) ;
+// • « objet » → « axe de progression » ;
+// • transcription : bouton « ✍️ Dictée (texte seul) » qui n'utilise pas le
+//   micro en même temps que l'enregistrement, et la raison s'affiche quand
+//   la reconnaissance vocale échoue.
+// ══════════════════════════════════════════════════════════════════════
+function frbObsCfg(){try{const ss=E('s-summary');if(!ss||ss.classList.contains('hidden'))return null;const a=frbArch();return a&&a.observer&&a.observer.on?a.observer:null;}catch(e){return null;}}
+function frbBtnKept(b,o){if(!b)return true;if(!pvOpt(b))return true;return (o.obs||[]).indexOf(String(b.label))>=0;}
+function frbCrKept(cr,ti,o){const B=getTeamDialogBtns(ti)||[];return (cr.numCriteria||[]).concat(cr.denCriteria||[]).every(k=>{if(String(k).indexOf('btn_')!==0)return true;return frbBtnKept(B[+String(k).slice(4)],o);});}
+getTeamCustomRatios=(function(f){return function(ti){const L=f.apply(this,arguments);try{const o=frbObsCfg();if(o&&Array.isArray(L))return L.filter(cr=>frbCrKept(cr,ti,o));}catch(e){}return L;};})(getTeamCustomRatios);
+getTeamRatioFlag=(function(f){return function(ti,id){const v=f.apply(this,arguments);try{if(/^r[1456]$/.test(id)&&CFG.obsSimple&&frbObsCfg())return false;}catch(e){}return v;};})(getTeamRatioFlag);
+// ce qu'on a concédé + vocabulaire « axe de progression »
+frbRender=(function(f){return function(ti){const r=f.apply(this,arguments);try{const p=E('frb-panel');if(!p)return r;
+  p.querySelectorAll('.frb-oesel option').forEach(op=>{op.textContent=op.textContent.replace(/^OE\s+/,'Axe ');});p.querySelectorAll('.frb-oes button').forEach(b=>{b.textContent=b.textContent.replace(/^OE\s+/,'Axe ');});
+  const sub=p.querySelector('.frb-sub span');if(sub)sub.textContent='— axe de progression : ';const s2=p.querySelector('.frb-sub');if(s2&&!s2.querySelector('select')&&sub)sub.textContent=sub.textContent.replace('axe de progression : ','fils rouges micro');
+  if(CFG.gameMode==='2eq'&&!p.querySelector('.frb-adv')){let M=[];try{M=computeRemedMacroObjectives(ti===1?0:1)||[];}catch(e){}if(M.length){const adv=(teamsNames&&teamsNames[ti===1?0:1])||'l\'adversaire';const d=document.createElement('div');d.className='frb-adv';
+    d.innerHTML='<b>Ce qu\'on a concédé</b><span> (réussite de '+esc(adv)+' contre nous)</span><'+'div class="frb-advl">'+M.map(o=>'<'+'div><i>'+esc(o.label)+'</i><b>'+esc(String(o.actualPct!=null?Math.round(o.actualPct):'–'))+(o.unit===''?'':' %')+'</b></'+'div>').join('')+'</'+'div>';
+    const hd=p.querySelector('.frb-hd');if(hd)hd.insertAdjacentElement('afterend',d);}}}catch(e){console.warn('frb3',e);}return r;};})(frbRender);
+// ── dictée seule + raison des échecs ──
+const DICT={rec:null,slot:null,on:false};
+function dictMsg(slot,t,bad){let m=E('sp-msg-'+slot);const tx=E('audio-transcript-'+slot);if(!m&&tx){m=document.createElement('div');m.id=['sp','msg',slot].join('-');m.className='sp-msg';tx.insertAdjacentElement('afterend',m);}if(m){m.textContent=t||'';m.classList.toggle('bad',!!bad);}}
+function spErrTxt(e){return ({'network':'La transcription automatique passe par un service en ligne (Google sur Chrome et Android) qui ne répond pas, souvent bloqué en Chine. L\'audio est bien enregistré ; tu peux taper le texte ou utiliser le micro du clavier.',
+  'not-allowed':'Le micro est refusé pour la transcription : autorise-le dans le navigateur.','service-not-allowed':'Ce navigateur refuse la transcription automatique ici. Tape le texte ou utilise le micro du clavier.',
+  'audio-capture':'Le micro est déjà pris par l\'enregistrement : essaie « ✍️ Dictée (texte seul) ».','no-speech':'Rien entendu : parle plus près du micro.','language-not-supported':'Le français n\'est pas disponible pour la transcription sur cet appareil.'})[e]||('Transcription interrompue ('+e+').');}
+getSpeechRecognitionInstance=(function(f){return function(){const rec=f.apply(this,arguments);try{if(rec&&!rec._v362){rec._v362=true;const oe=rec.onerror;rec.onerror=function(ev){try{oe&&oe.call(this,ev);}catch(e){}try{const sl=speechRecActiveSlot!=null?speechRecActiveSlot:0;if(ev&&ev.error&&ev.error!=='aborted')dictMsg(sl,'⚠ '+spErrTxt(ev.error),true);}catch(e){}};}}catch(e){}return rec;};})(getSpeechRecognitionInstance);
+function dictToggle(slot){if(DICT.on){DICT.on=false;try{DICT.rec&&DICT.rec.stop();}catch(e){}dictUi();return;}
+  let SR=null;try{SR=window.SpeechRecognition||window.webkitSpeechRecognition||null;}catch(e){}if(!SR){dictMsg(slot,'⚠ Ce navigateur ne fait pas de transcription automatique. Tape le texte, ou touche la case puis le micro du clavier (dictée du téléphone).',true);return;}
+  try{if(typeof mediaRecorderObj!=='undefined'&&mediaRecorderObj&&mediaRecorderObj.state==='recording')stopAudioRecording(audioActiveSlot!=null?audioActiveSlot:slot);}catch(e){}
+  try{if(globalSpeechRecognition)globalSpeechRecognition.abort();}catch(e){}
+  const rec=new SR();rec.lang='fr-FR';rec.continuous=true;rec.interimResults=true;DICT.rec=rec;DICT.slot=slot;DICT.on=true;let base=(MATCH.transcriptionText[slot]||'').trim();
+  rec.onresult=function(ev){let fin='',mid='';for(let i=ev.resultIndex;i<ev.results.length;i++){const r=ev.results[i];if(r.isFinal)fin+=r[0].transcript+' ';else mid+=r[0].transcript;}if(fin){base=(base+' '+fin).trim();MATCH.transcriptionText[slot]=base;try{updateArchiveAudioData(slot);}catch(e){}}const tx=E('audio-transcript-'+slot);if(tx)tx.innerText=base+(mid?' '+mid:'');dictMsg(slot,'🎙 Dictée en cours… parle normalement',false);};
+  rec.onerror=function(ev){if(ev.error==='no-speech'||ev.error==='aborted')return;DICT.on=false;dictMsg(slot,'⚠ '+spErrTxt(ev.error),true);dictUi();};
+  rec.onend=function(){if(DICT.on){try{rec.start();}catch(e){DICT.on=false;dictUi();}}else{dictMsg(slot,(MATCH.transcriptionText[slot]||'').trim()?'✓ Dictée terminée (texte modifiable)':'',false);}};
+  try{rec.start();dictMsg(slot,'🎙 Dictée en cours… parle normalement',false);}catch(e){DICT.on=false;dictMsg(slot,'⚠ La dictée n\'a pas pu démarrer.',true);}dictUi();}
+function dictUi(){[0,1].forEach(sl=>{const b=E('dict-btn-'+sl);if(b){b.textContent=DICT.on&&DICT.slot===sl?'⏹ Arrêter la dictée':'✍️ Dictée (texte seul)';b.classList.toggle('on',DICT.on&&DICT.slot===sl);}});}
+(function(){[0,1].forEach(sl=>{try{const stop=E('audio-stop-btn-'+sl);if(stop&&!E('dict-btn-'+sl)){const b=document.createElement('button');b.type='button';b.id=['dict','btn',sl].join('-');b.className='dict-btn';b.onclick=function(){dictToggle(sl);};stop.parentElement.appendChild(b);}}catch(e){}});dictUi();})();
+(function(){const st=document.createElement('style');st.textContent='html body .dict-btn{border:1px solid #334155;background:#0f172a;color:#e2e8f0;border-radius:999px;padding:6px 12px;font-weight:700;font-size:.78rem;cursor:pointer;margin-left:6px;}html body .dict-btn.on{border-color:#ef4444;color:#fca5a5;}'
++'html body .sp-msg{font-size:.74rem;color:#93c5fd;margin:4px 0;}html body .sp-msg.bad{color:#fca5a5;}html body .sp-msg:empty{display:none;}'
++'html body .frb-adv{border:1px solid #7f1d1d;background:rgba(127,29,29,.15);border-radius:12px;padding:8px 10px;}html body .frb-adv > b{font-size:.86rem;}html body .frb-adv > span{font-size:.74rem;color:#94a3b8;}html body .frb-advl{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:6px;margin-top:6px;}html body .frb-advl > div{display:flex;flex-direction:column;background:#0f172a;border-radius:8px;padding:6px 8px;}html body .frb-advl i{font-style:normal;font-size:.72rem;color:#cbd5e1;}html body .frb-advl b{font-size:1.15rem;color:#fca5a5;}';document.head.appendChild(st);})();
 </script>
 </body>
 </html>
