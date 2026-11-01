@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v357</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v358</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v357</title>
+<title>Gribouillis EPS v358</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -26271,6 +26271,23 @@ showAudioSlotForTeam=(function(f){return function(ti){const r=f.apply(this,argum
 +'html body .frb-sit{display:flex;gap:5px;flex-wrap:wrap;align-items:center;}html body .frb-sit button{border:1px solid #334155;background:#0f172a;color:#e2e8f0;border-radius:999px;padding:5px 11px;font-size:.78rem;font-weight:700;cursor:pointer;}html body .frb-sit button.on{border-color:#a78bfa;background:rgba(167,139,250,.22);}'
 +'html body .frb-proj{border:2px dashed #a78bfa;border-radius:12px;padding:9px 11px;display:flex;flex-direction:column;gap:2px;}html body .frb-proj span{font-size:.7rem;font-weight:800;color:#c4b5fd;text-transform:uppercase;letter-spacing:.05em;}html body .frb-proj em{font-style:normal;font-size:.84rem;}html body .frb-proj small{color:#94a3b8;font-size:.72rem;}';
 document.head.appendChild(st);})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v358 — bilan : pas de redite des indicateurs (ils sont déjà en haut) ;
+// en mode « boutons seuls », pas de terrain dans le bilan ; les fils rouges
+// micro sont ceux de l'objet du PROFIL D'OBSERVATION utilisé (puis de la
+// séance du même sport, puis de la séance de la classe dans ce sport).
+// ══════════════════════════════════════════════════════════════════════
+function frbProfOe(){try{const P=CFG.savedPresets||[];const p=P[CFG.activePresetIndexT1];return p&&p.meta&&p.meta.oeId||null;}catch(e){return null;}}
+frbOes=(function(f){return function(){try{const sd=(typeof REMED_CONTENT!=='undefined'&&REMED_CONTENT[CFG.apsa])||null;if(!sd)return f.apply(this,arguments);const all=sd.oe||[];const by=id=>all.find(o=>o.id===id);
+  const po=frbProfOe();if(po&&by(po))return [by(po)];
+  let s=getActiveSeance();if(!(s&&s.sport===CFG.apsa&&s.oeId)){const c=clsActive();const t=edtToday();const L=(SEANCES||[]).filter(x=>x.sport===CFG.apsa&&x.oeId&&(!c||x.classeId===c.id||x.classe===c.nom)).sort((a,b)=>String(b.date).localeCompare(String(a.date)));s=L.find(x=>x.date<=t)||L[0]||null;}
+  if(s&&s.oeId){const L=[s.oeId].concat(s.oeExtra||[]).map(by).filter(Boolean);if(L.length)return L;}
+  return all;}catch(e){return f.apply(this,arguments);}};})(frbOes);
+// pas de redite : on retire les cases d'indicateurs du panneau
+frbRender=(function(f){return function(ti){const r=f.apply(this,arguments);try{const p=E('frb-panel');if(p){p.querySelectorAll('.frb-mac').forEach(x=>x.remove());p.querySelectorAll('.frb-dim').forEach(x=>{if(/objectif chiffré/.test(x.textContent))x.remove();});const hd=p.querySelector('.frb-hd span');if(hd)hd.textContent='fils rouges micro, à remplir avec les joueurs';}
+  const ss=E('s-summary');if(ss)ss.classList.toggle('frb-noterr',!!CFG.obsSimple);}catch(e){}return r;};})(frbRender);
+(function(){const st=document.createElement('style');st.textContent='html body #s-summary.frb-noterr #bilan-simple .bilan-terrain-wrap{display:none !important;}html body #s-summary.frb-noterr #bilan-simple .bilan-right{flex:1;max-width:none;}html body #s-summary.frb-noterr #bilan-simple .simple-sum{justify-content:center;}html body #s-summary.frb-noterr #bilan-simple .bilan-right{max-width:900px;margin:0 auto;}';document.head.appendChild(st);})();
 </script>
 </body>
 </html>
