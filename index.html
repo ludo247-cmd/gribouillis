@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v365</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v366</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v365</title>
+<title>Gribouillis EPS v366</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -22784,7 +22784,7 @@ setInterval(()=>{try{if(document.visibilityState!=='visible'||!CAD_UI.ev||!E('ev
 // ══════════════════════════════════════════════════════════════════════
 // Nomenclatures disponibles (on en ajoutera d'autres ici)
 const SEQ_NOMENS=[
-  {id:'cedreps',lab:'📘 CEDREPS',ok:q=>!!(REMED_CONTENT&&REMED_CONTENT[q.sport]&&!REMED_CONTENT[q.sport].custom)},
+  {id:'cedreps',lab:'📘 Bibliothèque didactique (CEDREPS · EPS énactive)',ok:q=>!!(REMED_CONTENT&&REMED_CONTENT[q.sport]&&!REMED_CONTENT[q.sport].custom)},
   {id:'as',lab:'🏟️ Projet de jeu AS',ok:()=>listReferentiels().length>0}];
 function seqPickRowHtml(q,isAS,refs){const qi=esc(q.id);const cur=isAS?'as':'cedreps';
   const A=EDT_APSA.slice();if(q.sport&&A.indexOf(q.sport)<0)A.unshift(q.sport);
@@ -26769,6 +26769,92 @@ lx2Did=function(){const all=lx2All();let sp=LIBX.sp&&all.indexOf(LIBX.sp)>=0?LIB
 (function(){const st=document.createElement('style');st.textContent='html body .lx2-nom{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:8px 0 0;}html body .lx2-nom button{border:1px solid var(--border);background:#0f172a;color:var(--text);border-radius:999px;padding:5px 11px;font-size:.78rem;font-weight:700;cursor:pointer;}html body .lx2-nom button.on{background:#15803d;border-color:#22c55e;color:#fff;}'
 +'html body .lx2-res > summary{font-size:.86rem;}html body .lx2-amplifier{border-color:#f59e0b;}html body .lx2-amplifier > summary{color:#fcd34d;}'
 +'html body .lx2-prof{border:1px dashed #f59e0b;border-radius:8px;padding:6px 8px;margin-top:8px;font-size:.8rem;}html body .lx2-pr{margin:5px 0;}html body .lx2-pr small{display:block;color:#fde68a;margin:3px 0 0 4px;font-size:.74rem;}';document.head.appendChild(st);})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v366 — LIAISON BIBLIOTHÈQUE DIDACTIQUE ↔ SÉQUENCE + DUPLICATION
+// • ⧉ Dupliquer un objet (CEDREPS ou énactive) : la copie se modifie,
+//   l'original reste. ↺ Version d'origine pour revenir au texte de départ.
+// • Les objets EPS énactive deviennent des objets de séquence : expériences
+//   à vivre = fils rouges micro → CP (intention · action · perception),
+//   Amplifier = fils rouges macro, FPS liée à l'espace d'action.
+// • Dans la séquence, chaque objet choisi se déplie (lecture) ; « Dupliquer
+//   pour cette séquence » crée une copie propre, modifiable sur place,
+//   sans toucher la bibliothèque d'origine.
+// ══════════════════════════════════════════════════════════════════════
+lx2Ced=function(k){const r=REMED_CONTENT&&REMED_CONTENT[k];return r&&!r.custom?(r.oe||[]).filter(o=>!o._en):[];};
+function lx2Uid(){return Date.now().toString(36).slice(-5)+Math.floor(Math.random()*1296).toString(36);}
+function lx2ClsName(q){try{const C=JSON.parse(localStorage.getItem('grib_classes_v1')||'{}');const c=(C.list||[]).find(x=>x.id===q.classeId);return c?c.nom:'';}catch(e){return '';}}
+// ── objets énactifs vus comme objets de séquence ──
+function enVirt(sp,F){const R=enResOf(F);const fid='enac-'+F.id;
+  return {id:fid,_en:F.id,short:'🌱 '+(F.titre||'Espace d\'action encouragée'),label:F.eae?String(F.eae).split(/\.\s/)[0]+'.':(F.titre||''),sub:F.titre||'',macroLabels:(R.amplifier||[]).slice(),media:F.media||null,
+    micro:(F.exps||[]).map((X,i)=>{const xid='enac-'+(X.id||(F.id+'-x'+i));return {id:xid,label:'Exp'+(i+1)+' — '+(X.titre||''),states:[{id:'respecte',label:'Expérience vécue : '+(X.titre||'')},{id:'non_respecte',label:'Pas encore vécue (à travailler).'}],media:X.media||null,
+      cps:[{id:xid+'-cp',label:X.titre||('Expérience '+(i+1)),attendu:{intention:X.intention||'',action:X.action||'',perception:X.perception||''},exercices:[],media:X.media||null}]};})};}
+function enInject(){if(typeof REMED_CONTENT==='undefined'||!REMED_CONTENT)return;try{Object.keys(REMED_CONTENT).forEach(sp=>{const sd=REMED_CONTENT[sp];if(sd&&Array.isArray(sd.oe))for(let i=sd.oe.length-1;i>=0;i--)if(sd.oe[i]&&sd.oe[i]._en)sd.oe.splice(i,1);});
+  const o=enLoad();Object.keys(o).forEach(sp=>{if(sp.charAt(0)==='_')return;const L=(o[sp]&&o[sp].fiches)||[];if(!L.length)return;let sd=REMED_CONTENT[sp];if(!sd){sd=REMED_CONTENT[sp]={id:sp,label:cuSpLabel(sp),icon:(String(lx2Name(sp)).split(' ')[0]||'🏅'),oe:[],_userSport:true};}if(sd.custom)return;L.forEach(F=>sd.oe.push(enVirt(sp,F)));});}catch(e){console.warn('enInject',e);}}
+enSave=(function(f){return function(){const r=f.apply(this,arguments);enInject();return r;};})(enSave);
+initRemediation=(function(f){return function(){const r=f.apply(this,arguments);enInject();return r;};})(initRemediation);
+try{enInject();}catch(e){}
+// situations liées à une expérience = situations de son CP (séance, remédiation)
+function enPath(sp,F,X){const xid='enac-'+X.id;return [sp,'enac-'+F.id,xid,xid+'-cp'].join('|');}
+enSit=(function(f){return function(sp,id,i,lid){const r=f.apply(this,arguments);try{const o=enLoad();const F=(enSp(o,sp).fiches||[]).find(x=>x.id===id);const X=F&&F.exps[i];if(!X||!X.id)return r;const path=enPath(sp,F,X);const on=(X.sits||[]).indexOf(lid)>=0;
+  const a=libLoad().slice();const it=a.find(x=>x.id===lid);if(!it)return r;it.cpAlso=Array.isArray(it.cpAlso)?it.cpAlso:[];
+  if(on){if(it.cp!==path&&it.cpAlso.indexOf(path)<0){if(!it.cp)it.cp=path;else it.cpAlso.push(path);}}else{if(it.cp===path){it.cp=it.cpAlso[0]||'';it.cpAlso=it.cpAlso.slice(1);}else it.cpAlso=it.cpAlso.filter(p=>p!==path);}libSave(a);}catch(e){console.warn('enSit sync',e);}return r;};})(enSit);
+(function(){try{const o=enLoad();const a=libLoad().slice();let ch=false;Object.keys(o).forEach(sp=>{if(sp.charAt(0)==='_')return;((o[sp]||{}).fiches||[]).forEach(F=>(F.exps||[]).forEach(X=>{if(!X.id)return;const p=enPath(sp,F,X);(X.sits||[]).forEach(lid=>{const it=a.find(x=>x.id===lid);if(!it)return;it.cpAlso=Array.isArray(it.cpAlso)?it.cpAlso:[];if(it.cp!==p&&it.cpAlso.indexOf(p)<0){if(!it.cp)it.cp=p;else it.cpAlso.push(p);ch=true;}});}));});if(ch)libSave(a);}catch(e){}})();
+// FPS d'un objet énactif = FPS liée à son espace d'action
+fpsForOe=(function(f){return function(q,oe){try{if(String(oe).indexOf('enac-')===0&&!(fpsA(q,oe)&&fpsA(q,oe).id)){const fid=String(oe).slice(5);const S=enLoad();let F=null;Object.keys(S).forEach(sp=>{if(sp.charAt(0)!=='_'&&!F)F=((S[sp]||{}).fiches||[]).find(x=>x.id===fid)||null;});const C=seqFpsCands(q);const id=F&&(F.fps||[]).find(x=>C.some(c=>c.id===x));if(id)return id;}}catch(e){}return f.apply(this,arguments);};})(fpsForOe);
+function enMakeFps(sp,id){const o=enLoad();const F=(enSp(o,sp).fiches||[]).find(x=>x.id===id);if(!F)return;const lid='lib-en-'+F.id;const a=libLoad().slice();
+  if(!a.some(x=>x.id===lid)){a.push({id:lid,kind:'match',titre:F.titre||'FPS',objectif:'',minJ:0,desc:[F.eae,F.regles].filter(Boolean).join('\n'),image:null,video:null,criteres:[],roles:[],apsa:(REMED_CONTENT[sp]&&REMED_CONTENT[sp].label)||cuSpLabel(sp),oe:'enac-'+F.id,oeLab:F.titre||'',cp:'',oeAlso:[],cpAlso:[],tags:['EPS énactive'],date:Date.now(),regleAlsoLabels:[],principes:[]});libSave(a);}
+  F.fps=F.fps||[];if(F.fps.indexOf(lid)<0)F.fps.push(lid);enSave(o);try{toast2('⚽ FPS créée depuis l\'espace d\'action');}catch(e){}renderLibTab();}
+// ── duplication ──
+function cuDup(sp,oe,tag){const O=libxNode(sp,oe);const sd=REMED_CONTENT[sp];if(!O||!sd)return null;const pre=stripAccents(sp).toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,8)||'apsa';const nid=pre+'-c'+lx2Uid();
+  const c=JSON.parse(JSON.stringify(O));delete c._macroEd;c.id=nid;c._user=true;c.short=(O.short||O.id)+(tag?' ('+tag.lab+')':' (copie)');c._orig=O._orig||O.id;if(tag){c._seq=tag.seq;c._seqLab=tag.lab;}else{delete c._seq;delete c._seqLab;}
+  const map={};(c.micro||[]).forEach((M,i)=>{const mid=nid+'-frm'+(i+1);(M.cps||[]).forEach((C,j)=>{const cid=mid+'-cp'+(j+1);map[[sp,oe,M.id,C.id].join('|')]=[sp,nid,mid,cid].join('|');C.id=cid;});M.id=mid;});
+  const ix=sd.oe.indexOf(O);sd.oe.splice(ix>=0?ix+1:sd.oe.length,0,c);CU_READY=true;libxSave();
+  try{const a=libLoad().slice();let ch=false;a.forEach(it=>{if(!it||it.kind!=='remed')return;[it.cp].concat(it.cpAlso||[]).forEach(p=>{if(p&&map[p]){it.cpAlso=Array.isArray(it.cpAlso)?it.cpAlso:[];if(it.cpAlso.indexOf(map[p])<0){it.cpAlso.push(map[p]);ch=true;}}});});if(ch)libSave(a);}catch(e){}
+  return nid;}
+function enDup(sp,id,tag){const o=enLoad();const S=enSp(o,sp);const F=(S.fiches||[]).find(x=>x.id===id);if(!F)return null;const c=JSON.parse(JSON.stringify(F));c.id=enUid();c.res=enResOf(F);delete c.amplif;delete c.ressorts;c.titre=(F.titre||'Objet')+(tag?' ('+tag.lab+')':' (copie)');c._orig=F._orig||F.id;if(tag){c.seq=tag.seq;c.seqLab=tag.lab;}else{delete c.seq;delete c.seqLab;}
+  (c.exps||[]).forEach(X=>{X.id=c.id+'_x'+lx2Uid();});const ix=S.fiches.indexOf(F);S.fiches.splice(ix+1,0,c);enSave(o);
+  try{const a=libLoad().slice();let ch=false;(c.exps||[]).forEach(X=>(X.sits||[]).forEach(lid=>{const it=a.find(x=>x.id===lid);if(!it)return;const p=enPath(sp,c,X);it.cpAlso=Array.isArray(it.cpAlso)?it.cpAlso:[];if(it.cpAlso.indexOf(p)<0){it.cpAlso.push(p);ch=true;}}));if(ch)libSave(a);}catch(e){}
+  return c.id;}
+function lx2DupCed(sp,oe){const n=cuDup(sp,oe);if(!n)return;const k='c|'+sp+'|'+n;LIBX.open[k]=true;LIBX.open[k+'|o']=true;try{toast2('⧉ Copie créée : modifie-la, l\'original reste intact');}catch(e){}renderLibTab();}
+function lx2DupEn(sp,id){const n=enDup(sp,id);if(!n)return;LIBX.open['en|'+sp+'|'+n]=true;LIBX.open['en|'+sp+'|'+n+'|e']=true;try{toast2('⧉ Copie créée : modifie-la, l\'original reste intact');}catch(e){}renderLibTab();}
+// ── version d'origine ──
+function lx2SeedEn(id){let r=null;Object.keys(ENAC_SEED).forEach(k=>(ENAC_SEED[k]||[]).forEach(f=>{if(f.id===id)r=f;}));return r;}
+function lx2SeedCu(sp,id){const D=CU_SEED[sp];return D?(D.oe||[]).find(x=>x.id===id)||null:null;}
+function lx2HasOrig(sp,O){if(!O._user)return !!(REMEDIATION_DATA[sp]&&(REMEDIATION_DATA[sp].oe||[]).some(x=>x.id===O.id));return !!lx2SeedCu(sp,O.id);}
+function cedReset(sp,oe){if(!confirm('Revenir à la version d\'origine de cet objet ? Tes modifications de textes seront perdues (les vidéos et situations liées restent).'))return;const O=libxNode(sp,oe);if(!O)return;
+  if(O._user){const S=lx2SeedCu(sp,oe);if(!S)return;const keep={media:O.media};Object.keys(O).forEach(k=>delete O[k]);Object.assign(O,JSON.parse(JSON.stringify(S)),{_user:true},keep.media?{media:keep.media}:{});libxSave();renderLibTab();return;}
+  try{const E0=JSON.parse(localStorage.getItem('grib_remed_edits_v1')||'{}');if(E0[sp]&&E0[sp][oe]){const med=E0[sp][oe].media;delete E0[sp][oe];if(med)E0[sp][oe]={media:med};localStorage.setItem('grib_remed_edits_v1',JSON.stringify(E0));}initRemediation();}catch(e){console.warn(e);}renderLibTab();}
+function enReset(sp,id){const S=lx2SeedEn(id);if(!S)return;if(!confirm('Revenir à la version d\'origine de cet objet ? Tes modifications de textes seront perdues.'))return;enMut(o=>{const L=enSp(o,sp).fiches;const i=L.findIndex(x=>x.id===id);if(i<0)return;const old=L[i];const n=JSON.parse(JSON.stringify(S));n.fps=old.fps;n.media=old.media;(n.exps||[]).forEach((X,j)=>{const ox=(old.exps||[]).find(y=>y.id===X.id);if(ox){X.sits=ox.sits||[];X.media=ox.media;}});L[i]=n;});}
+// ── barre d'actions sur chaque objet de la bibliothèque ──
+function lx2Bar(h,bar){const k=h.indexOf('<'+'div class="lx2-b">');return k<0?h:h.slice(0,k)+'<'+'div class="lx2-b"><'+'div class="lx2-bar">'+bar+'</'+'div>'+h.slice(k+19);}
+lx2CedObj=(function(f){return function(sp,O,lib){const h=f.apply(this,arguments);const q=lx2Q;
+  return lx2Bar(h,'<button type="button" onclick="lx2DupCed('+esc(q(sp))+','+esc(q(O.id))+')">⧉ Dupliquer</button>'+(lx2HasOrig(sp,O)?'<button type="button" onclick="cedReset('+esc(q(sp))+','+esc(q(O.id))+')">↺ Version d\'origine</button>':'')+(O._seqLab?'<span class="lx2-cp-tag">✂️ copie pour la séquence '+esc(O._seqLab)+'</span>':O._orig?'<span class="lx2-cp-tag">⧉ copie</span>':''));};})(lx2CedObj);
+lx2EnObj=(function(f){return function(sp,F,lib){let h=f.apply(this,arguments);const q=lx2Q;
+  h=h.replace('<span class="cc-dim">FPS liée :</span>','<span class="cc-dim">FPS liée :</span>'+(!(F.fps||[]).length?'<button type="button" class="lx-add" onclick="enMakeFps('+esc(q(sp))+','+esc(q(F.id))+')">⚽ Créer la FPS depuis cet espace</button>':''));
+  return lx2Bar(h,'<button type="button" onclick="lx2DupEn('+esc(q(sp))+','+esc(q(F.id))+')">⧉ Dupliquer</button>'+(lx2SeedEn(F.id)?'<button type="button" onclick="enReset('+esc(q(sp))+','+esc(q(F.id))+')">↺ Version d\'origine</button>':'')+(F.seqLab?'<span class="lx2-cp-tag">✂️ copie pour la séquence '+esc(F.seqLab)+'</span>':F._orig?'<span class="lx2-cp-tag">⧉ copie</span>':''));};})(lx2EnObj);
+// ── dans la séquence : l'objet se déplie, copie propre à la séquence ──
+function seqObjDup(qid,oe){const q=seqGet(qid);if(!q)return;const sp=q.sport;const tag={seq:q.id,lab:lx2ClsName(q)||q.nom||'séquence'};let n=null;
+  if(String(oe).indexOf('enac-')===0){const id=enDup(sp,String(oe).slice(5),tag);if(id)n='enac-'+id;}else n=cuDup(sp,oe,tag);if(!n)return;
+  seqUpdate(qid,x=>{const old=fpsForOe(x,oe);x.oeIds=(x.oeIds||[]).map(o=>o===oe?n:o);x.fpsA=x.fpsA||{};const a=x.fpsA[oe];x.fpsA[n]=a?JSON.parse(JSON.stringify(a)):(old?{id:old}:null);if(!x.fpsA[n])delete x.fpsA[n];});
+  LIBX.open['sq|'+n]=true;LIBX.open[(n.indexOf('enac-')===0?'en|'+sp+'|'+n.slice(5):'c|'+sp+'|'+n)]=true;try{toast2('✂️ Copie pour cette séquence : modifie-la ici, l\'original reste dans la bibliothèque');}catch(e){}renderSeqTab();}
+function seqObjLib(sp,oe){LIBX.shelf='did';LIBX.sp=sp;LIBX.nf='all';if(String(oe).indexOf('enac-')===0)LIBX.open['en|'+sp+'|'+String(oe).slice(5)]=true;else LIBX.open['c|'+sp+'|'+oe]=true;goTab('t-lib');renderLibTab();}
+function seqObjHtml(q){const sd=seqSd(q);if(!sd||sd.custom)return '';const sp=q.sport;const lib=libLoad();const qq=lx2Q;let h='';
+  (q.oeIds||[]).forEach(oe=>{const O=(sd.oe||[]).find(x=>x.id===oe);if(!O)return;let inner='',mine=false;
+    if(O._en){const F=((enLoad()[sp]||{}).fiches||[]).find(x=>x.id===O._en);if(!F)return;mine=F.seq===q.id;inner=lx2EnObj(sp,F,lib);}else{mine=O._seq===q.id;inner=lx2CedObj(sp,O,lib);}
+    const bar=mine?'<'+'div class="sq-obj-note">✂️ Copie propre à cette séquence : tu peux tout modifier ici, l\'original reste intact dans la bibliothèque.</'+'div>'
+      :'<'+'div class="lx-chips"><button type="button" class="lx-addb" onclick="seqObjDup('+esc(qq(q.id))+','+esc(qq(oe))+')">✂️ Dupliquer pour l\'adapter à cette séquence</button><button type="button" class="lx-mb" onclick="seqObjLib('+esc(qq(sp))+','+esc(qq(oe))+')">📘 Ouvrir dans la bibliothèque</button></'+'div>';
+    h+='<'+'details class="sq-obj'+(mine?'':' lx2-ro')+'" data-k="sq|'+esc(oe)+'"'+(LIBX.open['sq|'+oe]?' open':'')+'><summary>📖 '+esc(O.short||O.label)+' <small>'+(mine?'copie de la séquence · modifiable':'bibliothèque · lecture')+'</small></summary>'+bar+inner+'</details>';});
+  return h?'<'+'div class="sq-objs">'+h+'</'+'div>':'';}
+renderSeqTab=(function(f){return function(){const r=f.apply(this,arguments);try{const q=SEQ_UI&&SEQ_UI.open?seqGet(SEQ_UI.open):null;if(!q)return r;const host=E('t-seq');const row=host&&[...host.querySelectorAll('.seq-ed .remed-chip-row')].find(x=>x.querySelector('[data-oe]'));if(!row)return r;
+  const html=seqObjHtml(q);if(!html)return r;row.insertAdjacentHTML('afterend',html);const box=row.nextElementSibling;
+  box.addEventListener('toggle',e=>{const d=e.target;if(!d||!d.dataset||!d.dataset.k)return;LIBX.open[d.dataset.k]=d.open;if(d.open)d.querySelectorAll('textarea.lx2-t').forEach(lx2Fit);},true);box.querySelectorAll('textarea.lx2-t').forEach(lx2Fit);
+  box.querySelectorAll('.lx2-ro textarea').forEach(t=>{t.readOnly=true;});}catch(e){console.warn('seqObj',e);}return r;};})(renderSeqTab);
+// une action de la bibliothèque faite depuis la séquence redessine la séquence
+renderLibTab=(function(f){return function(){const r=f.apply(this,arguments);try{const t=E('t-seq');if(t&&t.classList.contains('active')&&SEQ_UI&&SEQ_UI.open)renderSeqTab();}catch(e){}return r;};})(renderLibTab);
+(function(){const st=document.createElement('style');st.textContent='html body .lx2-bar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:6px 0 2px;}html body .lx2-bar button{border:1px solid #334155;background:#111827;color:#e2e8f0;border-radius:8px;padding:5px 10px;font-size:.76rem;font-weight:700;cursor:pointer;}html body .lx2-cp-tag{font-size:.72rem;color:#fcd34d;font-weight:700;}'
++'html body .sq-objs{margin:8px 0;}html body .sq-obj{border:1px solid #334155;border-radius:10px;margin:6px 0;background:#0b1324;}html body .sq-obj > summary{cursor:pointer;padding:8px 12px;font-weight:700;font-size:.86rem;}html body .sq-obj > summary small{font-weight:500;color:var(--dim2);font-size:.72rem;margin-left:6px;}html body .sq-obj > *:not(summary){margin:0 10px 8px;}'
++'html body .sq-obj-note{font-size:.76rem;color:#fcd34d;margin:4px 10px 8px;}html body .lx2-ro .lx2-t{pointer-events:none;border-bottom-color:transparent;}html body .lx2-ro .lx2-bar,html body .lx2-ro .lx2-b button:not(.lx-addb),html body .lx2-ro .lx2-b select,html body .lx2-ro .lx2-b .lx-addb,html body .lx2-ro .lx-sit button{display:none;}html body .lx2-ro .lx2-t:placeholder-shown{display:none;}';document.head.appendChild(st);})();
 </script>
 </body>
 </html>
