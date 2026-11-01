@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v356</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v357</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v356</title>
+<title>Gribouillis EPS v357</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -26200,6 +26200,77 @@ renderSeanceTab=(function(f){return function(){const r=f.apply(this,arguments);t
   host.querySelectorAll('button').forEach(b=>{const oc=b.getAttribute('onclick')||'';const t=b.textContent||'';if((/setSeanceMode\('eleve'\)/.test(oc)||/Envoyer aux élèves|Lien \+ code pour les élèves/.test(t))&&b.style.display==='none')b.style.display='';});
   const box=host.querySelector('.el-box');if(box&&!box.closest('details.el-wrap')){const d=document.createElement('details');d.className='el-wrap';d.innerHTML='<summary>📲 App tablettes (nouvelle version, en essai)</summary>';box.insertAdjacentElement('beforebegin',d);d.appendChild(box);}}catch(e){console.warn('v356',e);}return r;};})(renderSeanceTab);
 (function(){const st=document.createElement('style');st.textContent='html body details.el-wrap{margin:0 0 10px;}html body details.el-wrap > summary{cursor:pointer;color:#67e8f9;font-size:.8rem;min-height:30px;display:flex;align-items:center;}';document.head.appendChild(st);})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v357 — ÉCRAN BILAN : sous la transcription, pour l'équipe affichée :
+// ① ses résultats macro (objectifs du profil : atteint / pas atteint),
+// ② ses fils rouges micro en langage élève (Oui / Non, ou élève par élève),
+// chacun une seule fois, ③ un « Non » ouvre les CP liés et leurs situations
+// (bibliothèque) ; toucher une situation = projet d'entraînement de l'équipe
+// (gardé dans la séance). Réponses gardées avec le match (archives).
+// ══════════════════════════════════════════════════════════════════════
+const FRB={ti:0,showInd:null,oe:null};
+function frbSport(){const s=getActiveSeance();if(s&&s.sport===CFG.apsa&&seanceSportDef(s))return {s:s,sd:seanceSportDef(s),R:seanceRefId(s)};const sd=(typeof REMED_CONTENT!=='undefined'&&REMED_CONTENT[CFG.apsa])||null;return {s:null,sd:sd,R:CFG.apsa};}
+function frbOes(){const X=frbSport();if(!X.sd)return [];const all=X.sd.oe||[];let ids=[];if(X.s&&X.s.oeId)ids=[X.s.oeId].concat(X.s.oeExtra||[]);const L=ids.map(id=>all.find(o=>o.id===id)).filter(Boolean);return L.length?L:all;}
+function frbArch(){try{const i=window._lastArchiveIndex;return (typeof i==='number'&&archives[i])?archives[i]:null;}catch(e){return null;}}
+function frbData(ti){const a=frbArch();const holder=a||(FRB.mem=FRB.mem||{});holder.frBilan=holder.frBilan||{};const d=holder.frBilan[ti]=holder.frBilan[ti]||{micro:{},ind:{},proj:null,oe:null};return d;}
+function frbSave(){try{if(frbArch())saveArchives();}catch(e){}}
+function frbMicroLab(m){if(m.eleve&&String(m.eleve).trim())return String(m.eleve).trim();const st=(m.states||[])[0];const t=st?eleveState(m,st):'';return t||String(m.label||'').replace(/^Frm\d+\s*[—-]\s*/,'');}
+function frbMicros(oe){const seen={};const out=[];(oe.micro||[]).forEach(m=>{if(m.hidden)return;const k=stripAccents(frbMicroLab(m)).toLowerCase().replace(/\s+/g,' ').trim();if(seen[k]){seen[k].also.push(m);return;}const it={m:m,also:[],lab:frbMicroLab(m)};seen[k]=it;out.push(it);});return out;}
+function frbCps(oe,it,R){const seen={};const out=[];const lib=libLoad().filter(x=>x&&x.kind==='remed');[it.m].concat(it.also).forEach(m=>(m.cps||[]).forEach(cp=>{const lab=eleveCp(cp);const k=stripAccents(lab).toLowerCase();let c=seen[k];if(!c){c=seen[k]={lab:lab,act:(cp.attendu&&cp.attendu.action)||'',paths:[],sit:[]};out.push(c);}
+  const p=remedCpPath(R,oe.id,m.id,cp.id);c.paths.push(p);(cp.exercices||[]).forEach(e=>{const t=e&&(e.titre||e.label||e.nom);if(t&&!c.sit.some(x=>x.t===t))c.sit.push({t:t,p:p});});
+  lib.forEach(x=>{if((x.cp===p||(x.cpAlso||[]).indexOf(p)>=0)&&!c.sit.some(y=>y.t===x.titre))c.sit.push({t:x.titre,p:p,lib:x.id});});}));return out;}
+function frbSet(ti,id,v){const d=frbData(ti);d.micro[id]=d.micro[id]===v?undefined:v;frbSave();frbRender(ti);}
+function frbInd(ti,id,p,v){const d=frbData(ti);d.ind[id]=d.ind[id]||{};d.ind[id][p]=d.ind[id][p]===v?undefined:v;frbSave();frbRender(ti);}
+function frbOe(ti,id){const d=frbData(ti);d.oe=id;frbSave();frbRender(ti);}
+function frbPick(ti,oeId,mid,ci,si){const X=frbSport();const oe=frbOes().find(o=>o.id===oeId);if(!oe)return;const it=frbMicros(oe).find(x=>x.m.id===mid);if(!it)return;const c=frbCps(oe,it,X.R)[ci];const st=c&&c.sit[si];if(!c)return;
+  const d=frbData(ti);d.proj={oe:oeId,frm:mid,cp:c.lab,path:c.paths[0],sit:st?st.t:'',lib:st&&st.lib||null,t:Date.now()};frbSave();
+  try{const s=X.s;const team=teamsNames[ti];if(s&&team){const P=pjStore(s);const prev=P[team]||{};P[team]=Object.assign(prev,{oe:oeId,rank:[mid],frm:mid,frmLab:pjNeg(it.m),ind:pjInd(it.m),cpPath:c.paths[0],exoId:st&&st.lib||null,score:0,t:Date.now(),src:'bilan'});saveSeances();}}catch(e){console.warn('frb proj',e);}
+  try{toast2('🎯 Projet d\'entraînement : '+c.lab);}catch(e){}frbRender(ti);}
+function frbRender(ti){FRB.ti=ti;let host=E('frb-panel');const strip=E('audio-transcript-strip');if(!strip)return;if(!host){host=document.createElement('div');host.id=['frb','panel'].join('-');strip.insertAdjacentElement('afterend',host);}
+  try{const X=frbSport();const team=(teamsNames&&teamsNames[ti])||('Équipe '+(ti+1));const d=frbData(ti);
+  // ① macro
+  let mac=[];try{mac=computeRemedMacroObjectives(ti)||[];}catch(e){}
+  let h='<'+'div class="frb-hd"><b>🎯 Bilan de '+esc(team)+'</b><span>à donner aux joueurs</span></'+'div>';
+  if(mac.length)h+='<'+'div class="frb-mac">'+mac.map(o=>{const st=o.state;const cls=st==='ok'||st==='reached'||st==='atteint'?'ok':(st==='info'?'info':(st==='pending'||st==='attente'?'info':'ko'));const val=(o.actualPct!=null?Math.round(o.actualPct):'–')+(o.unit===''?'':' %');
+    return '<'+'div class="frb-m '+cls+'"><span>'+esc(o.label)+'</span><b>'+esc(String(val))+'</b>'+(o.targetNum!=null?'<i>'+(cls==='ok'?'✓ objectif atteint':'objectif '+(o.neg?'≤ ':'≥ ')+o.targetNum+(o.unit===''?'':' %'))+'</i>':'<i>pas d\'objectif chiffré</i>')+'</'+'div>';}).join('')+'</'+'div>';
+  if(!mac.length)h+='<'+'div class="frb-dim">Pas d\'objectif chiffré (fil rouge macro) dans le profil d\'observation de ce match.</'+'div>';
+  // ② micro
+  const O=frbOes();if(!O.length){host.innerHTML=h+'<'+'div class="frb-dim">Pas de fils rouges pour ce sport.</'+'div>';return;}
+  let oe=O.find(o=>o.id===d.oe)||O[0];
+  h+='<'+'div class="frb-sub">Ce qu\'on a vu <span>— fils rouges micro'+(O.length>1?'':' · '+esc(oe.short||oe.label||''))+'</span></'+'div>';
+  if(O.length>1)h+='<'+'div class="frb-oes">'+O.map(o=>'<button type="button" class="'+(o.id===oe.id?'on':'')+'" onclick="frbOe('+ti+',\''+esc(o.id)+'\')">'+esc(o.short||o.label)+'</button>').join('')+'</'+'div>';
+  const P=(()=>{try{return getPlayersForTeam(team)||[];}catch(e){return [];}})();
+  frbMicros(oe).forEach(it=>{const id=it.m.id;const v=d.micro[id];const ind=(d.ind[id])||{};const no=v==='n'||Object.keys(ind).some(k=>ind[k]==='n');const who=Object.keys(ind).filter(k=>ind[k]==='n');
+    h+='<'+'div class="frb-fr'+(v==='y'?' y':no?' n':'')+'"><'+'div class="frb-q">'+esc(it.lab)+'</'+'div><'+'div class="frb-yn"><button type="button" class="y'+(v==='y'?' on':'')+'" onclick="frbSet('+ti+',\''+esc(id)+'\',\'y\')">Oui</button><button type="button" class="n'+(v==='n'?' on':'')+'" onclick="frbSet('+ti+',\''+esc(id)+'\',\'n\')">Non</button>'
+      +(P.length?'<button type="button" class="ind" onclick="FRB.showInd=FRB.showInd===\''+esc(id)+'\'?null:\''+esc(id)+'\';frbRender('+ti+')">'+(FRB.showInd===id?'masquer':'élève par élève')+'</button>':'')+'</'+'div>';
+    if(FRB.showInd===id&&P.length)h+='<'+'div class="frb-pl">'+P.map(p=>{const pe=esc(p).replace(/'/g,"\\'");return '<'+'div><span>'+esc(p)+'</span><span><button type="button" class="'+(ind[p]==='y'?'y':'')+'" onclick="frbInd('+ti+',\''+esc(id)+'\',\''+pe+'\',\'y\')">oui</button><button type="button" class="'+(ind[p]==='n'?'n':'')+'" onclick="frbInd('+ti+',\''+esc(id)+'\',\''+pe+'\',\'n\')">non</button></span></'+'div>';}).join('')+'</'+'div>';
+    if(no){const C=frbCps(oe,it,X.R);h+='<'+'div class="frb-cps"><span class="frb-arrow">↳ À travailler'+(who.length?' ('+esc(who.join(', '))+')':'')+'</span>'
+      +C.map((c,ci)=>'<'+'div class="frb-cp"><b>'+esc(c.lab)+'</b>'+(c.act?'<small>'+esc(c.act.length>170?c.act.slice(0,168)+'…':c.act)+'</small>':'')+'<'+'div class="frb-sit">'+(c.sit.length?c.sit.map((x,si)=>'<button type="button" class="'+(d.proj&&d.proj.cp===c.lab&&d.proj.sit===x.t?'on':'')+'" onclick="frbPick('+ti+',\''+esc(oe.id)+'\',\''+esc(id)+'\','+ci+','+si+')">▶ '+esc(x.t)+'</button>').join(''):'<button type="button" class="'+(d.proj&&d.proj.cp===c.lab&&!d.proj.sit?'on':'')+'" onclick="frbPick('+ti+',\''+esc(oe.id)+'\',\''+esc(id)+'\','+ci+',-1)">🎯 Choisir ce contenu</button><span class="frb-dim">pas encore de situation liée</span>')+'</'+'div></'+'div>').join('')+'</'+'div>';}
+    h+='</'+'div>';});
+  // ③ projet
+  if(d.proj)h+='<'+'div class="frb-proj"><span>Notre projet d\'entraînement</span><b>'+esc(d.proj.cp)+'</b>'+(d.proj.sit?'<em>Situation : '+esc(d.proj.sit)+'</em>':'')+'<small>Gardé pour la suite de la séance et les séances suivantes.</small></'+'div>';
+  host.innerHTML=h;}catch(e){console.warn('frb',e);host.innerHTML='';}}
+showAudioSlotForTeam=(function(f){return function(ti){const r=f.apply(this,arguments);try{frbRender(ti===1?1:0);}catch(e){}return r;};})(showAudioSlotForTeam);
+(function(){const st=document.createElement('style');st.textContent=
+ 'html body #frb-panel{display:flex;flex-direction:column;gap:8px;padding:10px 12px 16px;background:var(--panel);border-top:1px solid var(--border);}'
++'html body .frb-hd{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;}html body .frb-hd b{font-size:1rem;}html body .frb-hd span{font-size:.72rem;color:var(--dim2);text-transform:uppercase;letter-spacing:.05em;}'
++'html body .frb-mac{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:6px;}html body .frb-m{display:flex;flex-direction:column;gap:1px;border-radius:12px;padding:8px 10px;background:#0f172a;border:1px solid #1e293b;}'
++'html body .frb-m span{font-size:.74rem;color:#cbd5e1;}html body .frb-m b{font-size:1.35rem;font-variant-numeric:tabular-nums;}html body .frb-m i{font-style:normal;font-size:.72rem;font-weight:800;}'
++'html body .frb-m.ok{border-color:#16a34a;background:rgba(22,163,74,.12);}html body .frb-m.ok i{color:#4ade80;}html body .frb-m.ko{border-color:#ea580c;background:rgba(234,88,12,.12);}html body .frb-m.ko i{color:#fb923c;}html body .frb-m.info i{color:#94a3b8;}'
++'html body .frb-sub{font-weight:800;margin-top:6px;}html body .frb-sub span{font-weight:400;color:var(--dim2);font-size:.8rem;}html body .frb-dim{font-size:.74rem;color:var(--dim2);}'
++'html body .frb-oes{display:flex;gap:6px;flex-wrap:wrap;}html body .frb-oes button{border:1px solid #334155;background:#0f172a;color:#cbd5e1;border-radius:999px;padding:5px 12px;font-size:.78rem;font-weight:700;cursor:pointer;}html body .frb-oes button.on{border-color:#facc15;color:#fff;}'
++'html body .frb-fr{border:1px solid #1e293b;border-radius:12px;padding:9px 11px;display:flex;flex-direction:column;gap:7px;background:#0f172a;}html body .frb-fr.y{border-color:#16a34a;}html body .frb-fr.n{border-color:#ea580c;}'
++'html body .frb-q{font-weight:700;font-size:.9rem;line-height:1.35;}html body .frb-yn{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}'
++'html body .frb-yn button{border:2px solid #334155;background:#111827;color:#e2e8f0;border-radius:10px;padding:6px 16px;font-weight:800;cursor:pointer;min-width:64px;}html body .frb-yn .y.on{border-color:#22c55e;background:rgba(34,197,94,.2);}html body .frb-yn .n.on{border-color:#f97316;background:rgba(249,115,22,.2);}'
++'html body .frb-yn .ind{border:none;background:none;color:#94a3b8;text-decoration:underline;min-width:0;padding:4px;font-weight:600;}'
++'html body .frb-pl{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:5px;}html body .frb-pl > div{display:flex;justify-content:space-between;align-items:center;gap:6px;background:#111827;border-radius:8px;padding:4px 8px;font-size:.82rem;}'
++'html body .frb-pl button{border:1px solid #334155;background:#0f172a;color:#cbd5e1;border-radius:7px;padding:2px 7px;margin-left:3px;font-weight:800;font-size:.74rem;cursor:pointer;}html body .frb-pl button.y{border-color:#22c55e;color:#4ade80;}html body .frb-pl button.n{border-color:#f97316;color:#fb923c;}'
++'html body .frb-cps{border-left:3px solid #a78bfa;margin-left:4px;padding-left:10px;display:flex;flex-direction:column;gap:6px;}html body .frb-arrow{color:#c4b5fd;font-weight:800;font-size:.78rem;}'
++'html body .frb-cp{background:#111827;border:1px solid rgba(167,139,250,.45);border-radius:10px;padding:7px 9px;display:flex;flex-direction:column;gap:4px;}html body .frb-cp b{color:#c4b5fd;font-size:.86rem;}html body .frb-cp small{color:#94a3b8;font-size:.74rem;}'
++'html body .frb-sit{display:flex;gap:5px;flex-wrap:wrap;align-items:center;}html body .frb-sit button{border:1px solid #334155;background:#0f172a;color:#e2e8f0;border-radius:999px;padding:5px 11px;font-size:.78rem;font-weight:700;cursor:pointer;}html body .frb-sit button.on{border-color:#a78bfa;background:rgba(167,139,250,.22);}'
++'html body .frb-proj{border:2px dashed #a78bfa;border-radius:12px;padding:9px 11px;display:flex;flex-direction:column;gap:2px;}html body .frb-proj span{font-size:.7rem;font-weight:800;color:#c4b5fd;text-transform:uppercase;letter-spacing:.05em;}html body .frb-proj em{font-style:normal;font-size:.84rem;}html body .frb-proj small{color:#94a3b8;font-size:.72rem;}';
+document.head.appendChild(st);})();
 </script>
 </body>
 </html>
