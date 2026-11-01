@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fiches demi-fond</title>
+<link rel="icon" href="favicon-32.png">
+<style>
+:root{--ink:#111;--line:#222;--grey:#d9d9d9;--ui:#f4f1ea;--uiink:#2b2b2b;--acc:#1f5fbf}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Times New Roman",Times,serif;background:#e7e4dc;color:var(--ink)}
+#ui{position:fixed;left:0;top:0;bottom:0;width:340px;overflow:auto;background:var(--ui);color:var(--uiink);font:14px/1.35 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;padding:12px 12px 40px;border-right:1px solid #cfc9bb;z-index:2}
+#ui h1{font-size:17px;margin:0 0 4px}
+#ui .sub{font-size:12px;color:#6b665c;margin-bottom:10px}
+#ui fieldset{border:1px solid #d6cfbf;border-radius:8px;padding:8px;margin:0 0 10px;background:#fbfaf6}
+#ui legend{font-weight:600;font-size:12px;padding:0 4px;color:#5b5548}
+#ui label{display:flex;align-items:center;gap:6px;margin:4px 0;font-size:13px}
+#ui input[type=text],#ui input[type=number],#ui select{font:inherit;padding:4px 6px;border:1px solid #c9c2b2;border-radius:6px;background:#fff;min-width:0}
+#ui input[type=number]{width:60px}
+.ex{border:1px solid #d6cfbf;border-radius:8px;padding:6px;margin:6px 0;background:#fff}
+.ex .r{display:flex;gap:4px;align-items:center;margin:3px 0;flex-wrap:wrap}
+.ex .r input[type=text]{flex:1}
+.ex .hint{font-size:11px;color:#7a7466}
+.btn{font:inherit;font-size:13px;padding:6px 10px;border-radius:7px;border:1px solid #bdb5a3;background:#fff;cursor:pointer}
+.btn.p{background:var(--acc);color:#fff;border-color:var(--acc)}
+.btn.s{padding:2px 7px;font-size:12px}
+.row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+#warn{color:#a33;font-size:12px;margin:4px 0}
+#stage{margin-left:340px;padding:16px;display:flex;flex-direction:column;align-items:center;gap:16px}
+.page{width:297mm;height:210mm;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.18);padding:6mm 7mm;position:relative;overflow:hidden;transform-origin:top left}
+.wrap{position:relative}
+[contenteditable]{outline:none}
+[contenteditable]:hover{background:rgba(31,95,191,.07)}
+[contenteditable]:focus{background:rgba(31,95,191,.12)}
+.ttl{text-align:center;font:900 22pt/1.05 "Arial Black",Arial,sans-serif;color:#1aa3e8;-webkit-text-stroke:.6px #0b3c8c;letter-spacing:.3px;margin-bottom:1.5mm}
+.intro{border:1px solid var(--line);background:#e9e9e9;text-align:center;font-size:10.5pt;line-height:1.25;padding:.6mm 2mm}
+.duo{display:flex;border:1px solid var(--line);border-top:0}
+.cr{flex:1;min-width:0;display:flex;flex-direction:column}
+.cr+.cr{border-left:2.4px solid #000}
+.idrow{display:flex;border-bottom:1px solid var(--line);font-size:11pt}
+.idrow div{padding:.4mm 1.5mm}
+.idrow .nm{flex:1.2;font-weight:700}
+.idrow .vm{flex:1;border-left:1px solid var(--line)}
+.secs{display:flex;flex:1}
+.sec{display:flex;flex-direction:column;border-right:1px solid var(--line);min-width:0}
+.sec:last-child{border-right:0}
+.sh{text-align:center;border-bottom:1px solid var(--line);padding:.6mm 1mm;min-height:13mm}
+.sh .a{font-weight:700;font-size:12pt}
+.sh .d{font-size:9.5pt;line-height:1.15}
+.grids{flex:1;display:flex;align-items:flex-end;justify-content:space-around;padding:1.2mm .8mm .6mm;position:relative}
+.blk{display:flex;flex-direction:column;align-items:stretch}
+table.g{border-collapse:collapse;table-layout:fixed}
+table.g td{border:1px solid #333;padding:0;font-size:7.5pt;text-align:left;vertical-align:top}
+table.g td.n{background:var(--grey);padding-left:.6mm}
+table.g td.opt{background:#e6e6e6}
+table.g tr.tg td:not(.n){box-shadow:inset 0 0 0 1.4px #d22}
+table.g tr.tg td.n{box-shadow:inset 0 0 0 1.4px #d22;font-weight:700}
+.lab{display:flex;font-size:6.5pt;line-height:1;margin-top:.4mm;align-items:flex-end}
+.lab span{text-align:center;overflow:visible;white-space:nowrap}
+.lab .arr{font-size:11pt;color:#888;text-align:left}
+.lab3 span{font-size:8pt;font-weight:700}
+.lab3 span.o{font-weight:400;font-style:italic}
+.foot{display:flex;border-top:1px solid var(--line)}
+.fb{flex:1;min-width:0;border-right:1px solid var(--line);font-size:8pt;display:flex;flex-direction:column}
+.fb:last-child{border-right:0}
+.fb .pen{border-bottom:1px solid var(--line);padding:.2mm 1mm}
+.fb .sig{flex:1;text-align:center;font-style:italic;padding:.6mm .8mm;line-height:1.15}
+.fb .cr2{text-align:center;padding:0 .5mm}
+.fb .rr{display:flex;justify-content:space-between;padding:.6mm 1.5mm .8mm}
+.bub{position:absolute;border:1px solid #333;border-radius:50%;background:#fff;font-size:7.5pt;text-align:center;line-height:1.15;padding:2.5mm 3mm;z-index:1}
+.ct{position:absolute;border-collapse:collapse;font-size:8pt;background:#fff;z-index:1}
+.ct td,.ct th{border:1px solid #333;padding:.2mm 1mm;text-align:center}
+.ct th{background:var(--grey)}
+.ct .i{font-style:italic;font-size:7pt}
+.bandbot{border:1px solid var(--line);border-top:0;background:#e2e2e2;text-align:center;font-size:11pt;padding:.6mm 2mm;line-height:1.25}
+.choix{display:flex}
+.choix>div{flex:1;border-right:1px solid var(--line);padding:0 .5mm}
+.choix>div:last-child{border-right:0}
+.c-verte .sh{background:#d6ecc9}.c-jaune .sh{background:#fff3a3}.c-orange .sh{background:#ffd8a8}.c-rouge .sh{background:#f7c0c0}.c-bleue .sh{background:#cfe1ff}
+.nocol .sh{background:none!important}
+.pc{display:inline-block}
+@media (max-width:900px){#ui{position:static;width:auto;border-right:0}#stage{margin-left:0;padding:8px;align-items:flex-start;overflow:auto}}
+@page{size:A4 landscape;margin:0}
+@media print{
+ body{background:#fff}
+ #ui{display:none}
+ #stage{margin:0;padding:0;display:block}
+ .wrap{width:auto!important;height:auto!important}
+ .page{box-shadow:none;transform:none!important;page-break-after:always;break-after:page}
+ [contenteditable]:hover,[contenteditable]:focus{background:none}
+ *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+<div id="ui">
+  <h1>🏃 Fiches demi-fond</h1>
+  <div class="sub">Modèle Hanula : 1 case = 1 plot de 25 m, 1 colonne = 1'30, le numéro de ligne = la vitesse en km/h. Tout le texte de la fiche se modifie en cliquant dessus.</div>
+
+  <fieldset><legend>Modèle de départ</legend>
+    <div class="row"><select id="tpl"><option value="ex">Fiche exercice (2×6', 2×1'30, 30/30)</option><option value="final">Épreuve finale 12' à choix + 30/30</option><option value="vide">Fiche vierge</option></select><button class="btn s" id="tplGo">Charger</button></div>
+  </fieldset>
+
+  <fieldset><legend>Séance</legend>
+    <label>Titre <input type="text" id="titre" style="flex:1"></label>
+    <label>Coureurs par fiche <select id="nc"><option value="2">2 (binôme)</option><option value="1">1</option></select></label>
+    <label>Lignes (plots max) <input type="number" id="rows" min="6" max="26"> &nbsp;30/30 : <input type="number" id="rows3" min="4" max="14"></label>
+    <label><input type="checkbox" id="col"> Bandeaux de couleur d'allure</label>
+    <label><input type="checkbox" id="crit"> Bandeau « critère de réussite de la séance »</label>
+  </fieldset>
+
+  <fieldset><legend>Exercices</legend>
+    <div class="hint" style="font-size:11px;color:#7a7466">Saisie : <b>2x3</b> = 2 blocs de 3' · <b>1'30+3'</b> · <b>12</b> · en 30/30 : <b>2x3</b> = 2 séries de 3 rép., <b>4-7</b> = 7 rép. dont 4 obligatoires</div>
+    <div id="exs"></div>
+    <button class="btn s" id="addEx">＋ Exercice</button>
+  </fieldset>
+
+  <fieldset><legend>Élèves (facultatif)</legend>
+    <div class="hint" style="font-size:11px;color:#7a7466">Une ligne par élève : <b>Nom ; VMA</b>. Une fiche par binôme, la ligne cible est encadrée en rouge. Vide = fiches anonymes.</div>
+    <textarea id="eleves" rows="4" style="width:100%;font:13px system-ui;border:1px solid #c9c2b2;border-radius:6px;padding:4px" placeholder="Léa ; 12&#10;Sami ; 14"></textarea>
+    <label>Fiches vierges si pas d'élèves <input type="number" id="nPages" min="1" max="20"></label>
+  </fieldset>
+
+  <div id="warn"></div>
+  <div class="row" style="margin:8px 0">
+    <button class="btn p" id="print">🖨️ Imprimer</button>
+    <button class="btn" id="resetEd" title="Revenir aux textes générés">↺ Effacer mes retouches</button>
+  </div>
+  <fieldset><legend>Mes séances</legend>
+    <div class="row"><input type="text" id="svName" placeholder="Nom (ex. S3 – 2×3')" style="flex:1"><button class="btn s" id="svBtn">💾 Enregistrer</button></div>
+    <div id="svList" style="margin-top:6px"></div>
+  </fieldset>
+  <div class="sub" style="margin-top:10px"><a href="./" style="color:var(--acc)">← Retour à Gribouillis</a></div>
+</div>
+<div id="stage"></div>
+
+<script>
+(function(){
+var KEY='grib_demifond_v1';
+var ALL={verte:{l:'Allure verte',o:-3},jaune:{l:'Allure jaune',o:-2},orange:{l:'Allure orange',o:-1},rouge:{l:'Allure rouge',o:3},bleue:{l:'Allure bleue',o:0},choix:{l:'Au choix',o:-3}};
+var TPL={
+ ex:{titre:"Demi-fond – Fiche exercice 1",nc:2,rows:18,rows3:7,col:true,crit:true,
+   exs:[{al:'verte',fm:'c',s:'2x6',o:-3},{al:'orange',fm:'c',s:'2x1\'30',o:-1},{al:'rouge',fm:'3',s:'2x3',o:3}]},
+ final:{titre:"Épreuve finale : le 12' à choix et série en 30/30",nc:2,rows:18,rows3:8,col:false,crit:false,final:true,
+   exs:[{al:'choix',fm:'c',s:'12',o:-3},{al:'rouge',fm:'3',s:'4-7',o:3}]},
+ vide:{titre:"Demi-fond",nc:2,rows:18,rows3:7,col:true,crit:true,exs:[{al:'verte',fm:'c',s:'2x3',o:-3}]}
+};
+var S, ED={}, RHA=0;
+function $(i){return document.getElementById(i)}
+function ld(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){return {}}}
+function sv(d){try{localStorage.setItem(KEY,JSON.stringify(d))}catch(e){}}
+function clone(o){return JSON.parse(JSON.stringify(o))}
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+
+/* durées */
+function psec(t){t=String(t).trim().replace(/mn|min/g,"'").replace(/’/g,"'").replace(/''|"|s$/,'"');
+ var m;
+ if((m=t.match(/^(\d+):(\d{1,2})$/)))return +m[1]*60+ +m[2];
+ if((m=t.match(/^(\d+)'\s*(\d{1,2})?"?$/)))return +m[1]*60+(+m[2]||0);
+ if((m=t.match(/^(\d+)"$/)))return +m[1];
+ if((m=t.match(/^(\d+(?:[.,]\d+)?)$/)))return Math.round(parseFloat(m[1].replace(',','.'))*60);
+ return 0}
+function fmt(s){var m=Math.floor(s/60),r=s%60;if(!m)return r+"''";return r?m+"'"+(r<10?'0':'')+r:m+"'"}
+/* « 2x3 » → [180,180] ; « 1'30+3' » → [90,180] */
+function parseC(str){var out=[];String(str||'').split('+').forEach(function(p){p=p.trim();if(!p)return;var m=p.match(/^(\d+)\s*[x×*]\s*(.+)$/i),n=1;if(m){n=+m[1];p=m[2]}var s=psec(p);if(s>0)for(var i=0;i<Math.min(n,8);i++)out.push(s)});return out}
+/* 30/30 : « 2x3 » → 2 séries de 3 rép ; « 4-7 » → 7 rép dont 4 obligatoires ; « 7 » → 7 */
+function parse3(str){var out=[];String(str||'').split('+').forEach(function(p){p=p.trim().replace(/30\/30/,'').replace(/'/g,'').trim();if(!p)return;var m=p.match(/^(\d+)\s*[x×*]\s*(\d+)$/i);if(m){for(var i=0;i<Math.min(+m[1],8);i++)out.push({n:+m[2],ob:+m[2]});return}m=p.match(/^(\d+)\s*[-àa]\s*(\d+)$/);if(m){out.push({n:+m[2],ob:+m[1]});return}if(/^\d+$/.test(p))out.push({n:+p,ob:+p})});return out}
+
+function blocsOf(e){
+ if(e.fm==='3')return parse3(e.s).map(function(b){return {t:'3',cols:Math.min(b.n,14),ob:b.ob,lab:[]}});
+ return parseC(e.s).map(function(sec){var n=Math.ceil(sec/90),lab=[];for(var i=1;i<=n;i++)lab.push(fmt(Math.min(i*90,sec)));return {t:'c',cols:Math.min(n,16),sec:sec,lab:lab}})}
+function off(o){return o>0?'VMA +'+o:(o<0?'VMA −'+(-o):'VMA')}
+function descOf(e,bl){
+ if(e.al==='choix')return '';
+ if(e.fm==='3'){var allSame=bl.every(function(b){return b.cols===bl[0].cols&&b.ob===b.cols});
+  if(bl.length>1&&allSame)return 'Je cours '+bl.length+' séries de '+bl[0].cols+"' de 30/30 à "+off(e.o);
+  if(bl.length===1&&bl[0].ob<bl[0].cols)return 'Je cours '+bl[0].ob+' à '+bl[0].cols+' × 30/30 à '+off(e.o);
+  return 'Je cours '+bl.map(function(b){return b.cols}).join(' + ')+' × 30/30 à '+off(e.o)}
+ var secs=bl.map(function(b){return b.sec}),same=secs.every(function(s){return s===secs[0]});
+ var d=same&&secs.length>1?secs.length+'×'+fmt(secs[0]):secs.map(fmt).join(' + ');
+ return 'Je cours '+d+' à '+off(e.o)}
+function sigOf(b,i){
+ if(b.t==='3')return "Marge d'erreur : 1 demi-plot d'écart toléré";
+ var rest=b.sec%90;
+ if(b.cols===1)return i===0?"Signal à 45''":'Pas de signal';
+ var s=b.cols>2&&i===0?"Signal à 45'' sur 2 colonnes et coups de sifflet chaque 1'30":(b.cols<=3?'Sifflets '+b.lab.slice(0,-1).join(' et '):"Sifflet toutes les 1'30");
+ if(rest)s+=' — dernière colonne : '+fmt(rest);
+ return s}
+function crOf(b){if(b.t==='3')return '';return b.cols>=3?'CR ≤ 2 sorties de route':(b.cols===2?'CR ≤ 1 SR':'CR = 0 SR')}
+
+/* éditable avec mémoire des retouches */
+function E(k,html,tag,cls,st){tag=tag||'div';var v=ED.hasOwnProperty(k)?ED[k]:html;return '<'+tag+' contenteditable="true" data-e="'+k+'"'+(cls?' class="'+cls+'"':'')+(st?' style="'+st+'"':'')+'>'+v+'</'+tag+'>'}
+
+/* géométrie (mm) */
+function layout(W){
+ var secs=S.exs.map(function(e){var bl=blocsOf(e);var u=0;bl.forEach(function(b,i){u+=1+b.cols+(i?0.7:0)});return {e:e,bl:bl,u:u+0.6,min:(e.fm==='3'?34:(e.al==='choix'?60:22))}});
+ var cw=8,tries=0;
+ while(tries++<30){var tot=0;secs.forEach(function(s){tot+=Math.max(s.u*cw,s.min)});if(tot<=W)break;cw-=0.25;if(cw<3.2)break}
+ secs.forEach(function(s){s.w=Math.max(s.u*cw,s.min)});
+ var tot=secs.reduce(function(a,s){return a+s.w},0);
+ var k=W/tot;secs.forEach(function(s){s.w*=k});
+ return {secs:secs,cw:cw}}
+
+function grid(b,cw,rh,rows,target,key){
+ var nr=b.t==='3'?S.rows3:rows,h='<'+'table class="g" style="width:'+((b.cols+1)*cw).toFixed(2)+'mm">';
+ for(var r=nr;r>=1;r--){var tg=(b.t==='c'&&target&&r===target)||(b.t==='3'&&target&&r===target);
+  h+='<tr'+(tg?' class="tg"':'')+' style="height:'+rh.toFixed(2)+'mm"><td class="n" style="width:'+cw.toFixed(2)+'mm">'+r+'</td>';
+  for(var c=1;c<=b.cols;c++)h+='<td'+(b.t==='3'&&c>b.ob?' class="opt"':'')+'></td>';
+  h+='</tr>'}
+ h+='</table><'+'div class="lab'+(b.t==='3'?' lab3':'')+'"><span class="arr" style="width:'+cw.toFixed(2)+'mm">⇧</span>';
+ for(var c=1;c<=b.cols;c++)h+='<span'+(b.t==='3'&&c>b.ob?' class="o"':'')+' style="width:'+cw.toFixed(2)+'mm">'+(b.t==='3'?c:b.lab[c-1])+'</span>';
+ return h+'</div>'}
+
+function contrat(){return '<tr><th colspan="2">Mon contrat de plots<br>sur 30/30</th></tr><tr><td class="i">Ma VMA<br>est de :</td><td class="i">En 30\'\', je<br>dois faire :</td></tr>'+
+ [['18','6,5'],['16/17','6'],['14/15','5,5'],['12/13','5'],['10/11','4,5']].map(function(r){return '<tr><td>'+r[0]+'</td><td>'+r[1]+' plots</td></tr>'}).join('')}
+function plots3(v){v=+v;if(!v)return 0;if(v>=18)return 6.5;if(v>=16)return 6;if(v>=14)return 5.5;if(v>=12)return 5;if(v>=10)return 4.5;return 4}
+
+function coureur(ci,el,W,L,rows,rh){
+ var h='<'+'div class="cr" style="width:'+W+'mm">';
+ var final=!!S.final;
+ h+='<'+'div class="idrow">'+'<'+'div class="nm">Coureur '+(ci+1)+' : '+(el?esc(el.nom):'')+'</div><'+'div class="vm">Ma <b>VMA'+(final?' validée':'')+'</b> est de : '+(el&&el.vma?'<b>'+esc(el.vma)+'</b>':'')+'</div></div>';
+ h+='<'+'div class="secs">';
+ var first3=true;
+ L.secs.forEach(function(s,si){var e=s.e,a=ALL[e.al]||ALL.verte;
+  h+='<'+'div class="sec c-'+e.al+(S.col?'':' nocol')+'" style="width:'+s.w.toFixed(2)+'mm">';
+  if(e.al==='choix'){
+   h+='<'+'div class="sh" style="padding:0">'+E('x'+si+'.ch0',"J'entoure mon <b>allure cible</b> :",'div','', 'border-bottom:1px solid #222;font-size:10.5pt')+
+    '<'+'div class="choix">'+
+    '<'+'div>'+E('x'+si+'.c1',"<span class=\"a\">Allure verte</span><br><span class=\"d\">Je cours "+fmt(s.bl[0]?s.bl[0].sec:720)+" à VMA −3</span>")+'</div>'+
+    '<'+'div>'+E('x'+si+'.c2',"<span class=\"a\">Allure jaune</span><br><span class=\"d\"><u>Je raye 1 colonne</u> mais je cours à VMA −2</span>")+'</div>'+
+    '<'+'div>'+E('x'+si+'.c3',"<span class=\"a\">Allure orange</span><br><span class=\"d\"><u>Je raye 2 colonnes</u> mais je cours à VMA −1</span>")+'</div></div></div>';
+  }else{
+   h+='<'+'div class="sh">'+E('x'+si+'.a',a.l,'div','a')+E('x'+si+'.d',descOf(e,s.bl),'div','d')+'</div>';
+  }
+  var tgt=0;if(el&&el.vma){var v=parseFloat(String(el.vma).replace(',','.'));if(e.fm==='3')tgt=Math.ceil(plots3(v));else if(e.al!=='choix')tgt=Math.round(v+(+e.o||0))}
+  h+='<'+'div class="grids">';
+  if(e.fm==='3'&&first3){
+   h+=E('x'+si+'.bub','Attention ! Marcher ou ralentir fortement quand on a franchi son nombre de plots compte pour une pénalité !','div','bub','left:1mm;top:1mm;width:'+Math.min(s.w*0.7,46).toFixed(1)+'mm');
+   h+='<'+'table class="ct" style="right:1.5mm;top:'+(Math.max(16,(S.rows-S.rows3)*rh-38)).toFixed(1)+'mm">'+contrat()+'</table>';
+  }
+  s.bl.forEach(function(b,bi){h+='<'+'div class="blk">'+grid(b,L.cw,rh,rows,tgt,'x'+si+'.'+bi)+'</div>'});
+  if(!s.bl.length)h+='<'+'div style="font:12px system-ui;color:#a33">Saisie à compléter</div>';
+  h+='</div>';
+  h+='<'+'div class="foot">';
+  s.bl.forEach(function(b,bi){var k='x'+si+'.'+bi;
+   h+='<'+'div class="fb">'+E(k+'.p',b.t==='3'&&final?'':'Pénalité :','div','pen')+E(k+'.s',(final&&b.t==='3')?"Au-delà de "+b.ob+", 1 répétition rattrapée compte pour 1 sortie de route en moins (maximum 3)":(final?'':sigOf(b,bi)),'div','sig')+E(k+'.c',final?'':crOf(b),'div','cr2')+(final?'':'<'+'div class="rr"><span>Réussi</span><span>Raté</span></div>')+'</div>'});
+  if(!s.bl.length)h+='<'+'div class="fb"></div>';
+  h+='</div></div>';
+  if(e.fm==='3')first3=false;
+ });
+ h+='</div>';
+ if(final)h+='<'+'div class="idrow" style="border-top:1px solid #222;border-bottom:0;background:#e6e6e6"><div style="flex:1">Sorties de route :</div><div style="flex:1">Pénalités :</div><div style="flex:1;font-weight:700">Ma note : &nbsp;&nbsp; /20</div></div>';
+ return h+'</div>'}
+
+function page(pi,els){
+ var W=283,ncr=+S.nc,cw=(W-(ncr>1?0.8:0))/ncr;
+ var L=layout(cw-1.2);
+ var nb=S.exs.length,hasHead=!S.final;
+ var avail=210-12-14-(hasHead?14:0)-(S.final?7:0)-7-15-30-(S.crit||S.final?10:0)-6;
+ var rh=Math.max(3.4,Math.min(7.2,avail/S.rows+RHA));
+ var h='<'+'div class="page">';
+ h+=E('ttl',esc(S.titre),'div','ttl');
+ if(hasHead){var intro="Préparation de l'épreuve finale : <b>le 12' à choix et série en 30/30</b><br>Travail de "+S.exs.map(function(e){var a=ALL[e.al]||ALL.verte;return "l'"+a.l.toLowerCase()+' ('+off(e.o)+') '+(e.fm==='3'?'en 30/30':'sur '+descOf(e,blocsOf(e)).replace(/^Je cours /,'').replace(/ à VMA.*$/,''))}).join(', ')+'<br>Si je me sens bien je peux <b>augmenter mon contrat de VMA</b>.';
+  h+=E('intro',intro,'div','intro')}
+ h+='<'+'div class="duo"'+(hasHead?'':' style="border-top:1px solid #222"')+'>';
+ for(var c=0;c<ncr;c++)h+=coureur(c,els?els[c]:null,cw,L,S.rows,rh);
+ h+='</div>';
+ if(S.final)h+=E('bandF',"L'allure est fixée en fonction de la VMA validée dans le cycle. Chaque écart en dessous de la cible donne une sortie de route. <b>Courir plus vite que l'allure cible ne compte pas pour des sorties de route</b>. <b>Marcher-s'arrêter-ralentir avant le sifflet</b> compte pour une pénalité (= 1 sortie de route).<br><span style=\"font-size:9.5pt\">Quand mon partenaire passe un plot, je mets une X dans la première colonne. Toutes les 1'30, je change de colonne.</span>",'div','bandbot');
+ else if(S.crit){var n=S.exs.reduce(function(a,e){return a+blocsOf(e).length},0);
+  h+=E('band','Critère de réussite de la séance : avoir au moins <b>'+Math.max(1,Math.ceil(n*2/3))+'</b> exercices réussis / '+n+'<br>Je peux <b>renégocier ma VMA à la hausse</b> en fin de séance','div','bandbot')}
+ return {html:h+'</div>',cw:L.cw}}
+
+var _adj=0;
+function render(){
+ var els=String($('eleves').value||'').split(/\n/).map(function(l){var p=l.split(/[;\t,]/);var nom=(p[0]||'').trim();if(!nom)return null;return {nom:nom,vma:(p[1]||'').trim()}}).filter(Boolean);
+ var pages=[],ncr=+S.nc;
+ if(els.length){for(var i=0;i<els.length;i+=ncr)pages.push(els.slice(i,i+ncr))}
+ else for(var i=0;i<Math.max(1,+S.nPages||1);i++)pages.push(null);
+ var st=$('stage'),h='',minCw=9;
+ pages.forEach(function(p,i){var r=page(i,p);minCw=Math.min(minCw,r.cw);h+='<'+'div class="wrap">'+r.html+'</div>'});
+ st.innerHTML=h;
+ if(!_adj){_adj=1;var pg=st.querySelector('.page');if(pg){var tr=pg.style.transform;pg.style.transform='none';var pr=pg.getBoundingClientRect(),last=pg.lastElementChild.getBoundingClientRect();pg.style.transform=tr;
+  var free=(pr.bottom-6*3.7795)-last.bottom;var d=free/3.7795/S.rows;if(Math.abs(d)>0.05){RHA+=d;RHA=Math.max(-3,Math.min(3,RHA));render();_adj=0;return}}}
+ _adj=0;
+ $('warn').textContent=minCw<4?'⚠️ Beaucoup de colonnes : les cases sont petites. Passe à 1 coureur par fiche ou répartis sur 2 fiches.':'';
+ fit();
+}
+function fit(){var st=$('stage');var avail=st.clientWidth-32;var pw=297*3.7795;var k=Math.min(1,avail/pw);
+ [].forEach.call(st.querySelectorAll('.wrap'),function(w){var p=w.firstChild;p.style.transform='scale('+k+')';w.style.width=(pw*k)+'px';w.style.height=(210*3.7795*k)+'px'})}
+
+/* retouches : synchronisées entre les coureurs et les pages */
+document.addEventListener('input',function(ev){var t=ev.target;if(!t.getAttribute||!t.getAttribute('data-e'))return;var k=t.getAttribute('data-e');ED[k]=t.innerHTML;
+ [].forEach.call(document.querySelectorAll('[data-e="'+k+'"]'),function(o){if(o!==t)o.innerHTML=t.innerHTML});persist()});
+document.addEventListener('focusout',function(ev){var t=ev.target;if(t.getAttribute&&t.getAttribute('data-e')==='ttl'){S.titre=t.textContent;$('titre').value=S.titre}});
+
+/* panneau */
+function exUI(){var box=$('exs');box.innerHTML='';
+ S.exs.forEach(function(e,i){var d=document.createElement('div');d.className='ex';
+  var opts=Object.keys(ALL).map(function(k){return '<option value="'+k+'"'+(e.al===k?' selected':'')+'>'+ALL[k].l+'</option>'}).join('');
+  d.innerHTML='<'+'div class="r"><select data-f="al">'+opts+'</select><select data-f="fm"><option value="c"'+(e.fm!=='3'?' selected':'')+'>Continu (1\'30)</option><option value="3"'+(e.fm==='3'?' selected':'')+'>30/30</option></select><button class="btn s" data-f="del" title="Supprimer">✕</button></div>'+
+   '<'+'div class="r"><input type="text" data-f="s" value="'+esc(e.s)+'" placeholder="2x3"><span style="font-size:12px">VMA</span><input type="number" data-f="o" value="'+e.o+'" style="width:52px"></div>'+
+   '<'+'div class="r"><button class="btn s" data-f="up">↑</button><button class="btn s" data-f="dn">↓</button><span class="hint">'+esc(sum(e))+'</span></div>';
+  d.addEventListener('input',function(ev){var f=ev.target.getAttribute('data-f');if(!f)return;var v=ev.target.value;
+   if(f==='al'){e.al=v;e.o=ALL[v].o;if(v==='rouge')e.fm='3';exUI()}else if(f==='fm'){e.fm=v;exUI()}else if(f==='o')e.o=+v||0;else e.s=v;
+   d.querySelector('.hint').textContent=sum(e);clearEx(i);persist();render()});
+  d.addEventListener('click',function(ev){var f=ev.target.getAttribute('data-f');if(f==='del'){S.exs.splice(i,1)}else if(f==='up'&&i>0){S.exs.splice(i-1,0,S.exs.splice(i,1)[0])}else if(f==='dn'&&i<S.exs.length-1){S.exs.splice(i+1,0,S.exs.splice(i,1)[0])}else return;ED={};exUI();persist();render()});
+  box.appendChild(d)})}
+function sum(e){var b=blocsOf(e);if(!b.length)return 'saisie non comprise';return b.length+' bloc'+(b.length>1?'s':'')+' : '+b.map(function(x){return x.cols+' col.'}).join(' + ')}
+function clearEx(i){Object.keys(ED).forEach(function(k){if(k.indexOf('x'+i+'.')===0||k==='intro'||k==='band')delete ED[k]})}
+function toUI(){$('titre').value=S.titre;$('nc').value=S.nc;$('rows').value=S.rows;$('rows3').value=S.rows3;$('col').checked=!!S.col;$('crit').checked=!!S.crit;$('nPages').value=S.nPages||1;$('eleves').value=S.eleves||'';exUI()}
+function persist(){var d=ld();d.cur={S:S,ED:ED};sv(d)}
+function load(tpl){S=clone(TPL[tpl]);S.nPages=1;S.eleves=$('eleves').value||'';ED={};toUI();persist();render()}
+function svList(){var d=ld(),l=d.list||[],b=$('svList');b.innerHTML=l.length?'':'<span class="hint" style="font-size:12px;color:#7a7466">Aucune séance enregistrée.</span>';
+ l.forEach(function(x,i){var r=document.createElement('div');r.className='row';r.style.margin='3px 0';r.innerHTML='<button class="btn s" style="flex:1;text-align:left">'+esc(x.n)+'</button><button class="btn s" title="Supprimer">✕</button>';
+  r.children[0].onclick=function(){S=clone(x.S);ED=clone(x.ED||{});toUI();persist();render()};
+  r.children[1].onclick=function(){if(!confirm('Supprimer « '+x.n+' » ?'))return;l.splice(i,1);d.list=l;sv(d);svList()};b.appendChild(r)})}
+['titre','nc','rows','rows3','col','crit','nPages','eleves'].forEach(function(id){$(id).addEventListener('input',function(){var t=$(id);
+ if(id==='col'||id==='crit')S[id]=t.checked;else if(id==='nc'||id==='rows'||id==='rows3'||id==='nPages'){var v=+t.value;if(!v)return;S[id]=Math.max(1,Math.min(id==='nPages'?20:26,v))}else S[id]=t.value;
+ if(id==='titre')delete ED.ttl;persist();render()})});
+$('nc').addEventListener('change',function(){S.nc=+$('nc').value;persist();render()});
+$('tplGo').onclick=function(){if(Object.keys(ED).length&&!confirm('Remplacer la fiche actuelle et tes retouches ?'))return;load($('tpl').value)};
+$('addEx').onclick=function(){S.exs.push({al:'verte',fm:'c',s:'2x3',o:-3});exUI();persist();render()};
+$('print').onclick=function(){window.print()};
+$('resetEd').onclick=function(){ED={};persist();render()};
+$('svBtn').onclick=function(){var n=$('svName').value.trim()||S.titre;var d=ld();d.list=d.list||[];var j=-1;d.list.forEach(function(x,i){if(x.n===n)j=i});var it={n:n,S:clone(S),ED:clone(ED)};if(j>=0)d.list[j]=it;else d.list.push(it);sv(d);$('svName').value='';svList()};
+window.addEventListener('resize',fit);
+window.addEventListener('beforeprint',function(){[].forEach.call(document.querySelectorAll('.page'),function(p){p.style.transform='none'})});
+window.addEventListener('afterprint',fit);
+
+var d=ld();
+if(d.cur&&d.cur.S){S=d.cur.S;ED=d.cur.ED||{};toUI();render()}else load('ex');
+svList();
+window.DF={render:render,parseC:parseC,parse3:parse3,blocsOf:blocsOf,S:function(){return S}};
+})();
+</script>
+</body>
+</html>
