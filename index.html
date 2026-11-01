@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v360</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v361</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v360</title>
+<title>Gribouillis EPS v361</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -26376,6 +26376,73 @@ prmRender=(function(f){return function(){f.apply(this,arguments);try{const ov=E(
 stopMatch=(function(f){return function(){try{if(PRM.obsr&&PRM.obsr.on)PRM.obsr.lvl=(1+(CFG.gameMode==='2eq'?1:0)+PRM.obsr.obs.length);}catch(e){}const r=f.apply(this,arguments);try{if(PRM.obsr)PRM.obsr.lvl=0;}catch(e){}return r;};})(stopMatch);
 (function(){const st=document.createElement('style');st.textContent='#qj-tabs .qjx{flex:0 0 auto;background:transparent;border:1px dashed var(--border);color:var(--dim2);font-weight:700;}'
 +'#prm-ov .pv-lk{margin-left:6px;font-size:12px;opacity:.8;cursor:pointer;padding:0 2px;}#prm-ov .pv-ind{display:inline-flex;align-items:center;min-height:38px;background:#14532d;border-color:#16a34a;color:#dcfce7;cursor:default;}#prm-ov .pv-pbd{margin-top:10px;}#prm-ov .pv-pbd summary{cursor:pointer;color:#a3a7b0;font-size:13px;min-height:30px;}#prm-ov .pv-pbd .prm-card{margin-top:6px;}';document.head.appendChild(st);})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v361 — BIBLIOTHÈQUE EN DEUX RAYONS.
+// 📘 Didactique (par APSA) : objet → fils rouges macro (+ profils
+// d'observation liés) → FPS liées → fils rouges micro (version élève,
+// vidéo) → CP (version élève, attendus, vidéo) → situations liées
+// (lier une situation existante, en créer une). Écrit une fois, sert à
+// toutes les séances du sport.
+// 🧰 Pratique : la bibliothèque de toujours (situations, échauffements,
+// FPS, séances).
+// ══════════════════════════════════════════════════════════════════════
+const LIBX={shelf:'did',sp:null,open:{},lk:null};
+function libxSports(){return Object.keys(REMED_CONTENT||{}).filter(k=>REMED_CONTENT[k]&&!REMED_CONTENT[k].custom&&(REMED_CONTENT[k].oe||[]).length);}
+function libxSpName(k){return ({football:'⚽ Football',handball:'🤾 Handball',basketball:'🏀 Basket',volley:'🏐 Volley',badminton:'🏸 Badminton'})[k]||k;}
+function libxSave(){try{saveRemedEdits();}catch(e){console.warn(e);}}
+function libxNode(sp,oe,mi,cp){const O=(REMED_CONTENT[sp]&&REMED_CONTENT[sp].oe||[]).find(o=>o.id===oe);if(!O)return null;if(!mi)return O;const M=(O.micro||[]).find(m=>m.id===mi);if(!M)return null;if(!cp)return M;return (M.cps||[]).find(c=>c.id===cp)||null;}
+function libxEl(sp,oe,mi,cp,v){const n=libxNode(sp,oe,mi,cp);if(!n)return;v=String(v||'').trim();if(v)n.eleve=v;else delete n.eleve;libxSave();try{toast2('🗣 Version élève enregistrée');}catch(e){}}
+function libxMedia(sp,oe,mi){mediaSheet({k:'libx',sp:sp,oe:oe,mi:mi||null});}
+mediaRes=(function(f){return function(t){if(t&&t.k==='libx'){const n=libxNode(t.sp,t.oe,t.mi);return n?{n:n,save:libxSave,ttl:n.short||n.label}:null;}return f.apply(this,arguments);};})(mediaRes);
+mediaClose=(function(f){return function(){const r=f.apply(this,arguments);try{if(LIBX.shelf==='did'&&E('t-lib')&&E('t-lib').classList.contains('active'))renderLibTab();}catch(e){}return r;};})(mediaClose);
+function libxSits(path){return libLoad().filter(x=>x&&x.kind==='remed'&&(x.cp===path||(x.cpAlso||[]).indexOf(path)>=0));}
+function libxLink(path,id){const a=libLoad().slice();const it=a.find(x=>x.id===id);if(!it)return;if(!it.cp)it.cp=path;else{it.cpAlso=Array.isArray(it.cpAlso)?it.cpAlso:[];if(it.cp!==path&&it.cpAlso.indexOf(path)<0)it.cpAlso.push(path);}libSave(a);LIBX.lk=null;renderLibTab();}
+function libxUnlink(path,id){if(!confirm('Délier cette situation de ce contenu ? (elle reste dans la bibliothèque)'))return;const a=libLoad().slice();const it=a.find(x=>x.id===id);if(!it)return;if(it.cp===path){it.cp=(it.cpAlso||[])[0]||'';it.cpAlso=(it.cpAlso||[]).slice(1);}else it.cpAlso=(it.cpAlso||[]).filter(p=>p!==path);libSave(a);renderLibTab();}
+function libxNew(path){const p=path.split('|');try{libcOpen('remed');if(LIBC&&LIBC.f){LIBC.f.ref=p[0];LIBC.f.mode='apsa';LIBC.f.oe=p[1];LIBC.f.oes=[p[1]];LIBC.f.cps=[path];libcRender();}}catch(e){console.warn(e);}}
+function libxProf(name){try{const P=CFG.savedPresets||[];const i=P.findIndex(p=>p&&p.name===name);if(i>=0)applyNamedPreset(i);}catch(e){}goToProfilesConsole();}
+function libxTa(sp,oe,mi,cp,v,ph){return '<textarea class="lx-ta" rows="1" placeholder="'+esc(ph||'Version élève (vide = texte prof)')+'" onchange="libxEl(\''+sp+'\',\''+oe+'\','+(mi?'\''+mi+'\'':'null')+','+(cp?'\''+cp+'\'':'null')+',this.value)">'+esc(v||'')+'</textarea>';}
+function libxMb(n,sp,oe,mi){const m=n&&n.media||{};const has=!!(m.video||m.anim);return '<button type="button" class="lx-mb'+(has?' on':'')+'" onclick="libxMedia(\''+sp+'\',\''+oe+'\','+(mi?'\''+mi+'\'':'null')+')">🎬 '+(has?(m.video?'vidéo':'animation'):'vidéo')+'</button>';}
+function libxDid(){const SP=libxSports();const sp=LIBX.sp&&SP.indexOf(LIBX.sp)>=0?LIBX.sp:(SP.indexOf('handball')>=0?'handball':SP[0]);LIBX.sp=sp;const sd=REMED_CONTENT[sp];const lib=libLoad();
+  let h='<'+'div class="lx-sp">'+SP.map(k=>'<button type="button" class="'+(k===sp?'on':'')+'" onclick="LIBX.sp=\''+k+'\';renderLibTab()">'+libxSpName(k)+'</button>').join('')+'</'+'div>';
+  h+='<'+'div class="cc-dim" style="margin:4px 0 10px;">Chaque objet d\'enseignement avec sa chaîne complète. Les versions élèves et les vidéos écrites ici servent à toutes les séances de '+esc(libxSpName(sp).replace(/^\S+\s/,''))+'.</'+'div>';
+  (sd.oe||[]).forEach(O=>{const open=!!LIBX.open[sp+'|'+O.id];const P=(CFG.savedPresets||[]).filter(p=>p&&p.meta&&p.meta.oeId===O.id);const F=lib.filter(x=>x&&x.kind==='match'&&x.oe===O.id);
+    h+='<'+'details class="lx-oe"'+(open?' open':'')+' ontoggle="LIBX.open[\''+sp+'|'+O.id+'\']=this.open"><summary><b>'+esc(O.short||O.id)+'</b><span>'+esc(O.label||'')+'</span><small>'+(O.micro||[]).length+' fils rouges micro · '+F.length+' FPS · '+P.length+' profil'+(P.length>1?'s':'')+'</small></summary>';
+    if(!open){h+='</'+'details>';return;}
+    h+='<'+'div class="lx-row">'+libxMb(O,sp,O.id)+libxTa(sp,O.id,null,null,O.eleve,'Objet en langage élève (vide = texte prof)')+'</'+'div>';
+    h+='<'+'div class="lx-sec">🎯 Fils rouges macro <span>(projet d\'action : ce que mesure l\'observation)</span></'+'div><ul class="lx-ul">'+(O.macroLabels||[]).map(t=>'<li>'+esc(t)+'</li>').join('')+'</ul>'
+      +'<'+'div class="lx-chips"><span class="cc-dim">Profils d\'observation :</span>'+(P.length?P.map(p=>'<button type="button" onclick="libxProf(\''+esc(p.name).replace(/'/g,"\\'")+'\')">👁 '+esc(p.name)+' ✏️</button>').join(''):'<span class="cc-dim">aucun relié — dans le bilan d\'un match, choisis cet objet pour relier le profil utilisé.</span>')+'</'+'div>';
+    h+='<'+'div class="lx-sec">⚽ FPS de l\'objet</'+'div><'+'div class="lx-chips">'+(F.length?F.map(x=>'<button type="button" onclick="libEdit(\''+esc(x.id)+'\')">'+esc(x.titre)+(x.video?' 🎬':'')+'</button>').join(''):'<span class="cc-dim">aucune</span>')+'<button type="button" class="lx-add" onclick="libcOpen(\'match\')">＋ FPS</button></'+'div>';
+    h+='<'+'div class="lx-sec">🔎 Fils rouges micro → CP → situations <span>(projet technique, puis projet d\'apprentissage)</span></'+'div>';
+    (O.micro||[]).forEach(M=>{if(M.hidden)return;h+='<'+'div class="lx-mi"><'+'div class="lx-mh"><b>'+esc(String(M.label||'').replace(/^Frm\d+\s*[—-]\s*/,''))+'</b>'+libxMb(M,sp,O.id,M.id)+'</'+'div>'+libxTa(sp,O.id,M.id,null,M.eleve||'', 'Langage élève (actuellement : « '+frbMicroLab(M)+' »)')
+      +'<'+'div class="lx-cps">'+(M.cps||[]).map(C=>{const path=remedCpPath(sp,O.id,M.id,C.id);const S=libxSits(path);const att=C.attendu||{};const cm=C.media||{};
+        return '<'+'div class="lx-cp"><'+'div class="lx-mh"><b>'+esc(C.label)+'</b><button type="button" class="lx-mb'+((cm.video||cm.anim)?' on':'')+'" onclick="mediaSheet({k:\'cp\',path:\''+esc(path)+'\'})">🎬 '+((cm.video||cm.anim)?'vidéo':'vidéo')+'</button></'+'div>'
+         +libxTa(sp,O.id,M.id,C.id,C.eleve||'','Langage élève (actuellement : « '+eleveCp(C)+' »)')
+         +(att.action?'<small class="lx-att">'+esc(String(att.action).slice(0,220))+(String(att.action).length>220?'…':'')+'</small>':'')
+         +'<'+'div class="lx-chips">'+S.map(x=>'<span class="lx-sit">▶ '+esc(x.titre)+(x.video?' 🎬':'')+'<button type="button" title="Modifier" onclick="libEdit(\''+esc(x.id)+'\')">✏️</button><button type="button" title="Délier" onclick="libxUnlink(\''+esc(path)+'\',\''+esc(x.id)+'\')">✕</button></span>').join('')
+         +'<button type="button" class="lx-add" onclick="LIBX.lk=LIBX.lk===\''+esc(path)+'\'?null:\''+esc(path)+'\';renderLibTab()">🔗 Lier une situation</button><button type="button" class="lx-add" onclick="libxNew(\''+esc(path)+'\')">＋ Nouvelle situation</button></'+'div>'
+         +(LIBX.lk===path?'<'+'div class="lx-pick">'+lib.filter(x=>x&&x.kind==='remed'&&S.indexOf(x)<0&&(!x.apsa||fpsNormSp(x.apsa)===fpsNormSp(sp)||String(x.cp||'').indexOf(sp+'|')===0)).map(x=>'<button type="button" onclick="libxLink(\''+esc(path)+'\',\''+esc(x.id)+'\')">'+esc(x.titre)+'</button>').join('')+'</'+'div>':'')
+         +'</'+'div>';}).join('')+'</'+'div></'+'div>';});
+    h+='</'+'details>';});
+  return h;}
+renderLibTab=(function(f){return function(){const host=E('lib-tab-content');if(!host)return f.apply(this,arguments);let r;
+  if(LIBX.shelf==='pra'){r=f.apply(this,arguments);}else{try{host.innerHTML='<'+'div class="card"><'+'div class="card-title"><span class="ico">📘</span>Bibliothèque didactique</'+'div>'+libxDid()+'</'+'div>';}catch(e){console.warn('libx',e);r=f.apply(this,arguments);}}
+  try{const bar=document.createElement('div');bar.className='lx-shelf';bar.innerHTML='<button type="button" class="'+(LIBX.shelf==='did'?'on':'')+'" onclick="LIBX.shelf=\'did\';renderLibTab()">📘 Didactique<small>objets · fils rouges · CP</small></button><button type="button" class="'+(LIBX.shelf==='pra'?'on':'')+'" onclick="LIBX.shelf=\'pra\';renderLibTab()">🧰 Pratique<small>situations · échauffements · FPS · séances</small></button>';host.insertAdjacentElement('afterbegin',bar);}catch(e){}
+  return r;};})(renderLibTab);
+(function(){const st=document.createElement('style');st.textContent=
+ 'html body .lx-shelf{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}html body .lx-shelf button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;border:2px solid var(--border);background:#0f172a;color:var(--text);border-radius:12px;padding:10px 12px;font-weight:800;font-size:1rem;cursor:pointer;text-align:left;}html body .lx-shelf button small{font-weight:500;font-size:.72rem;color:var(--dim2);}html body .lx-shelf button.on{border-color:#3b82f6;background:#10234a;}'
++'html body .lx-sp{display:flex;gap:6px;flex-wrap:wrap;}html body .lx-sp button{border:1px solid var(--border);background:#0f172a;color:var(--text);border-radius:999px;padding:7px 14px;font-weight:700;cursor:pointer;}html body .lx-sp button.on{background:#2563eb;border-color:#2563eb;color:#fff;}'
++'html body .lx-oe{border:1px solid var(--border);border-radius:12px;margin:0 0 8px;background:#0b1324;}html body .lx-oe > summary{cursor:pointer;padding:10px 12px;display:flex;flex-direction:column;gap:2px;}html body .lx-oe > summary b{font-size:1rem;}html body .lx-oe > summary span{font-size:.82rem;color:#cbd5e1;}html body .lx-oe > summary small{font-size:.72rem;color:var(--dim2);}'
++'html body .lx-oe[open]{padding-bottom:10px;}html body .lx-oe[open] > *:not(summary){margin-left:12px;margin-right:12px;}'
++'html body .lx-row{display:flex;gap:8px;align-items:flex-start;flex-wrap:wrap;}html body .lx-ta{flex:1 1 260px;width:100%;box-sizing:border-box;min-height:34px;background:#111827;border:1px solid #334155;color:#e2e8f0;border-radius:8px;padding:6px 8px;font-size:.82rem;resize:vertical;margin:4px 0;font-family:inherit;}'
++'html body .lx-sec{font-weight:800;margin-top:12px;font-size:.88rem;}html body .lx-sec span{font-weight:400;color:var(--dim2);font-size:.76rem;}html body .lx-ul{margin:4px 0 4px 18px;padding:0;font-size:.8rem;color:#cbd5e1;}'
++'html body .lx-chips{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:4px 0;}html body .lx-chips > button,html body .lx-sit{border:1px solid #334155;background:#111827;color:#e2e8f0;border-radius:999px;padding:5px 11px;font-size:.78rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:4px;}'
++'html body .lx-sit button{border:none;background:none;color:#94a3b8;cursor:pointer;padding:0 2px;font-size:.78rem;}html body .lx-chips .lx-add{border-style:dashed;color:#93c5fd;background:transparent;}'
++'html body .lx-mi{border-left:3px solid #f59e0b;padding:6px 0 6px 10px;margin:8px 0;}html body .lx-mh{display:flex;gap:8px;align-items:flex-start;justify-content:space-between;}html body .lx-mh b{font-size:.86rem;}'
++'html body .lx-mb{flex:0 0 auto;border:1px solid #334155;background:#111827;color:#cbd5e1;border-radius:8px;padding:4px 9px;font-size:.74rem;cursor:pointer;}html body .lx-mb.on{border-color:#22c55e;color:#86efac;}'
++'html body .lx-cps{display:flex;flex-direction:column;gap:6px;margin-top:4px;}html body .lx-cp{border:1px solid rgba(167,139,250,.4);border-radius:10px;padding:7px 9px;background:#0f172a;}html body .lx-cp .lx-mh b{color:#c4b5fd;font-size:.82rem;}html body .lx-att{display:block;color:#94a3b8;font-size:.72rem;}'
++'html body .lx-pick{display:flex;gap:5px;flex-wrap:wrap;padding:6px;border:1px dashed #334155;border-radius:8px;max-height:180px;overflow:auto;}html body .lx-pick button{border:1px solid #334155;background:#111827;color:#e2e8f0;border-radius:999px;padding:4px 10px;font-size:.74rem;cursor:pointer;}';
+document.head.appendChild(st);})();
 </script>
 </body>
 </html>
