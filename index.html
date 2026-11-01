@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v377</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v378</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v377</title>
+<title>Gribouillis EPS v378</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -17824,7 +17824,7 @@ function sbAtelierHtml(s,st,a,i){
 }
 function sbVigHtml(s,r,stepKey){
   const ex=r.exo,col=pathOeColor(s,r.cpPath),k=esc(r.key);
-  const th=ex.image?'<img src="'+ex.image+'" alt="" draggable="false">':(ex.anim?thumbImgHtml(ex.anim,'🎞'):(ex.video?vidThumbHtml(ex.video):'<span>🏃</span>'));
+  const th=ex.image?'<img src="'+ex.image+'" alt="" draggable="false">':(ex.video?vidThumbHtml(ex.video):(ex.anim?thumbImgHtml(ex.anim,'🎞'):'<span>🏃</span>'));
   return '<div class="sb-vig" style="--oe:'+col+'" data-drag="exo:'+k+(stepKey?'@'+esc(stepKey):'')+'" onclick="sbVigClick(this)" title="'+esc(String(ex.titre||''))+'">'
     +'<div class="sb-th">'+th+(ex.anim&&(ex.image||ex.video)?'<i>🎞</i>':'')+((ex.paliers||[]).length?'<b class="sb-niv">📶'+((ex.paliers||[]).length+1)+'</b>':'')+'</div><div class="sb-vt">'+esc(String(ex.titre||'Situation'))+'</div>'+(ex.stars?'<div class="stars-ro">'+'★'.repeat(ex.stars)+'</div>':'')
     +(stepKey?'<button type="button" class="sb-vx" title="Retirer de cette étape" data-s="'+esc(stepKey)+'" data-k="'+k+'" onclick="event.stopPropagation();sbUnassign(this.dataset.s,this.dataset.k)">✕</button>':'')+'</div>';
@@ -18341,7 +18341,7 @@ function sbFiltersHtml(s,all){
     +'<select onchange="SB_UI.min=+this.value;sbPalRefresh()"><option value="0">★ toutes</option><option value="3"'+(SB_UI.min===3?' selected':'')+'>★★★ et plus</option><option value="4"'+(SB_UI.min===4?' selected':'')+'>★★★★ et plus</option><option value="5"'+(SB_UI.min===5?' selected':'')+'>★★★★★</option></select>'
     +'<label style="font-size:.72rem;display:flex;gap:4px;align-items:center;"><input type="checkbox"'+(SB_UI.lib?' checked':'')+' onchange="SB_UI.lib=this.checked;sbPalRefresh()"> 📚 inclure la bibliothèque</label></div>';
 }
-function sbLibVigHtml(x){const th=x.image?'<img src="'+x.image+'" alt="" draggable="false">':(x.anim?thumbImgHtml(x.anim,'🎞'):(x.video?vidThumbHtml(x.video):'<span>🏃</span>'));
+function sbLibVigHtml(x){const th=x.image?'<img src="'+x.image+'" alt="" draggable="false">':(x.video?vidThumbHtml(x.video):(x.anim?thumbImgHtml(x.anim,'🎞'):'<span>🏃</span>'));
   return '<div class="sb-vig lib" style="--oe:#64748b" data-drag="lib:'+esc(x.id)+'" onclick="sbVigClick(this)" title="Bibliothèque : '+esc(String(x.titre||''))+' — glisser dans le déroulé ou toucher pour l\'ajouter"><div class="sb-th">'+th+'</div><div class="sb-vt">'+esc(String(x.titre||'Situation'))+'</div>'+(x.stars?'<div class="stars-ro">'+'★'.repeat(x.stars)+'</div>':'')+'</div>';}
 function sbPalListInner(s,rows){const lib=sbLibRows(s);const h=rows.map(r=>sbVigHtml(s,r,null)).join('')+lib.map(sbLibVigHtml).join('');return h||'<div class="sb-meta">Aucune situation avec ces filtres.</div>';}
 function sbPalRefresh(){const s=getActiveSeance();const el=E('sb-pal-list');if(!s||!el)return;const all=sbPaletteRows(s);const prio=all.filter(r=>r.f>=2);el.innerHTML=sbPalListInner(s,sbFilterRows((SB_UI.all||!prio.length)?all:prio));}
@@ -20991,7 +20991,7 @@ function aspExInfo(ex){if(!ex)return null;
   return null;}
 function aspThumb(inf){if(!inf)return '<span>❔</span>';const x=inf.src||{};const ph=(x.phases||[])[0]||{};
   if(x.image||ph.image)return '<img src="'+(x.image||ph.image)+'" alt="" draggable="false">';
-  const an=x.anim||ph.anim;if(an)return thumbImgHtml(an,inf.ico);if(x.video||ph.video)return vidThumbHtml(x.video||ph.video);return '<span>'+inf.ico+'</span>';}
+  const an=x.anim||ph.anim;if(x.video||ph.video)return vidThumbHtml(x.video||ph.video);if(an)return thumbImgHtml(an,inf.ico);return '<span>'+inf.ico+'</span>';}
 function aspLabel(s,b){if(b.kind==='objectif')return '📋 Objectif';if(b.kind==='bilan')return '🏁 Bilan';
   const T=[];(b.ats||[]).forEach(a=>(a.exos||[]).forEach(e=>{const i=aspExInfo(e);if(i&&T.indexOf(i.titre)<0)T.push(i.titre);}));
   return T.length?(T.length>2?T.slice(0,2).join(' · ')+' +'+(T.length-2):T.join(' · ')):'Bloc';}
@@ -21065,12 +21065,12 @@ function aspPalHtml(s){const t=ASP_UI.tab;
       +'<'+'div class="sb-pal-list" id="'+['asp','list'].join('-')+'">'+aspExoListHtml(s,D)+'</'+'div>';}
   else if(t==='fps'){const q=stripAccents(String(ASP_UI.q2||'')).toLowerCase();const L=libLoad().filter(x=>x.kind==='match'&&libFitsSeance(x,s)&&(!q||stripAccents(String(x.titre||'')+' '+(x.desc||'')).toLowerCase().indexOf(q)>=0)).sort((a,b)=>(b.stars||0)-(a.stars||0));
     h+='<'+'div class="sb-filt"><input type="search" placeholder="🔍 rechercher une FPS" value="'+esc(ASP_UI.q2||'')+'" onchange="ASP_UI.q2=this.value;renderSeanceTab()"><button type="button" class="btn-xs" style="background:#1d4ed8;color:#fff;" onclick="aspNewLib(\'match\')">＋ Nouvelle FPS</button></'+'div>'
-      +'<'+'div class="sb-pal-list">'+(L.map(x=>'<'+'div class="sb-vig fps lib" style="--oe:#2563eb" data-drag="fps:'+esc(x.id)+'" onclick="sbFpsTap(this)" title="Toucher : voir / modifier · glisser sur un atelier"><'+'div class="sb-th">'+(x.image?'<img src="'+x.image+'" alt="" draggable="false">':(x.anim?thumbImgHtml(x.anim,'⚽'):(x.video?vidThumbHtml(x.video):'<span>⚽</span>')))+'</'+'div><'+'div class="sb-vt">'+esc(String(x.titre||'FPS'))+'</'+'div></'+'div>').join('')||'<span class="cc-dim">Aucune FPS dans la Biblio : crée-en une avec ＋ Nouvelle FPS.</span>')+'</'+'div>';}
+      +'<'+'div class="sb-pal-list">'+(L.map(x=>'<'+'div class="sb-vig fps lib" style="--oe:#2563eb" data-drag="fps:'+esc(x.id)+'" onclick="sbFpsTap(this)" title="Toucher : voir / modifier · glisser sur un atelier"><'+'div class="sb-th">'+(x.image?'<img src="'+x.image+'" alt="" draggable="false">':(x.video?vidThumbHtml(x.video):(x.anim?thumbImgHtml(x.anim,'⚽'):'<span>⚽</span>')))+'</'+'div><'+'div class="sb-vt">'+esc(String(x.titre||'FPS'))+'</'+'div></'+'div>').join('')||'<span class="cc-dim">Aucune FPS dans la Biblio : crée-en une avec ＋ Nouvelle FPS.</span>')+'</'+'div>';}
   else{const L=libLoad().filter(x=>(x.kind==='warm'||x.kind==='phase')&&libFitsSeance(x,s)).sort((a,b)=>(a.kind==='warm'?0:1)-(b.kind==='warm'?0:1)||(b.date||0)-(a.date||0));
     const n=((s.echauffement&&s.echauffement.phases)||[]).length;
     h+='<'+'div class="asp-acts"><button type="button" onclick="aspOpenWarm()">＋ Composer l\'échauffement de la séance ('+n+' atelier'+(n>1?'s':'')+')</button><button type="button" class="alt" onclick="aspKeepWarm()">💾 Le garder dans la Biblio</button><button type="button" class="alt" onclick="aspNewLib(\'warm\')">＋ Nouvel exercice d\'échauffement</button></'+'div>'
       +'<'+'div class="sb-pal-list"><'+'div class="sb-vig" style="--oe:#f97316" data-drag="aw:1" title="L\'échauffement de la séance (3 phases) : glisser sur un atelier"><'+'div class="sb-th"><span>🔥</span></'+'div><'+'div class="sb-vt">Échauffement de la séance</'+'div></'+'div>'
-      +L.map(x=>{const ph=x.kind==='warm'?(x.phases||[])[0]||{}:x;const th=(ph.image||x.image)?'<img src="'+(ph.image||x.image)+'" alt="" draggable="false">':((ph.anim||x.anim)?thumbImgHtml(ph.anim||x.anim,'🔥'):((ph.video||x.video)?vidThumbHtml(ph.video||x.video):'<span>🔥</span>'));
+      +L.map(x=>{const ph=x.kind==='warm'?(x.phases||[])[0]||{}:x;const th=(ph.image||x.image)?'<img src="'+(ph.image||x.image)+'" alt="" draggable="false">':((ph.video||x.video)?vidThumbHtml(ph.video||x.video):((ph.anim||x.anim)?thumbImgHtml(ph.anim||x.anim,'🔥'):'<span>🔥</span>'));
         return '<'+'div class="sb-vig lib" style="--oe:#f97316" data-drag="lw:'+esc(x.id)+'" onclick="sbWarmTap(this)" title="Toucher : voir · glisser sur un atelier"><'+'div class="sb-th">'+th+'</'+'div><'+'div class="sb-vt">'+(x.kind==='warm'?'<span class="asp-vt-p">Échauffement complet · '+(x.phases||[]).length+' ateliers</span>':'')+esc(String(x.titre||'Échauffement'))+'</'+'div></'+'div>';}).join('')+'</'+'div>';}
   return h+'<'+'div class="cc-dim" style="margin-top:2px;font-size:.68rem;">Toucher une vignette = la voir (et la modifier) · la glisser sur un bloc (appui long sur tablette) = la programmer</'+'div></'+'div>';}
 function aspColsHtml(s){const T=aspTimes(s);const B=aspBase();if(!B.length)return '';
@@ -21311,7 +21311,7 @@ let LIB_CARDS={};
 const LIB_KC={remed:'#16a34a',match:'#2563eb',warm:'#f97316',phase:'#f97316',seance:'#7c3aed',oe:'#0d9488'};
 function libTileHtml(x){const ph=(x.kind==='warm'?(x.phases||[])[0]:(x.kind==='seance'&&x.tpl?(x.tpl.phases||[])[0]:null))||{};
   const img=x.image||ph.image,an=x.anim||ph.anim,vd=x.video||ph.video;
-  const th=img?'<img src="'+img+'" alt="" loading="lazy">':(an?thumbImgHtml(an,LIB_ICO[x.kind]||'📄'):(vd?vidThumbHtml(vd):'<span>'+(LIB_ICO[x.kind]||'📄')+'</span>'));
+  const th=img?'<img src="'+img+'" alt="" loading="lazy">':(vd?vidThumbHtml(vd):(an?thumbImgHtml(an,LIB_ICO[x.kind]||'📄'):'<span>'+(LIB_ICO[x.kind]||'📄')+'</span>'));
   return '<'+'div class="lib-tile" style="--kc:'+(LIB_KC[x.kind]||'#334155')+'" data-id="'+esc(x.id)+'" onclick="libTileOpen(this.dataset.id)" title="'+esc(String(x.titre||''))+'"><'+'div class="th">'+th+'</'+'div><'+'div class="nm">'+esc(String(x.titre||'Sans titre'))+'</'+'div></'+'div>';}
 function libTileClose(){const o=document.querySelector('.lib-card-ov');if(o)o.remove();}
 function libTileOpen(id){libTileClose();const c=LIB_CARDS[id];if(!c)return;const o=document.createElement('div');o.className='lib-card-ov';
@@ -21357,7 +21357,7 @@ function wcOpen(id){const it=id?libLoad().find(x=>x.id===id&&x.kind==='warm'):nu
     (it.secs||[]).forEach(sc=>{const v=sc&&sc.notes&&sc.notes.all;if(v&&!WC.notes[sc.type])WC.notes[sc.type]=v;});}
   wcRender();}
 function wcClose(){const o=E(['wc','ov'].join('-'));if(o)o.remove();WC=null;}
-function wcThumb(x){const img=x.image,an=x.anim,vd=x.video;return img?'<img src="'+img+'" alt="">':(an?thumbImgHtml(an,'🔥'):(vd?vidThumbHtml(vd):'<span>🔥</span>'));}
+function wcThumb(x){const img=x.image,an=x.anim,vd=x.video;return img?'<img src="'+img+'" alt="">':(vd?vidThumbHtml(vd):(an?thumbImgHtml(an,'🔥'):'<span>🔥</span>'));}
 function wcRender(){if(!WC)return;let o=E(['wc','ov'].join('-'));if(!o){o=document.createElement('div');o.id=['wc','ov'].join('-');o.className='wc-ov';document.body.appendChild(o);}
   const keep=o.scrollTop;const D='<'+'div',C='</'+'div>';
   let h=D+' class="wc-box">'+D+' style="display:flex;gap:8px;align-items:center;margin-bottom:6px;"><b style="flex:1;font-size:1.05rem;">🔥 '+(WC.id?'Échauffement enregistré':'Composer un échauffement')+'</b><button type="button" class="btn-xs" style="background:#15803d;color:#fff;padding:8px 14px;" onclick="wcSave()">💾 Enregistrer dans la Biblio</button><button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="wcClose()">✕</button>'+C
@@ -27388,6 +27388,21 @@ function cvPrint(){const f=document.getElementById('cv-fr');try{f.contentWindow.
 function cvClose(){const o=document.getElementById('cv-ov');if(o)o.remove();}
 orgRender=(function(f){return function(){const r=f.apply(this,arguments);try{const q=orgQ();if(!q||!/volley/i.test(String(q.sport||'')))return r;const host=E('t-org');const hd=host&&host.querySelector('.org-hd');
   if(hd&&!hd.querySelector('.cv-btn'))hd.insertAdjacentHTML('beforeend','<button type="button" class="btn-xs cv-btn" style="background:#7c3aed;color:#fff;margin-left:6px;" onclick="cvOpen()" title="Un mini-dossier par club à imprimer : feuilles de match, fils rouges, projet, entraînement">🖨️ Carnet papier</button>');}catch(e){console.warn('cv',e);}return r;};})(orgRender);
+
+// ══════════════════════════════════════════════════════════════════════
+// v378 — quand une situation a une vidéo (GitHub) ET une animation :
+// la vidéo passe devant partout ; l'animation reste en aide facultative
+// (« Pas compris ? Voir l'animation »).
+// ══════════════════════════════════════════════════════════════════════
+const VA378={m:null,t:0};
+function va378Has(j){try{const now=Date.now();if(!VA378.m||now-VA378.t>8000){const m=new Set();
+    (libLoad()||[]).forEach(x=>{if(!x)return;if(x.anim&&x.anim.json&&x.video)m.add(x.anim.json);(x.phases||[]).forEach(p=>{if(p&&p.anim&&p.anim.json&&(p.video||x.video))m.add(p.anim.json);});});VA378.m=m;VA378.t=now;}
+  return VA378.m.has(j);}catch(e){return false;}}
+function va378Lab(h){return h.replace("▶ Lire l\\'animation","🎞 Pas compris ? Voir l\\'animation").replace("▶ Lire l'animation","🎞 Pas compris ? Voir l'animation");}
+animEleveHtml=(function(f){return function(a,fill){const h=f.apply(this,arguments);try{if(!fill&&a&&a.json&&va378Has(a.json))return va378Lab(h);}catch(e){}return h;};})(animEleveHtml);
+eleveCpMediaHtml=(function(f){return function(m){const h=f.apply(this,arguments);try{if(m&&m.video&&m.anim)return va378Lab(h);}catch(e){}return h;};})(eleveCpMediaHtml);
+animLibBtns=(function(f){return function(x){let h=f.apply(this,arguments);try{if(x&&x.kind!=='seance'&&x.video&&String(x.video).indexOf('data:')!==0){
+    h='<button type="button" class="btn-xs" style="background:#15803d;color:#fff;" onclick="openVideoLightbox(CP_VID_REG['+cpVidReg(x.video)+'])">▶ Vidéo</button>'+h.replace('>▶ Animation</button>','>🎞 Animation (aide)</button>');}}catch(e){}return h;};})(animLibBtns);
 </script>
 </body>
 </html>
