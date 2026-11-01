@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v374</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v375</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v374</title>
+<title>Gribouillis EPS v375</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -27269,6 +27269,25 @@ function momDrawCancel(){MDRAW.shapes=[];momDrawPaint();momDrawEnd();}
 +'html body .mom-stage{position:relative;}html body .mom-stage video{display:block;width:100%;max-height:60vh;background:#000;border-radius:10px;}html body .mom-cv{position:absolute;left:0;top:0;pointer-events:none;}html body .mom-cv.on{pointer-events:auto;cursor:crosshair;touch-action:none;}'
 +'html body .mom-play.full{padding:0;}html body .mom-play.full .mom-pbox{width:100vw;height:100vh;max-height:100vh;border-radius:0;box-sizing:border-box;}html body .mom-play.full .mom-stage video{max-height:calc(100vh - 150px);height:calc(100vh - 150px);}'
 +'html body .mom-tools .mom-dt{display:flex;gap:5px;flex-wrap:wrap;align-items:center;}html body .mom-tools .mom-dt[hidden]{display:none;}html body .mom-tools button.on{background:#2563eb;border-color:#2563eb;color:#fff;}html body .mom-tools .col{width:26px;height:26px;padding:0;border-radius:999px;}html body .mom-tools .col.on{outline:3px solid #fff;}';document.head.appendChild(st);})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v375 — Organisation : reprendre les clubs/niveaux d'un ancien championnat ;
+// séquence volley Terminales : FPS « Les beaux points » ; lien vers le
+// générateur de fiches demi-fond (CA1).
+// ══════════════════════════════════════════════════════════════════════
+// ── v375 : Organisation — reprendre les clubs et niveaux de l'ancien championnat ──
+function orgImportChamp(){const q=orgQ();if(!q||!q.champ)return;const ch=q.champ;const C=ch.clubs||[];const A=ch.aff||{};if(!C.length)return;
+  orgSave(o=>{o.levels=(ch.niv&&ch.niv.length)?ch.niv.slice():o.levels;o.niv=o.niv||{};
+    o.fam.groups=C.map(c=>({id:'og'+c.id+Date.now().toString(36).slice(-3),src:c.id,nom:c.nom,col:c.col||'#475569',locked:false,members:Object.keys(A).filter(n=>A[n]&&A[n].club===c.id)}));o.fam.k=o.fam.groups.length;o.fam.sub='niveau';
+    Object.keys(A).forEach(n=>{if(A[n]&&A[n].niv!=null)o.niv[n]=+A[n].niv;});
+    const sp=String(q.sport||'');const fmt=sp==='volley'?'volley 4c4':sp==='handball'?'hand':'';const c=chsOf(o);if(!o.cal||!o.cal.terrains||(o.cal.terrains[0]&&/hand/.test(o.cal.terrains[0].fmt||'')&&sp!=='handball'))c.terrains=[{nom:'Terrain 1',fmt:fmt},{nom:'Terrain 2',fmt:fmt}];
+    const per=((ch.jours||[])[0]||{}).m;if(per&&per.length)c.perS=Math.max(1,Math.min(8,Math.ceil(per.length/c.terrains.length)));o.cal=c;});
+  try{toast2('📥 Clubs et niveaux repris : vérifie, puis ③ Championnat');}catch(e){}}
+orgRender=(function(f){return function(){const r=f.apply(this,arguments);try{const q=orgQ();if(!q||!q.champ||!(q.champ.clubs||[]).length)return r;const o=orgOf(q);if((o.fam.groups||[]).length)return r;
+  const host=E('t-org');const btn=host&&[...host.querySelectorAll('button')].find(b=>/＋ Club/.test(b.textContent));if(!btn||host.querySelector('.org-imp'))return r;
+  btn.insertAdjacentHTML('beforebegin','<button type="button" class="btn-xs org-imp" style="background:#15803d;color:#fff;margin:4px 6px 4px 0;" onclick="orgImportChamp()">📥 Reprendre mes clubs du championnat ('+esc((q.champ.clubs||[]).map(c=>c.nom).join(', '))+' · '+esc((q.champ.niv||[]).join(' / '))+')</button>');}catch(e){console.warn('orgImp',e);}return r;};})(orgRender);
+
+(function(){try{if(localStorage.getItem('grib_fix375'))return;const a=seqAll();const q=a.find(x=>x.id==='seq-mvqx3n5e6319');if(q&&q.fpsA&&['volley-b','volley-c'].every(k=>q.fpsA[k]&&q.fpsA[k].id==='lib-vb-3')&&libLoad().some(x=>x.id==='lib-vb-11')){q.fpsA['volley-b'].id='lib-vb-11';q.fpsA['volley-c'].id='lib-vb-11';seqSaveAll(a);}localStorage.setItem('grib_fix375','1');}catch(e){console.warn('fix375',e);}})();
 </script>
 </body>
 </html>
