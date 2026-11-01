@@ -8,32 +8,39 @@
 <style>
 :root{--ink:#111;--line:#222;--grey:#d9d9d9;--ui:#f4f1ea;--uiink:#2b2b2b;--acc:#1f5fbf}
 *{box-sizing:border-box}
-body{margin:0;font-family:"Times New Roman",Times,serif;background:#e7e4dc;color:var(--ink)}
-#ui{position:fixed;left:0;top:0;bottom:0;width:340px;overflow:auto;background:var(--ui);color:var(--uiink);font:14px/1.35 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;padding:12px 12px 40px;border-right:1px solid #cfc9bb;z-index:2}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#e7e4dc;color:var(--ink)}
+#ui{position:fixed;left:0;top:0;bottom:0;width:350px;overflow:auto;background:var(--ui);color:var(--uiink);font:14px/1.35 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;padding:12px 12px 40px;border-right:1px solid #cfc9bb;z-index:2}
 #ui h1{font-size:17px;margin:0 0 4px}
 #ui .sub{font-size:12px;color:#6b665c;margin-bottom:10px}
 #ui fieldset{border:1px solid #d6cfbf;border-radius:8px;padding:8px;margin:0 0 10px;background:#fbfaf6}
 #ui legend{font-weight:600;font-size:12px;padding:0 4px;color:#5b5548}
 #ui label{display:flex;align-items:center;gap:6px;margin:4px 0;font-size:13px}
 #ui input[type=text],#ui input[type=number],#ui select{font:inherit;padding:4px 6px;border:1px solid #c9c2b2;border-radius:6px;background:#fff;min-width:0}
-#ui input[type=number]{width:60px}
+#ui input[type=number]{width:58px}
+.hint{font-size:11px;color:#7a7466}
 .ex{border:1px solid #d6cfbf;border-radius:8px;padding:6px;margin:6px 0;background:#fff}
 .ex .r{display:flex;gap:4px;align-items:center;margin:3px 0;flex-wrap:wrap}
 .ex .r input[type=text]{flex:1}
-.ex .hint{font-size:11px;color:#7a7466}
 .btn{font:inherit;font-size:13px;padding:6px 10px;border-radius:7px;border:1px solid #bdb5a3;background:#fff;cursor:pointer}
 .btn.p{background:var(--acc);color:#fff;border-color:var(--acc)}
 .btn.s{padding:2px 7px;font-size:12px}
 .row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 #warn{color:#a33;font-size:12px;margin:4px 0}
-#stage{margin-left:340px;padding:16px;display:flex;flex-direction:column;align-items:center;gap:16px}
-.page{width:297mm;height:210mm;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.18);padding:6mm 7mm;position:relative;overflow:hidden;transform-origin:top left}
+#stage{margin-left:350px;padding:16px;display:flex;flex-direction:column;align-items:center;gap:16px}
+.page{background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.18);position:relative;overflow:hidden;transform-origin:top left;font-family:"Times New Roman",Times,serif}
+.page.L{width:297mm;height:210mm;padding:6mm 7mm}
+.page.P{width:210mm;height:297mm;padding:7mm 7mm;font-family:Arial,Helvetica,sans-serif}
 .wrap{position:relative}
+.pglab{font:12px system-ui;color:#5b5548;align-self:flex-start;margin-bottom:-10px}
 [contenteditable]{outline:none}
 [contenteditable]:hover{background:rgba(31,95,191,.07)}
 [contenteditable]:focus{background:rgba(31,95,191,.12)}
 .ttl{text-align:center;font:900 22pt/1.05 "Arial Black",Arial,sans-serif;color:#1aa3e8;-webkit-text-stroke:.6px #0b3c8c;letter-spacing:.3px;margin-bottom:1.5mm}
+.P .ttl{font-size:15pt;color:#111;-webkit-text-stroke:0;background:#dbe4f3;border:1px solid #222;padding:1.2mm;margin:1.5mm 0}
 .intro{border:1px solid var(--line);background:#e9e9e9;text-align:center;font-size:10.5pt;line-height:1.25;padding:.6mm 2mm}
+.P .intro{font-size:9pt;text-align:left;background:#fff;font-style:italic}
+.srr{border:1px solid var(--line);border-top:0;font-size:9pt;padding:.6mm 2mm;background:#fff7d6;line-height:1.25}
+.P .srr{border-top:1px solid var(--line);margin-top:1.5mm}
 .duo{display:flex;border:1px solid var(--line);border-top:0}
 .cr{flex:1;min-width:0;display:flex;flex-direction:column}
 .cr+.cr{border-left:2.4px solid #000}
@@ -41,20 +48,24 @@ body{margin:0;font-family:"Times New Roman",Times,serif;background:#e7e4dc;color
 .idrow div{padding:.4mm 1.5mm}
 .idrow .nm{flex:1.2;font-weight:700}
 .idrow .vm{flex:1;border-left:1px solid var(--line)}
+table.idt{width:100%;border-collapse:collapse;font-size:10pt}
+table.idt td{border:1px solid #222;padding:1.2mm 1.5mm}
+table.idt td.k{background:#351c75;color:#fff;font-weight:700;width:1%;white-space:nowrap}
 .secs{display:flex;flex:1}
 .sec{display:flex;flex-direction:column;border-right:1px solid var(--line);min-width:0}
 .sec:last-child{border-right:0}
 .sh{text-align:center;border-bottom:1px solid var(--line);padding:.6mm 1mm;min-height:13mm}
 .sh .a{font-weight:700;font-size:12pt}
 .sh .d{font-size:9.5pt;line-height:1.15}
+.sh .k{font-size:8.5pt;margin-top:.4mm}
 .grids{flex:1;display:flex;align-items:flex-end;justify-content:space-around;padding:1.2mm .8mm .6mm;position:relative}
 .blk{display:flex;flex-direction:column;align-items:stretch}
 table.g{border-collapse:collapse;table-layout:fixed}
 table.g td{border:1px solid #333;padding:0;font-size:7.5pt;text-align:left;vertical-align:top}
 table.g td.n{background:var(--grey);padding-left:.6mm}
 table.g td.opt{background:#e6e6e6}
-table.g tr.tg td:not(.n){box-shadow:inset 0 0 0 1.4px #d22}
-table.g tr.tg td.n{box-shadow:inset 0 0 0 1.4px #d22;font-weight:700}
+table.g tr.tg td{box-shadow:inset 0 2px 0 #d22}
+table.g tr.tg td.n{font-weight:700;color:#d22}
 .lab{display:flex;font-size:6.5pt;line-height:1;margin-top:.4mm;align-items:flex-end}
 .lab span{text-align:center;overflow:visible;white-space:nowrap}
 .lab .arr{font-size:11pt;color:#888;text-align:left}
@@ -64,26 +75,60 @@ table.g tr.tg td.n{box-shadow:inset 0 0 0 1.4px #d22;font-weight:700}
 .fb{flex:1;min-width:0;border-right:1px solid var(--line);font-size:8pt;display:flex;flex-direction:column}
 .fb:last-child{border-right:0}
 .fb .pen{border-bottom:1px solid var(--line);padding:.2mm 1mm}
-.fb .sig{flex:1;text-align:center;font-style:italic;padding:.6mm .8mm;line-height:1.15}
-.fb .cr2{text-align:center;padding:0 .5mm}
-.fb .rr{display:flex;justify-content:space-between;padding:.6mm 1.5mm .8mm}
+.fb .sig{text-align:center;font-style:italic;padding:.4mm .8mm;line-height:1.1;font-size:7.5pt}
+.mb{font-size:8pt;line-height:1.2;padding:.6mm 1mm}
+.mb .l{display:flex;justify-content:space-between;gap:1mm;align-items:baseline}
+.mb .rr{display:flex;justify-content:space-around;font-weight:700;font-size:9pt;margin:.8mm 0;letter-spacing:.2px}
+.mb .rr span{border:1px solid #888;border-radius:3mm;padding:.2mm 1.6mm;white-space:nowrap}
+.mbL{font-size:7pt;padding:.4mm .3mm}.mbL .rr2{text-align:center;font-weight:700;white-space:nowrap;font-size:7.5pt;margin:.4mm 0}.mbL .zr i{width:2.6mm;height:2.6mm}
+.mb .zr{display:flex;gap:1.2mm;align-items:center;justify-content:center;font-size:7pt}
+.mb .zr i{display:inline-block;width:3.2mm;height:3.2mm;border-radius:50%;border:1px solid #333}
+.dots{border-bottom:1px dotted #333;display:inline-block;min-width:9mm;height:3.5mm}
 .bub{position:absolute;border:1px solid #333;border-radius:50%;background:#fff;font-size:7.5pt;text-align:center;line-height:1.15;padding:2.5mm 3mm;z-index:1}
-.ct{position:absolute;border-collapse:collapse;font-size:8pt;background:#fff;z-index:1}
+.ct{border-collapse:collapse;font-size:8pt;background:#fff;z-index:1}
+.ct.abs{position:absolute}
 .ct td,.ct th{border:1px solid #333;padding:.2mm 1mm;text-align:center}
 .ct th{background:var(--grey)}
 .ct .i{font-style:italic;font-size:7pt}
-.bandbot{border:1px solid var(--line);border-top:0;background:#e2e2e2;text-align:center;font-size:11pt;padding:.6mm 2mm;line-height:1.25}
+.bandbot{border:1px solid var(--line);border-top:0;background:#e2e2e2;font-size:10pt;padding:.8mm 2mm;line-height:1.35}
+.P .bandbot{border-top:1px solid var(--line);margin-top:2mm;background:#fff2cc}
+.bandbot .ck,.jeu .ck{display:inline-block;width:3.2mm;height:3.2mm;border:1.2px solid #222;vertical-align:-.5mm;margin:0 .8mm 0 2.2mm}
 .choix{display:flex}
 .choix>div{flex:1;border-right:1px solid var(--line);padding:0 .5mm}
 .choix>div:last-child{border-right:0}
-.c-verte .sh{background:#d6ecc9}.c-jaune .sh{background:#fff3a3}.c-orange .sh{background:#ffd8a8}.c-rouge .sh{background:#f7c0c0}.c-bleue .sh{background:#cfe1ff}
-.nocol .sh{background:none!important}
-.pc{display:inline-block}
+.c-verte .sh,.c-verte .ch{background:#d6ecc9}.c-jaune .sh,.c-jaune .ch{background:#fff3a3}.c-orange .sh,.c-orange .ch{background:#ffd8a8}.c-rouge .sh,.c-rouge .ch{background:#f7c0c0}.c-bleue .sh,.c-bleue .ch{background:#cfe1ff}
+.nocol .sh,.nocol .ch{background:#eee!important}
+/* portrait : cartes */
+.cards{display:flex;flex-wrap:wrap;gap:2mm;margin-top:2mm;align-items:flex-start;justify-content:center}
+.card{border:1.3px solid #222;display:flex;flex-direction:column}
+.card .ch{border-bottom:1px solid #222;padding:.8mm 1.5mm;text-align:center}
+.card .ch .a{font-weight:700;font-size:10.5pt}
+.card .ch .d{font-size:8.5pt}
+.card .ch .k{font-size:8.5pt;margin-top:.5mm;font-weight:700}
+.card .bl{display:flex;justify-content:space-around;align-items:flex-end;padding:1.5mm 1mm 0;gap:1.5mm}
+.card .bc{display:flex;flex-direction:column;align-items:center}
+.card .mbs{display:flex;border-top:1px solid #222;margin-top:1mm}
+.card .mbs>.mb{flex:1;border-right:1px solid #222}
+.card .mbs>.mb:last-child{border-right:0}
+.card .side{display:flex;align-items:flex-end;gap:2mm}
+/* jeux */
+.jeu{border:1.3px solid #222;margin-top:2mm;font-family:Arial,Helvetica,sans-serif}
+.jeu .jh{background:#c9d6ee;border-bottom:1px solid #222;text-align:center;font-weight:700;font-size:11pt;padding:1mm}
+.jeu .jr{font-size:8.6pt;padding:1mm 2mm;line-height:1.3;border-bottom:1px solid #222}
+.jeu table{width:100%;border-collapse:collapse;font-size:8.6pt}
+.jeu td,.jeu th{border:1px solid #333;padding:1mm;text-align:center}
+.jeu th{background:#eee;font-size:8pt}
+.jeu td.lf{text-align:left}
+.jeu .two{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.jeu .two>div{padding:1mm 2mm}
+.jeu .two>div+div{border-left:1px solid #222}
+.vbig .jeu td{height:11mm}.vbig .jeu .jr{font-size:9.5pt}.vbig .lines div{height:9mm}
+.lines div{border-bottom:1px dotted #444;height:6.5mm}
 @media (max-width:900px){#ui{position:static;width:auto;border-right:0}#stage{margin-left:0;padding:8px;align-items:flex-start;overflow:auto}}
-@page{size:A4 landscape;margin:0}
+@page{size:A4;margin:0}
 @media print{
  body{background:#fff}
- #ui{display:none}
+ #ui,.pglab{display:none}
  #stage{margin:0;padding:0;display:block}
  .wrap{width:auto!important;height:auto!important}
  .page{box-shadow:none;transform:none!important;page-break-after:always;break-after:page}
@@ -91,6 +136,7 @@ table.g tr.tg td.n{box-shadow:inset 0 0 0 1.4px #d22;font-weight:700}
  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
 </style>
+<style id="pagesz">@page{size:A4 landscape;margin:0}</style>
 </head>
 <body>
 <div id="ui">
@@ -98,27 +144,40 @@ table.g tr.tg td.n{box-shadow:inset 0 0 0 1.4px #d22;font-weight:700}
   <div class="sub">Modèle Hanula : 1 case = 1 plot de 25 m, 1 colonne = 1'30, le numéro de ligne = la vitesse en km/h. Tout le texte de la fiche se modifie en cliquant dessus.</div>
 
   <fieldset><legend>Modèle de départ</legend>
-    <div class="row"><select id="tpl"><option value="ex">Fiche exercice (2×6', 2×1'30, 30/30)</option><option value="final">Épreuve finale 12' à choix + 30/30</option><option value="vide">Fiche vierge</option></select><button class="btn s" id="tplGo">Charger</button></div>
+    <div class="row"><select id="tpl" style="flex:1">
+      <option value="ex">Hanula – fiche exercice (binôme, paysage)</option>
+      <option value="final">Hanula – épreuve finale 12' à choix + 30/30</option>
+      <option value="6e">6e – allure verte + rouge + dilemme (portrait)</option>
+      <option value="2nde">2nde – allure VMA + 30/30 (portrait, % VMA)</option>
+      <option value="vide">Fiche vierge</option></select><button class="btn s" id="tplGo">Charger</button></div>
   </fieldset>
 
   <fieldset><legend>Séance</legend>
     <label>Titre <input type="text" id="titre" style="flex:1"></label>
-    <label>Coureurs par fiche <select id="nc"><option value="2">2 (binôme)</option><option value="1">1</option></select></label>
+    <label>Format <select id="fmt"><option value="L">Paysage – 2 coureurs (Hanula)</option><option value="P">Portrait – 1 coureur</option></select></label>
     <label>Lignes (plots max) <input type="number" id="rows" min="6" max="26"> &nbsp;30/30 : <input type="number" id="rows3" min="4" max="14"></label>
-    <label><input type="checkbox" id="col"> Bandeaux de couleur d'allure</label>
-    <label><input type="checkbox" id="crit"> Bandeau « critère de réussite de la séance »</label>
+    <label><input type="checkbox" id="col"> Couleurs d'allure</label>
+    <label><input type="checkbox" id="rs"> Zone de ressenti après chaque course</label>
+    <label><input type="checkbox" id="fc"> Fréquence cardiaque</label>
+    <label><input type="checkbox" id="crit"> Bilan de la séance + projet</label>
   </fieldset>
 
-  <fieldset><legend>Exercices</legend>
-    <div class="hint" style="font-size:11px;color:#7a7466">Saisie : <b>2x3</b> = 2 blocs de 3' · <b>1'30+3'</b> · <b>12</b> · en 30/30 : <b>2x3</b> = 2 séries de 3 rép., <b>4-7</b> = 7 rép. dont 4 obligatoires</div>
+  <fieldset><legend>Courses</legend>
+    <div class="hint">Saisie : <b>2x3</b> = 2 courses de 3' (2 blocs de 2 colonnes) · <b>1'30+3'</b> · <b>12</b> · en 30/30 : <b>2x3</b> = 2 séries de 3 rép., <b>4-7</b> = 7 rép. dont 4 obligatoires. Chaque course a son mini-bilan « réussi / raté ».</div>
     <div id="exs"></div>
     <button class="btn s" id="addEx">＋ Exercice</button>
   </fieldset>
 
+  <fieldset><legend>Jeu de course</legend>
+    <label><select id="jeu" style="flex:1"><option value="">Aucun</option><option value="dilemme">Le dilemme du coureur</option><option value="battle">Battle Royale (chasseur)</option><option value="peloton">La course en peloton (maison de repos)</option><option value="poursuite">La course poursuite</option></select></label>
+    <label>Place <select id="jeuPos"><option value="v">Au verso (recto-verso)</option><option value="r">En bas du recto</option></select></label>
+    <label>Manches / courses <input type="number" id="jeuN" min="1" max="6"> <span id="jeuMisW"><input type="checkbox" id="jeuMis"> missions</span></label>
+  </fieldset>
+
   <fieldset><legend>Élèves (facultatif)</legend>
-    <div class="hint" style="font-size:11px;color:#7a7466">Une ligne par élève : <b>Nom ; VMA</b>. Une fiche par binôme, la ligne cible est encadrée en rouge. Vide = fiches anonymes.</div>
+    <div class="hint">Une ligne par élève : <b>Nom ; VMA</b>. La ligne du contrat est marquée en rouge sur chaque grille. Vide = fiches anonymes.</div>
     <textarea id="eleves" rows="4" style="width:100%;font:13px system-ui;border:1px solid #c9c2b2;border-radius:6px;padding:4px" placeholder="Léa ; 12&#10;Sami ; 14"></textarea>
-    <label>Fiches vierges si pas d'élèves <input type="number" id="nPages" min="1" max="20"></label>
+    <label>Fiches vierges si pas d'élèves <input type="number" id="nPages" min="1" max="30"></label>
   </fieldset>
 
   <div id="warn"></div>
@@ -126,6 +185,7 @@ table.g tr.tg td.n{box-shadow:inset 0 0 0 1.4px #d22;font-weight:700}
     <button class="btn p" id="print">🖨️ Imprimer</button>
     <button class="btn" id="resetEd" title="Revenir aux textes générés">↺ Effacer mes retouches</button>
   </div>
+  <div class="hint" id="rvHint" style="margin-bottom:8px"></div>
   <fieldset><legend>Mes séances</legend>
     <div class="row"><input type="text" id="svName" placeholder="Nom (ex. S3 – 2×3')" style="flex:1"><button class="btn s" id="svBtn">💾 Enregistrer</button></div>
     <div id="svList" style="margin-top:6px"></div>
@@ -137,13 +197,17 @@ table.g tr.tg td.n{box-shadow:inset 0 0 0 1.4px #d22;font-weight:700}
 <script>
 (function(){
 var KEY='grib_demifond_v1';
-var ALL={verte:{l:'Allure verte',o:-3},jaune:{l:'Allure jaune',o:-2},orange:{l:'Allure orange',o:-1},rouge:{l:'Allure rouge',o:3},bleue:{l:'Allure bleue',o:0},choix:{l:'Au choix',o:-3}};
+var ALL={verte:{l:'Allure verte',o:-3},jaune:{l:'Allure jaune',o:-2},orange:{l:'Allure orange',o:-1},rouge:{l:'Allure rouge',o:3},bleue:{l:'Allure bleue',o:0},vma:{l:'Allure VMA',o:0},choix:{l:'Au choix',o:-3}};
+var BASE={fmt:'L',nc:2,rows:18,rows3:7,col:true,crit:true,rs:false,fc:false,jeu:'',jeuPos:'v',jeuN:2,jeuMis:false};
+function T(o){var r=JSON.parse(JSON.stringify(BASE));for(var k in o)r[k]=o[k];return r}
 var TPL={
- ex:{titre:"Demi-fond – Fiche exercice 1",nc:2,rows:18,rows3:7,col:true,crit:true,
-   exs:[{al:'verte',fm:'c',s:'2x6',o:-3},{al:'orange',fm:'c',s:'2x1\'30',o:-1},{al:'rouge',fm:'3',s:'2x3',o:3}]},
- final:{titre:"Épreuve finale : le 12' à choix et série en 30/30",nc:2,rows:18,rows3:8,col:false,crit:false,final:true,
-   exs:[{al:'choix',fm:'c',s:'12',o:-3},{al:'rouge',fm:'3',s:'4-7',o:3}]},
- vide:{titre:"Demi-fond",nc:2,rows:18,rows3:7,col:true,crit:true,exs:[{al:'verte',fm:'c',s:'2x3',o:-3}]}
+ ex:T({titre:"Demi-fond – Fiche exercice 1",exs:[{al:'verte',fm:'c',s:'2x6',o:-3,u:'k'},{al:'orange',fm:'c',s:"2x1'30",o:-1,u:'k'},{al:'rouge',fm:'3',s:'2x3',o:3,u:'k'}]}),
+ final:T({titre:"Épreuve finale : le 12' à choix et série en 30/30",rows3:8,col:false,crit:false,final:true,exs:[{al:'choix',fm:'c',s:'12',o:-3,u:'k'},{al:'rouge',fm:'3',s:'4-7',o:3,u:'k'}]}),
+ '6e':T({titre:"Stabiliser son allure verte et rouge pour organiser ses courses",fmt:'P',nc:1,rs:true,jeu:'dilemme',jeuPos:'r',jeuN:2,
+   exs:[{al:'verte',fm:'c',s:'6',o:-3,u:'k'},{al:'rouge',fm:'c',s:"2x1'30",o:1,u:'k'}]}),
+ '2nde':T({titre:"Réaliser 3 courses pour valider son allure VMA et des séries d'intermittent",fmt:'P',nc:1,rows:20,rows3:8,col:false,rs:true,fc:true,
+   exs:[{al:'vma',fm:'c',s:"4'30+3'",o:100,u:'%'},{al:'rouge',fm:'3',s:'4-8',o:2,u:'k'}]}),
+ vide:T({titre:"Demi-fond",exs:[{al:'verte',fm:'c',s:'2x3',o:-3,u:'k'}]})
 };
 var S, ED={}, RHA=0;
 function $(i){return document.getElementById(i)}
@@ -151,8 +215,9 @@ function ld(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){re
 function sv(d){try{localStorage.setItem(KEY,JSON.stringify(d))}catch(e){}}
 function clone(o){return JSON.parse(JSON.stringify(o))}
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function fix(){for(var k in BASE)if(S[k]==null)S[k]=BASE[k];(S.exs||(S.exs=[])).forEach(function(e){if(!e.u)e.u='k'})}
 
-/* durées */
+/* ───── durées ───── */
 function psec(t){t=String(t).trim().replace(/mn|min/g,"'").replace(/’/g,"'").replace(/''|"|s$/,'"');
  var m;
  if((m=t.match(/^(\d+):(\d{1,2})$/)))return +m[1]*60+ +m[2];
@@ -161,89 +226,143 @@ function psec(t){t=String(t).trim().replace(/mn|min/g,"'").replace(/’/g,"'").r
  if((m=t.match(/^(\d+(?:[.,]\d+)?)$/)))return Math.round(parseFloat(m[1].replace(',','.'))*60);
  return 0}
 function fmt(s){var m=Math.floor(s/60),r=s%60;if(!m)return r+"''";return r?m+"'"+(r<10?'0':'')+r:m+"'"}
-/* « 2x3 » → [180,180] ; « 1'30+3' » → [90,180] */
 function parseC(str){var out=[];String(str||'').split('+').forEach(function(p){p=p.trim();if(!p)return;var m=p.match(/^(\d+)\s*[x×*]\s*(.+)$/i),n=1;if(m){n=+m[1];p=m[2]}var s=psec(p);if(s>0)for(var i=0;i<Math.min(n,8);i++)out.push(s)});return out}
-/* 30/30 : « 2x3 » → 2 séries de 3 rép ; « 4-7 » → 7 rép dont 4 obligatoires ; « 7 » → 7 */
 function parse3(str){var out=[];String(str||'').split('+').forEach(function(p){p=p.trim().replace(/30\/30/,'').replace(/'/g,'').trim();if(!p)return;var m=p.match(/^(\d+)\s*[x×*]\s*(\d+)$/i);if(m){for(var i=0;i<Math.min(+m[1],8);i++)out.push({n:+m[2],ob:+m[2]});return}m=p.match(/^(\d+)\s*[-àa]\s*(\d+)$/);if(m){out.push({n:+m[2],ob:+m[1]});return}if(/^\d+$/.test(p))out.push({n:+p,ob:+p})});return out}
-
 function blocsOf(e){
  if(e.fm==='3')return parse3(e.s).map(function(b){return {t:'3',cols:Math.min(b.n,14),ob:b.ob,lab:[]}});
  return parseC(e.s).map(function(sec){var n=Math.ceil(sec/90),lab=[];for(var i=1;i<=n;i++)lab.push(fmt(Math.min(i*90,sec)));return {t:'c',cols:Math.min(n,16),sec:sec,lab:lab}})}
-function off(o){return o>0?'VMA +'+o:(o<0?'VMA −'+(-o):'VMA')}
+function off(e){var o=+e.o||0;if(e.u==='%')return o+' % de VMA';return o>0?'VMA +'+o:(o<0?'VMA −'+(-o):'VMA')}
 function descOf(e,bl){
  if(e.al==='choix')return '';
  if(e.fm==='3'){var allSame=bl.every(function(b){return b.cols===bl[0].cols&&b.ob===b.cols});
-  if(bl.length>1&&allSame)return 'Je cours '+bl.length+' séries de '+bl[0].cols+"' de 30/30 à "+off(e.o);
-  if(bl.length===1&&bl[0].ob<bl[0].cols)return 'Je cours '+bl[0].ob+' à '+bl[0].cols+' × 30/30 à '+off(e.o);
-  return 'Je cours '+bl.map(function(b){return b.cols}).join(' + ')+' × 30/30 à '+off(e.o)}
+  if(bl.length>1&&allSame)return 'Je cours '+bl.length+' séries de '+bl[0].cols+"' de 30/30 à "+off(e);
+  if(bl.length===1&&bl[0].ob<bl[0].cols)return 'Je cours '+bl[0].ob+' à '+bl[0].cols+' × 30/30 à '+off(e);
+  return 'Je cours '+bl.map(function(b){return b.cols}).join(' + ')+' × 30/30 à '+off(e)}
  var secs=bl.map(function(b){return b.sec}),same=secs.every(function(s){return s===secs[0]});
  var d=same&&secs.length>1?secs.length+'×'+fmt(secs[0]):secs.map(fmt).join(' + ');
- return 'Je cours '+d+' à '+off(e.o)}
+ return 'Je cours '+d+' à '+off(e)}
 function sigOf(b,i){
- if(b.t==='3')return "Marge d'erreur : 1 demi-plot d'écart toléré";
  var rest=b.sec%90;
  if(b.cols===1)return i===0?"Signal à 45''":'Pas de signal';
- var s=b.cols>2&&i===0?"Signal à 45'' sur 2 colonnes et coups de sifflet chaque 1'30":(b.cols<=3?'Sifflets '+b.lab.slice(0,-1).join(' et '):"Sifflet toutes les 1'30");
+ var s=b.cols>2&&i===0?"Signal à 45'' sur 2 colonnes et sifflet toutes les 1'30":(b.cols<=3?'Sifflets '+b.lab.slice(0,-1).join(' et '):"Sifflet toutes les 1'30");
  if(rest)s+=' — dernière colonne : '+fmt(rest);
  return s}
-function crOf(b){if(b.t==='3')return '';return b.cols>=3?'CR ≤ 2 sorties de route':(b.cols===2?'CR ≤ 1 SR':'CR = 0 SR')}
+function srMax(b){return b.cols>=3?2:(b.cols===2?1:0)}
+/* contrats */
+var C30=[[20,'20/21','7'],[18,'18/19','6,5'],[16,'16/17','6'],[14,'14/15','5,5'],[12,'12/13','5'],[10,'10/11','4,5'],[0,'7/8/9','4']];
+function plots3(v){v=+v;if(!v)return 0;for(var i=0;i<C30.length;i++)if(v>=C30[i][0])return parseFloat(C30[i][2].replace(',','.'));return 4}
+function vmaOf(el){if(!el||!el.vma)return 0;return parseFloat(String(el.vma).replace(',','.'))||0}
+function cible(e,v){if(!v)return 0;if(e.fm==='3')return plots3(v);if(e.u==='%')return Math.round(v*(+e.o||0)/100*2)/2;return v+(+e.o||0)}
+function nb(x){return String(x).replace('.',',')}
 
 /* éditable avec mémoire des retouches */
 function E(k,html,tag,cls,st){tag=tag||'div';var v=ED.hasOwnProperty(k)?ED[k]:html;return '<'+tag+' contenteditable="true" data-e="'+k+'"'+(cls?' class="'+cls+'"':'')+(st?' style="'+st+'"':'')+'>'+v+'</'+tag+'>'}
 
-/* géométrie (mm) */
-function layout(W){
- var secs=S.exs.map(function(e){var bl=blocsOf(e);var u=0;bl.forEach(function(b,i){u+=1+b.cols+(i?0.7:0)});return {e:e,bl:bl,u:u+0.6,min:(e.fm==='3'?34:(e.al==='choix'?60:22))}});
- var cw=8,tries=0;
- while(tries++<30){var tot=0;secs.forEach(function(s){tot+=Math.max(s.u*cw,s.min)});if(tot<=W)break;cw-=0.25;if(cw<3.2)break}
- secs.forEach(function(s){s.w=Math.max(s.u*cw,s.min)});
- var tot=secs.reduce(function(a,s){return a+s.w},0);
- var k=W/tot;secs.forEach(function(s){s.w*=k});
- return {secs:secs,cw:cw}}
-
-function grid(b,cw,rh,rows,target,key){
- var nr=b.t==='3'?S.rows3:rows,h='<'+'table class="g" style="width:'+((b.cols+1)*cw).toFixed(2)+'mm">';
- for(var r=nr;r>=1;r--){var tg=(b.t==='c'&&target&&r===target)||(b.t==='3'&&target&&r===target);
-  h+='<tr'+(tg?' class="tg"':'')+' style="height:'+rh.toFixed(2)+'mm"><td class="n" style="width:'+cw.toFixed(2)+'mm">'+r+'</td>';
+/* ───── grille Hanula ───── */
+function grid(b,cw,rh,target){
+ var nr=b.t==='3'?S.rows3:S.rows,tr=target?Math.round(target):0,h='<'+'table class="g" style="width:'+((b.cols+1)*cw).toFixed(2)+'mm">';
+ for(var r=nr;r>=1;r--){
+  h+='<tr'+(tr&&r===tr?' class="tg"':'')+' style="height:'+rh.toFixed(2)+'mm"><td class="n" style="width:'+cw.toFixed(2)+'mm">'+r+'</td>';
   for(var c=1;c<=b.cols;c++)h+='<td'+(b.t==='3'&&c>b.ob?' class="opt"':'')+'></td>';
   h+='</tr>'}
  h+='</table><'+'div class="lab'+(b.t==='3'?' lab3':'')+'"><span class="arr" style="width:'+cw.toFixed(2)+'mm">⇧</span>';
  for(var c=1;c<=b.cols;c++)h+='<span'+(b.t==='3'&&c>b.ob?' class="o"':'')+' style="width:'+cw.toFixed(2)+'mm">'+(b.t==='3'?c:b.lab[c-1])+'</span>';
  return h+'</div>'}
+function contrat(abs,st){return '<'+'table class="ct'+(abs?' abs':'')+'"'+(st?' style="'+st+'"':'')+'><tr><th colspan="2">Mon contrat de plots<br>sur 30/30</th></tr><tr><td class="i">Ma VMA<br>est de :</td><td class="i">En 30\'\', je<br>dois faire :</td></tr>'+
+ C30.map(function(r){return '<tr><td>'+r[1]+'</td><td>'+r[2]+' plots</td></tr>'}).join('')+'</table>'}
 
-function contrat(){return '<tr><th colspan="2">Mon contrat de plots<br>sur 30/30</th></tr><tr><td class="i">Ma VMA<br>est de :</td><td class="i">En 30\'\', je<br>dois faire :</td></tr>'+
- [['18','6,5'],['16/17','6'],['14/15','5,5'],['12/13','5'],['10/11','4,5']].map(function(r){return '<tr><td>'+r[0]+'</td><td>'+r[1]+' plots</td></tr>'}).join('')}
-function plots3(v){v=+v;if(!v)return 0;if(v>=18)return 6.5;if(v>=16)return 6;if(v>=14)return 5.5;if(v>=12)return 5;if(v>=10)return 4.5;return 4}
+/* ───── mini-bilan d'une course : l'élève sait tout de suite s'il a réussi ───── */
+function miniBilan(b,k,num){
+ if(S.fmt!=='P'){var h='<'+'div class="mb mbL">';
+  h+=E(k+'.r',b.t==='3'?'Rép. réussies<br><span class="dots" style="min-width:5mm"></span> / '+b.ob:'SR <span class="dots" style="min-width:4mm"></span> ≤ '+srMax(b),'div','','text-align:center;white-space:nowrap');
+  h+='<'+'div class="rr2" style="font-size:11pt">☺ &nbsp;☹</div>';
+  if(S.rs)h+='<'+'div class="zr"><i style="background:#fff"></i><i style="background:#60a5fa"></i><i style="background:#ef4444"></i><i style="background:#111"></i></div>';
+  if(S.fc)h+='<'+'div style="text-align:center">FC <span class="dots"></span></div>';
+  return h+'</div>'}
+ var h='<'+'div class="mb">';
+ if(b.t==='3'){h+=E(k+'.r','<'+'div class="l"><span>Répétitions réussies</span><span><span class="dots"></span> / '+b.ob+'</span></div><'+'div class="hint" style="font-size:6.8pt;text-align:center">½ plot d\'écart toléré · réussi si ≥ '+Math.max(1,b.ob-1)+'</div>','div')}
+ else{var m=srMax(b);h+=E(k+'.r','<'+'div class="l"><span>Sorties de route</span><span><span class="dots"></span> '+(m?'(max '+m+')':'(0 permise)')+'</span></div>','div')}
+ h+='<'+'div class="rr"><span>☺ Réussi</span><span>☹ Raté</span></div>';
+ if(S.rs)h+='<'+'div class="zr">Ressenti <i style="background:#fff"></i><i style="background:#60a5fa"></i><i style="background:#ef4444"></i><i style="background:#111"></i></div>';
+ if(S.fc)h+='<'+'div class="l" style="font-size:7.5pt"><span>FC après</span><span class="dots"></span></div>';
+ return h+'</div>'}
+function contratLine(e,v,bl){
+ if(e.al==='choix')return '';
+ if(e.fm==='3'){var p=plots3(v);return 'Mon contrat : '+(p?'<b>'+nb(p)+'</b>':'<span class="dots"></span>')+' plots en 30\'\''}
+ var c=cible(e,v);return 'Vitesse cible : '+(c?'<b>'+nb(c)+'</b>':'<span class="dots"></span>')+' km/h = '+(c?'<b>'+nb(c)+'</b>':'<span class="dots"></span>')+' plots en 1\'30'}
+var SRR="<b>Avant de courir</b>, je trace un trait rouge sur la ligne de mon contrat. <b>Sortie de route</b> = une colonne qui s'arrête sous ce trait (1 km/h de moins que prévu), ou je marche / ralentis fortement. Courir plus vite ne compte pas.";
+var SRR_L="Quand mon partenaire passe un plot, je mets une <b>X</b>. Toutes les 1'30, je change de colonne. <b>Sortie de route</b> = colonne qui n'atteint pas la ligne cible ; marcher ou ralentir avant le sifflet = 1 pénalité. <b>Après chaque course, j'entoure ☺ si j'ai réussi, ☹ sinon.</b>";
 
-function coureur(ci,el,W,L,rows,rh){
- var h='<'+'div class="cr" style="width:'+W+'mm">';
- var final=!!S.final;
- h+='<'+'div class="idrow">'+'<'+'div class="nm">Coureur '+(ci+1)+' : '+(el?esc(el.nom):'')+'</div><'+'div class="vm">Ma <b>VMA'+(final?' validée':'')+'</b> est de : '+(el&&el.vma?'<b>'+esc(el.vma)+'</b>':'')+'</div></div>';
- h+='<'+'div class="secs">';
+/* ───── bilan de séance ───── */
+function nCourses(){return S.exs.reduce(function(a,e){return a+blocsOf(e).length},0)}
+function bilanSeance(){var n=nCourses(),k=Math.max(1,Math.ceil(n*2/3));
+ var alls=[];S.exs.forEach(function(e){var l=e.al==='choix'?'':(ALL[e.al]||{}).l;if(l&&alls.indexOf(l)<0)alls.push(l)});
+ return E('band','<b>Bilan de la séance :</b> courses réussies <span class="dots"></span> / '+n+' → <b>séance réussie si ≥ '+k+'</b> · total des sorties de route <span class="dots"></span><br><b>Ma prochaine séance, je travaille :</b>'+alls.map(function(l){return '<span class="ck"></span>'+l.toLowerCase().replace('allure','mon allure')}).join('')+'<span class="ck"></span>j\'augmente mon contrat<span class="ck"></span>je le baisse','div','bandbot')}
+
+/* ───── jeux ───── */
+function jeuHtml(el){var j=S.jeu,N=Math.max(1,Math.min(6,+S.jeuN||2)),h='<'+'div class="jeu">',nm=el?esc(el.nom):'';
+ if(j==='dilemme'){
+  h+=E('j.t','Le dilemme du coureur — pelotons de 4','div','jh');
+  h+=E('j.r',"<b>Règle :</b> la 1<sup>re</sup> moitié de la course se court <b>ensemble, en peloton</b>. Ensuite chacun choisit en secret : <b>coopérer</b> ou <b>attaquer</b>.<br><b>Coopération :</b> si les 4 arrivent ensemble (zone de 5 m) → <b>10 pts chacun</b>. <b>Sinon c'est la course :</b> 1<sup>er</sup> 12 pts · 2<sup>e</sup> 8 · 3<sup>e</sup> 6 · 4<sup>e</sup> 4.",'div','jr');
+  h+='<'+'table><tr><th rowspan="2">Coureur</th>';for(var i=1;i<=N;i++)h+='<th colspan="3">Manche '+i+'</th>';h+='<th rowspan="2">Total</th></tr><tr>';
+  for(i=1;i<=N;i++)h+='<th>Mon choix</th><th>Rang</th><th>Pts</th>';h+='</tr>';
+  for(var r=0;r<4;r++){h+='<tr><td class="lf" style="width:32mm">'+(r===0&&nm?'<b>'+nm+'</b>':'')+'</td>';for(i=1;i<=N;i++)h+='<td style="font-size:7.5pt;white-space:nowrap"><span class="ck" style="margin-left:0"></span>Coop <span class="ck"></span>Att.</td><td></td><td></td>';h+='<td></td></tr>'}
+  h+='</table>';
+  if(S.jeuMis)h+=E('j.m','<b>Missions</b> (j\'en choisis en secret, +pts si réussie) : <span class="ck"></span>finir 1<sup>er</sup> ou 2<sup>e</sup> +5 <span class="ck"></span>attaquer le plus tôt et tenir +5 <span class="ck"></span>attaquer dans les 50 derniers m +3 <span class="ck"></span>dépasser un coureur +3 <span class="ck"></span>ne pas finir dernier +3 <span class="ck"></span>ne pas lancer la 1<sup>re</sup> attaque +2 <span class="ck"></span>courir à la corde +2','div','jr','border-top:1px solid #222;border-bottom:0');
+  h+='<'+'div class="jr" style="border-bottom:0;border-top:1px solid #222">'+E('j.q',"Pourquoi ai-je choisi de coopérer ou d'attaquer ?",'div')+'<'+'div class="lines"><'+'div></div></div></div>';
+ }else if(j==='battle'){
+  h+=E('j.t','Battle Royale — le chasseur','div','jh');
+  h+=E('j.r',"<b>Règle :</b> tout le monde part ensemble. Après un demi-tour, le 1<sup>er</sup> prend la <b>chasuble du chasseur</b>. Le chasseur élimine un coureur en lui <b>prenant un tour</b>. Celui qui rattrape le chasseur prend la chasuble. La course s'arrête quand il ne reste qu'un coureur.<br><b>Points :</b> rang d'élimination (1<sup>er</sup> éliminé = 1 pt, 2<sup>e</sup> = 2 pts…) + <b>2 pts par élimination</b> faite en chasseur. À partir de la course 2, circuit selon le classement : 1<sup>er</sup>-4<sup>e</sup> tour complet · 5<sup>e</sup>-9<sup>e</sup> petite coupe · 10<sup>e</sup> et + grande coupe.",'div','jr');
+  h+='<'+'table><tr><th>Course</th><th>Mon circuit</th><th>Tours faits</th><th>Éliminé(e) à … / en … position</th><th>Éliminations ×2</th><th>Total</th></tr>';
+  for(var i=1;i<=N;i++)h+='<tr style="height:9mm"><td><b>'+i+'</b></td><td style="font-size:7.5pt;text-align:left">'+(i===1?'Tour complet':'<span class="ck" style="margin-left:0"></span>complet<br><span class="ck" style="margin-left:0"></span>petite coupe<br><span class="ck" style="margin-left:0"></span>grande coupe')+'</td><td></td><td style="font-size:7.5pt">……min……s · ……<sup>e</sup></td><td></td><td></td></tr>';
+  h+='</table>';
+  h+=E('j.m','<b>Mes missions :</b> <span class="ck"></span>gagner une course <span class="ck"></span>faire un podium <span class="ck"></span>ne jamais marcher <span class="ck"></span>réaliser une élimination <span class="ck"></span>prendre la chasuble <span class="ck"></span>battre mon classement de la course précédente','div','jr','border-top:1px solid #222;border-bottom:0');
+ }else if(j==='peloton'){
+  h+=E('j.t','La course en peloton — la maison de repos','div','jh');
+  h+=E('j.r',"<b>Règle :</b> l'équipe court ensemble sur le circuit et fait le plus de tours possible pendant le temps donné. <b>Un seul coureur de l'équipe à la fois</b> peut se reposer dans la « maison de repos » ; il repart dès qu'un coéquipier arrive. <b>Réussi</b> si jamais 2 coureurs au repos en même temps.",'div','jr');
+  h+='<'+'table><tr><th>Course</th><th>Durée</th><th>Tours de l\'équipe</th><th>Mes passages au repos</th><th>Jamais 2 au repos ?</th><th>Ressenti</th></tr>';
+  for(var i=1;i<=N;i++)h+='<tr style="height:8mm"><td><b>'+i+'</b></td><td></td><td></td><td></td><td style="font-size:7.5pt"><span class="ck" style="margin-left:0"></span>oui <span class="ck"></span>non</td><td></td></tr>';
+  h+='</table>';
+ }else if(j==='poursuite'){
+  h+=E('j.t','La course poursuite','div','jh');
+  h+=E('j.r',"<b>Règle :</b> deux coureurs partent en même temps sur 200 m, avec un départ décalé selon leur VMA. On marque : <b>A</b> abandon 0 · <b>D</b> défaite 1 · <b>D+V</b> défaite mais temps VMA tenu 1,5 · <b>D+B</b> défaite mais mieux que le temps VMA 2 · <b>E</b> égalité 2,5 · <b>V</b> victoire 3 · <b>V+B</b> victoire et mieux que le temps VMA 3,5.",'div','jr');
+  h+='<'+'table><tr><th>Course</th><th>Adversaire</th><th>Décalage</th><th>Mon temps</th><th>Résultat (lettres)</th><th>Pts</th></tr>';
+  for(var i=1;i<=N;i++)h+='<tr style="height:8mm"><td><b>'+i+'</b></td><td></td><td></td><td></td><td></td><td></td></tr>';
+  h+='<tr><td colspan="5" style="text-align:right"><b>Total</b></td><td></td></tr></table>';
+ }
+ return h+'</div>'}
+
+/* ───── format paysage Hanula (2 coureurs) ───── */
+function layoutL(W){
+ var secs=S.exs.map(function(e){var bl=blocsOf(e);var u=0;bl.forEach(function(b,i){u+=1+b.cols+(i?0.7:0)});return {e:e,bl:bl,u:u+0.6,min:Math.max(e.fm==='3'?34:(e.al==='choix'?60:22),bl.length*17)}});
+ var cw=8,tries=0;
+ while(tries++<40){var tot=0;secs.forEach(function(s){tot+=Math.max(s.u*cw,s.min)});if(tot<=W)break;cw-=0.25;if(cw<3.2)break}
+ secs.forEach(function(s){s.w=Math.max(s.u*cw,s.min)});
+ var tot=secs.reduce(function(a,s){return a+s.w},0),k=W/tot;secs.forEach(function(s){s.w*=k});
+ return {secs:secs,cw:cw}}
+function coureurL(ci,el,W,L,rh){
+ var final=!!S.final,v=vmaOf(el),h='<'+'div class="cr" style="width:'+W+'mm">';
+ h+='<'+'div class="idrow"><'+'div class="nm">Coureur '+(ci+1)+' : '+(el?esc(el.nom):'')+'</div><'+'div class="vm">Ma <b>VMA'+(final?' validée':'')+'</b> est de : '+(v?'<b>'+esc(el.vma)+'</b>':'')+'</div></div><'+'div class="secs">';
  var first3=true;
  L.secs.forEach(function(s,si){var e=s.e,a=ALL[e.al]||ALL.verte;
   h+='<'+'div class="sec c-'+e.al+(S.col?'':' nocol')+'" style="width:'+s.w.toFixed(2)+'mm">';
   if(e.al==='choix'){
-   h+='<'+'div class="sh" style="padding:0">'+E('x'+si+'.ch0',"J'entoure mon <b>allure cible</b> :",'div','', 'border-bottom:1px solid #222;font-size:10.5pt')+
-    '<'+'div class="choix">'+
+   h+='<'+'div class="sh" style="padding:0">'+E('x'+si+'.ch0',"J'entoure mon <b>allure cible</b> :",'div','','border-bottom:1px solid #222;font-size:10.5pt')+'<'+'div class="choix">'+
     '<'+'div>'+E('x'+si+'.c1',"<span class=\"a\">Allure verte</span><br><span class=\"d\">Je cours "+fmt(s.bl[0]?s.bl[0].sec:720)+" à VMA −3</span>")+'</div>'+
     '<'+'div>'+E('x'+si+'.c2',"<span class=\"a\">Allure jaune</span><br><span class=\"d\"><u>Je raye 1 colonne</u> mais je cours à VMA −2</span>")+'</div>'+
     '<'+'div>'+E('x'+si+'.c3',"<span class=\"a\">Allure orange</span><br><span class=\"d\"><u>Je raye 2 colonnes</u> mais je cours à VMA −1</span>")+'</div></div></div>';
-  }else{
-   h+='<'+'div class="sh">'+E('x'+si+'.a',a.l,'div','a')+E('x'+si+'.d',descOf(e,s.bl),'div','d')+'</div>';
-  }
-  var tgt=0;if(el&&el.vma){var v=parseFloat(String(el.vma).replace(',','.'));if(e.fm==='3')tgt=Math.ceil(plots3(v));else if(e.al!=='choix')tgt=Math.round(v+(+e.o||0))}
+  }else h+='<'+'div class="sh">'+E('x'+si+'.a',a.l,'div','a')+E('x'+si+'.d',descOf(e,s.bl),'div','d')+(final?'':'<'+'div class="k">'+contratLine(e,v)+'</div>')+'</div>';
+  var tgt=e.al==='choix'?0:cible(e,v);
   h+='<'+'div class="grids">';
   if(e.fm==='3'&&first3){
    h+=E('x'+si+'.bub','Attention ! Marcher ou ralentir fortement quand on a franchi son nombre de plots compte pour une pénalité !','div','bub','left:1mm;top:1mm;width:'+Math.min(s.w*0.7,46).toFixed(1)+'mm');
-   h+='<'+'table class="ct" style="right:1.5mm;top:'+(Math.max(16,(S.rows-S.rows3)*rh-38)).toFixed(1)+'mm">'+contrat()+'</table>';
-  }
-  s.bl.forEach(function(b,bi){h+='<'+'div class="blk">'+grid(b,L.cw,rh,rows,tgt,'x'+si+'.'+bi)+'</div>'});
+   h+=contrat(true,'right:1.5mm;top:'+(Math.max(16,(S.rows-S.rows3)*rh-40)).toFixed(1)+'mm');}
+  s.bl.forEach(function(b){h+='<'+'div class="blk">'+grid(b,L.cw,rh,tgt)+'</div>'});
   if(!s.bl.length)h+='<'+'div style="font:12px system-ui;color:#a33">Saisie à compléter</div>';
-  h+='</div>';
-  h+='<'+'div class="foot">';
+  h+='</div><'+'div class="foot">';
   s.bl.forEach(function(b,bi){var k='x'+si+'.'+bi;
-   h+='<'+'div class="fb">'+E(k+'.p',b.t==='3'&&final?'':'Pénalité :','div','pen')+E(k+'.s',(final&&b.t==='3')?"Au-delà de "+b.ob+", 1 répétition rattrapée compte pour 1 sortie de route en moins (maximum 3)":(final?'':sigOf(b,bi)),'div','sig')+E(k+'.c',final?'':crOf(b),'div','cr2')+(final?'':'<'+'div class="rr"><span>Réussi</span><span>Raté</span></div>')+'</div>'});
+   if(final)h+='<'+'div class="fb">'+(b.t==='3'?E(k+'.s',"Au-delà de "+b.ob+", 1 répétition rattrapée compte pour 1 sortie de route en moins (maximum 3)",'div','sig'):E(k+'.p','Pénalités :','div','pen'))+'</div>';
+   else h+='<'+'div class="fb">'+(b.t==='c'?E(k+'.s',sigOf(b,bi),'div','sig','border-bottom:1px solid #222'):'')+miniBilan(b,k,bi)+'</div>'});
   if(!s.bl.length)h+='<'+'div class="fb"></div>';
   h+='</div></div>';
   if(e.fm==='3')first3=false;
@@ -251,75 +370,124 @@ function coureur(ci,el,W,L,rows,rh){
  h+='</div>';
  if(final)h+='<'+'div class="idrow" style="border-top:1px solid #222;border-bottom:0;background:#e6e6e6"><div style="flex:1">Sorties de route :</div><div style="flex:1">Pénalités :</div><div style="flex:1;font-weight:700">Ma note : &nbsp;&nbsp; /20</div></div>';
  return h+'</div>'}
-
-function page(pi,els){
- var W=283,ncr=+S.nc,cw=(W-(ncr>1?0.8:0))/ncr;
- var L=layout(cw-1.2);
- var nb=S.exs.length,hasHead=!S.final;
- var avail=210-12-14-(hasHead?14:0)-(S.final?7:0)-7-15-30-(S.crit||S.final?10:0)-6;
- var rh=Math.max(3.4,Math.min(7.2,avail/S.rows+RHA));
- var h='<'+'div class="page">';
- h+=E('ttl',esc(S.titre),'div','ttl');
- if(hasHead){var intro="Préparation de l'épreuve finale : <b>le 12' à choix et série en 30/30</b><br>Travail de "+S.exs.map(function(e){var a=ALL[e.al]||ALL.verte;return "l'"+a.l.toLowerCase()+' ('+off(e.o)+') '+(e.fm==='3'?'en 30/30':'sur '+descOf(e,blocsOf(e)).replace(/^Je cours /,'').replace(/ à VMA.*$/,''))}).join(', ')+'<br>Si je me sens bien je peux <b>augmenter mon contrat de VMA</b>.';
-  h+=E('intro',intro,'div','intro')}
- h+='<'+'div class="duo"'+(hasHead?'':' style="border-top:1px solid #222"')+'>';
- for(var c=0;c<ncr;c++)h+=coureur(c,els?els[c]:null,cw,L,S.rows,rh);
+function pageL(els,rh0){
+ var W=283,ncr=+S.nc||2,cw=(W-(ncr>1?0.8:0))/ncr,L=layoutL(cw-1.2),final=!!S.final;
+ var jr=S.jeu&&S.jeuPos==='r';
+ var avail=210-12-14-(final?7:14)-6-15-(final?7:34)-(S.crit||final?12:0)-(jr?55:0)-(S.rs?4:0)-(S.fc?3:0);
+ var rh=Math.max(3.2,Math.min(7.2,avail/S.rows+RHA));
+ var h='<'+'div class="page L">'+E('ttl',esc(S.titre),'div','ttl');
+ if(!final){h+=E('intro',"Travail de "+S.exs.map(function(e){var a=ALL[e.al]||ALL.verte;return "l'"+a.l.toLowerCase()+' ('+off(e)+')'+(e.fm==='3'?' en 30/30':'')}).join(', ')+'. Si je me sens bien, je peux <b>augmenter mon contrat de VMA</b>.','div','intro');
+  h+=E('srrL',SRR_L,'div','srr')}
+ h+='<'+'div class="duo"'+(final?' style="border-top:1px solid #222"':'')+'>';
+ for(var c=0;c<ncr;c++)h+=coureurL(c,els?els[c]:null,cw,L,rh);
  h+='</div>';
- if(S.final)h+=E('bandF',"L'allure est fixée en fonction de la VMA validée dans le cycle. Chaque écart en dessous de la cible donne une sortie de route. <b>Courir plus vite que l'allure cible ne compte pas pour des sorties de route</b>. <b>Marcher-s'arrêter-ralentir avant le sifflet</b> compte pour une pénalité (= 1 sortie de route).<br><span style=\"font-size:9.5pt\">Quand mon partenaire passe un plot, je mets une X dans la première colonne. Toutes les 1'30, je change de colonne.</span>",'div','bandbot');
- else if(S.crit){var n=S.exs.reduce(function(a,e){return a+blocsOf(e).length},0);
-  h+=E('band','Critère de réussite de la séance : avoir au moins <b>'+Math.max(1,Math.ceil(n*2/3))+'</b> exercices réussis / '+n+'<br>Je peux <b>renégocier ma VMA à la hausse</b> en fin de séance','div','bandbot')}
+ if(final)h+=E('bandF',"L'allure est fixée en fonction de la VMA validée dans le cycle. Chaque écart en dessous de la cible donne une sortie de route. <b>Courir plus vite que l'allure cible ne compte pas pour des sorties de route</b>. <b>Marcher-s'arrêter-ralentir avant le sifflet</b> compte pour une pénalité (= 1 sortie de route).<br><span style=\"font-size:9.5pt\">Quand mon partenaire passe un plot, je mets une X dans la première colonne. Toutes les 1'30, je change de colonne.</span>",'div','bandbot');
+ else if(S.crit)h+=bilanSeance();
+ if(jr)h+=jeuHtml(null);
  return {html:h+'</div>',cw:L.cw}}
+
+/* ───── format portrait (1 coureur) ───── */
+function pageP(el){
+ var v=vmaOf(el),W=196,jr=S.jeu&&S.jeuPos==='r';
+ var cards=S.exs.map(function(e){var bl=blocsOf(e);return {e:e,bl:bl}});
+ var cw=7.2;
+ function cardW(c,cw){var w=0;c.bl.forEach(function(b){w+=Math.max((b.cols+1)*cw,b.t==='3'?30:34)+1.5});if(c.e.fm==='3')w+=36;return Math.max(w+3,60)}
+ var tries=0;while(tries++<30&&cards.some(function(c){return cardW(c,cw)>W})&&cw>4.2)cw-=0.2;
+ var rh=Math.max(3.3,Math.min(7.6,4.9+RHA));
+ var h='<'+'div class="page P">';
+ h+='<'+'table class="idt"><tr><td class="k">Coureur(euse)</td><td style="width:34%">'+(el?'<b>'+esc(el.nom)+'</b>':'')+'</td><td class="k">Coach / observateur</td><td></td></tr><tr><td class="k">Date</td><td></td><td class="k">Ma VMA</td><td>'+(v?'<b>'+esc(el.vma)+'</b> km/h':'<span class="dots" style="min-width:14mm"></span> km/h')+'</td></tr></table>';
+ h+=E('ttl',esc(S.titre),'div','ttl');
+ h+=E('intro',"Objectif : apprendre à régler mon allure. À la fin de chaque course, je sais si j'ai réussi grâce à ma grille et à mon trait de contrat.",'div','intro');
+ h+=E('srrP',SRR,'div','srr');
+ h+='<'+'div class="cards">';
+ cards.forEach(function(c,si){var e=c.e,a=ALL[e.al]||ALL.verte,tgt=e.al==='choix'?0:cible(e,v);
+  h+='<'+'div class="card c-'+e.al+(S.col?'':' nocol')+'" style="width:'+Math.min(W,cardW(c,cw)).toFixed(1)+'mm">';
+  h+='<'+'div class="ch">'+E('x'+si+'.a',(e.al==='choix'?'Allure au choix':a.l)+(c.bl.length>1?' — '+c.bl.length+' courses':''),'div','a')+E('x'+si+'.d',descOf(e,c.bl),'div','d')+'<'+'div class="k">'+contratLine(e,v)+'</div></div>';
+  h+='<'+'div class="side"><'+'div style="flex:1">';
+  h+='<'+'div class="bl">';
+  c.bl.forEach(function(b,bi){h+='<'+'div class="bc" style="min-width:'+(b.t==='3'?30:34)+'mm"><'+'div style="font:700 8pt Arial;margin-bottom:.6mm">'+(b.t==='3'?'Série '+(bi+1):'Course '+(bi+1)+' · '+fmt(b.sec))+'</div>'+grid(b,cw,rh,tgt)+'</div>'});
+  if(!c.bl.length)h+='<'+'div style="font:12px system-ui;color:#a33;padding:4mm">Saisie à compléter</div>';
+  h+='</div><'+'div class="mbs">';
+  c.bl.forEach(function(b,bi){h+=miniBilan(b,'x'+si+'.'+bi,bi)});
+  h+='</div></div>';
+  if(e.fm==='3')h+='<'+'div style="padding:1.5mm;align-self:center">'+contrat(false)+'</div>';
+  h+='</div></div>';
+ });
+ h+='</div>';
+ if(S.crit)h+=bilanSeance();
+ if(jr)h+=jeuHtml(el);
+ return {html:h+'</div>',cw:cw}}
+
+/* verso : le jeu sur une page entière */
+function pageVerso(els){
+ var P=S.fmt==='P',n=P?1:(+S.nc||2),h='<'+'div class="page '+(P?'P':'L')+' vbig"><'+'div style="display:grid;grid-template-columns:repeat('+n+',1fr);gap:5mm">';
+ for(var i=0;i<n;i++){var el=els&&els[i];
+  h+='<'+'div><'+'div style="font:700 11pt Arial;margin-bottom:1mm">Coureur(euse) : '+(el?esc(el.nom):'……………………………')+'</div>'+jeuHtml(el)+
+   '<'+'div class="jeu"><'+'div class="jh" style="background:#fff2cc">Ce que je retiens de ma séance</div><'+'div class="jr lines" style="border-bottom:0"><'+'div></div><'+'div></div><'+'div></div><'+'div></div></div></div></div>'}
+ return h+'</div></div>'}
 
 var _adj=0;
 function render(){
+ fix();
+ var P=S.fmt==='P';$('pagesz').textContent='@page{size:A4 '+(P?'portrait':'landscape')+';margin:0}';
  var els=String($('eleves').value||'').split(/\n/).map(function(l){var p=l.split(/[;\t,]/);var nom=(p[0]||'').trim();if(!nom)return null;return {nom:nom,vma:(p[1]||'').trim()}}).filter(Boolean);
- var pages=[],ncr=+S.nc;
- if(els.length){for(var i=0;i<els.length;i+=ncr)pages.push(els.slice(i,i+ncr))}
- else for(var i=0;i<Math.max(1,+S.nPages||1);i++)pages.push(null);
+ var ncr=P?1:(+S.nc||2),groups=[];
+ if(els.length){for(var i=0;i<els.length;i+=ncr)groups.push(els.slice(i,i+ncr))}
+ else for(var i=0;i<Math.max(1,+S.nPages||1);i++)groups.push(null);
+ var verso=S.jeu&&S.jeuPos==='v';
  var st=$('stage'),h='',minCw=9;
- pages.forEach(function(p,i){var r=page(i,p);minCw=Math.min(minCw,r.cw);h+='<'+'div class="wrap">'+r.html+'</div>'});
+ groups.forEach(function(g,i){var r=P?pageP(g&&g[0]):pageL(g);minCw=Math.min(minCw,r.cw);
+  if(verso)h+='<'+'div class="pglab">Fiche '+(i+1)+' — recto</div>';
+  h+='<'+'div class="wrap">'+r.html+'</div>';
+  if(verso)h+='<'+'div class="pglab">Fiche '+(i+1)+' — verso</div><'+'div class="wrap">'+pageVerso(g)+'</div>'});
  st.innerHTML=h;
- if(!_adj){_adj=1;var pg=st.querySelector('.page');if(pg){var tr=pg.style.transform;pg.style.transform='none';var pr=pg.getBoundingClientRect(),last=pg.lastElementChild.getBoundingClientRect();pg.style.transform=tr;
-  var free=(pr.bottom-6*3.7795)-last.bottom;var d=free/3.7795/S.rows;if(Math.abs(d)>0.05){RHA+=d;RHA=Math.max(-3,Math.min(3,RHA));render();_adj=0;return}}}
+ if(_adj<4){var pg=st.querySelector('.page');if(pg){pg.style.transform='none';var pr=pg.getBoundingClientRect(),kids=pg.children,bot=0;
+   for(var j=0;j<kids.length;j++)bot=Math.max(bot,kids[j].getBoundingClientRect().bottom);
+   var free=(pr.bottom-6.5*3.7795)-bot;var rowsTot=P?Math.max(1,rowsPortrait(pg)):S.rows;var d=free/3.7795/rowsTot;
+   if(Math.abs(d)>0.04&&!(d>0&&RHA>=2.7)){RHA+=d;RHA=Math.max(-3,Math.min(2.7,RHA));_adj++;render();return}}}
  _adj=0;
- $('warn').textContent=minCw<4?'⚠️ Beaucoup de colonnes : les cases sont petites. Passe à 1 coureur par fiche ou répartis sur 2 fiches.':'';
+ var over=false;[].forEach.call(st.querySelectorAll('.page'),function(p){var t=p.style.transform;p.style.transform='none';var b=p.getBoundingClientRect().bottom,m=0;[].forEach.call(p.children,function(k){m=Math.max(m,k.getBoundingClientRect().bottom)});if(m>b+1)over=true;p.style.transform=t});
+ $('warn').textContent=(minCw<4?'⚠️ Beaucoup de colonnes : les cases sont petites. ':'')+(over?'⚠️ La fiche déborde : mets le jeu au verso, enlève une option ou réduis le nombre de lignes.':'');
+ $('rvHint').textContent=verso?'Recto-verso : imprime en « recto verso, bord long » ('+(P?'portrait':'paysage : bord court')+').':'';
  fit();
 }
-function fit(){var st=$('stage');var avail=st.clientWidth-32;var pw=297*3.7795;var k=Math.min(1,avail/pw);
- [].forEach.call(st.querySelectorAll('.wrap'),function(w){var p=w.firstChild;p.style.transform='scale('+k+')';w.style.width=(pw*k)+'px';w.style.height=(210*3.7795*k)+'px'})}
+function rowsPortrait(pg){var tops={};[].forEach.call(pg.querySelectorAll('.card'),function(c){tops[Math.round(c.offsetTop)]=Math.max(tops[Math.round(c.offsetTop)]||0,maxRows(c))});var s=0;for(var k in tops)s+=tops[k];return s}
+function maxRows(card){var m=0;[].forEach.call(card.querySelectorAll('table.g'),function(t){m=Math.max(m,t.rows.length)});return m}
+function fit(){var st=$('stage'),avail=st.clientWidth-32;
+ [].forEach.call(st.querySelectorAll('.wrap'),function(w){var p=w.firstChild,P=p.classList.contains('P'),pw=(P?210:297)*3.7795,ph=(P?297:210)*3.7795,k=Math.min(1,avail/pw);p.style.transform='scale('+k+')';w.style.width=(pw*k)+'px';w.style.height=(ph*k)+'px'})}
 
 /* retouches : synchronisées entre les coureurs et les pages */
 document.addEventListener('input',function(ev){var t=ev.target;if(!t.getAttribute||!t.getAttribute('data-e'))return;var k=t.getAttribute('data-e');ED[k]=t.innerHTML;
  [].forEach.call(document.querySelectorAll('[data-e="'+k+'"]'),function(o){if(o!==t)o.innerHTML=t.innerHTML});persist()});
 document.addEventListener('focusout',function(ev){var t=ev.target;if(t.getAttribute&&t.getAttribute('data-e')==='ttl'){S.titre=t.textContent;$('titre').value=S.titre}});
 
-/* panneau */
+/* ───── panneau ───── */
 function exUI(){var box=$('exs');box.innerHTML='';
  S.exs.forEach(function(e,i){var d=document.createElement('div');d.className='ex';
   var opts=Object.keys(ALL).map(function(k){return '<option value="'+k+'"'+(e.al===k?' selected':'')+'>'+ALL[k].l+'</option>'}).join('');
   d.innerHTML='<'+'div class="r"><select data-f="al">'+opts+'</select><select data-f="fm"><option value="c"'+(e.fm!=='3'?' selected':'')+'>Continu (1\'30)</option><option value="3"'+(e.fm==='3'?' selected':'')+'>30/30</option></select><button class="btn s" data-f="del" title="Supprimer">✕</button></div>'+
-   '<'+'div class="r"><input type="text" data-f="s" value="'+esc(e.s)+'" placeholder="2x3"><span style="font-size:12px">VMA</span><input type="number" data-f="o" value="'+e.o+'" style="width:52px"></div>'+
+   '<'+'div class="r"><input type="text" data-f="s" value="'+esc(e.s)+'" placeholder="2x3"><input type="number" data-f="o" value="'+e.o+'" style="width:54px"><select data-f="u"><option value="k"'+(e.u!=='%'?' selected':'')+'>km/h / VMA</option><option value="%"'+(e.u==='%'?' selected':'')+'>% VMA</option></select></div>'+
    '<'+'div class="r"><button class="btn s" data-f="up">↑</button><button class="btn s" data-f="dn">↓</button><span class="hint">'+esc(sum(e))+'</span></div>';
   d.addEventListener('input',function(ev){var f=ev.target.getAttribute('data-f');if(!f)return;var v=ev.target.value;
-   if(f==='al'){e.al=v;e.o=ALL[v].o;if(v==='rouge')e.fm='3';exUI()}else if(f==='fm'){e.fm=v;exUI()}else if(f==='o')e.o=+v||0;else e.s=v;
-   d.querySelector('.hint').textContent=sum(e);clearEx(i);persist();render()});
+   if(f==='al'){e.al=v;e.o=ALL[v].o;e.u='k';if(v==='rouge'&&S.fmt==='L')e.fm='3';exUI()}else if(f==='fm'){e.fm=v;exUI()}else if(f==='u'){e.u=v;e.o=v==='%'?100:ALL[e.al].o;exUI()}else if(f==='o')e.o=+v||0;else e.s=v;
+   var hn=d.querySelector('.hint');if(hn)hn.textContent=sum(e);clearEx(i);persist();render()});
   d.addEventListener('click',function(ev){var f=ev.target.getAttribute('data-f');if(f==='del'){S.exs.splice(i,1)}else if(f==='up'&&i>0){S.exs.splice(i-1,0,S.exs.splice(i,1)[0])}else if(f==='dn'&&i<S.exs.length-1){S.exs.splice(i+1,0,S.exs.splice(i,1)[0])}else return;ED={};exUI();persist();render()});
   box.appendChild(d)})}
-function sum(e){var b=blocsOf(e);if(!b.length)return 'saisie non comprise';return b.length+' bloc'+(b.length>1?'s':'')+' : '+b.map(function(x){return x.cols+' col.'}).join(' + ')}
+function sum(e){var b=blocsOf(e);if(!b.length)return 'saisie non comprise';return b.length+(e.fm==='3'?' série':' course')+(b.length>1?'s':'')+' : '+b.map(function(x){return x.cols+' col.'}).join(' + ')}
 function clearEx(i){Object.keys(ED).forEach(function(k){if(k.indexOf('x'+i+'.')===0||k==='intro'||k==='band')delete ED[k]})}
-function toUI(){$('titre').value=S.titre;$('nc').value=S.nc;$('rows').value=S.rows;$('rows3').value=S.rows3;$('col').checked=!!S.col;$('crit').checked=!!S.crit;$('nPages').value=S.nPages||1;$('eleves').value=S.eleves||'';exUI()}
+function toUI(){fix();$('titre').value=S.titre;$('fmt').value=S.fmt;$('rows').value=S.rows;$('rows3').value=S.rows3;$('col').checked=!!S.col;$('crit').checked=!!S.crit;$('rs').checked=!!S.rs;$('fc').checked=!!S.fc;
+ $('jeu').value=S.jeu||'';$('jeuPos').value=S.jeuPos||'v';$('jeuN').value=S.jeuN||2;$('jeuMis').checked=!!S.jeuMis;$('nPages').value=S.nPages||1;$('eleves').value=S.eleves||'';exUI()}
 function persist(){var d=ld();d.cur={S:S,ED:ED};sv(d)}
-function load(tpl){S=clone(TPL[tpl]);S.nPages=1;S.eleves=$('eleves').value||'';ED={};toUI();persist();render()}
-function svList(){var d=ld(),l=d.list||[],b=$('svList');b.innerHTML=l.length?'':'<span class="hint" style="font-size:12px;color:#7a7466">Aucune séance enregistrée.</span>';
+function load(tpl){S=clone(TPL[tpl]);S.nPages=1;S.eleves=$('eleves').value||'';ED={};RHA=0;toUI();persist();render()}
+function svList(){var d=ld(),l=d.list||[],b=$('svList');b.innerHTML=l.length?'':'<span class="hint">Aucune séance enregistrée.</span>';
  l.forEach(function(x,i){var r=document.createElement('div');r.className='row';r.style.margin='3px 0';r.innerHTML='<button class="btn s" style="flex:1;text-align:left">'+esc(x.n)+'</button><button class="btn s" title="Supprimer">✕</button>';
-  r.children[0].onclick=function(){S=clone(x.S);ED=clone(x.ED||{});toUI();persist();render()};
+  r.children[0].onclick=function(){S=clone(x.S);ED=clone(x.ED||{});RHA=0;toUI();persist();render()};
   r.children[1].onclick=function(){if(!confirm('Supprimer « '+x.n+' » ?'))return;l.splice(i,1);d.list=l;sv(d);svList()};b.appendChild(r)})}
-['titre','nc','rows','rows3','col','crit','nPages','eleves'].forEach(function(id){$(id).addEventListener('input',function(){var t=$(id);
- if(id==='col'||id==='crit')S[id]=t.checked;else if(id==='nc'||id==='rows'||id==='rows3'||id==='nPages'){var v=+t.value;if(!v)return;S[id]=Math.max(1,Math.min(id==='nPages'?20:26,v))}else S[id]=t.value;
- if(id==='titre')delete ED.ttl;persist();render()})});
-$('nc').addEventListener('change',function(){S.nc=+$('nc').value;persist();render()});
+['titre','fmt','rows','rows3','col','crit','rs','fc','jeu','jeuPos','jeuN','jeuMis','nPages','eleves'].forEach(function(id){var h=function(){var t=$(id);
+ if(t.type==='checkbox')S[id]=t.checked;else if(t.type==='number'){var v=+t.value;if(!v)return;S[id]=Math.max(1,Math.min(id==='nPages'?30:26,v))}else S[id]=t.value;
+ if(id==='jeu'){S.jeuN={dilemme:2,battle:3,peloton:3,poursuite:4}[S.jeu]||2;$('jeuN').value=S.jeuN;['j.t','j.r','j.m','j.q'].forEach(function(k){delete ED[k]})}if(id==='titre')delete ED.ttl;if(id==='fmt'||id==='rows'||id==='rows3'||id==='jeuPos'||id==='jeu')RHA=0;persist();render()};$(id).addEventListener('input',h);if($(id).tagName==='SELECT')$(id).addEventListener('change',h)});
 $('tplGo').onclick=function(){if(Object.keys(ED).length&&!confirm('Remplacer la fiche actuelle et tes retouches ?'))return;load($('tpl').value)};
-$('addEx').onclick=function(){S.exs.push({al:'verte',fm:'c',s:'2x3',o:-3});exUI();persist();render()};
+$('addEx').onclick=function(){S.exs.push({al:'verte',fm:'c',s:'2x3',o:-3,u:'k'});exUI();persist();render()};
 $('print').onclick=function(){window.print()};
 $('resetEd').onclick=function(){ED={};persist();render()};
 $('svBtn').onclick=function(){var n=$('svName').value.trim()||S.titre;var d=ld();d.list=d.list||[];var j=-1;d.list.forEach(function(x,i){if(x.n===n)j=i});var it={n:n,S:clone(S),ED:clone(ED)};if(j>=0)d.list[j]=it;else d.list.push(it);sv(d);$('svName').value='';svList()};
@@ -330,7 +498,7 @@ window.addEventListener('afterprint',fit);
 var d=ld();
 if(d.cur&&d.cur.S){S=d.cur.S;ED=d.cur.ED||{};toUI();render()}else load('ex');
 svList();
-window.DF={render:render,parseC:parseC,parse3:parse3,blocsOf:blocsOf,S:function(){return S}};
+window.DF={render:render,parseC:parseC,parse3:parse3,blocsOf:blocsOf,load:load,S:function(){return S},set:function(k,v){S[k]=v;toUI();render()}};
 })();
 </script>
 </body>
