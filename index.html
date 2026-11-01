@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v359</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v360</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v359</title>
+<title>Gribouillis EPS v360</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -26336,6 +26336,46 @@ frbRender=(function(f){return function(ti){const r=f.apply(this,arguments);try{c
 (function(){const st=document.createElement('style');st.textContent='#prm-ov .pv-obj{display:flex;align-items:center;gap:8px;margin:4px 0;}#prm-ov .pv-obj span{flex:1;font-size:14px;}#prm-ov .pv-obj input{width:70px;min-height:36px;border-radius:8px;border:1px solid #2d323d;background:#111318;color:#fff;padding:0 8px;font-size:15px;}'
 +'#prm-ov .pv-lvls{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:6px;}#prm-ov .pv-lv{display:flex;gap:8px;align-items:center;text-align:left;border:2px solid #2d323d;background:#1a1d24;color:#e8e8ea;border-radius:10px;padding:8px;cursor:pointer;font-family:inherit;}#prm-ov .pv-lv b{font-size:20px;color:#facc15;}#prm-ov .pv-lv span{font-size:12px;}#prm-ov .pv-lv.on{border-color:#facc15;background:#2a2512;}'
 +'html body .frb-oesel{margin-left:6px;min-height:30px;border-radius:8px;background:#0f172a;color:#e2e8f0;border:1px solid #334155;font-size:.8rem;max-width:100%;}html body .frb-ob{font-style:normal;font-size:.75rem;color:#93c5fd;}';document.head.appendChild(st);})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v360 — • Qui joue : une seule façon de choisir à l'écran (la dernière
+// utilisée) ; les autres derrière « Autre façon de choisir ».
+// • Avant le match : « Boutons » fusionné dans « Qui observe et quoi ».
+// • Chaque bouton du profil est INDISPENSABLE (toujours là) ou FACULTATIF
+// (l'observateur le prend en plus) ; réglage gardé dans le profil.
+// ══════════════════════════════════════════════════════════════════════
+const QJX={all:false};
+qjRender=(function(f){return function(){const r=f.apply(this,arguments);try{const tabs=E('qj-tabs');if(!tabs)return r;const B=[...tabs.querySelectorAll('button')].filter(b=>!b.classList.contains('qjx'));const on=B.find(b=>b.classList.contains('on'));if(B.length<2||!on)return r;
+  B.forEach(b=>{b.style.display=(QJX.all||b===on)?'':'none';});let t=tabs.querySelector('.qjx');if(!t){t=document.createElement('button');t.type='button';t.className='qjx';t.onclick=function(){QJX.all=!QJX.all;qjRender();};tabs.appendChild(t);}
+  t.textContent=QJX.all?'✕ Fermer':'⇄ Autre façon de choisir ('+(B.length-1)+')';on.onclick=on.onclick;}catch(e){}return r;};})(qjRender);
+qjSetTab=(function(f){return function(){QJX.all=false;return f.apply(this,arguments);};})(qjSetTab);
+// ── indispensable / facultatif ──
+function pvOpt(b){if(!b)return false;if(b.opt!=null)return !!b.opt;return !(pvIsPt(b)||b.switchTeam);}
+function pvBtnLists(){const L=[CFG.dialogBtns];try{if(PRM.temp)L.push(PRM.temp);}catch(e){}try{const p=(CFG.savedPresets||[])[CFG.activePresetIndexT1];if(p&&Array.isArray(p.dialogBtns))L.push(p.dialogBtns);}catch(e){}try{if(CFG.team2Preset&&Array.isArray(CFG.team2Preset.dialogBtns))L.push(CFG.team2Preset.dialogBtns);}catch(e){}return L.filter(Array.isArray);}
+function pvToggleOpt(lab){const cur=(prmBtnsNow()||[]).find(b=>String(b.label)===lab);const v=!pvOpt(cur);pvBtnLists().forEach(L=>L.forEach(b=>{if(b&&String(b.label)===lab)b.opt=v;}));try{saveConfig();}catch(e){}const o=pvObs();if(!v)o.obs=o.obs.filter(x=>x!==lab);prmRender();}
+pvObsCands=(function(f){return function(){return (prmBtnsNow()||[]).filter(b=>b&&!b.adv&&pvOpt(b)).map(b=>String(b.label));};})(pvObsCands);
+pvSetObs=(function(f){return function(lab){const o=pvObs();o.on=true;o.lvl=0;const i=o.obs.indexOf(lab);if(i>=0)o.obs.splice(i,1);else o.obs.push(lab);prmRender();};})(pvSetObs);
+pvSetName=(function(f){return function(n){const o=pvObs();o.on=true;o.lvl=0;o.name=o.name===n?'':n;prmRender();};})(pvSetName);
+pvObsTxt=(function(f){return function(){const o=pvObs();const L=prmBtnsNow()||[];const ind=L.filter(b=>b&&!b.adv&&!pvOpt(b)).length;
+  return (o.name?o.name+' · ':'')+ind+' indispensable'+(ind>1?'s':'')+(o.obs.length?' + '+o.obs.join(', '):'')+(o.on?'':' · tous les boutons tant que personne n\'est choisi');};})(pvObsTxt);
+pvObsBody=(function(f){return function(){const o=pvObs();const L=(prmBtnsNow()||[]).filter(b=>b&&!b.adv);const names=[];(PRM.lineup||[]).forEach(l=>(l||[]).forEach(n=>{if(names.indexOf(n)<0)names.push(n);}));(MATCH.playersData||[]).forEach(p=>{const n=p&&p.name;if(n&&names.indexOf(n)<0)names.push(n);});
+  const q=t=>esc(t).replace(/'/g,"\\'");const lock=b=>'<span class="pv-lk" title="Changer : indispensable ⇄ facultatif" onclick="event.stopPropagation();pvToggleOpt(\''+q(b.label)+'\')">'+(pvOpt(b)?'⇧':'🔒')+'</span>';
+  const I=L.filter(b=>!pvOpt(b)),F=L.filter(b=>pvOpt(b));
+  return '<'+'div class="prm-lab">Qui observe</'+'div><'+'div class="prm-wrap">'+(names.length?names.slice(0,40).map(n=>'<button type="button" class="prm-chip'+(o.name===n?' on':'')+'" onclick="pvSetName(\''+q(n)+'\')">'+esc(n)+'</button>').join(''):'<span class="prm-dim">Pas de liste d\'élèves.</span>')+'</'+'div>'
+   +'<'+'div class="prm-lab" style="margin-top:8px;">🔒 Indispensables · toujours affichés</'+'div><'+'div class="prm-wrap">'+(I.length?I.map(b=>'<span class="prm-chip pv-ind">'+esc(b.label)+lock(b)+'</span>').join(''):'<span class="prm-dim">aucun</span>')+'</'+'div>'
+   +'<'+'div class="prm-lab" style="margin-top:8px;">➕ Facultatifs · l\'observateur choisit ce qu\'il prend en plus</'+'div><'+'div class="prm-wrap">'+(F.length?F.map(b=>'<button type="button" class="prm-chip'+(o.obs.indexOf(String(b.label))>=0?' on':'')+'" onclick="pvSetObs(\''+q(b.label)+'\')">'+esc(b.label)+lock(b)+'</button>').join(''):'<span class="prm-dim">aucun</span>')+'</'+'div>'
+   +'<'+'div class="prm-dim">🔒 / ⇧ : passer un bouton d\'indispensable à facultatif (gardé dans le profil). En boutons seuls, l\'observateur voit les indispensables et ses facultatifs.</'+'div>'
+   +'<'+'div class="pv-pbslot"></'+'div>';};})(pvObsBody);
+// filtre en boutons seuls (remplace le filtre par niveau)
+obsSimpleHtml=(function(f){return function(){const o=PRM.obsr;let h=f.apply(this,arguments);try{if(!o||!o.on)return h;const L=getTeamDialogBtns(curT)||[];
+  h=h.replace(/<button type="button" style="[^"]*" onclick="obsSimpleTap\((\d+)\)">[\s\S]*?<\/button>/g,(m,i)=>{const b=L[+i];if(!b)return m;if(!pvOpt(b))return m;if(o.obs.indexOf(String(b.label))>=0)return m;return '';});}catch(e){}return h;};})(obsSimpleHtml);
+// fusion : la ligne « Boutons » disparaît, son contenu va dans « Qui observe et quoi »
+prmRender=(function(f){return function(){f.apply(this,arguments);try{const ov=E('prm-ov');const box=ov&&ov.querySelector('.prm-box');if(!box)return;const rows=[...box.querySelectorAll('.ps-row')];
+  const br=rows.find(r=>/Boutons/.test((r.querySelector('.ps-t b')||{}).textContent||''));const pb=box.querySelector('.pb-card');const slot=box.querySelector('.pv-pbslot');
+  if(br)br.remove();if(pb&&slot){const d=document.createElement('details');d.className='pv-pbd';d.innerHTML='<summary>✏️ Modifier les boutons du profil (ajouter, enlever)</summary>';slot.appendChild(d);pb.style.display='';pb.classList.remove('ps-body');d.appendChild(pb);}else if(pb&&!slot){pb.style.display='none';}}catch(e){console.warn('pv merge',e);}};})(prmRender);
+stopMatch=(function(f){return function(){try{if(PRM.obsr&&PRM.obsr.on)PRM.obsr.lvl=(1+(CFG.gameMode==='2eq'?1:0)+PRM.obsr.obs.length);}catch(e){}const r=f.apply(this,arguments);try{if(PRM.obsr)PRM.obsr.lvl=0;}catch(e){}return r;};})(stopMatch);
+(function(){const st=document.createElement('style');st.textContent='#qj-tabs .qjx{flex:0 0 auto;background:transparent;border:1px dashed var(--border);color:var(--dim2);font-weight:700;}'
++'#prm-ov .pv-lk{margin-left:6px;font-size:12px;opacity:.8;cursor:pointer;padding:0 2px;}#prm-ov .pv-ind{display:inline-flex;align-items:center;min-height:38px;background:#14532d;border-color:#16a34a;color:#dcfce7;cursor:default;}#prm-ov .pv-pbd{margin-top:10px;}#prm-ov .pv-pbd summary{cursor:pointer;color:#a3a7b0;font-size:13px;min-height:30px;}#prm-ov .pv-pbd .prm-card{margin-top:6px;}';document.head.appendChild(st);})();
 </script>
 </body>
 </html>
