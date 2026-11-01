@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v358</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v359</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v358</title>
+<title>Gribouillis EPS v359</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -26288,6 +26288,54 @@ frbOes=(function(f){return function(){try{const sd=(typeof REMED_CONTENT!=='unde
 frbRender=(function(f){return function(ti){const r=f.apply(this,arguments);try{const p=E('frb-panel');if(p){p.querySelectorAll('.frb-mac').forEach(x=>x.remove());p.querySelectorAll('.frb-dim').forEach(x=>{if(/objectif chiffré/.test(x.textContent))x.remove();});const hd=p.querySelector('.frb-hd span');if(hd)hd.textContent='fils rouges micro, à remplir avec les joueurs';}
   const ss=E('s-summary');if(ss)ss.classList.toggle('frb-noterr',!!CFG.obsSimple);}catch(e){}return r;};})(frbRender);
 (function(){const st=document.createElement('style');st.textContent='html body #s-summary.frb-noterr #bilan-simple .bilan-terrain-wrap{display:none !important;}html body #s-summary.frb-noterr #bilan-simple .bilan-right{flex:1;max-width:none;}html body #s-summary.frb-noterr #bilan-simple .simple-sum{justify-content:center;}html body #s-summary.frb-noterr #bilan-simple .bilan-right{max-width:900px;margin:0 auto;}';document.head.appendChild(st);})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v359 — AVANT LE MATCH : deux lignes de plus, comme « Fin du match » :
+// 🎯 Objectifs (fils rouges macro du profil, cibles modifiables) et
+// 🧑‍⚖️ Qui observe (nom, niveau 1 à 4, observables). En boutons seuls,
+// l'observateur ne voit que les boutons de son niveau. L'observateur est
+// gardé avec le match. Bilan : on peut changer l'objet observé (gardé
+// dans le profil).
+// ══════════════════════════════════════════════════════════════════════
+function pvObjList(){const out=[];try{RDEFS.forEach(rd=>{if(!CFG[rd.id])return;out.push({k:rd.id,lab:(typeof REMED_RLABELS!=='undefined'&&REMED_RLABELS[rd.id])||rd.label,t:CFG[rd.id+'Target']||''});});(CFG.customRatios||[]).forEach((cr,i)=>{if(cr&&cr.show)out.push({k:'cr'+i,lab:cr.label,t:cr.target||''});});}catch(e){}return out;}
+function pvObjSet(k,v){v=String(v||'').trim();if(/^cr\d+$/.test(k)){const cr=(CFG.customRatios||[])[+k.slice(2)];if(cr)cr.target=v;}else CFG[k+'Target']=v;try{saveConfig();}catch(e){}prmRender();}
+function pvObjTxt(){const L=pvObjList().filter(o=>o.t);return L.length?L.map(o=>o.lab+' '+(/^[<≤>≥]/.test(o.t)?o.t:'≥ '+o.t)+(/%/.test(o.t)?'':' %')).join(' · '):'aucun objectif chiffré';}
+function pvIsPt(b){return !!(b&&(b.isGoal||(+b.pts>0)));}
+function pvObsCands(){return (prmBtnsNow()||[]).filter(b=>b&&!b.adv&&!pvIsPt(b)).map(b=>String(b.label));}
+function pvObs(){if(!PRM.obsr)PRM.obsr={name:'',lvl:0,obs:[]};return PRM.obsr;}
+function pvObsTxt(){const o=pvObs();if(!o.name&&!o.lvl)return 'personne de désigné · tous les boutons';return (o.name||'?')+(o.lvl?' · niveau '+o.lvl:'')+(o.obs.length?' · '+o.obs.join(', '):'');}
+function pvSetName(n){const o=pvObs();o.name=o.name===n?'':n;prmRender();}
+function pvSetLvl(l){const o=pvObs();o.lvl=o.lvl===l?0:l;const C=pvObsCands();if(o.lvl<3)o.obs=[];if(o.lvl===3&&o.obs.length!==1)o.obs=C.slice(0,1);if(o.lvl===4&&o.obs.length<2)o.obs=C.slice(0,Math.max(2,o.obs.length));prmRender();}
+function pvSetObs(lab){const o=pvObs();const i=o.obs.indexOf(lab);if(o.lvl===3)o.obs=[lab];else if(i>=0)o.obs.splice(i,1);else o.obs.push(lab);prmRender();}
+function pvObjBody(){const L=pvObjList();if(!L.length)return '<'+'div class="prm-dim">Le profil d\'observation n\'a pas de fil rouge macro (ratio). Choisis ou modifie le profil dans « Observation ».</'+'div>';
+  return L.map(o=>'<'+'div class="pv-obj"><span>'+esc(o.lab)+'</span><input value="'+esc(o.t)+'" placeholder="ex. 50" onchange="pvObjSet(\''+o.k+'\',this.value)"><small>%</small></'+'div>').join('')+'<'+'div class="prm-dim">Cibles du profil : elles servent au bilan (objectif atteint ou pas).</'+'div>';}
+function pvObsBody(){const o=pvObs();const names=[];(PRM.lineup||[]).forEach(l=>(l||[]).forEach(n=>{if(names.indexOf(n)<0)names.push(n);}));(MATCH.playersData||[]).forEach(p=>{const n=p&&p.name;if(n&&names.indexOf(n)<0)names.push(n);});
+  const C=pvObsCands();const lv=[[1,'Les points de son équipe'],[2,'Les points des deux équipes'],[3,'+ 1 observable'],[4,'+ 2 observables ou plus']];
+  return '<'+'div class="prm-lab">Qui observe</'+'div><'+'div class="prm-wrap">'+(names.length?names.slice(0,40).map(n=>'<button type="button" class="prm-chip'+(o.name===n?' on':'')+'" onclick="pvSetName(\''+esc(n).replace(/'/g,"\\'")+'\')">'+esc(n)+'</button>').join(''):'<span class="prm-dim">Pas de liste d\'élèves.</span>')+'</'+'div>'
+    +'<'+'div class="prm-lab" style="margin-top:8px;">Son niveau</'+'div><'+'div class="pv-lvls">'+lv.map(x=>'<button type="button" class="pv-lv'+(o.lvl===x[0]?' on':'')+'" onclick="pvSetLvl('+x[0]+')"><b>'+x[0]+'</b><span>'+x[1]+'</span></button>').join('')+'</'+'div>'
+    +(o.lvl>=3?'<'+'div class="prm-lab" style="margin-top:8px;">Ce qu\'il observe en plus</'+'div><'+'div class="prm-wrap">'+(C.length?C.map(l=>'<button type="button" class="prm-chip'+(o.obs.indexOf(l)>=0?' on':'')+'" onclick="pvSetObs(\''+esc(l).replace(/'/g,"\\'")+'\')">'+esc(l)+'</button>').join(''):'<span class="prm-dim">Le profil n\'a que des boutons de points.</span>')+'</'+'div>':'')
+    +'<'+'div class="prm-dim">En boutons seuls, il ne voit que les boutons de son niveau. Sans niveau choisi : tous les boutons.</'+'div>';}
+prmRender=(function(f){return function(){f.apply(this,arguments);try{const ov=E('prm-ov');const box=ov&&ov.querySelector('.prm-box');if(!box)return;const anchor=[...box.querySelectorAll('.ps-row')].find(r=>/Observation/.test(r.textContent));
+  const after=anchor?(anchor.nextElementSibling&&anchor.nextElementSibling.classList.contains('ps-body')?anchor.nextElementSibling:anchor):null;
+  const mk=(k,ico,t,v,body)=>{const r=document.createElement('button');r.type='button';r.className='ps-row'+(PRM.open===k?' on':'');r.innerHTML='<span class="ps-i">'+ico+'</span><span class="ps-t"><b>'+esc(t)+'</b><span>'+esc(v)+'</span></span><span class="ps-c">'+(PRM.open===k?'▲':'Modifier')+'</span>';r.onclick=()=>psTog(k);
+    const d=document.createElement('div');d.className='prm-card ps-body';d.innerHTML=body;if(PRM.open!==k)d.style.display='none';return [r,d];};
+  const A=mk('obj','🎯','Objectifs (fils rouges macro)',pvObjTxt(),pvObjBody());const B=mk('obr','🧑‍⚖️','Qui observe et quoi',pvObsTxt(),pvObsBody());
+  let at=after;[A[0],A[1],B[0],B[1]].forEach(el=>{if(at){at.insertAdjacentElement('afterend',el);at=el;}else{const go=box.querySelector('.prm-go');if(go)go.insertAdjacentElement('beforebegin',el);}});}catch(e){console.warn('pv',e);}};})(prmRender);
+// boutons seuls : seulement les boutons du niveau de l'observateur
+obsSimpleHtml=(function(f){return function(){let h=f.apply(this,arguments);try{const o=PRM.obsr;if(!o||!o.lvl)return h;const L=getTeamDialogBtns(curT)||[];
+  h=h.replace(/<button type="button" style="[^"]*" onclick="obsSimpleTap\((\d+)\)">[\s\S]*?<\/button>/g,(m,i)=>{const b=L[+i];if(!b)return m;if(pvIsPt(b)||b.switchTeam)return m;if(o.lvl>=3&&o.obs.indexOf(String(b.label))>=0)return m;return '';});}catch(e){}return h;};})(obsSimpleHtml);
+// l'observateur est gardé avec le match
+stopMatch=(function(f){return function(){const ob=PRM.obsr&&(PRM.obsr.name||PRM.obsr.lvl)?JSON.parse(JSON.stringify(PRM.obsr)):null;const r=f.apply(this,arguments);try{const a=frbArch();if(a&&ob){a.observer=ob;saveArchives();}}catch(e){}return r;};})(stopMatch);
+// bilan : qui a observé + choix de l'objet (gardé dans le profil)
+function frbSetOe(id){try{const P=CFG.savedPresets||[];const p=P[CFG.activePresetIndexT1];if(p){p.meta=Object.assign({},p.meta||{},{oeId:id});saveConfig();}}catch(e){}frbRender(FRB.ti);}
+frbRender=(function(f){return function(ti){const r=f.apply(this,arguments);try{const p=E('frb-panel');if(!p)return r;const sd=(typeof REMED_CONTENT!=='undefined'&&REMED_CONTENT[CFG.apsa])||null;const O=frbOes();
+  const sub=p.querySelector('.frb-sub');if(sd&&sub){const cur=(p.querySelector('.frb-oes button.on')||{}).textContent;const curO=O.length===1?O[0]:(O.find(o=>(o.short||o.label)===cur)||O[0]);
+    const sel=document.createElement('select');sel.className='frb-oesel';sel.title='Objet observé (gardé dans le profil d\'observation)';sel.innerHTML=(sd.oe||[]).map(o=>'<option value="'+esc(o.id)+'"'+(curO&&o.id===curO.id?' selected':'')+'>'+esc(o.short||o.label)+'</option>').join('');sel.onchange=function(){frbSetOe(this.value);};
+    const sp=sub.querySelector('span');if(sp)sp.textContent='— fils rouges micro de ';sub.appendChild(sel);const oes=p.querySelector('.frb-oes');if(oes&&O.length>1&&frbProfOe())oes.remove();}
+  const a=frbArch();if(a&&a.observer&&a.observer.name){const hd=p.querySelector('.frb-hd');if(hd&&!hd.querySelector('.frb-ob')){const s2=document.createElement('em');s2.className='frb-ob';s2.textContent='observé par '+a.observer.name+(a.observer.lvl?' · niveau '+a.observer.lvl:'');hd.appendChild(s2);}}}catch(e){console.warn('frb2',e);}return r;};})(frbRender);
+(function(){const st=document.createElement('style');st.textContent='#prm-ov .pv-obj{display:flex;align-items:center;gap:8px;margin:4px 0;}#prm-ov .pv-obj span{flex:1;font-size:14px;}#prm-ov .pv-obj input{width:70px;min-height:36px;border-radius:8px;border:1px solid #2d323d;background:#111318;color:#fff;padding:0 8px;font-size:15px;}'
++'#prm-ov .pv-lvls{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:6px;}#prm-ov .pv-lv{display:flex;gap:8px;align-items:center;text-align:left;border:2px solid #2d323d;background:#1a1d24;color:#e8e8ea;border-radius:10px;padding:8px;cursor:pointer;font-family:inherit;}#prm-ov .pv-lv b{font-size:20px;color:#facc15;}#prm-ov .pv-lv span{font-size:12px;}#prm-ov .pv-lv.on{border-color:#facc15;background:#2a2512;}'
++'html body .frb-oesel{margin-left:6px;min-height:30px;border-radius:8px;background:#0f172a;color:#e2e8f0;border:1px solid #334155;font-size:.8rem;max-width:100%;}html body .frb-ob{font-style:normal;font-size:.75rem;color:#93c5fd;}';document.head.appendChild(st);})();
 </script>
 </body>
 </html>
