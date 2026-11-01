@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v362</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v363</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v362</title>
+<title>Gribouillis EPS v363</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -26487,6 +26487,86 @@ function dictUi(){[0,1].forEach(sl=>{const b=E('dict-btn-'+sl);if(b){b.textConte
 (function(){const st=document.createElement('style');st.textContent='html body .dict-btn{border:1px solid #334155;background:#0f172a;color:#e2e8f0;border-radius:999px;padding:6px 12px;font-weight:700;font-size:.78rem;cursor:pointer;margin-left:6px;}html body .dict-btn.on{border-color:#ef4444;color:#fca5a5;}'
 +'html body .sp-msg{font-size:.74rem;color:#93c5fd;margin:4px 0;}html body .sp-msg.bad{color:#fca5a5;}html body .sp-msg:empty{display:none;}'
 +'html body .frb-adv{border:1px solid #7f1d1d;background:rgba(127,29,29,.15);border-radius:12px;padding:8px 10px;}html body .frb-adv > b{font-size:.86rem;}html body .frb-adv > span{font-size:.74rem;color:#94a3b8;}html body .frb-advl{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:6px;margin-top:6px;}html body .frb-advl > div{display:flex;flex-direction:column;background:#0f172a;border-radius:8px;padding:6px 8px;}html body .frb-advl i{font-style:normal;font-size:.72rem;color:#cbd5e1;}html body .frb-advl b{font-size:1.15rem;color:#fca5a5;}';document.head.appendChild(st);})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v363 — BIBLIOTHÈQUE DIDACTIQUE : plusieurs nomenclatures.
+// 📘 CEDREPS : tout est modifiable (objet, fils rouges macro, fils rouges
+// micro et leurs états, CP, attendus intention / action / perception).
+// 🏟️ Projet de jeu (AS) : rappel, édition dans Remédiation (inchangé).
+// 🌱 EPS énactive : par APSA, des fiches « espace d'action encouragée »
+// (≈ FPS) → expériences à vivre (intention · action · perception) →
+// amplifications (fils rouges macro) et ressorts d'intervention (micro).
+// ══════════════════════════════════════════════════════════════════════
+// ── fils rouges macro gardés avec les autres modifications CEDREPS ──
+saveRemedEdits=(function(f){return function(){const r=f.apply(this,arguments);try{const E0=JSON.parse(localStorage.getItem('grib_remed_edits_v1')||'{}');Object.keys(REMED_CONTENT).forEach(sp=>{const sd=REMED_CONTENT[sp];if(!sd||sd.custom||!E0[sp])return;(sd.oe||[]).forEach(o=>{if(E0[sp][o.id]&&Array.isArray(o.macroLabels)&&o._macroEd)E0[sp][o.id].macroLabels=o.macroLabels;});});localStorage.setItem('grib_remed_edits_v1',JSON.stringify(E0));}catch(e){console.warn('macro save',e);}return r;};})(saveRemedEdits);
+function libxApplyMacro(){try{const E0=JSON.parse(localStorage.getItem('grib_remed_edits_v1')||'{}');Object.keys(E0).forEach(sp=>{const sd=REMED_CONTENT[sp];if(!sd||sd.custom)return;Object.keys(E0[sp]||{}).forEach(oid=>{const o=(sd.oe||[]).find(x=>x.id===oid);const m=E0[sp][oid]&&E0[sp][oid].macroLabels;if(o&&Array.isArray(m)){o.macroLabels=m.slice();o._macroEd=true;}});});}catch(e){}}
+initRemediation=(function(f){return function(){const r=f.apply(this,arguments);libxApplyMacro();return r;};})(initRemediation);
+try{libxApplyMacro();}catch(e){}
+function libxSetTxt(sp,oe,mi,cp,k,v){const n=libxNode(sp,oe,mi,cp);if(!n)return;v=String(v==null?'':v);
+  if(k==='macro'){n.macroLabels=v.split('\n').map(x=>x.trim()).filter(Boolean);n._macroEd=true;}
+  else if(k==='s1'||k==='s2'){const st=(n.states||[]).find(x=>x.id===k)||(n.states||[])[k==='s1'?0:1];if(st)st.label=v.trim();}
+  else if(/^att\./.test(k)){n.attendu=Object.assign({},n.attendu||{});n.attendu[k.slice(4)]=v.trim();}
+  else if(v.trim())n[k]=v.trim();
+  libxSave();try{toast2('✓ Enregistré');}catch(e){}}
+const LIBXE={};
+function libxIn(sp,oe,mi,cp,k,v,ph,rows){const a='\''+sp+'\',\''+oe+'\','+(mi?'\''+mi+'\'':'null')+','+(cp?'\''+cp+'\'':'null')+',\''+k+'\'';
+  return rows?'<textarea class="lx-ed" rows="'+rows+'" placeholder="'+esc(ph||'')+'" onchange="libxSetTxt('+a+',this.value)">'+esc(v||'')+'</textarea>':'<input class="lx-ed" value="'+esc(v||'')+'" placeholder="'+esc(ph||'')+'" onchange="libxSetTxt('+a+',this.value)">';}
+// panneau d'édition des textes d'un objet CEDREPS
+function libxEditHtml(sp,O){const att=(C)=>C.attendu||{};
+  let h='<'+'div class="lx-edit"><'+'div class="lx-sec">✏️ Textes de l\'objet</'+'div>'+libxIn(sp,O.id,null,null,'short',O.short,'Nom court (ex. OE B — Réception-attaque)')+libxIn(sp,O.id,null,null,'label',O.label,'Intitulé complet',2)
+    +'<'+'div class="lx-sec">🎯 Fils rouges macro <span>(un par ligne)</span></'+'div>'+libxIn(sp,O.id,null,null,'macro',(O.macroLabels||[]).join('\n'),'Un fil rouge macro par ligne',3);
+  (O.micro||[]).forEach(M=>{h+='<'+'div class="lx-mi"><'+'div class="lx-sec">🔎 Fil rouge micro</'+'div>'+libxIn(sp,O.id,M.id,null,'label',M.label,'Fil rouge micro',2)
+    +'<'+'div class="lx-2">'+libxIn(sp,O.id,M.id,null,'s1',((M.states||[])[0]||{}).label,'Ce qu\'on voit quand c\'est réussi',2)+libxIn(sp,O.id,M.id,null,'s2',((M.states||[])[1]||{}).label,'Ce qu\'on voit quand ce n\'est pas encore réussi',2)+'</'+'div>';
+    (M.cps||[]).forEach(C=>{const A=att(C);h+='<'+'div class="lx-cp"><'+'div class="lx-sec">📌 CP</'+'div>'+libxIn(sp,O.id,M.id,C.id,'label',C.label,'Contenu prioritaire',2)
+      +'<'+'div class="lx-3">'+libxIn(sp,O.id,M.id,C.id,'att.intention',A.intention,'Intention',3)+libxIn(sp,O.id,M.id,C.id,'att.action',A.action,'Action',3)+libxIn(sp,O.id,M.id,C.id,'att.perception',A.perception,'Perception',3)+'</'+'div></'+'div>';});
+    h+='</'+'div>';});
+  return h+'</'+'div>';}
+libxDid=(function(f){return function(){let h=f.apply(this,arguments);return h;};})(libxDid);
+// ── EPS énactive ──
+const ENAC_KEY='grib_enactive_v1';try{if(GRIB_BACKUP_KEYS.indexOf(ENAC_KEY)<0)GRIB_BACKUP_KEYS.push(ENAC_KEY);}catch(e){}
+function enLoad(){try{const o=JSON.parse(localStorage.getItem(ENAC_KEY)||'{}');return o&&typeof o==='object'?o:{};}catch(e){return {};}}
+function enSave(o){try{localStorage.setItem(ENAC_KEY,JSON.stringify(o));}catch(e){alert('Mémoire pleine.');}}
+function enUid(){return 'en'+Date.now().toString(36)+Math.floor(Math.random()*1e4).toString(36);}
+function enSp(o,sp){o[sp]=o[sp]||{fiches:[]};return o[sp];}
+function enMut(fn){const o=enLoad();fn(o);enSave(o);renderLibTab();}
+function enAddFiche(sp){enMut(o=>{enSp(o,sp).fiches.push({id:enUid(),titre:'Nouvel espace d\'action encouragée',eae:'',regles:'',exps:[],amplif:[],ressorts:[]});LIBX.open['en|'+sp+'|'+enSp(o,sp).fiches.slice(-1)[0].id]=true;});}
+function enDelFiche(sp,id){if(!confirm('Supprimer cette fiche ?'))return;enMut(o=>{const S=enSp(o,sp);S.fiches=S.fiches.filter(x=>x.id!==id);});}
+function enSet(sp,id,k,v,ei){const o=enLoad();const F=(enSp(o,sp).fiches||[]).find(x=>x.id===id);if(!F)return;if(ei!=null){const X=(F.exps||[])[ei];if(!X)return;X[k]=String(v||'');}else if(k==='amplif'||k==='ressorts')F[k]=String(v||'').split('\n').map(x=>x.trim()).filter(Boolean);else F[k]=String(v||'');enSave(o);try{toast2('✓ Enregistré');}catch(e){}}
+function enAddExp(sp,id){enMut(o=>{const F=(enSp(o,sp).fiches||[]).find(x=>x.id===id);if(F){F.exps=F.exps||[];F.exps.push({id:enUid(),titre:'',intention:'',action:'',perception:'',sits:[]});}});}
+function enDelExp(sp,id,i){if(!confirm('Supprimer cette expérience ?'))return;enMut(o=>{const F=(enSp(o,sp).fiches||[]).find(x=>x.id===id);if(F)F.exps.splice(i,1);});}
+function enSit(sp,id,i,lid){enMut(o=>{const F=(enSp(o,sp).fiches||[]).find(x=>x.id===id);const X=F&&F.exps[i];if(!X)return;X.sits=X.sits||[];const k=X.sits.indexOf(lid);if(k>=0)X.sits.splice(k,1);else X.sits.push(lid);});}
+function enMedia(sp,id,i){mediaSheet({k:'enac',sp:sp,id:id,i:i==null?null:i});}
+mediaRes=(function(f){return function(t){if(t&&t.k==='enac'){const o=enLoad();const F=(enSp(o,t.sp).fiches||[]).find(x=>x.id===t.id);const n=F&&(t.i!=null?F.exps[t.i]:F);if(!n)return null;return {n:n,save:()=>{enSave(o);},ttl:n.titre||'Expérience'};}return f.apply(this,arguments);};})(mediaRes);
+function enIn(sp,id,k,v,ph,rows,ei){const a='\''+sp+'\',\''+id+'\',\''+k+'\',this.value'+(ei!=null?','+ei:'');return rows?'<textarea class="lx-ed" rows="'+rows+'" placeholder="'+esc(ph)+'" onchange="enSet('+a+')">'+esc(v||'')+'</textarea>':'<input class="lx-ed" value="'+esc(v||'')+'" placeholder="'+esc(ph)+'" onchange="enSet('+a+')">';}
+function libxEnac(sp){const S=enSp(enLoad(),sp);const lib=libLoad().filter(x=>x&&x.kind==='remed'&&(!x.apsa||fpsNormSp(x.apsa)===fpsNormSp(sp)||String(x.cp||'').indexOf(sp+'|')===0));
+  let h='<'+'div class="cc-dim" style="margin:4px 0 10px;">EPS énactive : un <b>espace d\'action encouragée</b> (le dispositif, proche d\'une FPS) ouvre des <b>expériences à vivre</b>, chacune décrite par son intention, son action et sa perception. Les <b>amplifications</b> (fils rouges macro) et les <b>ressorts d\'intervention</b> (fils rouges micro) guident ton intervention.</'+'div>';
+  (S.fiches||[]).forEach(F=>{const key='en|'+sp+'|'+F.id;const open=!!LIBX.open[key];const m=F.media||{};
+    h+='<'+'details class="lx-oe"'+(open?' open':'')+' ontoggle="LIBX.open[\''+key+'\']=this.open"><summary><b>🌱 '+esc(F.titre||'Espace d\'action encouragée')+'</b><small>'+(F.exps||[]).length+' expérience'+((F.exps||[]).length>1?'s':'')+' à vivre</small></summary>';
+    if(!open){h+='</'+'details>';return;}
+    h+='<'+'div class="lx-row">'+enIn(sp,F.id,'titre',F.titre,'Nom de l\'espace d\'action encouragée')+'<button type="button" class="lx-mb'+((m.video||m.anim)?' on':'')+'" onclick="enMedia(\''+sp+'\',\''+F.id+'\')">🎬 vidéo</button><button type="button" class="lx-mb" onclick="enDelFiche(\''+sp+'\',\''+F.id+'\')">🗑</button></'+'div>'
+      +'<'+'div class="lx-sec">Espace d\'action encouragée <span>(dispositif, but, aménagements)</span></'+'div>'+enIn(sp,F.id,'eae',F.eae,'Le dispositif : terrain, effectifs, but du jeu…',3)+enIn(sp,F.id,'regles',F.regles,'Règles et contraintes',2)
+      +'<'+'div class="lx-2"><div><'+'div class="lx-sec">🎯 Amplifications <span>(fils rouges macro, une par ligne)</span></'+'div>'+enIn(sp,F.id,'amplif',(F.amplif||[]).join('\n'),'Une amplification par ligne',3)+'</div><div><'+'div class="lx-sec">🔎 Ressorts d\'intervention <span>(fils rouges micro, un par ligne)</span></'+'div>'+enIn(sp,F.id,'ressorts',(F.ressorts||[]).join('\n'),'Un ressort par ligne',3)+'</div></'+'div>'
+      +'<'+'div class="lx-sec">✨ Expériences à vivre</'+'div>';
+    (F.exps||[]).forEach((X,i)=>{const xm=X.media||{};h+='<'+'div class="lx-cp"><'+'div class="lx-row">'+enIn(sp,F.id,'titre',X.titre,'Nom de l\'expérience à vivre',0,i)+'<button type="button" class="lx-mb'+((xm.video||xm.anim)?' on':'')+'" onclick="enMedia(\''+sp+'\',\''+F.id+'\','+i+')">🎬 vidéo</button><button type="button" class="lx-mb" onclick="enDelExp(\''+sp+'\',\''+F.id+'\','+i+')">🗑</button></'+'div>'
+      +'<'+'div class="lx-3">'+enIn(sp,F.id,'intention',X.intention,'Intention',3,i)+enIn(sp,F.id,'action',X.action,'Action',3,i)+enIn(sp,F.id,'perception',X.perception,'Perception',3,i)+'</'+'div>'
+      +'<'+'div class="lx-chips"><span class="cc-dim">Situations :</span>'+(X.sits||[]).map(id=>{const it=lib.find(x=>x.id===id)||libLoad().find(x=>x.id===id);return it?'<span class="lx-sit">▶ '+esc(it.titre)+'<button type="button" onclick="enSit(\''+sp+'\',\''+F.id+'\','+i+',\''+esc(id)+'\')">✕</button></span>':'';}).join('')
+      +'<select class="lx-sel" onchange="if(this.value)enSit(\''+sp+'\',\''+F.id+'\','+i+',this.value)"><option value="">🔗 Lier une situation…</option>'+lib.filter(x=>(X.sits||[]).indexOf(x.id)<0).map(x=>'<option value="'+esc(x.id)+'">'+esc(x.titre)+'</option>').join('')+'</select></'+'div></'+'div>';});
+    h+='<button type="button" class="lx-addb" onclick="enAddExp(\''+sp+'\',\''+F.id+'\')">＋ Expérience à vivre</button></'+'details>';});
+  h+='<button type="button" class="lx-addb" onclick="enAddFiche(\''+sp+'\')">＋ Espace d\'action encouragée</button>';return h;}
+function libxAs(){const L=Object.keys(REMED_CONTENT||{}).filter(k=>REMED_CONTENT[k]&&REMED_CONTENT[k].custom);
+  return '<'+'div class="cc-dim" style="margin:4px 0 10px;">Projets de jeu (AS) : phases, orientations, principes. Ils se modifient comme avant dans l\'onglet Remédiation.</'+'div>'+(L.length?L.map(k=>{const r=REMED_CONTENT[k];return '<'+'div class="lx-oe" style="padding:10px 12px;"><b>🏟️ '+esc(r.label||r.name||k)+'</b><small class="cc-dim"> · '+(r.oe||[]).length+' éléments</small></'+'div>';}).join(''):'<span class="cc-dim">Aucun projet de jeu.</span>');}
+// sélecteur de nomenclature + édition CEDREPS
+renderLibTab=(function(f){return function(){const r=f.apply(this,arguments);try{if(LIBX.shelf!=='did')return r;const host=E('lib-tab-content');const card=host&&host.querySelector('.card');if(!card)return r;const nom=LIBX.nom||'ced';
+  const bar=document.createElement('div');bar.className='lx-nom';bar.innerHTML=[['ced','📘 CEDREPS'],['as','🏟️ Projet de jeu (AS)'],['en','🌱 EPS énactive']].map(x=>'<button type="button" class="'+(nom===x[0]?'on':'')+'" onclick="LIBX.nom=\''+x[0]+'\';renderLibTab()">'+x[1]+'</button>').join('');
+  const title=card.querySelector('.card-title');if(title)title.insertAdjacentElement('afterend',bar);
+  if(nom==='as'){[...card.children].forEach(c=>{if(c!==title&&c!==bar)c.remove();});card.insertAdjacentHTML('beforeend',libxAs());}
+  else if(nom==='en'){const sp=LIBX.sp||'handball';const keep=card.querySelector('.lx-sp');[...card.children].forEach(c=>{if(c!==title&&c!==bar&&c!==keep)c.remove();});card.insertAdjacentHTML('beforeend',libxEnac(sp));}
+  else{const sp=LIBX.sp;const OEs=((REMED_CONTENT[sp]||{}).oe||[]);card.querySelectorAll('details.lx-oe').forEach((d,ix)=>{if(!d.open)return;const O=OEs[ix];if(!O)return;const sum=d.querySelector('summary');const ek=sp+'|'+O.id;
+      const b=document.createElement('button');b.type='button';b.className='lx-addb';b.textContent=LIBXE[ek]?'✓ Fini de modifier les textes':'✏️ Modifier tous les textes de cet objet';b.onclick=function(){LIBXE[ek]=!LIBXE[ek];renderLibTab();};sum.insertAdjacentElement('afterend',b);
+      if(LIBXE[ek]){const d2=document.createElement('div');d2.innerHTML=libxEditHtml(sp,O);b.insertAdjacentElement('afterend',d2.firstChild);}});}}catch(e){console.warn('lx nom',e);}return r;};})(renderLibTab);
+(function(){const st=document.createElement('style');st.textContent='html body .lx-nom{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 10px;}html body .lx-nom button{border:1px solid var(--border);background:#0f172a;color:var(--text);border-radius:10px;padding:8px 12px;font-weight:800;cursor:pointer;}html body .lx-nom button.on{background:#15803d;border-color:#22c55e;color:#fff;}'
++'html body .lx-ed{width:100%;box-sizing:border-box;background:#111827;border:1px solid #334155;color:#e2e8f0;border-radius:8px;padding:6px 8px;font-size:.82rem;font-family:inherit;margin:3px 0;min-height:34px;resize:vertical;}html body .lx-2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}html body .lx-3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}@media (max-width:700px){html body .lx-2,html body .lx-3{grid-template-columns:1fr;}}'
++'html body .lx-edit{border:1px dashed #f59e0b;border-radius:10px;padding:8px 10px;margin:6px 0;background:#141007;}html body .lx-addb{border:1px dashed #3b82f6;background:transparent;color:#93c5fd;border-radius:10px;padding:8px 12px;font-weight:700;cursor:pointer;margin:6px 0;}html body .lx-sel{min-height:30px;border-radius:999px;background:#0f172a;color:#93c5fd;border:1px dashed #334155;max-width:100%;}';document.head.appendChild(st);})();
 </script>
 </body>
 </html>
