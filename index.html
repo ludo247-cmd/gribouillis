@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v382</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v383</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v382</title>
+<title>Gribouillis EPS v383</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -27615,6 +27615,18 @@ renderDialogEditor=(function(f){return function(){const r=f.apply(this,arguments
   const M=[[/^(term|terminale)/,'1CcFCJPONJo0xz9lrH724Hi4oDZDY1J5H'],[/^3b$/,'1hkHpnvrRcjrWuV5kRGQje6nU6WUiPY-N'],[/^3c$/,'1EY1kQvlNcmJ8-Op96BuIjmatv9o05HiQ'],[/^6c$/,'1mIMMqZyj-_KnagsY4yVMZq0NmgL7B23W'],[/^1a$/,'1ZV0ZqE08bSIm2BlcIfVjB6OO5veHdZM9'],[/^as$/,'1bJ2UHrnmshftvGW1FNXepjyG7bXxOwru']];
   const d=clsData();if(!d.list.length)return;let n=0;d.list.forEach(c=>{if(c.drive)return;const k=String(c.nom||'').trim().toLowerCase().replace(/\s+/g,'');const m=M.find(x=>x[0].test(k));if(m){c.drive=F+m[1];n++;}});
   if(n)clsSave(d);localStorage.setItem('grib_fix382','1');try{renderClassesConsole();}catch(e){}}catch(e){console.warn('fix382',e);}})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v383 — Bilan « Ce qu'on a vu » : un seul choix d'axe (le menu déroulant),
+// les boutons en double disparaissent ; dans une séance, l'objet de la
+// séance est présélectionné.
+// ══════════════════════════════════════════════════════════════════════
+function frb383Default(ti){try{const d=frbData(ti);if(d.oe)return;const X=frbSport();const all=(X.sd&&X.sd.oe)||[];
+  const sid=X.s&&X.s.oeId;if(sid&&all.some(o=>o.id===sid)){d.oe=sid;return;}const pid=frbProfOe();if(pid&&all.some(o=>o.id===pid))d.oe=pid;}catch(e){}}
+frbOes=(function(f){return function(){const L=f.apply(this,arguments);try{const d=frbData(FRB.ti);if(d&&d.oe&&!L.some(o=>o.id===d.oe)){const X=frbSport();const o=((X.sd&&X.sd.oe)||[]).find(x=>x.id===d.oe);if(o)return [o].concat(L);}}catch(e){}return L;};})(frbOes);
+frbSetOe=(function(f){return function(id){try{const d=frbData(FRB.ti);d.oe=id;frbSave();}catch(e){}return f.apply(this,arguments);};})(frbSetOe);
+frbRender=(function(f){return function(ti){frb383Default(ti==null?FRB.ti:ti);const r=f.apply(this,arguments);try{const p=E('frb-panel');if(!p)return r;const sel=p.querySelector('.frb-oesel');
+  if(sel){p.querySelectorAll('.frb-oes').forEach(x=>x.remove());const d=frbData(FRB.ti);if(d.oe&&[...sel.options].some(o=>o.value===d.oe))sel.value=d.oe;}}catch(e){console.warn('frb383',e);}return r;};})(frbRender);
 </script>
 </body>
 </html>
