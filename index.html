@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v387</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v388</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v387</title>
+<title>Gribouillis EPS v388</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -27742,6 +27742,107 @@ function lx2BulDone(t){const u=t.previousElementSibling;if(!u||!u.classList.cont
 lx2CedObj=(function(f){return function(){return lx2Bul(f.apply(this,arguments));};})(lx2CedObj);
 lx2EnObj=(function(f){return function(){return lx2Bul(f.apply(this,arguments));};})(lx2EnObj);
 (function(){const st=document.createElement('style');st.textContent='html body textarea.lx2-hid{display:none;}html body .lx2-ul{margin:4px 0 6px;padding:8px 12px 8px 28px;background:#111827;border:1px solid #334155;border-radius:8px;cursor:text;font-size:.88rem;line-height:1.4;}html body .lx2-ul li{margin:3px 0;}html body .lx2-ul li::marker{color:#60a5fa;}html body .lx2-ul-e{list-style:none;color:#64748b;margin-left:-14px;}';document.head.appendChild(st);})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v388 — Séquences : • « 🎲 Remplir au hasard (essai) » : accents des CP
+// dans la grille, séances créées, FPS dans les matchs, situations dans les
+// remédiations — tout s'annule d'un bouton. • Indicateur « ce qui est fait /
+// ce qui reste » pour la séquence et pour la séance.
+// ══════════════════════════════════════════════════════════════════════
+function genRnd(a){return a[Math.floor(Math.random()*a.length)];}
+function genShuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function seqGenRandom(id){const q0=seqGet(id);if(!q0)return;
+  if(q0._gen){alert('Un remplissage au hasard est déjà en place : annule-le d\'abord (bouton « ↩ Annuler le remplissage »).');return;}
+  const sd=seqSd(q0);if(!sd||!(sd.oe||[]).length){alert('Choisis d\'abord la nomenclature de la séquence (aucun objet disponible).');return;}
+  if(!confirm('Remplir la séquence au hasard ?\n\n• accents des contenus prioritaires dans la grille\n• les séances pas encore créées sont créées, avec la FPS dans les matchs et des situations dans les remédiations\n\nTout s\'annule avec « ↩ Annuler le remplissage ».'))return;
+  const bak={cols:JSON.parse(JSON.stringify(q0.cols||[])),oeIds:(q0.oeIds||[]).slice(),seances:[],exos:[]};
+  // 1) objet : si aucun, on en tire un
+  seqUpdate(id,q=>{if(!(q.oeIds||[]).length)q.oeIds=[genRnd(sd.oe).id];seqEnsureCols(q);});
+  let q=seqGet(id);const rows=seqRows(q);const nb=q.nb;const R=rows.length;
+  // 2) grille : S1 diagnostic (tout léger), puis chaque CP a un « pic » réparti sur la séquence, dernière séance = bilan
+  const centers=genShuffle(rows.map((r,i)=>1+Math.round((i+0.5)*(Math.max(1,nb-2))/Math.max(1,R))));
+  seqUpdate(id,q2=>{q2.cols.slice(0,q2.nb).forEach((col,k)=>{if(col.seanceId)return;col.focus=col.focus||{};
+    rows.forEach((r,i)=>{let v;if(k===0)v=1;else if(k===q2.nb-1&&q2.nb>2)v=(Math.random()<.5?1:2);else{const d=Math.abs(k-centers[i]);v=d===0?3:d===1?2:d===2?(Math.random()<.6?1:0):(Math.random()<.2?1:0);}col.focus[r.key]=v;});});});
+  // 3) séances
+  q=seqGet(id);const fps=(seqFpsList(q)||[])[0]||null;const lib=libLoad();
+  const goT=goTab;const rs=renderSeanceTab;const keepActive=SEANCE_STATE.activeId;
+  try{goTab=function(){};renderSeanceTab=function(){};
+    for(let k=0;k<q.nb;k++){const qq=seqGet(id);if(qq.cols[k]&&qq.cols[k].seanceId)continue;
+      seqCreateSeance(id,k);const q3=seqGet(id);const sid=q3.cols[k]&&q3.cols[k].seanceId;const s=(SEANCES||[]).find(x=>x.id===sid);if(!s)continue;
+      bak.seances.push(sid);s.genAuto=1;SEANCE_STATE.activeId=sid;
+      if(fps){if(!s.matchCfg||typeof s.matchCfg!=='object')s.matchCfg={};
+        s.steps.filter(st=>seanceStepBase(st.key)==='match').forEach(st=>{const old=s.matchCfg[st.key]||{};if(old.nom)return;const c=JSON.parse(JSON.stringify(fps.cfg||{}));['points','emblematiques','etayage'].forEach(x=>{if(!Array.isArray(c[x]))c[x]=[];});
+          if(!c.nom)c.nom=fps.titre;if(!c.profile&&fps.profile)c.profile=fps.profile;c.fpsId=fps.id;c.groupes=old.groupes||[];s.matchCfg[st.key]=c;});}
+      // échauffement : un échauffement complet de la bibliothèque (même APSA), sinon 3 phases
+      try{const ns=x=>fpsNormSp(x);const sp=ns(q3.sport);const W=lib.filter(x=>x&&x.kind==='warm'&&ns(x.apsa)===sp);const PH=lib.filter(x=>x&&x.kind==='phase'&&ns(x.apsa)===sp);
+        if(!s.echauffement||!Array.isArray(s.echauffement.phases))s.echauffement={phases:[]};
+        if(!s.echauffement.phases.length){const mk=(ph,it,j)=>({wtype:ph.wtype||it.wtype,sub:ph.sub||it.sub||'',id:'ph-'+Date.now()+'-'+k+'-'+j,titre:ph.titre||it.titre,desc:ph.desc||'',image:ph.image||null,video:ph.video||null,anim:ph.anim||null,audio:null,participants:[],criteres:[],scores:{}});
+          if(W.length){const w=genRnd(W);(Array.isArray(w.phases)&&w.phases.length?w.phases:[w]).forEach((ph,j)=>s.echauffement.phases.push(mk(ph,w,j)));}
+          else if(PH.length)genShuffle(PH).slice(0,3).forEach((p,j)=>s.echauffement.phases.push(mk(p,p,j)));}}catch(e){console.warn('gen warm',e);}
+      // situations : pour les CP les plus forts de la séance
+      const col=q3.cols[k]||{};const top=rows.filter(r=>(+((col.focus||{})[r.key])||0)>=2).sort((a,b)=>((col.focus[b.key]||0)-(col.focus[a.key]||0)));
+      const rem=s.steps.filter(st=>seanceStepBase(st.key)==='remediation');let ri=0;
+      top.slice(0,rem.length*2).forEach(r=>{const st=rem[ri%rem.length];ri++;if(!st)return;
+        let cand=[];r.paths.forEach(p=>{cand=cand.concat(libxSits(p).map(it=>({it:it,p:p})));});
+        if(!cand.length)cand=lx2Sits(q3.ref||q3.sport).slice(0,40).map(it=>({it:it,p:r.paths[0]}));if(!cand.length)return;
+        const c=genRnd(cand);const cp=getCpByPath(c.p);if(!cp)return;if(!Array.isArray(cp.exercices))cp.exercices=[];
+        let ex=cp.exercices.find(e=>e&&e.titre===c.it.titre);
+        if(!ex){ex={id:newExoId(),terrain:c.it.terrain||'',titre:c.it.titre,desc:c.it.desc,image:c.it.image||null,video:c.it.video||null,anim:c.it.anim||null,participants:[],criteres:(c.it.criteres||[]).map((x,j)=>({id:'crit-'+Date.now()+'-'+j,label:x.label,cible:x.cible||1,collectif:!!x.collectif,neg:!!x.neg})),scores:{},gen:1};
+          cp.exercices.push(ex);bak.exos.push(c.p+'#'+ex.id);}
+        const key=c.p+'#'+ex.id;if(!s.stepExos||typeof s.stepExos!=='object')s.stepExos={};const a=s.stepExos[st.key]||(s.stepExos[st.key]=[]);if(a.indexOf(key)<0)a.push(key);
+        if(!Array.isArray(s.keepExos))s.keepExos=[];if(s.keepExos.indexOf(key)<0)s.keepExos.push(key);});
+    }
+  }finally{goTab=goT;renderSeanceTab=rs;SEANCE_STATE.activeId=keepActive;}
+  try{saveRemedEdits();}catch(e){}saveSeances();
+  seqUpdate(id,q4=>{q4._gen=bak;});renderSeqTab();toast2('🎲 Séquence remplie au hasard · '+bak.seances.length+' séance(s) créée(s)');}
+function seqGenUndo(id){const q=seqGet(id);if(!q||!q._gen)return;if(!confirm('Annuler le remplissage au hasard ? Les séances créées par le hasard sont supprimées et la grille revient comme avant.'))return;
+  const g=q._gen;SEANCES=(SEANCES||[]).filter(s=>g.seances.indexOf(s.id)<0);if(g.seances.indexOf(SEANCE_STATE.activeId)>=0)SEANCE_STATE.activeId=null;
+  (g.exos||[]).forEach(k=>{const at=k.lastIndexOf('#');const cp=getCpByPath(k.slice(0,at));if(cp&&Array.isArray(cp.exercices))cp.exercices=cp.exercices.filter(e=>!(e&&e.id===k.slice(at+1)&&e.gen));});
+  try{saveRemedEdits();}catch(e){}saveSeances();
+  seqUpdate(id,q2=>{q2.cols=g.cols;q2.oeIds=g.oeIds;seqEnsureCols(q2);delete q2._gen;});renderSeqTab();toast2('↩ Remplissage annulé');}
+
+// ── indicateur : ce qui est fait / ce qui reste
+function chkHtml(L,title){const done=L.filter(x=>x.ok).length;const pct=Math.round(done/Math.max(1,L.length)*100);
+  return '<'+'details class="chk-box"'+(done<L.length?'':'')+'><summary><b>'+title+'</b> <span class="chk-bar"><i style="width:'+pct+'%"></i></span> <span class="chk-n">'+done+'/'+L.length+'</span>'+(done===L.length?' <span class="chk-ok">✓ prête</span>':' <span class="chk-todo">reste : '+L.filter(x=>!x.ok).map(x=>esc(x.short||x.lab)).join(' · ')+'</span>')+'</summary>'
+    +'<'+'ul>'+L.map(x=>'<li class="'+(x.ok?'ok':'no')+'">'+(x.ok?'✅':'⬜')+' '+esc(x.lab)+(x.det?' <small>'+esc(x.det)+'</small>':'')+'</li>').join('')+'</ul></details>';}
+function seqTeam(q){const sd=seqSd(q);if(!sd||sd.custom)return !!(sd&&sd.custom);return ['football','handball','basketball','volley','rugby','ultimate'].indexOf(q.sport)>=0;}
+function seqChecklist(q){const L=[];const nb=q.nb||0;const sd=seqSd(q);
+  L.push({lab:'Objet(s) d\'enseignement choisi(s)',short:'objet',ok:(q.oeIds||[]).length>0});
+  const team=seqTeam(q);
+  if(team){const F=(()=>{try{return seqFpsList(q);}catch(e){return [];}})();L.push({lab:'FPS de la séquence',short:'FPS',ok:F.length>0,det:F.map(x=>x.titre).join(', ')});
+    const P=CFG.savedPresets||[];const hasProf=F.some(f=>{const n=f.profile||(f.cfg&&f.cfg.profile);return n&&P.some(p=>p&&p.name===n);});L.push({lab:'Profil d\'observation de la FPS',short:'profil d\'observation',ok:hasProf});}
+  let rows=[];try{rows=seqRows(q);}catch(e){}let filled=0;for(let k=0;k<nb;k++){if(rows.some(r=>seqCellVal(q,k,r)>0&&((q.cols[k]||{}).seanceId||(+(((q.cols[k]||{}).focus||{})[r.key])||0)>0)))filled++;}
+  L.push({lab:'Grille des contenus prioritaires',short:'grille',ok:rows.length>0&&filled>=nb,det:filled+'/'+nb+' séances avec des accents'});
+  if(team){const G=(q.org&&q.org.fam&&q.org.fam.groups||[]).length||(q.champ&&(q.champ.clubs||[]).length)||0;L.push({lab:'Groupes / clubs (onglet Organisation)',short:'groupes',ok:G>=2,det:G?G+' club(s)':''});
+    L.push({lab:'Championnat',short:'championnat',ok:!!(q.champ&&q.champ.on&&(q.champ.clubs||[]).length>=2)});}
+  const ns=(q.cols||[]).slice(0,nb).filter(c=>c&&c.seanceId&&(SEANCES||[]).some(s=>s.id===c.seanceId)).length;
+  L.push({lab:'Séances créées',short:'séances',ok:ns>=nb&&nb>0,det:ns+'/'+nb});
+  let prep=0;(q.cols||[]).slice(0,nb).forEach(c=>{const s=c&&c.seanceId&&(SEANCES||[]).find(x=>x.id===c.seanceId);if(s&&seanceChecklist(s).every(x=>x.ok||x.opt))prep++;});
+  L.push({lab:'Séances entièrement préparées',short:'séances à préparer',ok:prep>=nb&&nb>0,det:prep+'/'+nb});
+  return L;}
+function seanceChecklist(s){const L=[];const steps=s.steps||[];
+  L.push({lab:'Objet d\'enseignement',short:'objet',ok:!!(s.oeId||s.customOeText)});
+  const ph=(s.echauffement&&s.echauffement.phases)||[];L.push({lab:'Échauffement',short:'échauffement',ok:ph.length>0,det:ph.length?ph.length+' phase(s)':''});
+  const M=steps.filter(st=>seanceStepBase(st.key)==='match');if(M.length){let ok=0;M.forEach(st=>{let nm='';try{nm=matchCfgOf(s,st.key).nom||'';}catch(e){}if(nm)ok++;});L.push({lab:'FPS dans les matchs',short:'FPS des matchs',ok:ok===M.length,det:ok+'/'+M.length});}
+  const Rm=steps.filter(st=>seanceStepBase(st.key)==='remediation');if(Rm.length){let ok=0;Rm.forEach(st=>{if(((s.stepExos||{})[st.key]||[]).length||(s.eleveChoix&&s.eleveChoix[st.key]))ok++;});L.push({lab:'Situations dans les remédiations',short:'remédiations',ok:ok===Rm.length,det:ok+'/'+Rm.length+' (sinon choix guidé des élèves)'});}
+  const fv=Object.values(s.cpFocus||{});L.push({lab:'Contenus prioritaires de la séance',short:'contenus',ok:!fv.length||fv.some(v=>v>0),det:fv.length&&!fv.some(v=>v>0)?'tous masqués : remplis la grille de la séquence':''});
+  L.push({lab:'Bilan de séance fait (après le cours)',short:'bilan',ok:s.status==='done'||!!s.recap,opt:true});
+  return L;}
+renderSeqTab=(function(f){return function(){const r=f.apply(this,arguments);try{const host=E('seq-console');const q=SEQ_UI.open&&seqGet(SEQ_UI.open);if(!host||!q)return r;
+    const t=host.querySelector('.card-title');if(t&&!host.querySelector('.chk-box'))t.insertAdjacentHTML('afterend',chkHtml(seqChecklist(q),'🧩 Construction de la séquence'));
+    const g=host.querySelector('.seq-grid-wrap');if(g&&!host.querySelector('.gen-bar')){const qi=lx2Q(q.id);
+      g.insertAdjacentHTML('beforebegin','<'+'div class="gen-bar">'+(q._gen?'<button type="button" class="gen-undo" onclick="seqGenUndo('+esc(qi)+')">↩ Annuler le remplissage au hasard</button><span class="cc-dim">'+q._gen.seances.length+' séance(s) créée(s) par le hasard</span>':'<button type="button" class="gen-go" onclick="seqGenRandom('+esc(qi)+')">🎲 Remplir au hasard (essai)</button><span class="cc-dim">pour voir une séquence remplie — tout s\'annule ensuite</span>')+'</div>');}
+    // pastille « préparée » sous chaque séance de la grille
+    host.querySelectorAll('.seq-grid').forEach(tb=>{});}catch(e){console.warn('seq chk',e);}return r;};})(renderSeqTab);
+renderSeanceTab=(function(f){return function(){const r=f.apply(this,arguments);try{const s=getActiveSeance();if(!s)return r;const host=E('seance-tab-content');if(!host)return r;
+    host.querySelectorAll('.chk-box.chk-se').forEach(x=>x.remove());
+    const anchor=[...host.querySelectorAll('div')].find(d=>/Déroulé de la séance/.test(d.textContent||'')&&d.children.length>2&&!d.querySelector('.chk-box'));
+    const h=chkHtml(seanceChecklist(s),'🧩 Préparation de la séance').replace('class="chk-box"','class="chk-box chk-se"');
+    if(anchor)anchor.insertAdjacentHTML('beforebegin',h);}catch(e){console.warn('seance chk',e);}return r;};})(renderSeanceTab);
+(function(){const st=document.createElement('style');st.textContent='html body .chk-box{border:1px solid #334155;border-radius:10px;padding:8px 12px;margin:8px 0 10px;background:#0f172a;}html body .chk-box summary{cursor:pointer;font-size:.88rem;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}'
+ +'html body .chk-bar{display:inline-block;width:90px;height:8px;border-radius:5px;background:#1e293b;overflow:hidden;}html body .chk-bar i{display:block;height:100%;background:linear-gradient(90deg,#f59e0b,#22c55e);}html body .chk-n{font-weight:800;color:#e2e8f0;}html body .chk-ok{color:#4ade80;font-weight:800;}html body .chk-todo{color:#fbbf24;font-size:.8rem;}'
+ +'html body .chk-box ul{margin:8px 0 2px;padding-left:4px;list-style:none;font-size:.85rem;}html body .chk-box li{margin:3px 0;}html body .chk-box li small{color:#94a3b8;}html body .chk-box li.no{color:#fde68a;}'
+ +'html body .gen-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:6px 0 8px;}html body .gen-go{background:#7c3aed;color:#fff;border:0;border-radius:10px;padding:8px 12px;font-weight:800;cursor:pointer;}html body .gen-undo{background:#b45309;color:#fff;border:0;border-radius:10px;padding:8px 12px;font-weight:800;cursor:pointer;}';document.head.appendChild(st);})();
 </script>
 </body>
 </html>
