@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v385</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v386</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v385</title>
+<title>Gribouillis EPS v386</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -27702,6 +27702,24 @@ function fpsProfRepair(){try{const L=libLoad();const P=CFG.savedPresets||(CFG.sa
     const p=fpsProfileEnsure(it,false);if(p){if(p.name!==nm)p.name=nm;n++;}});
   if(n){saveConfig();try{renderSavedPresets();}catch(e){}try{qjStatus();}catch(e){}console.log('v385 : '+n+' profil(s) de FPS recréé(s)');}}catch(e){console.warn('fpsProfRepair',e);}}
 setTimeout(fpsProfRepair,4200);
+
+// ══════════════════════════════════════════════════════════════════════
+// v386 — Synchro : un fichier de plus de 1 Mo (la bibliothèque) bloquait
+// tout l'envoi (GitHub refuse de lire un fichier > 1 Mo en mode normal →
+// pas de « sha » → erreur). On lit désormais le sha en mode « object »
+// (fonctionne jusqu'à 100 Mo).
+// ══════════════════════════════════════════════════════════════════════
+async function ghShaOf(ep){const c=ghCfg();let r;
+  try{r=await fetch('https://api.github.com'+ep+(ep.indexOf('?')<0?'?':'&')+'t='+Date.now(),{cache:'no-store',headers:{'Authorization':'Bearer '+c.token,'Accept':'application/vnd.github.object+json','X-GitHub-Api-Version':'2022-11-28'}});}
+  catch(e){throw new Error('Connexion impossible (hors-ligne ?)');}
+  if(r.status===404)return null;if(!r.ok){let m='';try{m=(await r.json()).message;}catch(e){}throw new Error('GitHub '+r.status+(m?' : '+m:''));}
+  try{const j=await r.json();return j&&j.sha||null;}catch(e){return null;}}
+ghPut=async function(repo,path,bytes,msg){const c=ghCfg();const ep='/repos/'+encodeURIComponent(c.owner)+'/'+encodeURIComponent(repo)+'/contents/'+path.split('/').map(encodeURIComponent).join('/');
+  let last=null;
+  for(let t=0;t<3;t++){const sha=await ghShaOf(ep);const body={message:msg,content:ghB64(bytes)};if(sha)body.sha=sha;
+    try{return await ghApi('PUT',ep,body);}
+    catch(e){last=e;if(!/ 409| 422|sha/.test(e.message))throw e;await new Promise(r=>setTimeout(r,700*(t+1)));}}
+  throw last;};
 </script>
 </body>
 </html>
