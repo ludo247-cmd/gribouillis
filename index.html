@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v386</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v387</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v386</title>
+<title>Gribouillis EPS v387</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -27720,6 +27720,28 @@ ghPut=async function(repo,path,bytes,msg){const c=ghCfg();const ep='/repos/'+enc
     try{return await ghApi('PUT',ep,body);}
     catch(e){last=e;if(!/ 409| 422|sha/.test(e.message))throw e;await new Promise(r=>setTimeout(r,700*(t+1)));}}
   throw last;};
+
+// ══════════════════════════════════════════════════════════════════════
+// v387 — Bibliothèque : les listes « un par ligne » (fils rouges macro,
+// amplifications, ressorts) s'affichent en puces ; on touche la liste
+// pour la modifier (le champ texte réapparaît).
+// ══════════════════════════════════════════════════════════════════════
+function lx2Bul(h){try{const TA='<textarea class="lx2-t"';let out='',pos=0;
+  while(true){const i=h.indexOf(TA,pos);if(i<0)break;const j=h.indexOf('</textarea>',i);if(j<0)break;const seg=h.slice(i,j);
+    const isList=/(&#39;|')(macro|amplif|ressorts)(&#39;|')/.test(seg.slice(0,seg.indexOf('>')));
+    out+=h.slice(pos,i);
+    if(isList){const gt=seg.indexOf('>');const body=seg.slice(gt+1);const lines=body.split('\n').map(x=>x.trim()).filter(Boolean);
+      const ul='<'+'ul class="lx2-ul" title="Toucher pour modifier" onclick="lx2BulEd(this)">'+(lines.length?lines.map(l=>'<li>'+l+'</li>').join(''):'<li class="lx2-ul-e">(vide — toucher pour écrire)</li>')+'</ul>';
+      out+=ul+seg.slice(0,gt).replace('class="lx2-t"','class="lx2-t lx2-hid" onblur="lx2BulDone(this)"')+seg.slice(gt);}
+    else out+=seg;
+    pos=j;}
+  return out+h.slice(pos);}catch(e){console.warn('lx2Bul',e);return h;}}
+function lx2BulEd(u){const t=u.nextElementSibling;if(!t||t.tagName!=='TEXTAREA')return;u.style.display='none';t.classList.remove('lx2-hid');lx2Fit(t);t.focus();}
+function lx2BulDone(t){const u=t.previousElementSibling;if(!u||!u.classList.contains('lx2-ul'))return;const L=String(t.value||'').split('\n').map(x=>x.trim()).filter(Boolean);
+  u.innerHTML=L.length?L.map(l=>'<li>'+esc(l)+'</li>').join(''):'<li class="lx2-ul-e">(vide — toucher pour écrire)</li>';t.classList.add('lx2-hid');u.style.display='';}
+lx2CedObj=(function(f){return function(){return lx2Bul(f.apply(this,arguments));};})(lx2CedObj);
+lx2EnObj=(function(f){return function(){return lx2Bul(f.apply(this,arguments));};})(lx2EnObj);
+(function(){const st=document.createElement('style');st.textContent='html body textarea.lx2-hid{display:none;}html body .lx2-ul{margin:4px 0 6px;padding:8px 12px 8px 28px;background:#111827;border:1px solid #334155;border-radius:8px;cursor:text;font-size:.88rem;line-height:1.4;}html body .lx2-ul li{margin:3px 0;}html body .lx2-ul li::marker{color:#60a5fa;}html body .lx2-ul-e{list-style:none;color:#64748b;margin-left:-14px;}';document.head.appendChild(st);})();
 </script>
 </body>
 </html>
