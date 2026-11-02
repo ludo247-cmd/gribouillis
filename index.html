@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v381</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v382</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v381</title>
+<title>Gribouillis EPS v382</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -27595,6 +27595,26 @@ ccCardHtml=(function(f){return function(c,active){const h=f.apply(this,arguments
 +'html body .cc-min .cc-car{display:inline-block;width:1em;color:var(--dim2);}html body .cc-min .cc-drv{background:#334155;color:#fff;}html body .cc-min .cc-drv.on{background:#0f766e;}'
 +'html body .cc-min .cc-drv-e{background:transparent;color:var(--dim2);border:1px solid #334155;padding:2px 6px;}'
 +'html body .cc-grid{align-items:start;}html body .cc-min{min-height:0!important;}html body .cc-min .cc-more{margin-top:8px;border-top:1px dashed #334155;padding-top:6px;}';document.head.appendChild(st);})();
+
+// v382
+// ── v382 : dans l'éditeur de profil, chaque bouton peut être 🔒 indispensable
+//    ou ⇧ facultatif (l'observateur / l'élève choisit parmi les facultatifs) ──
+function pvOptSet(i){const b=(CFG.dialogBtns||[])[i];if(!b)return;const lab=String(b.label);const v=!pvOpt(b);
+  try{pvBtnLists().forEach(L=>L.forEach(x=>{if(x&&String(x.label)===lab)x.opt=v;}));}catch(e){b.opt=v;}b.opt=v;
+  try{if(!v){const o=pvObs();o.obs=o.obs.filter(x=>x!==lab);}}catch(e){}try{saveConfig();}catch(e){}renderDialogEditor();}
+renderDialogEditor=(function(f){return function(){const r=f.apply(this,arguments);try{const el=E('dbe-list');if(!el)return r;
+  el.querySelectorAll('button[onclick^="removeDialogBtn("]').forEach(rb=>{const m=/removeDialogBtn\((\d+)\)/.exec(rb.getAttribute('onclick')||'');if(!m)return;const i=+m[1];const b=CFG.dialogBtns[i];if(!b||rb.previousElementSibling&&rb.previousElementSibling.classList.contains('pv-optb'))return;
+    const o=pvOpt(b);const t=document.createElement('button');t.type='button';t.className='btn-xs pv-optb';t.style.cssText='margin:0 4px 0 0;padding:4px 8px;white-space:nowrap;background:'+(o?'#0f766e':'#334155')+';color:#fff;';
+    t.textContent=o?'⇧ Facultatif':'🔒 Indispensable';t.title='Indispensable = toujours affiché. Facultatif = l\'observateur (ou l\'élève) choisit de le prendre en plus avant le match. Toucher pour changer.';
+    t.onclick=()=>pvOptSet(i);rb.parentNode.insertBefore(t,rb);});
+  if(!el.querySelector('.pv-opth')){const h=document.createElement('div');h.className='pv-opth';h.style.cssText='font-size:.74rem;color:var(--dim2);margin:4px 0 8px;';h.innerHTML='🔒 <b>Indispensable</b> : toujours affiché · ⇧ <b>Facultatif</b> : avant le match, dans « Qui observe et quoi », l\'élève choisit ce qu\'il observe en plus parmi les facultatifs.';el.insertBefore(h,el.firstChild);}
+ }catch(e){console.warn('pvopt',e);}return r;};})(renderDialogEditor);
+// ── v382 : liens Drive des classes (dossiers « Gribouillis EPS 2026-2027 ») mis automatiquement
+//    une seule fois, uniquement pour les classes qui n'ont pas encore de lien ──
+(function(){try{if(localStorage.getItem('grib_fix382'))return;const F='https://drive.google.com/drive/folders/';
+  const M=[[/^(term|terminale)/,'1CcFCJPONJo0xz9lrH724Hi4oDZDY1J5H'],[/^3b$/,'1hkHpnvrRcjrWuV5kRGQje6nU6WUiPY-N'],[/^3c$/,'1EY1kQvlNcmJ8-Op96BuIjmatv9o05HiQ'],[/^6c$/,'1mIMMqZyj-_KnagsY4yVMZq0NmgL7B23W'],[/^1a$/,'1ZV0ZqE08bSIm2BlcIfVjB6OO5veHdZM9'],[/^as$/,'1bJ2UHrnmshftvGW1FNXepjyG7bXxOwru']];
+  const d=clsData();if(!d.list.length)return;let n=0;d.list.forEach(c=>{if(c.drive)return;const k=String(c.nom||'').trim().toLowerCase().replace(/\s+/g,'');const m=M.find(x=>x[0].test(k));if(m){c.drive=F+m[1];n++;}});
+  if(n)clsSave(d);localStorage.setItem('grib_fix382','1');try{renderClassesConsole();}catch(e){}}catch(e){console.warn('fix382',e);}})();
 </script>
 </body>
 </html>
