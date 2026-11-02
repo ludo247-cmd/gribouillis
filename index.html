@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v384</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v385</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v384</title>
+<title>Gribouillis EPS v385</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -27683,6 +27683,25 @@ lx2CedObj=(function(f){return function(sp,O,lib){let h=f.apply(this,arguments);t
 +'html body .cpd-bub{background:#eef6ff;color:#0f172a;border-radius:18px;padding:10px 14px;margin:12px 0 12px;font-weight:700;position:relative;}'
 +'html body .cpd-dim{border-left:4px solid var(--c);background:#111827;border-radius:8px;padding:6px 10px;margin:0 0 8px;}html body .cpd-dh{font-size:.8rem;color:var(--c);margin-bottom:2px;}html body .cpd-dim textarea{width:100%;box-sizing:border-box;}'
 +'html body .cpd-src{font-size:.75rem;color:#94a3b8;margin-top:6px;}';document.head.appendChild(st);})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v385 — • Profils de FPS perdus (écrasés par une synchro) : recréés au
+//   démarrage pour chaque FPS de la bibliothèque dont le profil manque.
+// • Football OE A : les fils rouges macro du cahier CEDREPS n°19 (absents
+//   des données) sont ajoutés, sans toucher à un texte modifié.
+// ══════════════════════════════════════════════════════════════════════
+const FB_A_MACRO=["Nombre d'actions atteignant la zone de marque / nombre de possessions.","Actions collectives (au moins 2 élèves) atteignant la zone de marque.","Actions individuelles atteignant la zone de marque (visé : plus de collectives que d'individuelles)."];
+function fbAMacroFix(D){try{const O=D&&D.football&&(D.football.oe||[]).find(o=>o&&o.id==='football-a');if(O&&!(O.macroLabels||[]).length&&!O._macroEd)O.macroLabels=FB_A_MACRO.slice();}catch(e){}}
+try{fbAMacroFix(REMEDIATION_DATA);}catch(e){}
+try{fbAMacroFix(REMED_CONTENT);}catch(e){}
+initRemediation=(function(f){return function(){try{fbAMacroFix(REMEDIATION_DATA);}catch(e){}const r=f.apply(this,arguments);try{fbAMacroFix(REMED_CONTENT);}catch(e){}return r;};})(initRemediation);
+function fpsProfRepair(){try{const L=libLoad();const P=CFG.savedPresets||(CFG.savedPresets=[]);let n=0;
+  L.filter(x=>x&&x.kind==='match').forEach(it=>{const nm=it.profile||(it.cfg&&it.cfg.profile)||'';if(!/^FPS · /.test(nm))return;
+    if(P.some(p=>p&&(p.name===nm||(p.meta&&p.meta.fpsId&&p.meta.fpsId===it.id))))return;
+    const key=fpsSportKey(it);if(isRacket(key))return;if(it.apsa&&fpsNormSp(it.apsa)!==fpsNormSp(key))return;
+    const p=fpsProfileEnsure(it,false);if(p){if(p.name!==nm)p.name=nm;n++;}});
+  if(n){saveConfig();try{renderSavedPresets();}catch(e){}try{qjStatus();}catch(e){}console.log('v385 : '+n+' profil(s) de FPS recréé(s)');}}catch(e){console.warn('fpsProfRepair',e);}}
+setTimeout(fpsProfRepair,4200);
 </script>
 </body>
 </html>
