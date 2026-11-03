@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v402</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v403</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v402</title>
+<title>Gribouillis EPS v403</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -28841,6 +28841,66 @@ aspElPagedHtml=(function(f){return function(s){let h=f.apply(this,arguments);try
 +'html body .ael-big .th video{width:100%;height:100%;object-fit:contain;}html body .ael-2c .r .ael-big{aspect-ratio:3/2;min-height:0;height:auto;}html body .ael-2c .r .ael-big .th img{position:absolute;inset:0;width:100% !important;height:100% !important;max-width:none !important;max-height:none !important;object-fit:contain !important;float:none !important;margin:0 !important;}'
 +'html body .aop-ov.big{padding:2vh 2vw;background:rgba(0,0,0,.88);}html body .aop-ov.big video,html body .aop-ov.big img{max-width:96vw;max-height:92vh;border-radius:12px;}html body .aop-x.big{position:fixed;top:14px;right:14px;z-index:2;border:0;background:#334155;color:#fff;border-radius:10px;font-size:1.3rem;padding:6px 12px;cursor:pointer;}';
 document.head.appendChild(st);})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v403 — séance AS :
+// • feuille d'avant-match ouverte en préparation (⚙️) : « ✓ Confirmer » ramène
+//   aux blocs ; « ♾ Tournoi infini » (de nouveaux tours tant qu'on n'arrête pas) ;
+// • 👥 « 2 · 3 · 4 équipes » : changer d'un geste les équipes d'une FPS (ou de
+//   toutes les FPS garçons / filles) selon les présents ;
+// • élèves : plus aucune miniature à gauche ; équipes rétablies dans les
+//   parties « à la suite » ; animations masquées pour certaines FPS.
+// ══════════════════════════════════════════════════════════════════════
+// ── ✓ Confirmer (préparation) + ♾ ──
+function aspPrmConfirm(){try{const T=aspMatchTarget(PRM.ctx);if(T){T.obj.match=aspPrmRead();saveSeances();}}catch(e){}try{prmClose();}catch(e){}try{goTab('t-seance');renderSeanceTab();}catch(e){}try{toast2('✓ Réglages gardés pour cette situation');}catch(e){}}
+function aspPrmInf(){const T=aspMatchTarget(PRM.ctx);if(!T)return;const v=PRM.ctx.k!=null?aspSegAt(T.s,T.b,T.a,PRM.ctx.k)||T.a:T.a;const cfg=aspMRCfg(T.s,T.b,v);cfg.inf=!cfg.inf;saveSeances();const o=E('prm-ov');const x=o&&o.querySelector('.prm-ctx');if(x)x.remove();prmRender();}
+prmRender=(function(f){return function(){const r=f.apply(this,arguments);try{const o=E('prm-ov');if(!o||!PRM.ctx)return r;const T=aspMatchTarget(PRM.ctx);if(!T)return r;const x=o.querySelector('.prm-ctx');if(!x||x.querySelector('.prm-inf'))return r;
+  const v=PRM.ctx.k!=null?aspSegAt(T.s,T.b,T.a,PRM.ctx.k)||T.a:T.a;const n=aspTeamIds(T.s,v).length;const cfg=aspMRCfg(T.s,T.b,v);
+  if(n>=2){const b=document.createElement('button');b.type='button';b.className='prm-chip prm-inf'+(cfg.inf?' on':'');b.textContent='♾ Tournoi infini : '+(cfg.inf?'oui':'non');b.title='De nouveaux matchs pour toutes les équipes tant que tu n\'arrêtes pas';b.setAttribute('onclick','aspPrmInf()');x.appendChild(b);}
+  if(!(SEANCE_STATE&&SEANCE_STATE.mode==='eleve')&&!o.querySelector('.prm-confirm')){const kick=[...o.querySelectorAll('button')].find(bt=>/prmKick\(/.test(bt.getAttribute('onclick')||''));const c=document.createElement('button');c.type='button';c.className='prm-confirm';c.textContent='✓ Confirmer (retour aux blocs)';c.setAttribute('onclick','aspPrmConfirm()');
+    if(kick)kick.before(c);else (o.querySelector('.prm-box')||o).appendChild(c);}}catch(e){console.warn('v403 prm',e);}return r;};})(prmRender);
+// ── ♾ dans l'écran du tournoi : nouveau tour quand tous les matchs sont joués ──
+trnShow=(function(f){return function(bid,aid,eleve){try{const s=aspS();const b=s&&aspB(s,bid);const a=s&&aspAt(s,bid,aid);if(b&&a&&aspMRCfg(s,b,a).inf){const ids=aspTeamIds(s,a);const st=trnState(s,bid,aid);const P=trnPairs(ids.length);
+    if(P.length&&P.every(p=>st.done[ids[p[0]]+'~'+ids[p[1]]])){st.done={};st.round=(+st.round||1)+1;saveSeances();}}}catch(e){}
+  const r=f.apply(this,arguments);try{const s=aspS();const b=s&&aspB(s,bid);const a=s&&aspAt(s,bid,aid);const o=E('trn-ov');if(o&&b&&a&&aspMRCfg(s,b,a).inf){const st=trnState(s,bid,aid);const h=o.querySelector('h3');if(h)h.textContent='♾ Tournoi infini · tour '+(+st.round||1);
+    const p=o.querySelector('.cc-dim');if(p)p.textContent='Toutes les équipes se rencontrent ; quand tous les matchs du tour sont joués, un nouveau tour commence. On s\'arrête quand l\'enseignant le décide.';
+    const cl=o.querySelector('[data-x=close]');if(cl&&!eleve&&!o.querySelector('.trn-stop')){const bt=document.createElement('button');bt.type='button';bt.className='btn-xs trn-stop';bt.style.cssText='background:#7f1d1d;color:#fff;';bt.textContent='⏹ Fin du tournoi';bt.onclick=()=>{aspMRCfg(s,b,a).inf=false;st.round=1;saveSeances();o.remove();try{toast2('⏹ Tournoi terminé');}catch(e){}};cl.before(bt);}}}catch(e){}return r;};})(trnShow);
+// ── 👥 2 · 3 · 4 équipes ──
+function aspDecOf(s,sx){return (s.decoupages||[]).filter(d=>{const G=d.groupes||[];if(G.length<2)return false;const M=[].concat(...G.map(g=>g.members||[]));if(!M.length)return false;return M.filter(n=>grpSexe(n)===sx).length>=M.length*0.8;});}
+function aspTeamSets(s,sx){const by={};aspDecOf(s,sx).forEach(d=>{by[d.groupes.length]=d;});return by;}
+function aspAtSex(s,a){const M=aspAtMembers(s,a);const F=M.filter(n=>grpSexe(n)==='F').length,G=M.filter(n=>grpSexe(n)==='M').length;if((a.groups||[]).indexOf('pop-F')>=0)return 'F';if((a.groups||[]).indexOf('pop-M')>=0)return 'M';return F>G?'F':(G?'M':'');}
+function aspSetTeams(bid,aid,k,n){const s=aspS();if(!s)return;const b=aspB(s,bid);const a=b&&(b.ats||[]).find(x=>x.id===aid);if(!a)return;const tgt=(k!=null&&k>=0&&aspIsSeq(a))?a.exos[k]:null;
+  const sx=tgt?(()=>{const v=aspSegAt(s,b,a,k);return v?aspAtSex(s,v):aspAtSex(s,a);})():aspAtSex(s,a);const d=aspTeamSets(s,sx)[n];if(!d)return;const ids=d.groupes.map(g=>g.id);
+  if(tgt){tgt.groups=ids.slice();}else{a.groups=(a.groups||[]).filter(id=>/^pop-/.test(String(id))).concat(ids);}
+  try{ASP_CC=null;ASP_RL=null;}catch(e){}aspSave();}
+function aspSetTeamsAll(sx,n){const s=aspS();if(!s)return;const d=aspTeamSets(s,sx)[n];if(!d)return;const ids=d.groupes.map(g=>g.id);let c=0;
+  (s.asp.blocks||[]).forEach(b=>(b.ats||[]).forEach(a=>{if(aspIsSeq(a)){(a.exos||[]).forEach((e,k)=>{const i=aspExInfo(e);const v=aspSegAt(s,b,a,k);if(i&&i.kind==='fps'&&v&&aspAtSex(s,v)===sx&&aspTeamIds(s,v).length>=2){e.groups=ids.slice();c++;}});}
+    else if(aspAtIsFps(a)&&aspAtSex(s,a)===sx&&aspTeamIds(s,a).length>=2){a.groups=(a.groups||[]).filter(id=>/^pop-/.test(String(id))).concat(ids);c++;}}));
+  try{ASP_CC=null;ASP_RL=null;}catch(e){}aspSave();try{toast2('👥 '+n+' équipes '+(sx==='F'?'filles':'garçons')+' dans '+c+' FPS');}catch(e){}}
+aspAtHtml=(function(f){return function(s,b,a,i){let h=f.apply(this,arguments);if(!b||b.kind!=='bloc')return h;try{const t=document.createElement('template');t.innerHTML=h;const box=t.content.querySelector('.asp-at');if(!box)return h;let ch=false;
+  const bar=(v,k)=>{const sx=aspAtSex(s,v);const S=aspTeamSets(s,sx);const ns=Object.keys(S).map(Number).sort();if(ns.length<2)return null;const cur=aspTeamIds(s,v).length;
+    const d=document.createElement('div');d.className='asp-nteam';d.innerHTML='👥 '+ns.map(n=>'<button type="button" class="'+(n===cur?'on':'')+'" onclick="aspSetTeams(\''+esc(b.id)+'\',\''+esc(a.id)+'\','+(k==null?-1:k)+','+n+')">'+n+'</button>').join('')+' <span>équipes</span>';return d;};
+  if(aspIsSeq(a)){[...box.querySelectorAll('.asp-seqrow > .asp-seg')].forEach((sg,k)=>{const e=a.exos[k];const inf=e&&aspExInfo(e);if(!inf||inf.kind!=='fps')return;const v=aspSegAt(s,b,a,k);if(!v||aspTeamIds(s,v).length<2)return;const d=bar(v,k);if(d){const g=sg.querySelector('.asp-seg-g');if(g)g.after(d);else sg.appendChild(d);ch=true;}});}
+  else if(aspAtIsFps(a)&&aspTeamIds(s,a).length>=2){const d=bar(a,null);if(d){const ex=box.querySelector('.asp-exrow,.asp-ex');if(ex)ex.before(d);else box.appendChild(d);ch=true;}}
+  return ch?t.innerHTML:h;}catch(e){console.warn('v403 nt',e);return h;}};})(aspAtHtml);
+aspHtml=(function(f){return function(s){let h=f.apply(this,arguments);try{const parts=[['M','👦 Garçons'],['F','👧 Filles']].map(z=>{const S=aspTeamSets(s,z[0]);const ns=Object.keys(S).map(Number).sort();if(ns.length<2)return '';return '<span class="asp-ntall">'+z[1]+' : '+ns.map(n=>'<button type="button" onclick="aspSetTeamsAll(\''+z[0]+'\','+n+')">'+n+' éq.</button>').join('')+'</span>';}).filter(Boolean);
+  if(parts.length){const i=h.indexOf('<'+'div class="sb-pal asp-pal"');if(i>0)h=h.slice(0,i)+'<'+'div class="asp-ntbar" title="Moins d\'élèves que prévu ? Change d\'un geste le nombre d\'équipes dans toutes les FPS du groupe">⚡ Adapter les équipes de toute la séance · '+parts.join(' ')+'</'+'div>'+h.slice(i);}}catch(e){console.warn('v403 ntall',e);}return h;};})(aspHtml);
+// ── animations masquées côté élève pour certaines FPS (fiche : elNoAnim) ──
+(function(){try{if(localStorage.getItem('grib_elnoanim_v1'))return;const L=libLoad();let ch=false;L.forEach(x=>{if(x&&x.kind==='match'&&/milieu imbattable|jeu libre 7c7/i.test(String(x.titre||''))&&!x.elNoAnim){x.elNoAnim=true;ch=true;}});if(ch)libSave(L);localStorage.setItem('grib_elnoanim_v1','1');}catch(e){console.warn('elNoAnim',e);}})();
+aspEleveExHtml=(function(f){return function(s,e){let h=f.apply(this,arguments);try{const inf=aspExInfo(e);if(!inf||!inf.src||!inf.src.elNoAnim)return h;const t=document.createElement('template');t.innerHTML=h;const box=t.content.querySelector('.ael-medbox');if(!box)return h;const tp=box.querySelector('template');
+  if(tp)tp.content.querySelectorAll('.anim-inline').forEach(x=>{if(x.dataset.r)box.dataset.hr=x.dataset.r;x.remove();});if(!tp||!tp.content.querySelector('video,img'))box.classList.add('noplay');return t.innerHTML;}catch(err){return h;}};})(aspEleveExHtml);
+// ── élèves : ni miniature à gauche, équipes dans les parties « à la suite », pas de ▶ si rien à voir ──
+aspElPagedHtml=(function(f){return function(s){let h=f.apply(this,arguments);try{if(h.indexOf('ael-pages')<0)return h;const me=elMeGet(s);const t=document.createElement('template');t.innerHTML=h;let ch=false;
+  t.content.querySelectorAll('.ael-pages > .ael-step[data-a]').forEach(st=>{const b=(s.asp.blocks||[]).find(x=>x.id===st.dataset.b);const a=b&&(b.ats||[]).find(x=>x.id===st.dataset.a);if(!a)return;
+    const L=st.querySelector('.ael-2c > .l');if(L){L.querySelectorAll('img,video,.anim-inline,iframe,canvas').forEach(m=>{if(!m.closest('.ael-teams')&&!m.closest('template')){m.remove();ch=true;}});}
+    const big=st.querySelector('.ael-big');const mb=st.querySelector('.ael-medbox');if(big&&(!mb||mb.classList.contains('noplay'))){if(mb&&mb.dataset.hr&&!big.dataset.r)big.dataset.r=mb.dataset.hr;big.classList.remove('click');big.removeAttribute('onclick');const pl=big.querySelector('.pl');if(pl)pl.remove();ch=true;}
+    if(st.dataset.k!=null&&!st.querySelector('.ael-teams')&&aspIsSeq(a)){const k=+st.dataset.k;const v=aspSegAt(s,b,a,k);if(v&&aspAtIsFps(v)){const th=aspTeamsHtml(s,b,v,me);if(th){const d=document.createElement('div');d.innerHTML=th;const host=L||st;[...d.childNodes].forEach(n=>host.appendChild(n));ch=true;}}}});
+  return ch?t.innerHTML:h;}catch(e){console.warn('v403 el',e);return h;}};})(aspElPagedHtml);
+(function(){const st=document.createElement('style');st.textContent=
+ 'html body .prm-confirm{display:block;width:100%;margin:0 0 8px;border:0;border-radius:12px;padding:14px;font-weight:800;font-size:1.05rem;background:#15803d;color:#fff;cursor:pointer;}html body.mode-eleve .prm-confirm{display:none;}'
++'html body .asp-nteam{display:flex;align-items:center;gap:3px;font-size:.68rem;color:#cbd5e1;margin:3px 0;}html body .asp-nteam button{border:1px solid #475569;background:#0f172a;color:#e2e8f0;border-radius:7px;min-width:24px;padding:1px 6px;cursor:pointer;font-weight:700;}html body .asp-nteam button.on{background:#7c3aed;border-color:#7c3aed;color:#fff;}'
++'html body .asp-ntbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:.76rem;color:#cbd5e1;margin:4px 0 6px;}html body .asp-ntall button{border:1px solid #475569;background:#0f172a;color:#e2e8f0;border-radius:7px;padding:2px 8px;margin-left:3px;cursor:pointer;font-weight:700;}'
++'html body .ael-2c.fps>.l img:not(.ael-teams img){display:none;}';document.head.appendChild(st);})();
 </script>
 </body>
 </html>
