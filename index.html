@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v405</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v406</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v405</title>
+<title>Gribouillis EPS v406</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -28931,6 +28931,16 @@ elPublish=(function(f){return function(){try{const s=getActiveSeance();if(s&&s.a
 // v405 — élèves : un fil rouge n'apparaît que s'il a un objectif chiffré
 aspElPagedHtml=(function(f){return function(s){let h=f.apply(this,arguments);try{if(h.indexOf('ael-fr')<0)return h;const t=document.createElement('template');t.innerHTML=h;
   t.content.querySelectorAll('.ael-fr').forEach(box=>{box.querySelectorAll('li').forEach(li=>{if(!li.querySelector('b'))li.remove();});if(!box.querySelector('li'))box.remove();});return t.innerHTML;}catch(e){return h;}};})(aspElPagedHtml);
+
+// ══════════════════════════════════════════════════════════════════════
+// v406 — tablettes en mode élève : la synchro ne touche QUE les matchs
+// (archives) et la séance (résultats, bilans, tournois), qui s'ADDITIONNENT.
+// Réglages, profils, équipes, bibliothèque… d'une tablette élève ne sont ni
+// envoyés ni écrasés : les tablettes ne peuvent plus s'effacer l'une l'autre.
+// ══════════════════════════════════════════════════════════════════════
+const SYNC_EL_KEYS=['grib_archives_v3','grib_seances_v1'];
+function syncElOn(){try{return !!(SEANCE_STATE&&SEANCE_STATE.mode==='eleve');}catch(e){return false;}}
+syncKeys=(function(f){return function(){const L=f.apply(this,arguments);return syncElOn()?L.filter(k=>SYNC_EL_KEYS.indexOf(k)>=0):L;};})(syncKeys);
 </script>
 </body>
 </html>
