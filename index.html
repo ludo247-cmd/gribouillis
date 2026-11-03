@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v390</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v391</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v390</title>
+<title>Gribouillis EPS v391</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -27968,6 +27968,56 @@ renderSeanceTab=(function(f){return function(){const r=f.apply(this,arguments);t
 (function(){const st=document.createElement('style');st.textContent='html body .se-bar{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:4px 0 8px;}html body .se-bar button,html body .se-gym button{border:1px solid #334155;background:#111827;color:#e2e8f0;border-radius:9px;padding:5px 9px;font-size:.8rem;cursor:pointer;}html body .se-bar .se-ren{border-style:dashed;color:#cbd5e1;}'
  +'html body .se-gym{border:1px solid #7c3aed;border-radius:10px;padding:7px 9px;margin:0 0 8px;background:#140f24;}html body .se-gym select{background:#0f172a;color:#e2e8f0;border:1px solid #334155;border-radius:8px;padding:3px 6px;}html body .se-gym .lx-chips{margin-top:6px;}';document.head.appendChild(st);})();
 seanceChecklist=(function(f){return function(s){const L=f.apply(this,arguments);try{if(s&&!seIsTeam(s.sport))L.forEach(x=>{if(x.short==='remédiations'){x.lab='Situations / fiches dans les étapes (vague, ateliers, passage)';x.short='étapes';}});}catch(e){}return L;};})(seanceChecklist);
+
+// ══════════════════════════════════════════════════════════════════════
+// v391 — AS : PROJET DE JEU (fil rouge de l'année) ≠ SÉQUENCE (période)
+// • Le projet de jeu (Garçons / Filles) se définit dans la liste des
+//   séquences de l'AS, une fois pour l'année.
+// • Une séquence choisit, pour CHAQUE projet, les phases sur lesquelles on
+//   se concentre, et dose leurs principes séance par séance (grille).
+// ══════════════════════════════════════════════════════════════════════
+const pjEdAllHtmlFull=pjEdAllHtml;
+function seqIsASq(q){const sd=q&&seqSd(q);return !!(q&&q.ref&&sd&&sd.custom);}
+function seqRefLab(id){const r=pjRefs().find(x=>x.id===id);return r?String(r.label||''):'';}
+// dans une séquence : plus d'édition du projet, juste un rappel
+pjEdAllHtml=function(){if(!pjEdRefs().length)return '';
+  return '<'+'div class="seq-pjr"><span style="flex:1 1 300px;">🎡 <b>Projets de jeu</b> = le fil rouge de l\'année (garçons et filles), défini à part. <b>Cette séquence</b> = la période où l\'on se concentre sur certaines phases de chaque projet.</span>'
+    +'<button type="button" class="btn-xs" onclick="seqPjEditYear()">✎ Modifier les projets de jeu</button></'+'div>';};
+function seqPjEditYear(){SEQ_UI.open='';SEQ_UI.pjYear=true;pjEdRefs().forEach(r=>{PJE_OPEN[r.id]=true;});renderSeqTab();
+  setTimeout(()=>{const el=document.querySelector('#seq-console .seq-pjy');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});},60);}
+// lignes de la grille : celles du projet 2 s'ajoutent (clé « p2| »)
+seqRows=(function(f){return function(q){const A=f.apply(this,arguments);try{
+  if(!q||!q.ref2||q.ref2===q.ref||!seqIsASq(q))return A;const sd2=REMED_CONTENT[q.ref2];if(!sd2||!sd2.custom)return A;
+  const L1=seqRefLab(q.ref),L2=seqRefLab(q.ref2);A.forEach(r=>{r.oe=L1+' · '+r.oe;});
+  const B=f.call(this,{ref:q.ref2,sport:q.sport,oeIds:(q.oeIds2||[]).slice()});
+  B.forEach(r=>{r.key='p2|'+r.key;r.oeId='p2|'+r.oeId;r.oe=L2+' · '+r.oe;A.push(r);});}catch(e){console.warn('v391 rows',e);}return A;};})(seqRows);
+// changer le projet 1 vers celui du projet 2 : on libère le projet 2
+seqSet=(function(f){return function(id,k,v){if(k==='ref'){try{seqUpdate(id,q=>{if(v&&q.ref2===v){q.ref2='';q.oeIds2=[];}});}catch(e){}}return f.apply(this,arguments);};})(seqSet);
+function seqPj2BlockHtml(q){const qi=esc(q.id);const R=pjRefs().filter(r=>r.id!==q.ref&&REMED_CONTENT[r.id]&&REMED_CONTENT[r.id].custom);if(!R.length)return '';
+  const ref2=q.ref2&&q.ref2!==q.ref?q.ref2:'';const sd2=ref2&&REMED_CONTENT[ref2];const r2=R.find(r=>r.id===ref2);const sel=(q.oeIds2||[]).slice();
+  let h='<'+'div class="seq-pj2" style="--pc:'+(r2?pjColor(r2):'#64748b')+'"><'+'div class="row"><span>2e projet travaillé en parallèle :</span><select aria-label="2e projet de jeu de la séquence" onchange="seqPj2Set(\''+qi+'\',this.value)"><option value="">— aucun —</option>'
+    +R.map(r=>'<option value="'+esc(r.id)+'"'+(r.id===ref2?' selected':'')+'>'+esc(r.label)+'</option>').join('')+'</select>'+(sd2?'<span class="cc-dim">phases travaillées dans cette séquence :</span>':'')+'</'+'div>';
+  if(sd2){h+=pjOeChipsHtml(sd2,sel,'seqPj2TogCur');
+    const empty=(sd2.oe||[]).filter(o=>sel.indexOf(o.id)>=0&&!(o.micro||[]).some(m=>(m.cps||[]).some(c=>String(c.label||'').trim())));
+    if(empty.length)h+='<'+'div class="cc-dim" style="margin-top:4px;">'+empty.map(o=>esc(String(o.short||o.label||'')))+' : aucun principe renseigné pour l\'instant (✎ Modifier les projets de jeu).</'+'div>';}
+  return h+'</'+'div>';}
+renderSeqTab=(function(f){return function(){const r=f.apply(this,arguments);try{const host=E('seq-console');const c=clsActive();if(!host||!c)return r;
+  const q=SEQ_UI.open?seqGet(SEQ_UI.open):null;
+  if(!q){const R=pjEdRefs();const isAS=/\bAS\b/i.test(c.nom||'')||seqOfClass(c).some(seqIsASq);if(!isAS||!R.length)return r;
+    const card=host.querySelector('.card');if(!card||card.querySelector('.seq-pjy'))return r;
+    if(!SEQ_UI.pjYear)R.forEach(x=>{if(PJE_OPEN[x.id]===undefined)PJE_OPEN[x.id]=false;});
+    const d=document.createElement('div');d.className='seq-pjy';
+    d.innerHTML='<'+'div class="h">🎡 Projets de jeu de l\'année <span class="cc-dim">— le fil rouge : phases, orientations et principes (garçons / filles). Touchez un projet pour l\'ouvrir et le modifier.</span></'+'div>'+R.map(pjEdHtml).join('')
+      +'<'+'div class="h" style="margin-top:12px;">🗓️ Séquences <span class="cc-dim">— chaque séquence = une période où l\'on se concentre sur une partie des projets.</span></'+'div>';
+    const t=card.querySelector('.card-title');if(t)t.insertAdjacentElement('afterend',d);else card.prepend(d);SEQ_UI.pjYear=false;return r;}
+  if(!seqIsASq(q))return r;
+  const sp=[...host.querySelectorAll('.seq-ed > .row > span')].find(x=>/^Phases travaillées/.test(x.textContent||''));
+  if(sp){const r1=pjRefs().find(x=>x.id===q.ref);sp.innerHTML='<b style="color:'+(r1?pjColor(r1):'#cbd5e1')+'">'+esc(seqRefLab(q.ref)||'Projet 1')+'</b> — phases travaillées dans cette séquence :';
+    const chips=sp.parentElement.nextElementSibling;const box=document.createElement('div');box.innerHTML=seqPj2BlockHtml(q);
+    if(box.firstElementChild&&chips)chips.insertAdjacentElement('afterend',box.firstElementChild);}}catch(e){console.warn('v391 seq',e);}return r;};})(renderSeqTab);
+(function(){const st=document.createElement('style');st.textContent='html body .seq-pjr{display:flex;gap:8px;align-items:center;flex-wrap:wrap;border:1px dashed #334155;border-radius:10px;padding:7px 10px;margin:6px 0;font-size:.8rem;color:#cbd5e1;}html body .seq-pjr .btn-xs{background:#334155;color:#fff;margin-left:auto;}'
+ +'html body .seq-pjy{margin:4px 0 10px;}html body .seq-pjy .h{font-weight:700;margin:4px 0 6px;}html body .seq-pjy details.pje:not([open]){padding-bottom:0;}'
+ +'html body .seq-pj2{border-left:3px solid var(--pc);padding:4px 0 6px 10px;margin:8px 0;}html body .seq-pj2 select{background:#0f172a;color:#e2e8f0;border:1px solid #334155;border-radius:8px;padding:3px 6px;}';document.head.appendChild(st);})();
 </script>
 </body>
 </html>
