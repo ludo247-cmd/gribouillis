@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v399</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v400</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v399</title>
+<title>Gribouillis EPS v400</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -28615,6 +28615,98 @@ elPublish=(function(f){return function(){try{const s=getActiveSeance();if(s)aspL
 +'html body .aop-ov .hd{display:flex;gap:6px;align-items:center;}html body .aop-ov .aop-x{margin-left:auto;border:0;background:#334155;color:#fff;border-radius:7px;cursor:pointer;padding:3px 8px;}html body .aop-pitch{width:100%;height:auto;}'
 +'html body .aop-btns{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;}html body .aop-btns span{background:#1d4ed8;border-radius:12px;padding:16px 10px;text-align:center;font-weight:800;}html body .aop-t{margin:0;font-size:1rem;line-height:1.4;}';
 document.head.appendChild(st);})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v400 — AS, pour demain :
+// • ♾ tournoi infini : le gagnant reste, l'équipe au repos rentre, fin au
+//   sifflet (fin « libre » dans la feuille d'avant-match) ;
+// • élèves : dans une FPS, ni vidéo ni animation affichées d'office — un
+//   bouton « Pas compris ? » (rien pour les animations faites d'office) ;
+// • aperçu de l'outil d'observation = les vrais boutons du profil ;
+// • « ＋ Bloc » sous les blocs ;
+// • bilan élève simplifié : les fils rouges, oui / non, + 📤 Envoyer ;
+// • synchro : les matchs (archives) et les résultats/bilans des élèves de
+//   plusieurs tablettes s'ADDITIONNENT au lieu de s'écraser.
+// ══════════════════════════════════════════════════════════════════════
+// ── ♾ tournoi infini ──
+function aspMRInf(bid,aid,sg){const c=aspMRCtx(bid,aid,sg);if(!c)return;const cfg=aspMRCfg(c.s,c.b,c.a);cfg.inf=!cfg.inf;ASP_TRI_OPEN[aspMRKey(c.b,c.a)]=true;aspSave();}
+aspTriHtml=(function(f){return function(s,b,a,me){let h=f.apply(this,arguments);try{if(!h)return h;const P=aspTriPlan(s,b,a);if(!P||P.teams.length!==3)return h;const cfg=P.cfg;const bi=esc(b.id),ai=esc(a.id),sg=a._seg!=null?a._seg:-1;
+  if(cfg.inf){h=h.replace(/<summary>🏆 Tournoi à 3 · 3 matchs de \d+′/,'<summary>♾ Tournoi infini · le gagnant reste · fin au sifflet');
+    h=h.replace(/(<div class="m[^"]*"><span class="tm">)[^<]*(<\/span>)/g,'$1si au repos :$2');}
+  if(!me)h=h.replace('<button type="button" onclick="aspMRTouche(','<button type="button" onclick="aspMRInf(\''+bi+'\',\''+ai+'\','+sg+')">'+(cfg.inf?'♾ infini : oui':'♾ infini : non')+'</button> <button type="button" onclick="aspMRTouche(');}catch(e){console.warn('v400 inf',e);}return h;};})(aspTriHtml);
+aspObserve=(function(f){return function(bid,aid){try{const s=aspS();const b=s&&aspB(s,bid);const a=s&&aspAt(s,bid,aid);if(b&&a&&aspTeamIds(s,a).length===3&&aspMRCfg(s,b,a).inf){const c=prmCfg();c.end='free';localStorage.setItem(PRM_KEY,JSON.stringify(c));}}catch(e){}return f.apply(this,arguments);};})(aspObserve);
+trnShow=(function(f){return function(bid,aid,eleve){const r=f.apply(this,arguments);try{const s=aspS();const o=E('trn-ov');const b=s&&aspB(s,bid),a=s&&aspAt(s,bid,aid);if(o&&b&&a&&aspMRCfg(s,b,a).inf){const h=o.querySelector('b');if(h)h.textContent='♾ Tournoi infini · 3 équipes';
+  const p=o.querySelector('.cc-dim,p');if(p)p.textContent='Le gagnant reste sur le terrain, l\'équipe au repos rentre contre lui. On joue jusqu\'à ce que l\'enseignant siffle la fin. Touche ▶ pour lancer (ou relancer) un match.';
+  o.querySelectorAll('button[data-i]').forEach(bt=>{bt.textContent='▶ Match';});}}catch(e){}return r;};})(trnShow);
+// ── élèves : médias d'une FPS derrière un bouton ──
+function aspMedOpen(el){const box=el.closest('.ael-medbox');if(!box)return;const tpl=box.querySelector('template');if(!tpl)return;const o=document.createElement('div');o.className='aop-ov';o.onclick=e=>{if(e.target===o||e.target.closest('.aop-x'))o.remove();};
+  o.innerHTML='<'+'div class="box"><'+'div class="hd"><b>🎬 Pour bien comprendre</b><button type="button" class="aop-x">✕</button></'+'div>'+tpl.innerHTML+'</'+'div>';document.body.appendChild(o);try{const b=o.querySelector('.anim-inline button');if(b)b.click();}catch(e){}}
+aspEleveExHtml=(function(f){return function(s,e){let h=f.apply(this,arguments);try{const inf=aspExInfo(e);if(!inf||inf.kind!=='fps')return h;const t=document.createElement('template');t.innerHTML=h;const ex=t.content.querySelector('.ael-ex');if(!ex)return h;
+  const M=[...ex.querySelectorAll('video,.anim-inline,img')].filter(m=>!m.closest('.ael-vig')&&!(m.parentElement&&m.parentElement.closest('.anim-inline')));if(!M.length)return h;
+  const an=inf.src&&inf.src.anim;const auto=an&&/cedreps|auto/i.test(String(an.name||''));const keep=M.filter(m=>!(m.classList&&m.classList.contains('anim-inline')&&auto));
+  M.forEach(m=>m.remove());if(keep.length){const box=document.createElement('div');box.className='ael-medbox';const tp=document.createElement('template');keep.forEach(m=>tp.content.appendChild(m));box.appendChild(tp);
+    const bt=document.createElement('button');bt.type='button';bt.className='ael-medbtn';bt.textContent='🎬 Pas compris ? Voir '+(keep.some(m=>m.tagName==='VIDEO')?'la vidéo':'l\'animation');bt.setAttribute('onclick','aspMedOpen(this)');box.appendChild(bt);ex.appendChild(box);}
+  return t.innerHTML;}catch(err){console.warn('v400 med',err);return h;}};})(aspEleveExHtml);
+// ── aperçu = vrais boutons du profil ──
+aspObsPreview=(function(f){return function(bid,aid,k){try{const s=getActiveSeance();const b=s&&(s.asp.blocks||[]).find(x=>x.id===bid);let a=b&&(b.ats||[]).find(x=>x.id===aid);if(a&&k!=null&&k>=0&&aspIsSeq(a)){const v=aspSegAt(s,b,a,k);if(v)a=v;}
+  const pn=a&&aspObsProfileName(a);const P=(CFG.savedPresets||[]).find(p=>p&&p.name===pn);const B=((P&&P.dialogBtns)||((s.asp.profBtns||{})[pn])||[]).filter(x=>x&&x.label);
+  if(!B.length)return f.apply(this,arguments);const F=aspFpsOf(a);const src=(F&&F.inf&&F.inf.src)||{};const mode=a.obsMode||src.obsMode||((P&&P.obsSimple)?'simple':(CFG.obsSimple?'simple':'draw'));
+  const pitch='<svg viewBox="0 0 300 190" class="aop-pitch"><rect x="2" y="2" width="296" height="186" rx="8" fill="#166534" stroke="#fff" stroke-width="2"/><line x1="150" y1="2" x2="150" y2="188" stroke="#fff" stroke-width="2"/><circle cx="150" cy="95" r="24" fill="none" stroke="#fff" stroke-width="2"/><rect x="2" y="60" width="26" height="70" fill="none" stroke="#fff" stroke-width="2"/><rect x="272" y="60" width="26" height="70" fill="none" stroke="#fff" stroke-width="2"/><path d="M60 150 C 100 120, 120 60, 170 80 S 240 120, 262 92" fill="none" stroke="#facc15" stroke-width="5" stroke-linecap="round" stroke-dasharray="2 10"/><text x="252" y="80" font-size="26">☝️</text></svg>';
+  const bh='<'+'div class="aop-btns">'+B.map(x=>'<span style="background:'+esc(x.color||'#1d4ed8')+'">'+esc(String(x.label))+'</span>').join('')+'</'+'div>';
+  const o=document.createElement('div');o.className='aop-ov';o.onclick=e=>{if(e.target===o||e.target.closest('.aop-x'))o.remove();};
+  o.innerHTML='<'+'div class="box"><'+'div class="hd"><b>👁 Aperçu de l\'outil d\'observation</b> · '+esc(String((F&&F.inf.titre)||'FPS'))+'<button type="button" class="aop-x">✕</button></'+'div>'
+    +(mode==='draw'?pitch+'<'+'p class="aop-t">✏️ <b>Dessinez la trajectoire du ballon avec le doigt.</b> Quand vous enlevez votre doigt, dites comment l\'action s\'est terminée :</'+'p>'+bh
+      :bh+'<'+'p class="aop-t">✋ <b>Touchez simplement l\'écran</b> pour décrire ce que vous voyez.</'+'p>')+'</'+'div>';document.body.appendChild(o);return;}catch(e){console.warn('v400 aop',e);}return f.apply(this,arguments);};})(aspObsPreview);
+// les boutons des profils voyagent avec la séance (pour les tablettes)
+elPublish=(function(f){return function(){try{const s=getActiveSeance();if(s&&s.asp){const pb={};(CFG.savedPresets||[]).forEach(p=>{if(p&&p.name&&/^FPS ·/.test(p.name))pb[p.name]=(p.dialogBtns||[]).map(x=>({label:x.label,color:x.color}));});s.asp.profBtns=pb;saveSeances();}}catch(e){}return f.apply(this,arguments);};})(elPublish);
+// ── « ＋ Bloc » sous les blocs ──
+aspHtml=(function(f){return function(s){let h=f.apply(this,arguments);try{const t=document.createElement('template');t.innerHTML=h;const g=t.content.querySelector('.asp-grid');const gap=g&&g.querySelector(':scope > .asp-gap');if(gap){gap.classList.add('below');g.after(gap);h=t.innerHTML;}}catch(e){}return h;};})(aspHtml);
+// ── bilan élève simplifié ──
+function aspBilWho(s){const me=elMeGet(s);const tm=(typeof finCurTeam==='function')?finCurTeam(s):'';return tm||me||'classe';}
+function aspBilRows(s){const me=elMeGet(s);let sx='';try{if(me&&/^@g:pop-/.test(me))sx=me.slice(7);else if(me)sx=grpSexe(me);}catch(e){}
+  const P=aspProjs(s);let px=P;if(sx&&P.length>1){const k=P.find(p=>{const l=String((REMED_CONTENT[p.referentiel]||{}).label||'');return sx==='F'?/fille/i.test(l):/gar[cç]/i.test(l);});if(k)px=[k];}
+  const out=[],seen={};px.forEach(p=>{const ids=[p.oeId].concat(p.oeExtra||[]).filter(Boolean);let L=[];try{L=seanceAllCpPaths(p,ids.length?ids:null,false);}catch(e){}
+    const F=L.filter(x=>cpFocusOf(s,x)>=2);(F.length?F:L).forEach(path=>{const c=getCpByPath(path);if(!c)return;const lab=String((typeof eleveCp==='function'?eleveCp(c):'')||c.label||'');const key=cpGroupKey(lab)||path;if(seen[key])return;seen[key]=1;out.push({path:path,lab:lab});});});
+  return out.slice(0,6);}
+function aspBilSet(btn){const s=getActiveSeance();if(!s||!s.asp)return;const w=aspBilWho(s);s.asp.bil=s.asp.bil||{};const m=s.asp.bil[w]=s.asp.bil[w]||{};const p=btn.dataset.p,v=btn.dataset.v;if(m[p]===v)delete m[p];else m[p]=v;m.t=Date.now();saveSeances();
+  const row=btn.closest('.ael-bil-r');if(row)row.querySelectorAll('button').forEach(b=>b.classList.toggle('on',m[b.dataset.p]===b.dataset.v));}
+async function aspSendData(btn){try{if(btn){btn.disabled=true;btn.textContent='📤 Envoi…';}saveSeances();if(typeof syncNow==='function')await syncNow(true);if(btn){btn.textContent='✅ Données envoyées';}try{toast2('📤 Données envoyées à l\'enseignant');}catch(e){}}catch(e){if(btn){btn.disabled=false;btn.textContent='📤 Envoyer les données (réessayer)';}alert('Envoi impossible : '+e.message);}}
+renderEleveStepFinBilan=(function(f){return function(s,st){if(!s||!s.asp)return f.apply(this,arguments);try{const w=aspBilWho(s);const m=((s.asp.bil||{})[w])||{};const R=aspBilRows(s);
+  let h='';const matches=seanceMatches(s);if(matches.length){h+='<'+'div class="sel-box"><h4>⚽ Nos matchs</h4>';matches.forEach(mm=>{const a=mm.a;const t0=a.teams&&a.teams[0],t1=a.teams&&a.teams[1];h+='<'+'div class="sel-text">'+(t1?(esc(String(t0.name))+' '+((t0.stats||{}).buts||0)+' – '+((t1.stats||{}).buts||0)+' '+esc(String(t1.name))):esc(String(t0?t0.name:'')))+'</'+'div>';});h+='</'+'div>';}
+  h+='<'+'div class="sel-box ael-bil"><h4>🧵 Nos fils rouges : avons-nous réussi ?</h4>'+(R.length?R.map(r=>'<'+'div class="ael-bil-r"><span>'+esc(r.lab)+'</span><button type="button" class="oui'+(m[r.path]==='oui'?' on':'')+'" data-p="'+esc(r.path)+'" data-v="oui" onclick="aspBilSet(this)">✅ Oui</button><button type="button" class="non'+(m[r.path]==='non'?' on':'')+'" data-p="'+esc(r.path)+'" data-v="non" onclick="aspBilSet(this)">❌ Non</button></'+'div>').join(''):'<'+'div class="sel-dim">Pas de fil rouge choisi pour cette séance.</'+'div>')+'</'+'div>';
+  h+='<button type="button" class="sel-big ael-send" onclick="aspSendData(this)">📤 Envoyer les données</button>';return h;}catch(e){console.warn('v400 bil',e);return f.apply(this,arguments);}};})(renderEleveStepFinBilan);
+// ── synchro : additionner au lieu d'écraser ──
+function syncArchSig(a){try{return [a.date,a.duration,(a.teams||[]).map(t=>t&&t.name).join('/'),(a.timeline||[]).length,((a.timeline||[])[0]||{}).t||'',((a.timeline||[]).slice(-1)[0]||{}).t||''].join('|');}catch(e){return JSON.stringify(a).slice(0,200);}}
+function syncMergeVal(k,lv,rv){try{if(k==='grib_archives_v3'){const L=JSON.parse(lv||'[]'),R=JSON.parse(rv||'[]');if(!Array.isArray(L)||!Array.isArray(R))return rv;const sig={};R.forEach(a=>{sig[syncArchSig(a)]=1;});const add=L.filter(a=>!sig[syncArchSig(a)]);if(!add.length)return rv;return JSON.stringify(add.concat(R));}
+  if(k==='grib_seances_v1'){const L=JSON.parse(lv||'[]'),R=JSON.parse(rv||'[]');if(!Array.isArray(L)||!Array.isArray(R))return rv;const byR={};R.forEach(x=>{if(x&&x.id)byR[x.id]=x;});let ch=false;
+    L.forEach(x=>{if(!x||!x.id)return;const r=byR[x.id];if(!r){R.push(x);ch=true;return;}if(!x.asp||!r.asp)return;
+      ['res','bil'].forEach(f=>{const lx=x.asp[f]||{};const rx=r.asp[f]=r.asp[f]||{};Object.keys(lx).forEach(k1=>{const a=lx[k1]||{},b=rx[k1]=rx[k1]||{};
+        if(f==='bil'){if((+a.t||0)>(+b.t||0)){rx[k1]=a;ch=true;}return;}Object.keys(a).forEach(n=>{if(!b[n]||(+(a[n]||{}).t||0)>(+(b[n]||{}).t||0)){b[n]=a[n];ch=true;}});});});
+      const lt=x.asp.tourn||{},rt=r.asp.tourn=r.asp.tourn||{};Object.keys(lt).forEach(k2=>{const d=(lt[k2]||{}).done||{};const rd=(rt[k2]=rt[k2]||{done:{}}).done=(rt[k2].done||{});Object.keys(d).forEach(z=>{if(!rd[z]){rd[z]=d[z];ch=true;}});});});
+    return ch?JSON.stringify(R):rv;}}catch(e){console.warn('merge',k,e);}return rv;}
+syncPull=async function(idx){const m=syncMeta();if(!m)return 0;idx=idx||await syncIndex();if(!idx)return 0;let n=0;
+  for(const k of Object.keys(idx.mt)){if(syncKeys().indexOf(k)<0)continue;const rt=+idx.mt[k]||0,lt=+m.mt[k]||0;if(rt<=lt)continue;
+    let v=await syncRaw(syncPath(k));if(v==null)continue;const cur=_lsGet.call(localStorage,k);let mergedMore=false;
+    if(cur!=null&&(k==='grib_archives_v3'||k==='grib_seances_v1')&&(m.dirty[k]||true)){const mv=syncMergeVal(k,cur,v);if(mv!==v){v=mv;mergedMore=true;}}
+    if(cur!==v){SYNC.applying=true;try{_lsSet.call(localStorage,k,v);n++;}catch(e){console.warn('sync apply',k,e);}SYNC.applying=false;}
+    if(mergedMore){m.mt[k]=Date.now();m.dirty[k]=1;}else{m.mt[k]=rt;delete m.dirty[k];}}
+  syncMetaSave(m);return n;};
+(function(){const st=document.createElement('style');st.textContent=
+ 'html body .asp-gap.below{min-height:34px;margin-top:8px;font-size:.75rem;}'
++'html body .ael-medbtn{border:1px solid #7c3aed;background:#1e1b4b;color:#ddd6fe;border-radius:999px;padding:8px 14px;font-weight:700;cursor:pointer;margin-top:8px;}'
++'html body .aop-ov video{max-width:100%;border-radius:10px;}html body .aop-ov .anim-inline{min-height:300px;}'
++'html body .ael-bil-r{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 0;border-top:1px solid rgba(148,163,184,.2);}html body .ael-bil-r span{flex:1 1 220px;font-weight:700;}'
++'html body .ael-bil-r button{border:2px solid #475569;background:#0f172a;color:#e2e8f0;border-radius:12px;padding:10px 16px;font-weight:800;font-size:1rem;cursor:pointer;}html body .ael-bil-r button.oui.on{background:#15803d;border-color:#15803d;}html body .ael-bil-r button.non.on{background:#b91c1c;border-color:#b91c1c;}'
++'html body .ael-send{display:block;width:100%;margin-top:10px;background:#1d4ed8 !important;color:#fff !important;}';document.head.appendChild(st);})();
+// pas d'image à droite → une seule colonne ; tablette de groupe : bilan sans choix d'équipe
+aspElPagedHtml=(function(f){return function(s){let h=f.apply(this,arguments);try{if(h.indexOf('ael-2c')<0)return h;const t=document.createElement('template');t.innerHTML=h;let ch=false;
+  t.content.querySelectorAll('.ael-2c').forEach(g=>{const R=g.querySelector(':scope > .r'),L=g.querySelector(':scope > .l');if(!R||!L)return;if(R.querySelector('video,img:not(.th-anim),.anim-inline,iframe'))return;[...R.childNodes].reverse().forEach(n=>L.prepend(n));R.remove();g.classList.add('one');ch=true;});
+  return ch?t.innerHTML:h;}catch(e){return h;}};})(aspElPagedHtml);
+renderEleveStepFin=(function(f){return function(s,st){try{const me=elMeGet(s);if(s&&s.asp&&aspGTok(me))return renderEleveStepFinInner(s,st);}catch(e){}return f.apply(this,arguments);};})(renderEleveStepFin);
+(function(){const st=document.createElement('style');st.textContent='html body .ael-2c.one{display:block;}html body .ael-2c.one>.l{max-width:none;width:auto;}';document.head.appendChild(st);})();
+// correctif : deux versions de aspTeamShort coexistaient (« ? · 8 » sur l'écran élève)
+aspTeamShort=function(s,ids,g){if(Array.isArray(ids)&&g){const L=String(g.label||'');const w=L.split(/\s+/)[0];if(!w)return L;const same=ids.filter(id=>{const x=aspChip(s,id);return x&&String(x.label||'').split(/\s+/)[0]===w;}).length;return same>1?L:w;}
+  const x=aspChip(s,ids);const l=String(x&&x.label||'?');return l.split(/\s+/)[0];};
 </script>
 </body>
 </html>
