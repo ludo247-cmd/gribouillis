@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v396</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v397</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v396</title>
+<title>Gribouillis EPS v397</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -28366,6 +28366,107 @@ aspElPagedHtml=(function(f){return function(s){let h=f.apply(this,arguments);try
   steps.forEach((st,i)=>st.classList.toggle('ael-cur',i===ASP_PG.i));return t.innerHTML;}catch(e){console.warn('v396 el',e);return h;}};})(aspElPagedHtml);
 (function(){const st=document.createElement('style');st.textContent='html body .asp-seg-g{display:flex;flex-wrap:wrap;gap:3px;margin:3px 0;}html body .asp-seg-g .asp-g{font-size:.66rem;padding:2px 6px;}html body .asp-seg-g .gx{border:0;background:rgba(0,0,0,.35);color:#fff;border-radius:999px;margin-left:4px;cursor:pointer;font-size:.6rem;}'
  +'html body .asp-seg.over{outline:3px dashed #facc15;outline-offset:-2px;}html body .asp-seg .asp-obsbtn{margin-top:4px;}html body .asp-seg details.asp-tri{margin-top:4px;}';document.head.appendChild(st);})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v397 — séance AS :
+// • début des filles réglable (17h40 par défaut) : personne n'est « sans
+//   rien de prévu » avant le début de son cours ;
+// • arrivées : « 🕒 17h40 : 14 arrivées » (toucher pour voir qui) ;
+// • compteur 👦 / 👧 : toucher = qui est présent ;
+// • RÔLES PAR MATCH : 3 équipes → 3 matchs, l'équipe au repos arbitre ;
+//   2 équipes → les remplaçant(e)s (1 = arbitre, 2 = + observateur,
+//   plus = arbitres de touche) ; rôle choisi d'abord, sinon tirage ;
+//   chaque rôle modifiable à la main, match par match.
+// ══════════════════════════════════════════════════════════════════════
+function aspFilleCats(){const C=[];(COMPO.roster||[]).forEach(r=>{const c=String(r&&r.categorie||'');if(/fille/i.test(c)&&C.indexOf(c)<0)C.push(c);});return C;}
+function aspFStart(s){const cs=s.catStart||{};const k=Object.keys(cs).find(c=>/fille/i.test(c));return k?cs[k]:'';}
+function aspSetFStart(v){const s=getActiveSeance();if(!s)return;s.catStart=s.catStart||{};Object.keys(s.catStart).forEach(k=>{if(/fille/i.test(k))delete s.catStart[k];});const C=aspFilleCats();(C.length?C:['Filles']).forEach(c=>{if(v)s.catStart[c]=v;});s.fStartSet=1;saveSeances();renderSeanceTab();}
+aspHtml=(function(f){return function(s){try{if(s&&!s.fStartSet&&aspFilleCats().length){s.catStart=s.catStart||{};const cur=aspFStart(s);if(!cur||cur==='17:30'){Object.keys(s.catStart).forEach(k=>{if(/fille/i.test(k))delete s.catStart[k];});aspFilleCats().forEach(c=>{s.catStart[c]='17:40';});}s.fStartSet=1;try{saveSeances();}catch(e){}}}catch(e){}
+  let h=f.apply(this,arguments);try{const i=h.indexOf('📅 arrivées du');const j=i>=0?h.indexOf('</label>',i):-1;if(j>0){const sel='<label class="sb-start" title="Début réel du cours des filles : avant, elles ne comptent pas comme présentes">👧 début filles <input type="time" step="300" value="'+esc(aspFStart(s)||'')+'" onchange="aspSetFStart(this.value)"></label>';h=h.slice(0,j+8)+sel+h.slice(j+8);}}catch(e){}return h;};})(aspHtml);
+// ── arrivées compactes ──
+aspArrivalsHtml=function(s,b,tm,idx){if(b.kind!=='bloc'||!tm)return '';let h='';const BL=(s.asp.blocks||[]).filter(x=>x.kind==='bloc');const isLast=BL.length&&BL[BL.length-1].id===b.id;
+  const by={},U=[];aspRoster().forEach(n=>{const x=aspLateArr(s,n);if(x==null)return;if(x===-1){U.push(n);return;}if((x>=tm.a&&x<tm.b)||(isLast&&x>=tm.b))(by[x]=by[x]||[]).push(n);});
+  const fs=planMin(aspFStart(s)||'');
+  Object.keys(by).map(Number).sort((p,q)=>p-q).forEach(t=>{const N=by[t];const F=N.filter(n=>grpSexe(n)==='F'),M=N.filter(n=>grpSexe(n)==='M'),O=N.filter(n=>F.indexOf(n)<0&&M.indexOf(n)<0);
+    const L=(ic,A)=>A.length?'<'+'div>'+ic+' '+A.map(esc).join(', ')+'</'+'div>':'';
+    h+='<details class="asp-arr asp-arrd"><summary>🕒 <b>'+hmFmt(t)+'</b> : '+N.length+' arrivée'+(N.length>1?'s':'')+(fs!=null&&t===fs&&F.length?' · début des filles':'')+' <small>('+(M.length?'👦 '+M.length+' ':'')+(F.length?'👧 '+F.length:'')+(O.length?' · '+O.length+' ?':'')+')</small></summary>'+L('👦',M)+L('👧',F)+L('•',O)+'</details>';});
+  const first=BL[0];if(U.length&&first&&first.id===b.id)h+='<'+'div class="asp-arr" style="color:#fde68a;border-color:rgba(251,191,36,.5);background:rgba(251,191,36,.1);">🕒 En retard (heure inconnue) : '+U.map(esc).join(', ')+'</'+'div>';
+  return h;};
+// ── compteur : qui est présent ──
+aspCountHtml=(function(f){return function(s,b,tm){let h=f.apply(this,arguments);if(!h||!b||!tm)return h;try{const k=b.id;const t=document.createElement('template');t.innerHTML=h;const c=t.content.querySelector('.asp-cnt');if(!c)return h;
+  c.removeAttribute('onclick');c.removeAttribute('role');c.style.cursor='';
+  const sp=[...c.querySelectorAll('span')];const kk=esc(k);
+  if(sp[0])sp[0].setAttribute('onclick','event.stopPropagation();ASP_MISS[\''+kk+'\']=ASP_MISS[\''+kk+'\']===\'M\'?0:\'M\';renderSeanceTab()');
+  if(sp[1])sp[1].setAttribute('onclick','event.stopPropagation();ASP_MISS[\''+kk+'\']=ASP_MISS[\''+kk+'\']===\'F\'?0:\'F\';renderSeanceTab()');
+  const last=sp[sp.length-1];if(last){last.setAttribute('onclick','event.stopPropagation();ASP_MISS[\''+kk+'\']=ASP_MISS[\''+kk+'\']===true?0:true;renderSeanceTab()');last.style.cursor='pointer';}
+  [sp[0],sp[1]].forEach(x=>{if(x){x.style.cursor='pointer';x.title='Toucher : qui est présent';}});
+  h=t.innerHTML;const v=ASP_MISS[k];
+  if(v==='M'||v==='F'){h=h.replace(/<div class="asp-miss">[\s\S]*$/,'');const P=aspPresent(s,tm.a).filter(n=>grpSexe(n)===v).sort((a,b)=>String(a).localeCompare(String(b),'fr'));
+    h=h.replace(/(<div class="asp-cnt"[\s\S]*?<\/div>)/,'$1')+'<'+'div class="asp-miss"><b>'+(v==='M'?'👦 Garçons présents':'👧 Filles présentes')+' à '+hmFmt(tm.a)+' ('+P.length+')</b> : '+(P.length?P.map(esc).join(', '):'personne')+'</'+'div>';}
+  }catch(e){console.warn('v397 cnt',e);}return h;};})(aspCountHtml);
+// ── « sans rien de prévu » : pas avant le début de son cours ──
+aspAlerts=(function(f){return function(s,b,tm){const h=f.apply(this,arguments);try{if(!h||h.indexOf('sans rien de prévu')<0)return h;const cnt={};(b.ats||[]).forEach(a=>aspAtMembers(s,a).forEach(n=>{cnt[n]=1;}));
+  const pres=aspPresent(s,tm.a);const none=pres.filter(n=>!cnt[n]);
+  const t=document.createElement('template');t.innerHTML=h;const w=[...t.content.querySelectorAll('.asp-warn')].find(x=>/sans rien de prévu/.test(x.textContent));
+  if(w){if(!none.length)w.remove();else w.textContent='⚠ '+none.length+' sans rien de prévu'+(none.length<=4?' : '+none.join(', '):'');}return t.innerHTML;}catch(e){return h;}};})(aspAlerts);
+// ── rôles par match ──
+aspTriTeams=function(a){if(!a||!aspAtIsFps(a))return null;const T=(a.groups||[]).filter(id=>!/^pop-/.test(String(id)));return (T.length===2||T.length===3)?T:null;};
+aspAtRoleLabels=(function(f){return function(a){try{if(a&&aspIsSeq(a)){const L=[];(a.exos||[]).forEach(e=>{const inf=aspExInfo(e);const own=(e.groups||[]).filter(id=>!/^pop-/.test(String(id)));if(inf&&inf.kind==='fps'&&own.length>=2&&own.length<=3)return;
+      aspAtRoleLabels0(Object.assign(Object.create(a),{exos:[e],seq:false})).forEach(l=>{if(L.indexOf(l)<0)L.push(l);});});return L;}}catch(e){}return f.apply(this,arguments);};})(aspAtRoleLabels);
+const ASP_TOUCHE='Arbitre de touche';
+function aspMRKey(b,a){return b.id+'|'+a.id+'|'+(a._seg!=null?a._seg:'');}
+function aspMRCfg(s,b,a){s.asp.mr=s.asp.mr||{};const k=aspMRKey(b,a);return s.asp.mr[k]=s.asp.mr[k]||{seed:1,touche:2,man:{}};}
+aspTriPlan=function(s,b,a){const T=aspTriTeams(a);if(!T)return null;const W=aspTriWin(s,b,a);const cfg=aspMRCfg(s,b,a);const key=aspMRKey(b,a);
+  const F=aspFpsOf(a);const size=F&&F.inf&&F.inf.src?aspFpsSize(F.inf.src):0;let base=aspAtRoleLabels0(a).filter(l=>aspRoleKey(l)!=='respons');if(!base.length)base=['Arbitre','Observateur'];
+  const labels=base.concat(Array.from({length:Math.max(0,Math.min(2,+cfg.touche||0))},()=>ASP_TOUCHE));
+  const rnd=(i,n)=>aspTriHash(cfg.seed+'|'+key+'|'+i+'|'+n);const load={};
+  const mem=id=>{const g=aspChip(s,id);return (g&&g.members||[]).slice();};
+  const R=T.length===3?[[0,1,2],[2,0,1],[1,2,0]]:[[0,1,-1]];const d=Math.max(1,Math.floor((W.b-W.a)/R.length));
+  const matches=R.map((r,i)=>{const t0=W.a+i*d;const pres=aspPresent(s,t0);let pool,limit;
+    if(r[2]>=0){pool=mem(T[r[2]]).filter(n=>pres.indexOf(n)>=0);limit=pool.length;}
+    else{const A=mem(T[0]).filter(n=>pres.indexOf(n)>=0),B=mem(T[1]).filter(n=>pres.indexOf(n)>=0);pool=A.concat(B);limit=size?Math.max(0,A.length-size)+Math.max(0,B.length-size):2;}
+    const n=Math.min(labels.length,limit);const used={};
+    const roles=labels.slice(0,n).map((l,ri)=>{const m=(cfg.man||{})[i+'|'+ri];let nm=null,chosen=false,man=false;
+      if(m&&pool.indexOf(m)>=0&&!used[m]){nm=m;man=true;}
+      else{const av=pool.filter(x=>!used[x]);const so=L=>L.slice().sort((x,y)=>(load[x]||0)-(load[y]||0)||rnd(i,x)-rnd(i,y))[0];const hh=av.filter(x=>aspHasRole(x,l));nm=so(hh)||so(av)||null;chosen=!!(nm&&hh.indexOf(nm)>=0);}
+      if(nm){used[nm]=1;load[nm]=(load[nm]||0)+1;}return {role:l,name:nm,chosen:chosen,man:man,ri:ri};});
+    return {i:i,a:t0,b:t0+d,home:T[r[0]],away:T[r[1]],rest:r[2]>=0?T[r[2]]:null,pool:pool,roles:roles,subs:r[2]<0?limit:null};});
+  return {teams:T,dur:d,matches:matches,cfg:cfg,size:size};};
+function aspMRIco(l){return l===ASP_TOUCHE?'🚩':aspRoleIco(l);}
+aspTriHtml=function(s,b,a,me){const P=aspTriPlan(s,b,a);if(!P)return '';const bi=esc(b.id),ai=esc(a.id),sg=a._seg!=null?a._seg:-1,key=aspMRKey(b,a);
+  const col=id=>esc(String((aspChip(s,id)||{}).color||'#475569'));const chip=id=>'<span class="tri-t" style="--gc:'+col(id)+'">'+esc(aspTeamShort(s,id))+'</span>';
+  const mine=me&&P.matches.some(m=>m.roles.some(r=>r.name===me));const open=me?true:!!ASP_TRI_OPEN[key];const two=P.teams.length===2;
+  const sum=two?'🎭 Rôles du match'+(P.matches[0].subs!=null&&P.size?' · '+P.matches[0].subs+' remplaçant'+(P.matches[0].subs>1?'s':''):''):'🏆 Tournoi à 3 · 3 matchs de '+P.dur+'′';
+  let h='<details class="asp-tri"'+(open?' open':'')+(me?'':' ontoggle="ASP_TRI_OPEN[\''+esc(key)+'\']=this.open"')+'><summary>'+sum+(mine?' · ⭐ tu as un rôle':'')+'</summary>';
+  P.matches.forEach(m=>{const me1=me&&m.roles.some(r=>r.name===me);
+    h+='<'+'div class="m'+(me1?' me':'')+'"><span class="tm">'+hmFmt(m.a)+'</span>'+chip(m.home)+'<i>–</i>'+chip(m.away)+(m.rest?'<span class="rs0">'+chip(m.rest)+'</span>':'')+'<span class="rs">';
+    if(!m.roles.length)h+='<span class="cc-dim">'+(two?'pas de remplaçant : rôles à donner à la main':'personne de libre')+'</span>';
+    m.roles.forEach(r=>{if(me){h+='<span class="rl'+(r.name===me?' me':'')+'">'+aspMRIco(r.role)+' <b>'+(r.name?esc(r.name):'—')+'</b></span> ';return;}
+      h+='<label class="rl" title="'+esc(r.role)+'">'+aspMRIco(r.role)+'<select onchange="aspMRSet(\''+bi+'\',\''+ai+'\','+sg+','+m.i+','+r.ri+',this.value)"><option value="">'+(r.man?'🎲 tirage':(r.name?esc(r.name)+(r.chosen?'':' 🎲'):'—'))+'</option>'+m.pool.map(n=>'<option value="'+esc(n)+'"'+(r.man&&r.name===n?' selected':'')+'>'+esc(n)+(aspHasRole(n,r.role)?' ★':'')+'</option>').join('')+'</select></label> ';});
+    h+='</span></'+'div>';});
+  if(!me)h+='<'+'div class="ft">'+(two?'Rôles pris parmi les remplaçant(e)s · ':'L\'équipe au repos arbitre · ')+'★ = a choisi ce rôle · '
+    +'<button type="button" onclick="aspMRTouche(\''+bi+'\',\''+ai+'\','+sg+')">🚩 touche : '+(+P.cfg.touche||0)+'</button> <button type="button" onclick="aspMRRoll(\''+bi+'\',\''+ai+'\','+sg+')">🎲 nouveau tirage</button></'+'div>';
+  return h+'</details>';};
+function aspMRCtx(bid,aid,sg){const s=aspS();if(!s)return null;const b=aspB(s,bid);let a=aspAt(s,bid,aid);if(!b||!a)return null;if(sg>=0){const v=aspSegAt(s,b,a,sg);if(v)a=v;}return {s:s,b:b,a:a};}
+function aspMRSet(bid,aid,sg,i,ri,v){const c=aspMRCtx(bid,aid,sg);if(!c)return;const cfg=aspMRCfg(c.s,c.b,c.a);cfg.man=cfg.man||{};if(v)cfg.man[i+'|'+ri]=v;else delete cfg.man[i+'|'+ri];ASP_TRI_OPEN[aspMRKey(c.b,c.a)]=true;aspSave();}
+function aspMRRoll(bid,aid,sg){const c=aspMRCtx(bid,aid,sg);if(!c)return;const cfg=aspMRCfg(c.s,c.b,c.a);cfg.seed=(+cfg.seed||1)+1;ASP_TRI_OPEN[aspMRKey(c.b,c.a)]=true;aspSave();}
+function aspMRTouche(bid,aid,sg){const c=aspMRCtx(bid,aid,sg);if(!c)return;const cfg=aspMRCfg(c.s,c.b,c.a);cfg.touche=((+cfg.touche||0)+1)%3;ASP_TRI_OPEN[aspMRKey(c.b,c.a)]=true;aspSave();}
+(function(){const st=document.createElement('style');st.textContent='html body details.asp-arrd{cursor:pointer;}html body details.asp-arrd>summary{list-style:none;}html body details.asp-arrd>summary::-webkit-details-marker{display:none;}html body details.asp-arrd>summary small{color:#94a3b8;}html body details.asp-arrd>div{margin-top:3px;}'
+ +'html body .asp-tri .rl{display:inline-flex;align-items:center;gap:2px;}html body .asp-tri .rl select{background:#0f172a;color:#e2e8f0;border:1px solid #475569;border-radius:6px;font-size:.66rem;padding:1px 2px;max-width:120px;}html body .asp-tri .rl.me{background:#f59e0b;color:#111;border-radius:6px;padding:0 4px;}'
+ +'html body .asp-tri .rs0{display:inline-flex;}html body .asp-head input[type=time]{background:#0f172a;color:#e2e8f0;border:1px solid #334155;border-radius:6px;padding:1px 4px;margin-left:3px;}';document.head.appendChild(st);})();
+// taille d'équipe : « 4+1 contre 4+1 » = 5
+aspFpsSize=(function(f){return function(src){try{const t=[src.format,src.cfg&&src.cfg.format,src.titre,src.desc].filter(Boolean).join(' ');const m=/(\d{1,2})\s*(?:\+\s*(\d{1,2}))?\s*(?:c|contre|vs|v|x|×)\s*\d{1,2}/i.exec(t);if(m)return (+m[1])+(+(m[2]||0));}catch(e){}return f.apply(this,arguments);};})(aspFpsSize);
+// ── bloc « Objectif » réduit à une barre (toujours annotable 💬) ──
+aspHtml=(function(f){return function(s){let h=f.apply(this,arguments);try{const t=document.createElement('template');t.innerHTML=h;const g=t.content.querySelector('.asp-grid');const o=g&&[...g.children].find(x=>x.classList.contains('asp-b')&&x.classList.contains('fix')&&/Objectif/.test((x.querySelector('.asp-bh')||{}).textContent||''));
+  if(o){o.classList.add('asp-objbar');const em=o.querySelector('.asp-empty');if(em){em.classList.add('sm');}g.before(o);h=t.innerHTML;}}catch(e){console.warn('v397 obj',e);}return h;};})(aspHtml);
+// ── appui long sur une situation d'un bloc = sa fiche (modifiable) ──
+let ASP_EXLP=null;
+document.addEventListener('pointerdown',e=>{const x=e.target&&e.target.closest&&e.target.closest('.asp-ex');if(!x||e.target.closest('button'))return;ASP_EXLP={x:e.clientX,y:e.clientY,t:Date.now(),el:x,mv:false};},true);
+document.addEventListener('pointermove',e=>{if(ASP_EXLP&&Math.hypot(e.clientX-ASP_EXLP.x,e.clientY-ASP_EXLP.y)>8)ASP_EXLP.mv=true;},true);
+document.addEventListener('pointerup',e=>{const L=ASP_EXLP;ASP_EXLP=null;if(!L||L.mv||Date.now()-L.t<550)return;try{if(document.querySelector('.sb-ghost,.sb-drag-ghost'))return;}catch(x){}
+  const d=String(L.el.dataset.drag||'');const q=d.split(':');if(q[0]!=='ae')return;const s=aspS();const a=s&&aspAt(s,q[1],q[2]);const ex=a&&(a.exos||[])[+q[3]];if(!ex)return;
+  setTimeout(()=>{try{if(ex.k==='lib')libEdit(ex.id);else if(ex.k==='exo')sbEditExo(ex.key);else if(ex.k==='warm')aspOpenWarm();}catch(err){console.warn('v397 lp',err);}},30);},true);
+(function(){const st=document.createElement('style');st.textContent='html body .asp-objbar{min-height:0;padding:3px 8px;margin:0 0 6px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}html body .asp-objbar .asp-bh{margin:0;}html body .asp-objbar .asp-empty.sm{font-size:.66rem;padding:0;margin:0;}html body .asp-ex{touch-action:manipulation;}';document.head.appendChild(st);})();
 </script>
 </body>
 </html>
