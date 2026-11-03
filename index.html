@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v401</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v402</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v401</title>
+<title>Gribouillis EPS v402</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -28643,7 +28643,7 @@ function aspMedOpen(el){const box=el.closest('.ael-medbox');if(!box)return;const
   o.innerHTML='<'+'div class="box"><'+'div class="hd"><b>🎬 Pour bien comprendre</b><button type="button" class="aop-x">✕</button></'+'div>'+tpl.innerHTML+'</'+'div>';document.body.appendChild(o);try{const b=o.querySelector('.anim-inline button');if(b)b.click();}catch(e){}}
 aspEleveExHtml=(function(f){return function(s,e){let h=f.apply(this,arguments);try{const inf=aspExInfo(e);if(!inf||inf.kind!=='fps')return h;const t=document.createElement('template');t.innerHTML=h;const ex=t.content.querySelector('.ael-ex');if(!ex)return h;
   const M=[...ex.querySelectorAll('video,.anim-inline,img')].filter(m=>!m.closest('.ael-vig')&&!(m.parentElement&&m.parentElement.closest('.anim-inline')));if(!M.length)return h;
-  const an=inf.src&&inf.src.anim;const auto=an&&/cedreps|auto/i.test(String(an.name||''));const keep=M.filter(m=>!(m.classList&&m.classList.contains('anim-inline')&&auto));
+  const an=inf.src&&inf.src.anim;const auto=false;const keep=M.filter(m=>!(m.classList&&m.classList.contains('anim-inline')&&auto));
   M.forEach(m=>m.remove());if(keep.length){const box=document.createElement('div');box.className='ael-medbox';const tp=document.createElement('template');keep.forEach(m=>tp.content.appendChild(m));box.appendChild(tp);
     const bt=document.createElement('button');bt.type='button';bt.className='ael-medbtn';bt.textContent='🎬 Pas compris ? Voir '+(keep.some(m=>m.tagName==='VIDEO')?'la vidéo':'l\'animation');bt.setAttribute('onclick','aspMedOpen(this)');box.appendChild(bt);ex.appendChild(box);}
   return t.innerHTML;}catch(err){console.warn('v400 med',err);return h;}};})(aspEleveExHtml);
@@ -28806,6 +28806,41 @@ aspElPagedHtml=(function(f){return function(s){let h=f.apply(this,arguments);try
     const d=document.createElement('div');d.className='ael-big click';d.setAttribute('onclick','aspBigOpen(this)');d.innerHTML='<span class="th">'+aspThumb(inf)+'</span><span class="pl">▶ Voir '+(v?'la vidéo':'l\'animation')+'</span>';R.appendChild(d);
     box.querySelector('.ael-medbtn').style.display='none';g.appendChild(L);g.appendChild(R);ch=true;});
   return ch?t.innerHTML:h;}catch(e){console.warn('v401 el2',e);return h;}};})(aspElPagedHtml);
+
+// ══════════════════════════════════════════════════════════════════════
+// v402 — écran élève : une seule grande image à droite (nette), bouton ▶
+// dessus qui ouvre l'animation en grand (plein écran) ou la vidéo en grand ;
+// toutes les animations sont cliquables ; « appliquer à toutes les FPS »
+// caché en mode élève.
+// ══════════════════════════════════════════════════════════════════════
+const ASP_HI={};let ASP_HIQ=[],ASP_HIB=false,ASP_HIF=null;
+function aspHiRun(){if(ASP_HIB||!ASP_HIQ.length)return;ASP_HIB=true;const it=ASP_HIQ.shift();
+  let fr=ASP_HIF;if(!fr){fr=document.createElement('iframe');fr.setAttribute('aria-hidden','true');fr.tabIndex=-1;fr.style.cssText='position:fixed;left:-3000px;top:0;width:1400px;height:900px;border:0;opacity:0;pointer-events:none;';document.body.appendChild(fr);ASP_HIF=fr;}
+  let done=false;const fin=()=>{if(done)return;done=true;ASP_HIB=false;setTimeout(aspHiRun,30);};
+  fr.onload=()=>{setTimeout(()=>{try{const cv=fr.contentDocument.getElementById('cv');if(cv&&cv.width){const W=Math.min(1600,Math.max(cv.width,1000)),H=Math.round(W*cv.height/cv.width);const c=document.createElement('canvas');c.width=W;c.height=H;c.getContext('2d').drawImage(cv,0,0,W,H);
+    const url=c.toDataURL('image/jpeg',.88);ASP_HI[it.k]=url;document.querySelectorAll('[data-hik="'+it.k+'"]').forEach(el=>{el.innerHTML='<img src="'+url+'" alt="" draggable="false">';});}}catch(e){console.warn('hi',e);}fin();},250);};
+  setTimeout(fin,5000);try{fr.srcdoc=animViewerHtml(it.j);}catch(e){fin();}}
+function aspHiFill(){try{document.querySelectorAll('.ael-big[data-r]:not([data-done])').forEach(el=>{el.dataset.done='1';const j=(window.__animReg||{})[el.dataset.r];if(!j)return;const k=thumbKey(j);const th=el.querySelector('.th');if(!th)return;th.dataset.hik=k;
+    if(ASP_HI[k]){th.innerHTML='<img src="'+ASP_HI[k]+'" alt="" draggable="false">';return;}if(!ASP_HIQ.some(x=>x.k===k))ASP_HIQ.push({k:k,j:j});setTimeout(aspHiRun,40);});}catch(e){}}
+renderSeanceTab=(function(f){return function(){const r=f.apply(this,arguments);setTimeout(aspHiFill,60);return r;};})(renderSeanceTab);
+try{aspPg=(function(f){return function(){const r=f.apply(this,arguments);setTimeout(aspHiFill,60);return r;};})(aspPg);}catch(e){}
+function aspMedBig(inner){const o=document.createElement('div');o.className='aop-ov big';o.onclick=e=>{if(e.target===o||e.target.closest('.aop-x'))o.remove();};o.innerHTML='<button type="button" class="aop-x big">✕</button>'+inner;document.body.appendChild(o);}
+aspBigOpen=function(el){const st=el.closest('.ael-step');const tp=st&&st.querySelector('.ael-medbox template');if(!tp)return;const d=document.createElement('div');d.appendChild(tp.content.cloneNode(true));
+  const an=d.querySelector('.anim-inline[data-r]');if(an){const j=(window.__animReg||{})[an.dataset.r];if(j){try{animPlay(j);return;}catch(e){}}}
+  const v=d.querySelector('video');if(v){aspMedBig('<video src="'+esc(v.getAttribute('src')||'')+'" controls autoplay playsinline></video>');return;}
+  const im=d.querySelector('img');if(im){aspMedBig('<img src="'+(im.getAttribute('src')||'')+'" alt="">');return;}};
+aspElPagedHtml=(function(f){return function(s){let h=f.apply(this,arguments);try{if(h.indexOf('ael-big')<0)return h;const t=document.createElement('template');t.innerHTML=h;
+  t.content.querySelectorAll('.ael-pages > .ael-step').forEach(st=>{const big=st.querySelector('.ael-big');if(!big)return;st.querySelectorAll('.ael-vig').forEach(x=>x.remove());
+    const tp=st.querySelector('.ael-medbox template');const html=tp?tp.innerHTML:'';const m=/class="anim-inline[^"]*"[^>]*data-r="(\d+)"/.exec(html)||/data-r="(\d+)"[^>]*class="anim-inline/.exec(html);
+    if(m)big.dataset.r=m[1];else if(/<video/.test(html)){const vs=/<video[^>]*src="([^"]+)"/.exec(html);const th=big.querySelector('.th');if(vs&&th&&!th.querySelector('img:not(.th-anim)'))th.innerHTML='<video src="'+vs[1]+'#t=0.5" muted playsinline preload="metadata"></video>';}
+    if(tp){big.classList.add('click');big.setAttribute('onclick','aspBigOpen(this)');const pl=big.querySelector('.pl');if(pl)pl.textContent='▶';else big.insertAdjacentHTML('beforeend','<span class="pl">▶</span>');}});
+  return t.innerHTML;}catch(e){console.warn('v402',e);return h;}};})(aspElPagedHtml);
+(function(){const st=document.createElement('style');st.textContent=
+ 'html body.mode-eleve .prm-ctx{display:none !important;}'
++'html body .ael-big .pl{width:84px;height:84px;border-radius:999px;display:flex;align-items:center;justify-content:center;font-size:2.2rem;padding:0;box-shadow:0 6px 20px rgba(0,0,0,.45);}'
++'html body .ael-big .th video{width:100%;height:100%;object-fit:contain;}html body .ael-2c .r .ael-big{aspect-ratio:3/2;min-height:0;height:auto;}html body .ael-2c .r .ael-big .th img{position:absolute;inset:0;width:100% !important;height:100% !important;max-width:none !important;max-height:none !important;object-fit:contain !important;float:none !important;margin:0 !important;}'
++'html body .aop-ov.big{padding:2vh 2vw;background:rgba(0,0,0,.88);}html body .aop-ov.big video,html body .aop-ov.big img{max-width:96vw;max-height:92vh;border-radius:12px;}html body .aop-x.big{position:fixed;top:14px;right:14px;z-index:2;border:0;background:#334155;color:#fff;border-radius:10px;font-size:1.3rem;padding:6px 12px;cursor:pointer;}';
+document.head.appendChild(st);})();
 </script>
 </body>
 </html>
