@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v398</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v399</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v398</title>
+<title>Gribouillis EPS v399</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -28529,6 +28529,91 @@ aspHtml=(function(f){return function(s){let h=f.apply(this,arguments);try{const 
 +'html body .ael-pts ul,html body .ael-reg ul{margin:2px 0 6px 18px;padding:0;}html body .ael-crit{background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.5);border-radius:8px;padding:5px 8px;margin-top:6px;}'
 +'html body #trn-ov .trn-roles{font-size:.74rem;color:#cbd5e1;margin:4px 0 6px;display:flex;flex-wrap:wrap;gap:6px;justify-content:center;}html body #trn-ov .trn-roles .me{background:#f59e0b;color:#111;border-radius:6px;padding:0 5px;}'
 +'html body .asp-stack{display:flex;flex-direction:column;gap:6px;}html body .asp-stack>.asp-b{margin:0;}html body .asp-objbar.in{margin:0;border-style:dashed;}';
+document.head.appendChild(st);})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v399 — AS, préparation de demain :
+// • taille d'équipe : « 2 × 5 min · 7 contre 7 » = 7 (et non 2) ;
+// • ⚙️ Observation d'un tournoi : directement la feuille d'avant-match ;
+// • AS : tablette de groupe = Garçons / Filles seulement ;
+// • « qui manque » : juste les noms ; téléphone : bloc large = toute la
+//   largeur ; Bilan en petit encart sous le dernier bloc (↺ matchs) ;
+// • bandeau de séquence réduit ; préparation de séance adaptée à l'AS ;
+// • élèves : image de l'animation dans son cadre, texte à gauche / image à
+//   droite, aperçu de l'outil d'observation sur les tablettes (envoi) ;
+// • envoi aux tablettes : propose de relier le Sheet s'il manque.
+// ══════════════════════════════════════════════════════════════════════
+aspFpsSize=function(src){try{const t=[src.format,src.cfg&&src.cfg.format,src.titre,src.desc].filter(Boolean).join(' ');
+  let m=/(\d{1,2})\s*(?:\+\s*(\d{1,2}))?\s*(?:contre|vs\.?|c)\s*\d{1,2}/i.exec(t);if(m)return (+m[1])+(+(m[2]||0));
+  m=/(\d{1,2})\s*joueurs?/i.exec(t);if(m)return +m[1];}catch(e){}return 0;};
+// ⚙️ (appui court) : pas d'écran « tournoi », le 1er match est préparé et la feuille s'ouvre
+aspObsBtn=(function(f){return function(el){try{const s=aspS();const bid=el.dataset.b,aid=el.dataset.a;let a=s&&aspAt(s,bid,aid);
+  if(a&&el.dataset.k!=null&&el.dataset.k!==''){const b=aspB(s,bid);const v=b&&aspSegAt(s,b,a,+el.dataset.k);if(v)a=v;}
+  const T=a?aspTeamIds(s,a):[];if(T.length>=3&&!(ASP_LP&&ASP_LP.b===el&&ASP_LP.long)){ASP_PAIR=[T[0],T[1]];try{return f.apply(this,arguments);}finally{ASP_PAIR=null;}}}catch(e){console.warn('v399 obs',e);}return f.apply(this,arguments);};})(aspObsBtn);
+// AS : Garçons / Filles seulement
+aspGTab=(function(f){return function(s){const L=f.apply(this,arguments);try{const c=clsActive();if(aspIsAS(s)||(c&&/(^|[^a-z0-9])as([^a-z0-9]|$)/i.test(String(c.nom||''))))return L.filter(x=>/^@g:pop-/.test(x.tok));}catch(e){}return L;};})(aspGTab);
+// qui manque : juste les noms
+aspMissHtml=function(s,b,tm){const all=(COMPO.roster||[]).filter(r=>r&&r.name!=null&&(grpSexe(r.name)==='M'||grpSexe(r.name)==='F'));const ab=[],late=[];
+  all.forEach(r=>{if(r.absent){ab.push(r.name);return;}const a=aspArr(s,r.name);if(a!=null&&a>0&&a>tm.a)late.push(r.name);});
+  return '<'+'div class="asp-miss">'+(ab.length?'<'+'div><b>Absents</b> : '+ab.map(esc).join(', ')+'</'+'div>':'')+(late.length?'<'+'div><b>Pas encore là</b> : '+late.map(esc).join(', ')+'</'+'div>':'')+(!ab.length&&!late.length?'<'+'div>Tout le monde est là.</'+'div>':'')+'</'+'div>';};
+// Bilan : petit encart sous le dernier bloc
+function aspResetMatches(){const s=aspS();if(!s)return;if(!confirm('Remettre tous les matchs de la séance « à jouer » ? (utile après un essai en mode élève)'))return;s.asp.tourn={};aspSave();try{toast2('↺ Matchs remis à jouer');}catch(e){}}
+aspHtml=(function(f){return function(s){let h=f.apply(this,arguments);try{const t=document.createElement('template');t.innerHTML=h;const g=t.content.querySelector('.asp-grid');if(!g)return h;
+  const B=[...g.children].filter(x=>x.classList.contains('asp-b')||x.classList.contains('asp-stack'));const bi=B.find(x=>x.classList.contains('asp-b')&&x.classList.contains('fix')&&/Bilan/.test((x.querySelector('.asp-bh')||{}).textContent||''));
+  if(bi){const prev=B[B.indexOf(bi)-1];bi.classList.add('asp-objbar','in','asp-bilbar');const em=bi.querySelector('.asp-empty');if(em)em.remove();
+    const bt=document.createElement('button');bt.type='button';bt.className='asp-rz';bt.textContent='↺ matchs à rejouer';bt.title='Après un essai en mode élève';bt.setAttribute('onclick','aspResetMatches()');(bi.querySelector('.asp-bh')||bi).appendChild(bt);
+    if(prev&&prev.classList.contains('asp-b')&&!prev.classList.contains('fix')){const st=document.createElement('div');st.className='asp-stack';prev.before(st);st.appendChild(prev);st.appendChild(bi);}
+    else if(prev&&prev.classList.contains('asp-stack'))prev.appendChild(bi);h=t.innerHTML;}}catch(e){console.warn('v399 bil',e);}return h;};})(aspHtml);
+// bandeau de séquence réduit
+seqBannerHtml=function(s){if(!s||!s.seqId)return '';const q=seqGet(s.seqId);if(!q)return '';
+  return '<'+'div class="seq-banner sm">🗓️ <b>'+esc(q.nom)+'</b> · séance '+((s.seqIdx||0)+1)+'/'+q.nb+'<button type="button" class="btn-xs" style="background:#334155;color:#fff;margin-left:auto;" onclick="SEQ_UI.open=\''+esc(q.id)+'\';goTab(\'t-seq\')">Voir la séquence</button></'+'div>';};
+// préparation de séance : version AS (blocs, groupes, équipes, profils)
+seanceChecklist=(function(f){return function(s){try{if(s&&s.asp&&aspIsAS(s)){const L=[];const T=aspTimes(s);
+    L.push({lab:'Orientations du projet (roues)',short:'objectif',ok:!!(s.oeId||(s.oeExtra||[]).length||(s.proj2&&s.proj2.oeId))});
+    let holes=0,noTeam=0,noProf=0,nF=0;const P=(CFG.savedPresets||[]).map(p=>p&&p.name);
+    (s.asp.blocks||[]).forEach(b=>{if(b.kind!=='bloc')return;const tm=T[b.id];const cnt={};(b.ats||[]).forEach(a=>{aspAtMembers(s,a).forEach(n=>{cnt[n]=1;});if(((a.groups||[]).length||(a.exos||[]).length)&&!(a.exos||[]).length)holes++;});
+      if(tm&&aspPresent(s,tm.a).some(n=>!cnt[n]))holes++;
+      (b.ats||[]).forEach(a=>{const parts=aspIsSeq(a)?a.exos.map((e,k)=>aspSegAt(s,b,a,k)).filter(Boolean):[a];parts.forEach(v=>{if(!aspAtIsFps(v))return;nF++;if(aspTeamIds(s,v).length<2)noTeam++;const pn=aspObsProfileName(v);if(!pn||P.indexOf(pn)<0)noProf++;});});});
+    L.push({lab:'Chaque bloc : une situation pour chaque groupe présent',short:'blocs',ok:!holes,det:holes?holes+' trou(s)':''});
+    if(nF){L.push({lab:'Équipes posées sur chaque FPS',short:'équipes',ok:!noTeam,det:noTeam?noTeam+'/'+nF+' sans équipes':''});
+      L.push({lab:'Profil d\'observation pour chaque FPS',short:'profils',ok:!noProf,det:noProf?noProf+'/'+nF+' sans profil':''});}
+    L.push({lab:'Bilan de séance fait (après le cours)',short:'bilan',ok:s.status==='done'||!!s.recap,opt:true});return L;}}catch(e){console.warn('v399 chk',e);}return f.apply(this,arguments);};})(seanceChecklist);
+// élèves : image de l'animation dans son cadre (comme une vidéo en pause)
+animEleveHtml=(function(f){return function(a,fill){const h=f.apply(this,arguments);try{if(!h||!a||!a.json)return h;const th=thumbImgHtml(a,'🎞');return h.replace('<div class="anim-inline" data-r="','<div class="anim-inline ai-poster-on" onclick="if(!event.target.closest(\'button\')){const b=this.querySelector(\'button\');if(b)b.click();}" data-r="').replace('<button type="button" onclick="animInline','<span class="ai-poster">'+th+'</span><button type="button" onclick="animInline');}catch(e){return h;}};})(animEleveHtml);
+// élèves : texte à gauche, image à droite même sans équipes ; aperçu de l'observation (tablettes)
+function aspObsPreview(bid,aid,k){const s=getActiveSeance();if(!s||!s.asp)return;const b=(s.asp.blocks||[]).find(x=>x.id===bid);let a=b&&(b.ats||[]).find(x=>x.id===aid);if(!a)return;
+  if(k!=null&&k>=0&&aspIsSeq(a)){const v=aspSegAt(s,b,a,k);if(v)a=v;}const F=aspFpsOf(a);const src=(F&&F.inf&&F.inf.src)||{};const mode=a.obsMode||src.obsMode||(CFG.obsSimple?'simple':'draw');
+  const pts=((src.cfg&&src.cfg.points)||[]).map(p=>String(p).split('=')[0].trim()).filter(Boolean).slice(0,8);const btns=pts.length?pts:['✅ Ballon conservé','❌ Ballon perdu','🎯 Tir','⚽ But'];
+  const pitch='<svg viewBox="0 0 300 190" class="aop-pitch"><rect x="2" y="2" width="296" height="186" rx="8" fill="#166534" stroke="#fff" stroke-width="2"/><line x1="150" y1="2" x2="150" y2="188" stroke="#fff" stroke-width="2"/><circle cx="150" cy="95" r="24" fill="none" stroke="#fff" stroke-width="2"/><rect x="2" y="60" width="26" height="70" fill="none" stroke="#fff" stroke-width="2"/><rect x="272" y="60" width="26" height="70" fill="none" stroke="#fff" stroke-width="2"/>'
+    +(mode==='draw'?'<path d="M60 150 C 100 120, 120 60, 170 80 S 240 120, 262 92" fill="none" stroke="#facc15" stroke-width="5" stroke-linecap="round" stroke-dasharray="2 10"/><text x="252" y="80" font-size="26">☝️</text>':'')+'</svg>';
+  const o=document.createElement('div');o.className='aop-ov';o.onclick=e=>{if(e.target===o||e.target.closest('.aop-x'))o.remove();};
+  o.innerHTML='<'+'div class="box"><'+'div class="hd"><b>👁 Aperçu de l\'outil d\'observation</b> · '+esc(String((F&&F.inf.titre)||'FPS'))+'<button type="button" class="aop-x">✕</button></'+'div>'
+    +(mode==='draw'?pitch+'<'+'p class="aop-t">✏️ <b>Dessinez la trajectoire du ballon avec le doigt.</b> Quand vous enlevez votre doigt, dites comment l\'action s\'est terminée.</'+'p>'
+      :'<'+'div class="aop-btns">'+btns.map(x=>'<span>'+esc(x)+'</span>').join('')+'</'+'div><'+'p class="aop-t">✋ <b>Touchez simplement l\'écran</b> pour décrire ce que vous voyez.</'+'p>')
+    +'<'+'div class="cc-dim">Pendant la séance, c\'est l\'enseignant qui lance l\'observation.</'+'div></'+'div>';document.body.appendChild(o);}
+aspElPagedHtml=(function(f){return function(s){let h=f.apply(this,arguments);try{if(h.indexOf('ael-pages')<0)return h;const t=document.createElement('template');t.innerHTML=h;let ch=false;const exp=(typeof GRIB_EXPORT_MODE!=='undefined'&&GRIB_EXPORT_MODE);
+  t.content.querySelectorAll('.ael-pages > .ael-step[data-a]').forEach(st=>{const b=(s.asp.blocks||[]).find(x=>x.id===st.dataset.b);const a=b&&(b.ats||[]).find(x=>x.id===st.dataset.a);if(!a)return;const k=st.dataset.k!=null?+st.dataset.k:-1;
+    const e=k>=0?(a.exos||[])[k]:(a.exos||[]).find(x=>{const i=aspExInfo(x);return i&&i.kind==='fps';});const inf=e&&aspExInfo(e);
+    if(exp&&inf&&inf.kind==='fps'&&!st.querySelector('.aop-btn')){const bt=document.createElement('button');bt.type='button';bt.className='ael-obs2 aop-btn';bt.textContent='👁 Aperçu de l\'outil d\'observation';bt.setAttribute('onclick','aspObsPreview(\''+b.id+'\',\''+a.id+'\','+k+')');
+      const ob=st.querySelector('.ael-obs');if(ob)ob.before(bt);else{const ex=st.querySelector('.ael-ex');if(ex)ex.before(bt);else st.appendChild(bt);}ch=true;}
+    if(!st.querySelector('.ael-2c')&&st.querySelectorAll('.ael-ex').length===1){const ex=st.querySelector('.ael-ex');const M=[...ex.querySelectorAll('video,img:not(.th-anim),.anim-inline')].filter(m=>!(m.parentElement&&m.parentElement.closest('.anim-inline'))&&!m.closest('.ael-vig'));
+      if(M.length===1){const g=document.createElement('div');g.className='ael-2c';const L=document.createElement('div');L.className='l';const R=document.createElement('div');R.className='r';ex.before(g);R.appendChild(M[0]);const ob=st.querySelector('.ael-obs,.aop-btn');if(ob)R.insertBefore(ob,R.firstChild);L.appendChild(ex);g.appendChild(L);g.appendChild(R);ch=true;}}});
+  return ch?t.innerHTML:h;}catch(e){console.warn('v399 el',e);return h;}};})(aspElPagedHtml);
+// envoi aux tablettes : relier le Sheet s'il manque
+function aspLinkSheet(s){try{const q=elSeq(s);const g=gsCfg();if(!q||elFileId(q)||!String(g.passerelle||'').trim())return;
+  const u=prompt('Pour envoyer la séance aux tablettes, l\'app passe par le Google Sheets de la classe.\nColle ici le lien du Google Sheets (https://docs.google.com/spreadsheets/d/…) :','');
+  if(u&&/\/d\/[A-Za-z0-9_-]+/.test(u))seqUpdate(q.id,x=>{x.gs=Object.assign({},x.gs||{},{url:u.trim(),feuille:(x.gs&&x.gs.feuille)||'Élèves'});});}catch(e){console.warn('v399 link',e);}}
+elPublish=(function(f){return function(){try{const s=getActiveSeance();if(s)aspLinkSheet(s);}catch(e){}return f.apply(this,arguments);};})(elPublish);
+(function(){const st=document.createElement('style');st.textContent=
+ '@media (max-width:699px){html body .asp-b.asp-w2,html body .asp-b.asp-w3{grid-column:1/-1;}html body .asp-stack:has(.asp-w2),html body .asp-stack:has(.asp-w3){grid-column:1/-1;}}'
++'html body .asp-bilbar .asp-rz{border:1px solid #475569;background:transparent;color:#cbd5e1;border-radius:7px;font-size:.66rem;padding:1px 6px;cursor:pointer;margin-left:4px;}'
++'html body .seq-banner.sm{display:flex;align-items:center;gap:8px;padding:5px 10px;font-size:.8rem;}'
++'html body .anim-inline.ai-poster-on{position:relative;cursor:pointer;min-height:140px;}html body .anim-inline .ai-poster{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:inherit;}html body .anim-inline .ai-poster img{width:100%;height:100%;object-fit:contain;}html body .anim-inline .ai-poster>span{font-size:2.4rem;opacity:.5;}'
++'html body .anim-inline.ai-poster-on>button{position:relative;z-index:2;}html body .anim-inline.ai-poster-on>.ai-name{position:relative;z-index:2;}'
++'html body .ael-obs2{display:block;width:100%;margin:8px 0 4px;min-height:44px;border:0;border-radius:12px;background:#334155;color:#fff;font-weight:800;font-size:1rem;cursor:pointer;}'
++'html body .aop-ov{position:fixed;inset:0;z-index:99990;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:12px;}html body .aop-ov .box{background:#0f172a;border:1px solid #3b82f6;border-radius:14px;padding:12px 14px;width:min(560px,100%);color:#e2e8f0;display:flex;flex-direction:column;gap:10px;}'
++'html body .aop-ov .hd{display:flex;gap:6px;align-items:center;}html body .aop-ov .aop-x{margin-left:auto;border:0;background:#334155;color:#fff;border-radius:7px;cursor:pointer;padding:3px 8px;}html body .aop-pitch{width:100%;height:auto;}'
++'html body .aop-btns{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;}html body .aop-btns span{background:#1d4ed8;border-radius:12px;padding:16px 10px;text-align:center;font-weight:800;}html body .aop-t{margin:0;font-size:1rem;line-height:1.4;}';
 document.head.appendChild(st);})();
 </script>
 </body>
