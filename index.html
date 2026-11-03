@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v395</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v396</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v395</title>
+<title>Gribouillis EPS v396</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -28293,6 +28293,79 @@ aspMissHtml=(function(f){return function(s,b,tm){let h=f.apply(this,arguments);t
 // ── AS : « 6/5/4ème » = garçons ──
 grpSexe=(function(f){return function(n){const r=f.apply(this,arguments);if(r)return r;try{const ro=rosterOf(n);const c=clsActive();if(ro&&c&&/(^|[^a-z0-9])as([^a-z0-9]|$)/i.test(String(c.nom||''))&&/\d\s*\/\s*\d|[eè]me\b/i.test(String(ro.categorie||''))&&!/fille/i.test(String(ro.categorie||'')))return 'M';}catch(e){}return r;};})(grpSexe);
 (function(){const st=document.createElement('style');st.textContent='html body .asp-head .sb-start select{background:#0f172a;color:#e2e8f0;border:1px solid #334155;border-radius:6px;padding:2px 4px;margin-left:3px;}';document.head.appendChild(st);})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v396 — parties « à la suite » d'un atelier = 2 situations à part entière :
+// • chaque partie reçoit SES équipes (glisser une équipe sur la partie) ;
+// • chaque partie a son ⚙️ Observation (et son tournoi s'il y a 3 équipes) ;
+// • mode élève : une étape par partie, avec son horaire.
+// ══════════════════════════════════════════════════════════════════════
+let ASP_SEG=null;
+function aspSegAt(s,b,a,k){if(!a||!aspIsSeq(a))return null;const e=(a.exos||[])[k];if(!e)return null;const S=aspSegs(b,a,aspTimes(s)[b.id]);
+  const own=(e.groups||[]).filter(id=>!!aspChip(s,id));const base=(a.groups||[]).filter(id=>/^pop-/.test(String(id)));
+  const G=own.length?own.concat(base.filter(x=>own.indexOf(x)<0)):(a.groups||[]).slice();
+  const v=Object.create(a);v.groups=G;v.exos=[e];v.seq=false;v._win=S[k]||null;v._seg=k;if(e.obsMode)v.obsMode=e.obsMode;if(e.obsProfile)v.obsProfile=e.obsProfile;return v;}
+aspTriWin=(function(f){return function(s,b,a){if(a&&a._win)return a._win;return f.apply(this,arguments);};})(aspTriWin);
+aspAt=(function(f){return function(s,bid,aid){const r=f.apply(this,arguments);try{if(r&&ASP_SEG&&ASP_SEG.b===bid&&ASP_SEG.a===aid&&Date.now()-ASP_SEG.t<180000){const b=aspB(s,bid);const v=b&&aspSegAt(s,b,r,ASP_SEG.k);if(v)return v;}}catch(e){}return r;};})(aspAt);
+aspAtMembers=(function(f){return function(s,a){const L=f.apply(this,arguments);try{if(a&&aspIsSeq(a)){const set={};L.forEach(n=>{set[n]=1;});(a.exos||[]).forEach(e=>(e.groups||[]).forEach(id=>{const g=aspChip(s,id);(g&&g.members||[]).forEach(n=>{set[n]=1;});}));return Object.keys(set);}}catch(e){}return L;};})(aspAtMembers);
+aspObserve=(function(f){return function(){try{return f.apply(this,arguments);}finally{try{if(!document.getElementById(['trn','ov'].join('-')))ASP_SEG=null;}catch(e){}}};})(aspObserve);
+renderSeanceTab=(function(f){return function(){if(ASP_SEG&&!document.getElementById(['trn','ov'].join('-'))&&Date.now()-ASP_SEG.t>1500)ASP_SEG=null;return f.apply(this,arguments);};})(renderSeanceTab);
+// boutons ⚙️ : la partie visée
+aspObsBtn=(function(f){return function(el){if(el&&el.dataset.k!=null&&el.dataset.k!=='')ASP_SEG={b:el.dataset.b,a:el.dataset.a,k:+el.dataset.k,t:Date.now()};return f.apply(this,arguments);};})(aspObsBtn);
+document.addEventListener('pointerdown',e=>{const b=e.target&&e.target.closest&&e.target.closest('.asp-obsbtn[data-k]');if(b)ASP_SEG={b:b.dataset.b,a:b.dataset.a,k:+b.dataset.k,t:Date.now()};},true);
+aspObsDetail=(function(f){return function(){try{return f.apply(this,arguments);}finally{ASP_SEG=null;}};})(aspObsDetail);
+// équipes d'une partie
+function aspSegGrpAdd(bid,aid,k,gid,from){const s=aspS();if(!s)return;const b=aspB(s,bid);const a=aspAt(s,bid,aid);if(!a||!a.exos||!a.exos[k])return;const e=a.exos[k];
+  if(from){const a0=aspAt(s,from.b,from.a);if(a0)a0.groups=(a0.groups||[]).filter(x=>x!==from.g);}
+  (a.exos||[]).forEach((x,j)=>{if(j!==k&&x.groups)x.groups=x.groups.filter(g=>g!==gid);});
+  e.groups=(e.groups||[]);if(e.groups.indexOf(gid)<0)e.groups.push(gid);if(!/^pop-/.test(gid))a.groups=(a.groups||[]).filter(x=>x!==gid);
+  saveSeances();renderSeanceTab();}
+function aspSegGrpDel(bid,aid,k,gid){const s=aspS();if(!s)return;const a=aspAt(s,bid,aid);const e=a&&a.exos&&a.exos[k];if(!e)return;e.groups=(e.groups||[]).filter(x=>x!==gid);aspSave();}
+(function(){
+  try{const oc=sbCanDrop;sbCanDrop=function(p,drop){if(String(drop).indexOf('ase:')===0){const t=String(p).split(':')[0];return t==='grp'||t==='ag';}return oc.apply(this,arguments);};}catch(e){}
+  try{const od=sbDo;sbDo=function(p,drop){if(String(drop).indexOf('ase:')===0){const q=String(drop).slice(4).split(':');const P=aspPayload(String(p));if(P&&P.grp)aspSegGrpAdd(q[0],q[1],+q[2],P.grp,P.from||null);return;}return od.apply(this,arguments);};}catch(e){}
+})();
+aspAtHtml=(function(f){return function(s,b,a,i){let h=f.apply(this,arguments);if(!b||b.kind!=='bloc'||!aspIsSeq(a))return h;try{
+  const t=document.createElement('template');t.innerHTML=h;const box=t.content.querySelector('.asp-at');if(!box)return h;
+  const segs=[...box.querySelectorAll('.asp-seqrow > .asp-seg')];
+  segs.forEach((sg,k)=>{const e=a.exos[k];if(!e)return;sg.dataset.drop='ase:'+b.id+':'+a.id+':'+k;sg.title='Glisser ici les équipes qui font cette partie';
+    const gr=document.createElement('div');gr.className='asp-seg-g';
+    gr.innerHTML=(e.groups||[]).map(id=>{const g=aspChip(s,id);if(!g)return '';return '<span class="asp-g" style="--gc:'+esc(g.color||'#475569')+'" title="'+esc(String(g.label))+'">'+esc(String(g.label))+'<button type="button" class="gx" onclick="event.stopPropagation();aspSegGrpDel(\''+esc(b.id)+'\',\''+esc(a.id)+'\','+k+',\''+esc(id)+'\')" aria-label="Retirer">✕</button></span>';}).join('')
+      +((e.groups||[]).length?'':'<span class="cc-dim">⤵ glisse ici les équipes de cette partie</span>');
+    const sh=sg.querySelector('.sh');if(sh)sh.after(gr);else sg.prepend(gr);
+    const inf=aspExInfo(e);const v=aspSegAt(s,b,a,k);
+    if(inf&&inf.kind==='fps'){const bt=document.createElement('button');bt.type='button';bt.className='obs asp-obsbtn';bt.dataset.b=b.id;bt.dataset.a=a.id;bt.dataset.k=String(k);bt.setAttribute('onclick','aspObsBtn(this)');
+      bt.textContent='⚙️ Observation';bt.title='Toucher : feuille d\'avant-match de cette partie · appui long : profil d\'observation';sg.appendChild(bt);}
+    if(v&&aspTriTeams(v)){const d=document.createElement('div');d.innerHTML=aspTriHtml(s,b,v,null);if(d.firstElementChild)sg.appendChild(d.firstElementChild);}});
+  // ⚙️ de l'atelier entier : inutile quand chaque partie a le sien
+  if(segs.length)box.querySelectorAll(':scope > .asp-obsbtn').forEach(x=>{if(!x.dataset.k)x.remove();});
+  if(segs.length)box.querySelectorAll(':scope > button').forEach(x=>{const oc=x.getAttribute('onclick')||'';if(/aspObserve\(|aspMakeTeams\(/.test(oc))x.remove();});
+  return t.innerHTML;}catch(e){console.warn('v396 at',e);return h;}};})(aspAtHtml);
+// ── élève : une étape par partie ──
+function aspElObsSeg(bid,aid,k){ASP_SEG={b:bid,a:aid,k:k,t:Date.now()};aspEleveObserve(bid,aid);}
+let ASP_PG2='';
+aspElPagedHtml=(function(f){return function(s){let h=f.apply(this,arguments);try{if(h.indexOf('ael-pages')<0)return h;const me=elMeGet(s);
+  const t=document.createElement('template');t.innerHTML=h;const P=t.content.querySelector('.ael-pages');if(!P)return h;let ch=false;
+  [...P.children].forEach(st=>{const b=(s.asp.blocks||[]).find(x=>x.id===st.dataset.b);const a=b&&(b.ats||[]).find(x=>x.id===st.dataset.a);if(!a||!aspIsSeq(a))return;
+    const kids=[...st.children];const exIdx=kids.map((c,i)=>c.classList&&c.classList.contains('ael-ex')?i:-1).filter(i=>i>=0);if(exIdx.length<2||exIdx.length!==(a.exos||[]).length)return;
+    const S=aspSegs(b,a,aspTimes(s)[b.id]);const head=kids.slice(0,exIdx[0]);
+    const clones=exIdx.map((ix,k)=>{const end=k+1<exIdx.length?exIdx[k+1]:kids.length;const c=st.cloneNode(false);c.classList.remove('ael-cur');c.dataset.k=String(k);
+      head.forEach(x=>c.appendChild(x.cloneNode(true)));kids.slice(ix,end).forEach(x=>c.appendChild(x.cloneNode(true)));
+      const e=a.exos[k];const inf=aspExInfo(e)||{};const h3=c.querySelector('h3');
+      if(h3){const tt=h3.querySelector('.t');h3.innerHTML='';if(tt){tt.textContent=tt.textContent.replace(/\d{1,2}h\d{0,2}\s*$/,hmFmt(S[k].a));h3.appendChild(tt);}h3.appendChild(document.createTextNode(String(inf.titre||'')+' '));const sm=document.createElement('small');sm.style.cssText='color:#94a3b8;font-weight:600;';sm.textContent='· partie '+(k+1)+'/'+exIdx.length+' · '+S[k].dur+' min';h3.appendChild(sm);}
+      const own=(e.groups||[]).map(id=>aspChip(s,id)).filter(Boolean);const w=c.querySelector('.ael-with');
+      if(w&&own.length){const mine=own.filter(g=>me&&(g.members||[]).indexOf(me)>=0);w.textContent='👥 '+(mine.length?mine:own).map(g=>String(g.label)).join(' + ');}
+      c.querySelectorAll('.ael-obs').forEach(x=>{if(!(inf.kind==='fps'))x.remove();else x.setAttribute('onclick','aspElObsSeg(\''+b.id+'\',\''+a.id+'\','+k+')');});
+      c.querySelectorAll('details.asp-tri').forEach(x=>x.remove());
+      const v=aspSegAt(s,b,a,k);if(v&&aspTriTeams(v)){const d=document.createElement('div');d.innerHTML=aspTriHtml(s,b,v,me||'—');const anc=c.querySelector('.ael-roles')||c.querySelector('.ael-with')||h3;if(anc&&d.firstElementChild)anc.after(d.firstElementChild);}
+      return c;});
+    clones.forEach(c=>st.before(c));st.remove();ch=true;});
+  if(!ch)return h;
+  const steps=[...P.children];let n=0;steps.forEach(st=>{const tt=st.querySelector('h3 .t');if(tt){const m=/^\s*\d+\s*·/.exec(tt.textContent);if(m){n++;tt.textContent=tt.textContent.replace(/^\s*\d+/,String(n));}}});
+  const key=s.id+'|'+(me||'')+'|'+steps.length;if(ASP_PG2!==key){ASP_PG2=key;ASP_PG.i=aspElNowIdx(s,steps);}ASP_PG.i=Math.max(0,Math.min(steps.length-1,ASP_PG.i));
+  steps.forEach((st,i)=>st.classList.toggle('ael-cur',i===ASP_PG.i));return t.innerHTML;}catch(e){console.warn('v396 el',e);return h;}};})(aspElPagedHtml);
+(function(){const st=document.createElement('style');st.textContent='html body .asp-seg-g{display:flex;flex-wrap:wrap;gap:3px;margin:3px 0;}html body .asp-seg-g .asp-g{font-size:.66rem;padding:2px 6px;}html body .asp-seg-g .gx{border:0;background:rgba(0,0,0,.35);color:#fff;border-radius:999px;margin-left:4px;cursor:pointer;font-size:.6rem;}'
+ +'html body .asp-seg.over{outline:3px dashed #facc15;outline-offset:-2px;}html body .asp-seg .asp-obsbtn{margin-top:4px;}html body .asp-seg details.asp-tri{margin-top:4px;}';document.head.appendChild(st);})();
 </script>
 </body>
 </html>
