@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v394</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v395</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v394</title>
+<title>Gribouillis EPS v395</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -28263,6 +28263,36 @@ syncDiag=async function(){const c=ghCfg();const out=[];const set=t=>{SYNC2.diag=
   else if(!d.ok)out.push('👉 Seul l\'en-tête du jeton est bloqué : une extension ou l\'antivirus filtre les demandes « Authorization ». Même solution : désactiver les extensions / l\'antivirus web, ou essayer Edge.');
   else if(d.st===200)out.push('👉 Tout est bon maintenant : touche « Synchroniser maintenant ».');
   set(out.join('\n'));};
+
+// ══════════════════════════════════════════════════════════════════════
+// v395 — séance AS :
+// • ⚙️ Observation : appui court = feuille d'avant-match (« Coup d'envoi »)
+//   préparée pour cet atelier ; appui long = éditeur du profil
+//   d'observation (Réglages → Profils & indicateurs).
+// • « 📅 heures d'arrivée du … » : le jour dont on lit les colonnes
+//   « Fin cours » (avant : toujours le jour de la date de la séance).
+// • AS : les élèves « 6/5/4ème » comptent avec les garçons.
+// ══════════════════════════════════════════════════════════════════════
+let ASP_PRM=0;
+function aspObsProfileName(a){const F=aspFpsOf(a);if(!F)return '';const src=F.inf.src||{};return a.obsProfile||src.profile||(src.cfg&&src.cfg.profile)||'';}
+aspObsBtn=function(el){if(ASP_LP&&ASP_LP.b===el&&ASP_LP.long){ASP_LP=null;return;}ASP_LP=null;ASP_PRM=Date.now();try{aspObserve(el.dataset.b,el.dataset.a);}catch(e){ASP_PRM=0;console.warn(e);}};
+aspObsDetail=function(bid,aid){const s=aspS();const a=s&&aspAt(s,bid,aid);if(!a)return;const n=aspObsProfileName(a);const P=CFG.savedPresets||[];const i=n?P.findIndex(p=>p&&p.name===n):-1;
+  if(i<0){toast2(n?'Profil « '+n+' » introuvable : choisis-le dans Réglages → Profils & indicateurs.':'Cette FPS n\'a pas encore de profil d\'observation : crée-le dans Réglages → Profils & indicateurs.');try{goTab('t-params');}catch(e){}return;}
+  try{editProfileFromHome(i);}catch(e){console.warn(e);try{goTab('t-params');}catch(x){}}};
+aspObserve=(function(f){return function(bid,aid){const r=f.apply(this,arguments);try{if(ASP_PRM&&Date.now()-ASP_PRM<120000&&!document.getElementById(['trn','ov'].join('-'))){ASP_PRM=0;setTimeout(()=>{try{prmOpen();}catch(e){console.warn('prm',e);}},80);}}catch(e){}return r;};})(aspObserve);
+// ── jour des heures d'arrivée ──
+const ASP_DAYS=['lundi','mardi','mercredi','jeudi','vendredi'];const ASP_DAY_DATE={lundi:'2026-11-02',mardi:'2026-11-03',mercredi:'2026-11-04',jeudi:'2026-11-05',vendredi:'2026-11-06'};
+function aspDateDay(s){try{const d=new Date((s.date||'')+'T12:00:00');return ['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'][d.getDay()]||'';}catch(e){return '';}}
+planArrive=(function(f){return function(s,name){if(s&&s.arrDay&&ASP_DAY_DATE[s.arrDay]){const p=Object.create(s);p.date=ASP_DAY_DATE[s.arrDay];return f.call(this,p,name);}return f.apply(this,arguments);};})(planArrive);
+function aspSetArrDay(v){const s=getActiveSeance();if(!s)return;s.arrDay=v||'';saveSeances();renderSeanceTab();try{toast2(v?'📅 Heures d\'arrivée du '+v:'📅 Heures d\'arrivée du jour de la séance');}catch(e){}}
+aspHtml=(function(f){return function(s){try{if(s&&s.arrDay===undefined){const prev=(SEANCES||[]).filter(x=>x!==s&&x.classe===s.classe&&x.arrDay).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0))[0];if(prev){s.arrDay=prev.arrDay;try{saveSeances();}catch(e){}}}}catch(e){}
+  let h=f.apply(this,arguments);try{const i=h.indexOf('<label class="sb-start">');const j=i>=0?h.indexOf('</label>',i):-1;if(j>0){const dd=aspDateDay(s);const v=s.arrDay||'';
+    const sel='<label class="sb-start" title="Jour dont on lit les colonnes « Fin cours » du Sheet pour savoir qui est déjà là">📅 arrivées du <select onchange="aspSetArrDay(this.value)"><option value=""'+(v?'':' selected')+'>jour de la séance'+(dd?' ('+dd+')':'')+'</option>'+ASP_DAYS.map(d=>'<option value="'+d+'"'+(v===d?' selected':'')+'>'+d+'</option>').join('')+'</select></label>';
+    h=h.slice(0,j+8)+sel+h.slice(j+8);}}catch(e){}return h;};})(aspHtml);
+aspMissHtml=(function(f){return function(s,b,tm){let h=f.apply(this,arguments);try{const day=s.arrDay||aspDateDay(s);h=h.replace(/Les heures d'arrivée viennent[\s\S]*?change la date de la séance\./,'Heures d\'arrivée : colonnes « Fin cours '+esc(day||'')+' » du Sheet + 5 min. Pas le bon jour ? Change « 📅 arrivées du » en haut du déroulé.');}catch(e){}return h;};})(aspMissHtml);
+// ── AS : « 6/5/4ème » = garçons ──
+grpSexe=(function(f){return function(n){const r=f.apply(this,arguments);if(r)return r;try{const ro=rosterOf(n);const c=clsActive();if(ro&&c&&/(^|[^a-z0-9])as([^a-z0-9]|$)/i.test(String(c.nom||''))&&/\d\s*\/\s*\d|[eè]me\b/i.test(String(ro.categorie||''))&&!/fille/i.test(String(ro.categorie||'')))return 'M';}catch(e){}return r;};})(grpSexe);
+(function(){const st=document.createElement('style');st.textContent='html body .asp-head .sb-start select{background:#0f172a;color:#e2e8f0;border:1px solid #334155;border-radius:6px;padding:2px 4px;margin-left:3px;}';document.head.appendChild(st);})();
 </script>
 </body>
 </html>
