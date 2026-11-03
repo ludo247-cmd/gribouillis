@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v389</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v390</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v389</title>
+<title>Gribouillis EPS v390</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -27920,6 +27920,54 @@ function gymPrint(){const sel=gymSel();const L=gymEls().filter(e=>sel[e.id]);if(
  +'html body .gy-top{display:flex;gap:7px;align-items:center;}html body .gy-niv{background:#1e3a8a;color:#fff;border-radius:6px;padding:1px 7px;font-size:.8rem;}html body .gy-card.rem .gy-niv{background:#b45309;}html body .gy-nom{cursor:pointer;font-weight:700;font-size:.86rem;flex:1;}html body .gy-ck{display:inline-flex;gap:3px;align-items:center;cursor:pointer;font-size:.85rem;}'
  +'html body .gy-crit{margin:5px 0 0;padding-left:18px;font-size:.78rem;color:#cbd5e1;}html body .gy-ed{margin-top:6px;}'
  +'html body .gy-prev{max-width:900px;}html body .gy-prev h4{margin:12px 0 6px;color:#c4b5fd;}html body .gf-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;}html body .gy-prev .gf{background:#fff;color:#111;border:2px solid #1e3a8a;border-radius:10px;padding:8px 10px;}html body .gy-prev .gf-h{display:flex;justify-content:space-between;font-size:.75rem;color:#1e3a8a;font-weight:700;}html body .gy-prev .gf-n{background:#1e3a8a;color:#fff;border-radius:6px;padding:0 6px;}html body .gy-prev .gf-n.r{background:#b45309;}html body .gy-prev .gf-t{font-weight:800;font-size:1.05rem;margin:3px 0;}html body .gy-prev .gf-b{display:flex;gap:8px;}html body .gy-prev .gf-c{flex:1;font-size:.82rem;}html body .gy-prev .gf-c ul{padding-left:18px;margin:2px 0 6px;}html body .gy-prev .gf-q img{width:70px;height:70px;}html body .gy-prev .gf-q small{display:block;font-size:.65rem;text-align:center;}html body .gy-prev .gf-v{font-size:.75rem;color:#374151;border-top:1px dashed #94a3b8;padding-top:3px;}html body .gf-rules{margin:6px 0;}';document.head.appendChild(st);})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v390 — Séances hors sports collectifs (gym, demi-fond, danse, natation…) :
+// • toutes les APSA de la programmation se choisissent pour une séance ;
+// • déroulé adapté : Présentation → Échauffement → 🌊 Vague (toute la
+//   classe) → 🔁 Ateliers (petits groupes) → 🏅 Passage / FPS → Bilan,
+//   sans étapes « Match » ; étapes renommables, ajout rapide ;
+// • gym : les fiches éléments sélectionnées pour la classe se posent
+//   directement dans une étape.
+// ══════════════════════════════════════════════════════════════════════
+const SE_TEAM=['football','handball','basketball','volley','badminton','rugby','ultimate','tennis de table','tennisdetable','jeux collectifs','boxe'];
+function seIsTeam(sp){return SE_TEAM.indexOf(sp)>=0;}
+try{EDT_APSA.forEach(k=>{if(SEQ_SPORTS.indexOf(k)<0){SEQ_SPORTS.push(k);SEQ_SPORT_NAMES[k]=(typeof calSportName==='function'?calSportName(k):k);}});}catch(e){console.warn('v390 sports',e);}
+const SE_NT_STEPS=[['presentation'],['echauffement'],['remediation-1','Vague (toute la classe)','🌊'],['remediation-2','Ateliers (petits groupes)','🔁'],['remediation-3','Passage / FPS','🏅'],['fin']];
+function seNonTeamSteps(s){if(!s||seIsTeam(s.sport))return;if(s.steps&&s.steps.some(st=>st.label))return;
+  s.steps=SE_NT_STEPS.map((x,i)=>{const o={key:x[0],status:i===0?'current':'pending'};if(x[1]){o.label=x[1];o.ico=x[2];}return o;});
+  if(s.matchCfg)s.matchCfg={};s.ntSteps=1;}
+seanceStepDef=(function(f){return function(key){const d=f.apply(this,arguments);try{const s=getActiveSeance();const st=s&&(s.steps||[]).find(x=>x.key===key);if(st&&st.label)return {label:st.label,ico:st.ico||d.ico};}catch(e){}return d;};})(seanceStepDef);
+let SE_FORM_SPORT=null;
+seanceFormSport=(function(f){return function(k){if(seIsTeam(k)){SE_FORM_SPORT=null;return f.apply(this,arguments);}
+  const keep={};['seance-date-input','seance-classe-free','seance-cat-free','seance-equipe-free'].forEach(i=>{const e=E(i);if(e)keep[i]=e.value;});const cs=E('seance-cat-select');if(cs)keep.cat=cs.value;
+  SE_FORM_SPORT=k;try{renderSeanceTab();}catch(e){}Object.keys(keep).forEach(i=>{if(i==='cat'){const c=E('seance-cat-select');if(c)c.value=keep.cat;return;}const e=E(i);if(e)e.value=keep[i];});};})(seanceFormSport);
+createSeance=(function(f){return function(){const before=(SEANCES||[]).length;const r=f.apply(this,arguments);try{const s=SEANCES[0];if(s&&(SEANCES||[]).length>before&&SE_FORM_SPORT){s.sport=SE_FORM_SPORT;SE_FORM_SPORT=null;}if(s&&(SEANCES||[]).length>before&&!seIsTeam(s.sport)){seNonTeamSteps(s);saveSeances();renderSeanceTab();}}catch(e){console.warn('v390 create',e);}return r;};})(createSeance);
+seqCreateSeance=(function(f){return function(id,k){const r=f.apply(this,arguments);try{const q=seqGet(id);const s=q&&seqSeance(q,k);if(s&&!seIsTeam(s.sport)&&!s.ntSteps){seNonTeamSteps(s);saveSeances();try{renderSeanceTab();}catch(e){}}}catch(e){console.warn('v390 seq',e);}return r;};})(seqCreateSeance);
+function seAddStep(lab,ico){const s=getActiveSeance();if(!s)return;const n=s.steps.filter(st=>seanceStepBase(st.key)==='remediation').reduce((m,st)=>Math.max(m,parseInt(st.key.split('-')[1],10)||0),0)+1;
+  const fi=s.steps.findIndex(st=>st.key==='fin');s.steps.splice(fi<0?s.steps.length:fi,0,{key:'remediation-'+n,status:'pending',label:lab,ico:ico});recomputeSeanceStatuses(s);saveSeances();renderSeanceTab();}
+function seRename(key){const s=getActiveSeance();if(!s)return;const st=s.steps.find(x=>x.key===key);if(!st)return;const v=prompt('Nom de l\'étape :',st.label||seanceStepDef(key).label);if(v==null)return;st.label=v.trim()||undefined;saveSeances();renderSeanceTab();}
+// ── gym : poser une fiche élément dans une étape
+function seGymCp(s){try{if(s.oeId){const P=seanceAllCpPaths(s,[s.oeId]);if(P&&P.length)return P[0];}}catch(e){}try{return remedDefaultCp(s);}catch(e){return null;}}
+function seGymAdd(gid,stepKey){const s=getActiveSeance();if(!s)return;const e=gymEl(gid);if(!e)return;const path=seGymCp(s);
+  if(!path){alert('Choisis d\'abord l\'objet d\'enseignement de la séance (étape Présentation) : la fiche s\'y range.');return;}
+  const cp=getCpByPath(path);if(!cp)return;if(!Array.isArray(cp.exercices))cp.exercices=[];let ex=cp.exercices.find(x=>x&&x.gymId===gid);
+  if(!ex){ex={id:newExoId(),gymId:gid,terrain:'',titre:e.nom+(e.niv?' — '+gymNiv(e):''),desc:'Je réussis si : '+(e.crit||[]).join(' · ')+((e.mat||[]).length?'\nMatériel : '+e.mat.join(', '):''),image:null,video:gymVideo(e)||null,anim:null,participants:[],criteres:(e.crit||[]).map((c,j)=>({id:'crit-'+Date.now()+'-'+j,label:c,cible:1,collectif:false,neg:false})),scores:{}};cp.exercices.push(ex);try{saveRemedEdits();}catch(x){}}
+  const key=path+'#'+ex.id;if(!s.stepExos||typeof s.stepExos!=='object')s.stepExos={};const a=s.stepExos[stepKey]||(s.stepExos[stepKey]=[]);if(a.indexOf(key)<0)a.push(key);
+  if(!Array.isArray(s.keepExos))s.keepExos=[];if(s.keepExos.indexOf(key)<0)s.keepExos.push(key);saveSeances();renderSeanceTab();try{toast2('🤸 '+e.nom+' → '+seanceStepDef(stepKey).label);}catch(x){}}
+function seBarHtml(s){const st=(s.steps||[]).filter(x=>seanceStepBase(x.key)==='remediation');const q=lx2Q;
+  let h='<'+'div class="se-bar"><b>🧩 Déroulé '+esc(SEQ_SPORT_NAMES[s.sport]||s.sport)+'</b><button type="button" onclick="seAddStep(\'Vague (toute la classe)\',\'🌊\')">＋ 🌊 Vague</button><button type="button" onclick="seAddStep(\'Ateliers (petits groupes)\',\'🔁\')">＋ 🔁 Ateliers</button><button type="button" onclick="seAddStep(\'Passage / FPS\',\'🏅\')">＋ 🏅 Passage / FPS</button>'
+    +'<span class="cc-dim">Renommer :</span>'+st.map(x=>'<button type="button" class="se-ren" onclick="seRename('+esc(q(x.key))+')">✏️ '+esc(seanceStepDef(x.key).label)+'</button>').join('')+'</'+'div>';
+  if(fpsNormSp(s.sport)==='gymna'&&typeof gymEls==='function'){const sel=gymSel();const L=gymEls().filter(e=>sel[e.id]);
+    h+='<'+'div class="se-gym"><b>🤸 Fiches gym de la classe</b> <span class="cc-dim">choisis l\'étape, puis touche une fiche pour l\'y poser</span> <select id="se-gym-step">'+st.map(x=>'<option value="'+esc(x.key)+'">'+esc(seanceStepDef(x.key).label)+'</option>').join('')+'</select>'
+      +(L.length?'<'+'div class="lx-chips">'+L.map(e=>'<button type="button" onclick="seGymAdd('+esc(q(e.id))+',E(\'se-gym-step\').value)"><b>'+esc(e.niv?(e.rem?'R·'+e.niv:e.niv):'•')+'</b> '+esc(e.nom)+'</button>').join('')+'</'+'div>':'<'+'div class="cc-dim">Aucune fiche sélectionnée pour cette classe : Biblio → Didactique → Gymnastique → coche 👁 les fiches.</'+'div>')+'</'+'div>';}
+  return h;}
+renderSeanceTab=(function(f){return function(){const r=f.apply(this,arguments);try{const sel=E('seance-sport-sel');if(sel&&SE_FORM_SPORT){sel.value=SE_FORM_SPORT;}}catch(e){}try{const s=getActiveSeance();if(!s||seIsTeam(s.sport))return r;const host=E('seance-tab-content');if(!host)return r;
+    host.querySelectorAll('.se-bar,.se-gym').forEach(x=>x.remove());const anchor=[...host.querySelectorAll('div')].find(d=>/Déroulé de la séance/.test(d.textContent||'')&&d.children.length>2&&!d.querySelector('.chk-box'));
+    if(anchor)anchor.insertAdjacentHTML('afterbegin',seBarHtml(s));}catch(e){console.warn('v390 bar',e);}return r;};})(renderSeanceTab);
+(function(){const st=document.createElement('style');st.textContent='html body .se-bar{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:4px 0 8px;}html body .se-bar button,html body .se-gym button{border:1px solid #334155;background:#111827;color:#e2e8f0;border-radius:9px;padding:5px 9px;font-size:.8rem;cursor:pointer;}html body .se-bar .se-ren{border-style:dashed;color:#cbd5e1;}'
+ +'html body .se-gym{border:1px solid #7c3aed;border-radius:10px;padding:7px 9px;margin:0 0 8px;background:#140f24;}html body .se-gym select{background:#0f172a;color:#e2e8f0;border:1px solid #334155;border-radius:8px;padding:3px 6px;}html body .se-gym .lx-chips{margin-top:6px;}';document.head.appendChild(st);})();
+seanceChecklist=(function(f){return function(s){const L=f.apply(this,arguments);try{if(s&&!seIsTeam(s.sport))L.forEach(x=>{if(x.short==='remédiations'){x.lab='Situations / fiches dans les étapes (vague, ateliers, passage)';x.short='étapes';}});}catch(e){}return L;};})(seanceChecklist);
 </script>
 </body>
 </html>
