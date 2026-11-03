@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v403</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v404</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v403</title>
+<title>Gribouillis EPS v404</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -28901,6 +28901,32 @@ aspElPagedHtml=(function(f){return function(s){let h=f.apply(this,arguments);try
 +'html body .asp-nteam{display:flex;align-items:center;gap:3px;font-size:.68rem;color:#cbd5e1;margin:3px 0;}html body .asp-nteam button{border:1px solid #475569;background:#0f172a;color:#e2e8f0;border-radius:7px;min-width:24px;padding:1px 6px;cursor:pointer;font-weight:700;}html body .asp-nteam button.on{background:#7c3aed;border-color:#7c3aed;color:#fff;}'
 +'html body .asp-ntbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:.76rem;color:#cbd5e1;margin:4px 0 6px;}html body .asp-ntall button{border:1px solid #475569;background:#0f172a;color:#e2e8f0;border-radius:7px;padding:2px 8px;margin-left:3px;cursor:pointer;font-weight:700;}'
 +'html body .ael-2c.fps>.l img:not(.ael-teams img){display:none;}';document.head.appendChild(st);})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v404 — élèves : fils rouges (objectifs du profil d'observation de la FPS)
+// + critère de réussite sur l'écran de la situation ; équipes : absents
+// rayés, ⏰ pour ceux qui arrivent plus tard.
+// ══════════════════════════════════════════════════════════════════════
+function aspProfObj(pn){const out=[];try{const P=(CFG.savedPresets||[]).find(p=>p&&p.name===pn);if(P){RDEFS.forEach(rd=>{if(!P[rd.id])return;out.push({lab:(typeof REMED_RLABELS!=='undefined'&&REMED_RLABELS[rd.id])||rd.label,t:P[rd.id+'Target']||''});});
+  (P.customRatios||[]).forEach(cr=>{if(cr&&cr.show!==false&&cr.label)out.push({lab:cr.label,t:cr.target||''});});}
+  else{const s=getActiveSeance();((s&&s.asp&&s.asp.profObj||{})[pn]||[]).forEach(o=>out.push(o));}}catch(e){}return out;}
+function aspObjTxt(o){const t=String(o.t||'').trim();return esc(o.lab)+(t?' <b>'+(/^[<≤>≥]/.test(t)?esc(t):'≥ '+esc(t))+(/%/.test(t)?'':' %')+'</b>':'');}
+aspElPagedHtml=(function(f){return function(s){let h=f.apply(this,arguments);try{if(h.indexOf('ael-pages')<0)return h;const t=document.createElement('template');t.innerHTML=h;let ch=false;const T=aspTimes(s);
+  t.content.querySelectorAll('.ael-pages > .ael-step[data-a]').forEach(st=>{const b=(s.asp.blocks||[]).find(x=>x.id===st.dataset.b);const a=b&&(b.ats||[]).find(x=>x.id===st.dataset.a);if(!a)return;const k=st.dataset.k!=null?+st.dataset.k:-1;
+    let v=a;if(k>=0&&aspIsSeq(a)){const x=aspSegAt(s,b,a,k);if(x)v=x;}const F=aspFpsOf(v);
+    if(F&&!st.querySelector('.ael-fr')){const O=aspProfObj(aspObsProfileName(v));const C=((F.inf.src&&F.inf.src.criteres)||[]).filter(c=>c&&(c.label||typeof c==='string'));
+      const items=O.map(aspObjTxt).concat(C.map(c=>typeof c==='string'?esc(c):esc(String(c.label))+(c.cible!=null&&c.cible!==''?' <b>'+(c.neg?'≤ ':'≥ ')+esc(String(c.cible))+(/%/.test(c.label||'')?' %':'')+'</b>':'')));
+      const seen={};const U=items.filter(x=>{const kk=x.replace(/<[^>]+>/g,'').toLowerCase();if(seen[kk])return false;seen[kk]=1;return true;});
+      st.querySelectorAll('.ael-crit').forEach(x=>x.remove());
+      if(U.length){const d=document.createElement('div');d.className='sel-crit ael-crit ael-fr';d.innerHTML='🎯 <b>Pour réussir (nos fils rouges)</b><ul>'+U.map(x=>'<li>'+x+'</li>').join('')+'</ul>';
+        const L=st.querySelector('.ael-2c > .l');const ex=L&&L.querySelector('.ael-ex');if(ex)ex.appendChild(d);else if(L)L.prepend(d);else st.appendChild(d);ch=true;}}
+    // équipes : absents rayés, ⏰ retardataires
+    const tm=T[b.id];st.querySelectorAll('.ael-teams button[data-n]').forEach(bt=>{const n=bt.dataset.n;const r=rosterOf(n);if(r&&r.absent){bt.classList.add('out');return;}
+      const ar=aspArr(s,n);const st0=(k>=0&&v._win)?v._win.a:(tm?tm.a:0);if(ar===-1||(ar!=null&&ar>st0)){bt.classList.remove('out');if(!bt.querySelector('.late')){bt.insertAdjacentHTML('beforeend','<span class="late" title="'+(ar>0?'arrive à '+hmFmt(ar):'arrive plus tard')+'"> ⏰'+(ar>0?hmFmt(ar):'')+'</span>');}ch=true;}});});
+  return ch?t.innerHTML:h;}catch(e){console.warn('v404',e);return h;}};})(aspElPagedHtml);
+// les objectifs des profils voyagent avec la séance (tablettes)
+elPublish=(function(f){return function(){try{const s=getActiveSeance();if(s&&s.asp){const po={};(CFG.savedPresets||[]).forEach(p=>{if(p&&p.name&&/^FPS ·/.test(p.name))po[p.name]=aspProfObj(p.name);});s.asp.profObj=po;saveSeances();}}catch(e){}return f.apply(this,arguments);};})(elPublish);
+(function(){const st=document.createElement('style');st.textContent='html body .ael-fr ul{margin:4px 0 0 18px;padding:0;}html body .ael-fr li{margin:2px 0;}html body .ael-teams button .late{font-size:.8em;color:#fbbf24;font-weight:700;}';document.head.appendChild(st);})();
 </script>
 </body>
 </html>
