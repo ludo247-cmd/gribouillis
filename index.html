@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v400</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v401</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v400</title>
+<title>Gribouillis EPS v401</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -28707,6 +28707,105 @@ renderEleveStepFin=(function(f){return function(s,st){try{const me=elMeGet(s);if
 // correctif : deux versions de aspTeamShort coexistaient (« ? · 8 » sur l'écran élève)
 aspTeamShort=function(s,ids,g){if(Array.isArray(ids)&&g){const L=String(g.label||'');const w=L.split(/\s+/)[0];if(!w)return L;const same=ids.filter(id=>{const x=aspChip(s,id);return x&&String(x.label||'').split(/\s+/)[0]===w;}).length;return same>1?L:w;}
   const x=aspChip(s,ids);const l=String(x&&x.label||'?');return l.split(/\s+/)[0];};
+
+// ══════════════════════════════════════════════════════════════════════
+// v401 — AS :
+// • bloc élargi même quand il est groupé avec le Bilan ;
+// • feuille d'avant-match : fin « ⏱ Temps + élimination » ; les réglages
+//   (fin, durée, périodes, points, boutons seuls / gribouillis) sont gardés
+//   PAR SITUATION DE LA SÉANCE (la fiche de la Biblio ne change pas), repris
+//   de la FPS la 1re fois (« 2 × 5 min »), et « appliquer à toutes les FPS
+//   de la séance » ;
+// • élèves : fermer la feuille sans « Coup d'envoi » = retour à la séance ;
+// • écran élève d'une FPS : à gauche règles condensées + équipes, à droite
+//   grande vignette cliquable (vidéo / animation) ;
+// • bilan élève : fils rouges macro + principes (oui / non), vidéos du
+//   bilan au même endroit, dictée du bilan rétablie ; prof : 📹 vidéo.
+// ══════════════════════════════════════════════════════════════════════
+let ASP_PRMCTX=null;
+aspObserve=(function(f){return function(bid,aid){try{ASP_PRMCTX={bid:bid,aid:aid,k:(ASP_SEG&&ASP_SEG.b===bid&&ASP_SEG.a===aid)?ASP_SEG.k:null,t:Date.now()};}catch(e){}return f.apply(this,arguments);};})(aspObserve);
+function aspMatchTarget(ctx){const s=aspS();if(!s||!ctx)return null;const b=aspB(s,ctx.bid);const a=b&&(b.ats||[]).find(x=>x.id===ctx.aid);if(!a)return null;
+  if(ctx.k!=null&&aspIsSeq(a)&&a.exos[ctx.k])return {s:s,b:b,a:a,obj:a.exos[ctx.k],e:a.exos[ctx.k]};const F=(a.exos||[]).find(x=>{const i=aspExInfo(x);return i&&i.kind==='fps';});return {s:s,b:b,a:a,obj:aspIsSeq(a)&&F?F:a,e:F};}
+function aspFmtDefault(e){try{const inf=aspExInfo(e);const src=(inf&&inf.src)||{};const t=[src.cfg&&src.cfg.format,src.format,src.desc].filter(Boolean).join(' ');
+  let m=/(\d)\s*[x×]\s*(\d{1,2}(?:[.,]\d)?)\s*(?:min|mn|′|')/i.exec(t);if(m)return {end:'time',nb:+m[1],dur:+String(m[2]).replace(',','.')};
+  m=/(\d{1,2}(?:[.,]\d)?)\s*(?:min|mn)\b/i.exec(t);if(m)return {end:'time',nb:1,dur:+String(m[1]).replace(',','.')};}catch(x){}return null;}
+function aspPrmApply(M){if(!M)return;if(M.end)PRM.c.end=M.end;if(M.dur)CFG.periodDur=M.dur;if(M.nb)CFG.nbPeriods=M.nb;if(M.tg)try{prmSetTarget(M.tg);}catch(e){}if(M.smode)PRM.c.smode=M.smode;if(M.obsSimple!=null)CFG.obsSimple=!!M.obsSimple;}
+function aspPrmRead(){return {end:PRM.c.end,dur:+CFG.periodDur||0,nb:+CFG.nbPeriods||1,tg:(()=>{try{return prmTarget();}catch(e){return 0;}})(),smode:PRM.c.smode,obsSimple:!!CFG.obsSimple};}
+prmOpen=(function(f){return function(){const r=f.apply(this,arguments);try{PRM.ctx=null;const c=ASP_PRMCTX;if(c&&Date.now()-c.t<15000&&aspS()){const T=aspMatchTarget(c);if(T){PRM.ctx=c;
+    let M=T.obj.match;if(!M){M=aspFmtDefault(T.e)||{};const cfg=aspMRCfg(T.s,T.b,c.k!=null?aspSegAt(T.s,T.b,T.a,c.k)||T.a:T.a);if(cfg&&cfg.inf)M.end='elim';const om=T.obj.obsMode||T.a.obsMode;if(om)M.obsSimple=(om==='simple');}
+    aspPrmApply(M);prmRender();}}}catch(e){console.warn('v401 prm open',e);}return r;};})(prmOpen);
+let ASP_PRMSV=null;
+prmRender=(function(f){return function(){const r=f.apply(this,arguments);try{const o=E('prm-ov');if(!o)return r;const c=PRM.c||{};
+  // ⏱ Temps + élimination
+  const chips=[...o.querySelectorAll('.prm-chip')];const sc=chips.find(x=>/prmEnd\('score'\)/.test(x.getAttribute('onclick')||''));
+  if(sc&&!o.querySelector('.prm-elim')){const b=document.createElement('button');b.type='button';b.className='prm-chip prm-elim'+(c.end==='elim'?' on':'');b.textContent='⏱ Temps + élimination';b.setAttribute('onclick',"prmEnd('elim')");sc.after(b);
+    if(c.end==='elim'){const row=sc.closest('.prm-row');const d=document.createElement('div');d.innerHTML='<'+'div class="prm-row">'+prmStepper('min',String(CFG.periodDur).replace('.',','),"prmStep('dur',-0.5)","prmStep('dur',0.5)")+prmStepper(CFG.nbPeriods>1?'périodes':'période',CFG.nbPeriods,"prmStep('nb',-1)","prmStep('nb',1)")+'</'+'div><'+'div class="prm-dim" style="margin-top:4px;">Le match s\'arrête au temps… ou avant, dès qu\'une équipe en élimine une autre (touche ⏹ pour finir le match).</'+'div>';if(row)row.after(...d.childNodes);}}
+  // réglages de la situation pour cette séance
+  if(PRM.ctx&&!o.querySelector('.prm-ctx')){const T=aspMatchTarget(PRM.ctx);if(T){const inf=aspExInfo(T.e)||{};const card=o.querySelector('.prm-card');const d=document.createElement('div');d.className='prm-ctx';
+    d.innerHTML='📌 Réglages de <b>'+esc(String(inf.titre||'cette FPS'))+'</b> pour cette séance (gardés pour tous ses matchs ; la fiche de la Biblio ne change pas). <button type="button" class="prm-chip" onclick="aspPrmAll()">↔ Appliquer à toutes les FPS de la séance</button>';
+    if(card)card.before(d);else o.firstElementChild&&o.firstElementChild.prepend(d);}
+    clearTimeout(ASP_PRMSV);ASP_PRMSV=setTimeout(()=>{try{const T2=aspMatchTarget(PRM.ctx);if(T2&&E('prm-ov')){T2.obj.match=aspPrmRead();saveSeances();}}catch(e){}},300);}}catch(e){console.warn('v401 prm',e);}return r;};})(prmRender);
+function aspPrmAll(){const s=aspS();if(!s)return;const M=aspPrmRead();let n=0;(s.asp.blocks||[]).forEach(b=>(b.ats||[]).forEach(a=>{if(aspIsSeq(a))(a.exos||[]).forEach(e=>{const i=aspExInfo(e);if(i&&i.kind==='fps'){e.match=Object.assign({},M);n++;}});else if(aspAtIsFps(a)){a.match=Object.assign({},M);n++;}}));saveSeances();try{toast2('↔ Réglages appliqués à '+n+' FPS de la séance (modifiables une par une)');}catch(e){}}
+prmKick=(function(f){return function(){const c=PRM.c;const el=c&&c.end==='elim';PRM._kick=true;try{if(el)c.end='time';return f.apply(this,arguments);}finally{PRM._kick=false;if(el){c.end='elim';try{prmSave();}catch(e){}}}};})(prmKick);
+prmClose=(function(f){return function(){const r=f.apply(this,arguments);try{if(!PRM._kick&&SEANCE_STATE&&SEANCE_STATE.mode==='eleve'&&document.body.classList.contains('eleve-hors-seance')){setTimeout(()=>{try{eleveBackToSeance();}catch(e){}},30);}}catch(e){}return r;};})(prmClose);
+// ── écran élève d'une FPS : gauche règles + équipes, droite grande vignette ──
+function aspBigOpen(el){const st=el.closest('.ael-step');const box=st&&st.querySelector('.ael-medbox');if(box){const b=box.querySelector('.ael-medbtn');if(b){aspMedOpen(b);return;}}}
+aspElPagedHtml=(function(f){return function(s){let h=f.apply(this,arguments);try{if(h.indexOf('ael-pages')<0)return h;const t=document.createElement('template');t.innerHTML=h;let ch=false;
+  t.content.querySelectorAll('.ael-pages > .ael-step[data-a]').forEach(st=>{const b=(s.asp.blocks||[]).find(x=>x.id===st.dataset.b);const a=b&&(b.ats||[]).find(x=>x.id===st.dataset.a);if(!a)return;const k=st.dataset.k!=null?+st.dataset.k:-1;
+    const e=k>=0?(a.exos||[])[k]:(a.exos||[]).find(x=>{const i=aspExInfo(x);return i&&i.kind==='fps';});const inf=e&&aspExInfo(e);if(!inf||inf.kind!=='fps')return;
+    const ex=st.querySelector('.ael-ex');if(!ex)return;let g=st.querySelector('.ael-2c');let L,R;
+    if(!g){g=document.createElement('div');g.className='ael-2c';L=document.createElement('div');L.className='l';ex.before(g);L.appendChild(ex);const tm=st.querySelector('.ael-teams');if(tm){L.appendChild(tm);const hn=st.querySelector('.ael-teams-hint');if(hn)L.appendChild(hn);}g.appendChild(L);}
+    else{g.classList.remove('one');L=g.querySelector(':scope > .l');}
+    R=g.querySelector(':scope > .r');if(!R){R=document.createElement('div');R.className='r';g.appendChild(R);}
+    st.querySelectorAll('.ael-obs,.aop-btn').forEach(x=>{if(x.parentElement!==R)R.prepend(x);});
+    if(!R.querySelector('.ael-big')){const has=!!st.querySelector('.ael-medbox');const d=document.createElement('div');d.className='ael-big'+(has?' click':'');if(has)d.setAttribute('onclick','aspBigOpen(this)');
+      d.innerHTML='<span class="th">'+aspThumb(inf)+'</span>'+(has?'<span class="pl">▶ Voir '+(st.querySelector('.ael-medbox template')&&/<video/.test(st.querySelector('.ael-medbox template').innerHTML)?'la vidéo':'l\'animation')+'</span>':'');R.appendChild(d);}
+    const mb=st.querySelector('.ael-medbtn');if(mb)mb.style.display='none';g.classList.add('fps');ch=true;});
+  return ch?t.innerHTML:h;}catch(e){console.warn('v401 el',e);return h;}};})(aspElPagedHtml);
+// ── bilan élève : macro + principes + vidéos + dictée ──
+function aspBilMacro(s){const out=[],seen={};const add=(id,lab)=>{lab=String(lab||'').trim();if(!lab)return;const k=stripAccents(lab).toLowerCase();if(seen[k])return;seen[k]=1;out.push({path:'macro:'+(id||k),lab:lab});};
+  try{const me=elMeGet(s);let sx='';if(me&&/^@g:pop-/.test(me))sx=me.slice(7);else if(me)sx=grpSexe(me);
+    aspBilRows(s).forEach(r=>{const c=getCpByPath(r.path);((c&&c.links&&c.links.macro)||[]).forEach(id=>add(id,asMacroLabel(id)));});
+    aspProjs(s).forEach(p=>{const sd=REMED_CONTENT[p.referentiel||p.sport]||null;const ids=[p.oeId].concat(p.oeExtra||[]).filter(Boolean);(sd&&sd.oe||[]).filter(o=>ids.indexOf(o.id)>=0).forEach(o=>{String(o.macro||'').split('\n').map(x=>x.replace(/^[-•\d.)\s]+/,'').trim()).filter(Boolean).forEach(x=>add('',x));});});
+    (s.asp.blocks||[]).forEach(b=>(b.ats||[]).forEach(a=>(a.exos||[]).forEach(e=>{const i=aspExInfo(e);if(!i||i.kind!=='fps'||!i.src)return;if(sx){const ms=aspAtMembers(s,a);if(!ms.some(n=>grpSexe(n)===sx))return;}((i.src.criteres)||[]).forEach(c=>add('',(c&&c.label)||c));})));}catch(e){console.warn('macro',e);}
+  return out.slice(0,6);}
+renderEleveStepFinBilan=(function(f){return function(s,st){let h=f.apply(this,arguments);if(!s||!s.asp)return h;try{const w=aspBilWho(s);const m=((s.asp.bil||{})[w])||{};const MC=aspBilMacro(s);
+  const rowH=r=>'<'+'div class="ael-bil-r"><span>'+esc(r.lab)+'</span><button type="button" class="oui'+(m[r.path]==='oui'?' on':'')+'" data-p="'+esc(r.path)+'" data-v="oui" onclick="aspBilSet(this)">✅ Oui</button><button type="button" class="non'+(m[r.path]==='non'?' on':'')+'" data-p="'+esc(r.path)+'" data-v="non" onclick="aspBilSet(this)">❌ Non</button></'+'div>';
+  if(MC.length)h=h.replace('<'+'div class="sel-box ael-bil"><h4>🧵 Nos fils rouges : avons-nous réussi ?</h4>','<'+'div class="sel-box ael-bil"><h4>📈 Fils rouges du match : avons-nous réussi ?</h4>'+MC.map(rowH).join('')+'<h4 style="margin-top:12px;">🧵 Nos principes</h4>');
+  const team=(typeof finCurTeam==='function')?finCurTeam(s):'';const clips=(s.clips||[]).filter(c=>c&&c.url&&(!c.team||!team||c.team===team));
+  let vid='';if(clips.length){try{vid='<'+'div class="sel-box"><h4>🎬 Nos vidéos</h4>'+renderEleveClips(s,clips)+'</'+'div>';}catch(e){}}
+  const rec='<'+'div class="sel-box"><h4>📝 Notre bilan</h4><textarea id="sel-recap" class="sel-recap" placeholder="Écris ou dicte ton bilan ici…" oninput="eleveRecapInput(this.value)">'+esc(String(recapGet(s)))+'</textarea>'
+    +'<'+'div class="sel-row2"><button type="button" id="sel-recap-mic" class="sel-big violet'+(SEANCE_RECAP_ON?' rec-on':'')+'" onclick="toggleSeanceRecapDictation()">'+(SEANCE_RECAP_ON?'⏹ Arrêter la dictée':'🎤 Dicter')+'</button><button type="button" class="sel-big" onclick="eleveSaveRecap()">💾 Enregistrer le bilan</button></'+'div>'
+    +(SEANCE_ELEVE_RECAP_SAVED?'<'+'div class="sel-ok" style="margin-top:10px;">✅ Bilan enregistré.</'+'div>':'')+'</'+'div>';
+  const i=h.indexOf('<button type="button" class="sel-big ael-send"');h=i>=0?h.slice(0,i)+vid+rec+h.slice(i):h+vid+rec;}catch(e){console.warn('v401 bil',e);}return h;};})(renderEleveStepFinBilan);
+renderEleveStepFinInner=(function(f){return function(s,st){if(s&&s.asp)return renderEleveStepFinBilan(s,st);return f.apply(this,arguments);};})(renderEleveStepFinInner);
+// prof : vidéo pour le bilan depuis l'encart Bilan
+aspHtml=(function(f){return function(s){let h=f.apply(this,arguments);try{const t=document.createElement('template');t.innerHTML=h;const bb=t.content.querySelector('.asp-bilbar .asp-bh');if(bb&&!bb.querySelector('.asp-vid')){const n=(s.clips||[]).length;
+  const l=document.createElement('label');l.className='asp-rz asp-vid';l.title='Filmer ou importer une vidéo : les élèves la retrouvent dans leur bilan';l.innerHTML='📹 vidéo bilan'+(n?' ('+n+')':'')+'<input type="file" accept="video/*" style="display:none;" onchange="clipUpload(this)">';bb.appendChild(l);h=t.innerHTML;}}catch(e){}return h;};})(aspHtml);
+(function(){const st=document.createElement('style');st.textContent=
+ '@media (min-width:700px){html body .asp-stack:has(.asp-w2){grid-column:span 2;}html body .asp-stack:has(.asp-w3){grid-column:span 3;}}'
++'html body .prm-ctx{font-size:.78rem;color:#cbd5e1;border:1px dashed #475569;border-radius:10px;padding:6px 8px;margin:0 0 8px;}html body .prm-ctx .prm-chip{margin-left:6px;}'
++'html body .ael-2c.fps{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:14px;align-items:start;}html body .ael-2c.fps>.l .sel-rules,html body .ael-2c.fps>.l .sel-text,html body .ael-2c.fps>.l .sel-obj,html body .ael-2c.fps>.l .ael-crit{font-size:.82rem;}'
++'html body .ael-2c.fps>.l .ael-ex h4{display:none;}html body .ael-big{position:relative;border-radius:14px;overflow:hidden;background:#0f172a;aspect-ratio:16/10;display:flex;align-items:center;justify-content:center;margin-top:8px;}'
++'html body .ael-big .th{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;}html body .ael-big .th img{width:100%;height:100%;object-fit:contain;}html body .ael-big .th>span{font-size:3rem;opacity:.5;}'
++'html body .ael-big.click{cursor:pointer;}html body .ael-big .pl{position:relative;z-index:2;background:rgba(124,58,237,.92);color:#fff;font-weight:800;border-radius:999px;padding:12px 22px;font-size:1.1rem;}'
++'@media (max-width:820px){html body .ael-2c.fps{grid-template-columns:1fr;}}';document.head.appendChild(st);})();
+// résumé « Fin du match » de la feuille : le mode élimination
+psEndTxt=(function(f){return function(){const c=PRM.c||{};if(c.end==='elim'){const n=+CFG.nbPeriods||1;return 'Temps + élimination · '+(n>1?n+' × ':'')+String(CFG.periodDur).replace('.',',')+' min';}return f.apply(this,arguments);};})(psEndTxt);
+// élèves : même mise en page pour les autres situations (texte à gauche, grande vignette à droite)
+aspEleveExHtml=(function(f){return function(s,e){let h=f.apply(this,arguments);try{const inf=aspExInfo(e);if(!inf||inf.kind==='fps'||inf.kind==='warm')return h;const t=document.createElement('template');t.innerHTML=h;const ex=t.content.querySelector('.ael-ex');if(!ex||ex.querySelector('.ael-medbox'))return h;
+  const M=[...ex.querySelectorAll('video,.anim-inline,img')].filter(m=>!m.closest('.ael-vig')&&!(m.parentElement&&m.parentElement.closest('.anim-inline')));if(!M.length)return h;
+  const box=document.createElement('div');box.className='ael-medbox';const tp=document.createElement('template');M.forEach(m=>{m.remove();tp.content.appendChild(m);});box.appendChild(tp);
+  const bt=document.createElement('button');bt.type='button';bt.className='ael-medbtn';bt.textContent='🎬 Voir';bt.setAttribute('onclick','aspMedOpen(this)');box.appendChild(bt);ex.appendChild(box);return t.innerHTML;}catch(err){return h;}};})(aspEleveExHtml);
+aspElPagedHtml=(function(f){return function(s){let h=f.apply(this,arguments);try{if(h.indexOf('ael-medbox')<0)return h;const t=document.createElement('template');t.innerHTML=h;let ch=false;
+  t.content.querySelectorAll('.ael-pages > .ael-step[data-a]').forEach(st=>{if(st.querySelector('.ael-2c.fps'))return;const box=st.querySelector('.ael-medbox');const ex=st.querySelector('.ael-ex');if(!box||!ex)return;
+    const b=(s.asp.blocks||[]).find(x=>x.id===st.dataset.b);const a=b&&(b.ats||[]).find(x=>x.id===st.dataset.a);const k=st.dataset.k!=null?+st.dataset.k:0;const e=a&&((a.exos||[])[k]||(a.exos||[])[0]);const inf=e&&aspExInfo(e);if(!inf)return;
+    let g=st.querySelector('.ael-2c');if(g)g.remove();g=document.createElement('div');g.className='ael-2c fps';const L=document.createElement('div');L.className='l';const R=document.createElement('div');R.className='r';ex.before(g);
+    [...st.children].filter(x=>x!==g&&!x.matches('h3,.ael-with,.ael-roles,.ael-head')&&(x.compareDocumentPosition(g)&Node.DOCUMENT_POSITION_PRECEDING)).forEach(x=>L.appendChild(x));
+    st.querySelectorAll('.ael-obs,.aop-btn').forEach(x=>R.appendChild(x));const v=/<video/.test(box.querySelector('template').innerHTML);
+    const d=document.createElement('div');d.className='ael-big click';d.setAttribute('onclick','aspBigOpen(this)');d.innerHTML='<span class="th">'+aspThumb(inf)+'</span><span class="pl">▶ Voir '+(v?'la vidéo':'l\'animation')+'</span>';R.appendChild(d);
+    box.querySelector('.ael-medbtn').style.display='none';g.appendChild(L);g.appendChild(R);ch=true;});
+  return ch?t.innerHTML:h;}catch(e){console.warn('v401 el2',e);return h;}};})(aspElPagedHtml);
 </script>
 </body>
 </html>
