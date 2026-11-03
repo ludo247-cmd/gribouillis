@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v393</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v394</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v393</title>
+<title>Gribouillis EPS v394</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -28240,6 +28240,29 @@ aspArrivalsHtml=function(s,b,tm,idx){if(b.kind!=='bloc'||!tm)return '';let h='';
 +'html body .asp-obspop .bt{display:flex;gap:8px;flex-wrap:wrap;}html body .asp-obspop .bt button{border:1px solid #334155;background:#1e293b;color:#e2e8f0;border-radius:8px;padding:7px 12px;cursor:pointer;}html body .asp-obspop .bt .go{background:#15803d;border-color:#15803d;font-weight:700;}'
 +'html body .asp-obsbtn{background:#334155 !important;}';
 document.head.appendChild(st);})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v394 — diagnostic de synchro plus précis (pré-vérification du
+// navigateur, en-tête du jeton, message d'erreur exact)
+// ══════════════════════════════════════════════════════════════════════
+syncDiag=async function(){const c=ghCfg();const out=[];const set=t=>{SYNC2.diag=t;const p=E('sync-pan');if(p)syncPanelFill(p);};set('🔎 Test en cours…');
+  const tok=String(c.token||'');if(!tok){set('❌ Pas de jeton GitHub sur cet appareil : Réglages → GitHub.');return;}
+  const kind=/^github_pat_/.test(tok.trim())?'jeton « fin » (github_pat_)':/^ghp_/.test(tok.trim())?'jeton classique (ghp_)':'jeton de forme inconnue';
+  out.push('ℹ️ '+kind+', '+tok.length+' caractères'+(tok!==tok.trim()?' (avec des espaces autour)':''));
+  const bad=[...tok].filter(ch=>!/[\x21-\x7e]/.test(ch));if(bad.length)out.push('❌ Le jeton contient '+bad.length+' caractère(s) invisible(s) ou spécial(aux) : recolle-le dans Réglages → GitHub.');
+  const T=async(lab,url,h)=>{try{const r=await fetch(url,{cache:'no-store',headers:h||{}});return {ok:true,st:r.status};}catch(e){return {ok:false,msg:String(e&&e.message||e)};}};
+  const a=await T('simple','https://api.github.com/zen');
+  out.push(a.ok?'✅ 1. GitHub joignable':'❌ 1. GitHub injoignable ('+a.msg+')');
+  if(!a.ok){out.push('👉 Le réseau ou un logiciel bloque api.github.com.');set(out.join('\n'));return;}
+  const b=await T('pre','https://api.github.com/zen',{'X-GitHub-Api-Version':'2022-11-28'});
+  out.push(b.ok?'✅ 2. Pré-vérification du navigateur OK':'❌ 2. Pré-vérification bloquée ('+b.msg+')');
+  let h3=null;try{h3={'Authorization':'Bearer '+tok.trim()};new Headers(h3);}catch(e){out.push('❌ 3. Le navigateur refuse le jeton tel qu\'il est enregistré ('+e.message+') : recolle-le.');set(out.join('\n'));return;}
+  const d=await T('auth','https://api.github.com/rate_limit',h3);
+  out.push(d.ok?(d.st===200?'✅ 3. Jeton accepté':d.st===401?'❌ 3. Jeton refusé par GitHub (expiré ou révoqué) : crée-en un nouveau':'⚠️ 3. GitHub répond '+d.st):'❌ 3. Demande avec le jeton bloquée ('+d.msg+')');
+  if(!b.ok)out.push('👉 Quelque chose bloque les demandes « avec en-têtes » vers GitHub : une extension de Chrome (bloqueur de pub, VPN, protection) ou l\'antivirus (analyse HTTPS). Essaie : chrome://extensions → désactive les extensions, recharge, resynchronise ; ou ouvre l\'app dans Edge.');
+  else if(!d.ok)out.push('👉 Seul l\'en-tête du jeton est bloqué : une extension ou l\'antivirus filtre les demandes « Authorization ». Même solution : désactiver les extensions / l\'antivirus web, ou essayer Edge.');
+  else if(d.st===200)out.push('👉 Tout est bon maintenant : touche « Synchroniser maintenant ».');
+  set(out.join('\n'));};
 </script>
 </body>
 </html>
