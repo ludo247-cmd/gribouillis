@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v392</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v393</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v392</title>
+<title>Gribouillis EPS v393</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -28150,6 +28150,95 @@ syncPanelFill=(function(f){return function(p){const r=f.apply(this,arguments);tr
 +'html body .asp-tri .obs{padding:2px 7px;}'
 +'html body .asp-miss{border:1px solid #334155;border-radius:8px;padding:5px 7px;margin:3px 0;font-size:.7rem;background:#0f172a;display:flex;flex-direction:column;gap:3px;}'
 +'html body #sync-pan .sp-diagout{white-space:pre-line;margin-top:8px;border:1px solid #334155;border-radius:8px;padding:7px 9px;background:#111827;font-size:.78rem;line-height:1.4;}';
+document.head.appendChild(st);})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v393 — séance AS, place gagnée :
+// • tournoi à 3 : cadre déroulable, compact, sans boutons Observer ;
+// • « Faire les équipes » disparaît dès que les équipes sont posées ;
+// • ⚙️ Observation : appui court = réglage rapide (mode, profil),
+//   appui long = réglages détaillés de la FPS ;
+// • « ➜ ensuite » à DROITE des situations ;
+// • arrivées regroupées par heure (« arrivée des filles »).
+// ══════════════════════════════════════════════════════════════════════
+// ── tournoi : déroulable et compact ──
+const ASP_TRI_OPEN={};
+aspTriHtml=function(s,b,a,me){const P=aspTriPlan(s,b,a);if(!P)return '';const bi=esc(b.id),ai=esc(a.id),k=b.id+'|'+a.id;
+  const col=id=>esc(String((aspChip(s,id)||{}).color||'#475569'));const chip=id=>'<span class="tri-t" style="--gc:'+col(id)+'">'+esc(aspTeamShort(s,id))+'</span>';
+  const mine=me&&P.matches.some(m=>m.roles.some(r=>r.name===me));const open=me?true:!!ASP_TRI_OPEN[k];
+  let h='<details class="asp-tri"'+(open?' open':'')+(me?'':' ontoggle="ASP_TRI_OPEN[\''+esc(k)+'\']=this.open"')+'><summary>🏆 Tournoi à 3 · 3 matchs de '+P.dur+'′'+(mine?' · ⭐ tu as un rôle':'')+'</summary>';
+  P.matches.forEach(m=>{const me1=me&&m.roles.some(r=>r.name===me);
+    h+='<'+'div class="m'+(me1?' me':'')+'"><span class="tm">'+hmFmt(m.a)+'</span>'+chip(m.home)+'<i>–</i>'+chip(m.away)+'<span class="rs">'+chip(m.rest)+' '
+      +m.roles.map(r=>aspRoleIco(r.role)+'<b>'+(r.name?esc(r.name):'—')+'</b>'+(r.name&&!r.chosen?'<small title="tiré au sort">🎲</small>':'')).join(' ')+'</span></'+'div>';});
+  if(!me)h+='<'+'div class="ft">👉 l\'équipe qui ne joue pas arbitre et observe · rôle choisi d\'abord, sinon 🎲 <button type="button" onclick="aspTriReroll(\''+bi+'\',\''+ai+'\')">🎲 nouveau tirage</button></'+'div>';
+  return h+'</details>';};
+// ── ⚙️ Observation : réglage rapide / détaillé ──
+let ASP_OBSPROF=null;
+aspExInfo=(function(f){return function(e){const r=f.apply(this,arguments);if(ASP_OBSPROF&&r&&r.kind==='fps'&&r.src){return Object.assign({},r,{src:Object.assign({},r.src,{profile:ASP_OBSPROF})});}return r;};})(aspExInfo);
+aspObserve=(function(f){return function(bid,aid){const s=aspS();const a=s&&aspAt(s,bid,aid);if(a&&a.obsProfile){const old=ASP_OBSPROF;ASP_OBSPROF=a.obsProfile;try{return f.apply(this,arguments);}finally{ASP_OBSPROF=old;}}return f.apply(this,arguments);};})(aspObserve);
+function aspFpsOf(a){const i=(a.exos||[]).findIndex(e=>{const x=aspExInfo(e);return x&&x.kind==='fps';});return i<0?null:{e:a.exos[i],inf:aspExInfo(a.exos[i])};}
+function aspObsClose(){const o=document.querySelector('.asp-obspop');if(o)o.remove();}
+function aspObsQuick(bid,aid){aspObsClose();const s=aspS();const a=s&&aspAt(s,bid,aid);if(!a)return;const F=aspFpsOf(a);if(!F)return;const src=F.inf.src||{};
+  const def=src.obsMode==='simple'?'Boutons seuls':src.obsMode==='draw'?'Gribouillage':'comme les réglages';const pdef=src.profile||(src.cfg&&src.cfg.profile)||'';
+  const P=(CFG.savedPresets||[]).filter(p=>p&&p.name).map(p=>p.name);const v=a.obsMode||'',pv=a.obsProfile||'';
+  const o=document.createElement('div');o.className='asp-obspop';o.onclick=e=>{if(e.target===o)aspObsClose();};
+  const opt=(k,t,cur)=>'<option value="'+esc(k)+'"'+(cur===k?' selected':'')+'>'+esc(t)+'</option>';
+  o.innerHTML='<'+'div class="box"><'+'div class="hd"><b>⚙️ Observation</b> · '+esc(String(F.inf.titre||'FPS'))+'<button type="button" onclick="aspObsClose()" aria-label="Fermer">✕</button></'+'div>'
+    +'<label>👁 Façon d\'observer<select id="aop-mode">'+opt('','Celle de la situation ('+def+')',v)+opt('simple','✋ Boutons seuls',v)+opt('draw','✏️ Gribouillage (tracer sur le terrain)',v)+'</select></label>'
+    +'<label>📋 Profil d\'observation (boutons, compteurs)<select id="aop-prof">'+opt('','Celui de la situation'+(pdef?' ('+pdef+')':''),pv)+P.map(n=>opt(n,n,pv)).join('')+'</select></label>'
+    +'<'+'div class="bt"><button type="button" class="go" onclick="aspObsQuickSave(\''+esc(bid)+'\',\''+esc(aid)+'\')">✓ Valider</button>'
+    +(F.e.k==='lib'?'<button type="button" onclick="aspObsClose();aspObsDetail(\''+esc(bid)+'\',\''+esc(aid)+'\')">🔧 Réglages détaillés…</button>':'')+'</'+'div>'
+    +'<'+'div class="cc-dim">Astuce : appui long sur ⚙️ = réglages détaillés de la FPS.</'+'div></'+'div>';
+  document.body.appendChild(o);}
+function aspObsQuickSave(bid,aid){const s=aspS();const a=s&&aspAt(s,bid,aid);if(!a)return;const m=E('aop-mode'),p=E('aop-prof');a.obsMode=m?m.value:'';a.obsProfile=p?p.value:'';if(!a.obsProfile)delete a.obsProfile;aspObsClose();aspSave();try{toast2('⚙️ Observation réglée pour cet atelier');}catch(e){}}
+function aspObsDetail(bid,aid){const s=aspS();const a=s&&aspAt(s,bid,aid);if(!a)return;const F=aspFpsOf(a);if(!F)return;
+  if(F.e.k==='lib'){try{libEdit(F.e.id);return;}catch(e){console.warn(e);}}aspObsQuick(bid,aid);}
+let ASP_LP=null;
+document.addEventListener('pointerdown',e=>{const b=e.target&&e.target.closest&&e.target.closest('.asp-obsbtn');if(!b)return;ASP_LP={b:b,long:false,t:setTimeout(()=>{if(ASP_LP&&ASP_LP.b===b){ASP_LP.long=true;try{navigator.vibrate&&navigator.vibrate(30);}catch(x){}aspObsDetail(b.dataset.b,b.dataset.a);}},550)};},true);
+['pointerup','pointercancel','pointerleave'].forEach(t=>document.addEventListener(t,()=>{if(ASP_LP)clearTimeout(ASP_LP.t);},true));
+function aspObsBtn(el){if(ASP_LP&&ASP_LP.b===el&&ASP_LP.long){ASP_LP=null;return;}ASP_LP=null;aspObsQuick(el.dataset.b,el.dataset.a);}
+// ── rendu de l'atelier ──
+aspAtHtml=(function(f){return function(s,b,a,i){let h=f.apply(this,arguments);if(!b||b.kind!=='bloc')return h;try{
+  const t=document.createElement('template');t.innerHTML=h;const box=t.content.querySelector('.asp-at');if(!box)return h;
+  box.querySelectorAll('.asp-seqrow > .asp-arr').forEach(x=>{x.className='asp-arw';});
+  box.querySelectorAll('.asp-seg > .obs').forEach(x=>x.remove());
+  if(aspTeamIds(s,a).length>=2)box.querySelectorAll('button').forEach(x=>{if(/aspMakeTeams\(/.test(x.getAttribute('onclick')||''))x.remove();});
+  // ➜ ensuite : à droite des situations
+  const solo=box.querySelector(':scope > .asp-next.solo');if(solo){const EX=[...box.querySelectorAll(':scope > .asp-ex')];if(EX.length){const row=document.createElement('div');row.className='asp-exrow';const col=document.createElement('div');col.className='asp-excol';
+    EX[0].before(row);EX.forEach(x=>col.appendChild(x));row.appendChild(col);solo.textContent='➜';solo.title='Glisser ici ce qu\'ils font ensuite : le bloc s\'élargit';row.appendChild(solo);}}
+  // ⚙️ Observation à la place du menu 👁
+  if(aspAtIsFps(a)){const m=box.querySelector('label.asp-obsm');const bt=document.createElement('button');bt.type='button';bt.className='obs asp-obsbtn';bt.dataset.b=b.id;bt.dataset.a=a.id;bt.setAttribute('onclick','aspObsBtn(this)');
+    const lab=a.obsMode==='simple'?' ✋':a.obsMode==='draw'?' ✏️':'';bt.textContent='⚙️ Observation'+lab+(a.obsProfile?' 📋':'');bt.title=(a.obsProfile?'Profil : '+a.obsProfile+' — ':'')+'Toucher : réglage rapide · appui long : réglages détaillés de la FPS';
+    if(m)m.replaceWith(bt);else{const ob=[...box.querySelectorAll('button.obs')].pop();if(ob)ob.after(bt);else box.appendChild(bt);}}
+  return t.innerHTML;}catch(e){console.warn('v393 at',e);return h;}};})(aspAtHtml);
+// ── arrivées regroupées par heure ──
+aspArrivalsHtml=function(s,b,tm,idx){if(b.kind!=='bloc'||!tm)return '';let h='';const catT={};
+  try{const cs=s.catStart||{};Object.keys(cs).forEach(c=>{const m=planMin(cs[c]);if(m!=null&&m>=tm.a&&m<tm.b&&m>(hm2m(s.start||'')||hm2m('16:30'))){catT[/fille/i.test(c)?'F':(/gar/i.test(c)?'M':c)]=m;h+='<'+'div class="asp-arr">🚩 Arrivée des <b>'+esc(String(c).toLowerCase())+'</b> ('+hmFmt(m)+')</'+'div>';}});}catch(e){}
+  const BL=(s.asp.blocks||[]).filter(x=>x.kind==='bloc');const isLast=BL.length&&BL[BL.length-1].id===b.id;const R=aspRoster();const by={},U=[];
+  R.forEach(n=>{const x=aspLateArr(s,n);if(x==null)return;if(x===-1){U.push(n);return;}if((x>=tm.a&&x<tm.b)||(isLast&&x>=tm.b))(by[x]=by[x]||[]).push(n);});
+  const later=(sx,t)=>R.filter(n=>grpSexe(n)===sx&&(()=>{const x=aspLateArr(s,n);return x!=null&&x!==-1&&x>=t;})());
+  Object.keys(by).map(Number).sort((p,q)=>p-q).forEach(t=>{const N=by[t];const parts=[];
+    [['F','👧','filles'],['M','👦','garçons']].forEach(z=>{const L=N.filter(n=>grpSexe(n)===z[0]);if(!L.length)return;
+      if(catT[z[0]]!=null&&Math.abs(catT[z[0]]-t)<=10&&L.length>=2)return;
+      const all=later(z[0],t);if(L.length>=3&&L.length===all.length)parts.push(z[1]+' <b>arrivée des '+z[2]+'</b> ('+L.length+')');
+      else parts.push(z[1]+' '+L.map(n=>'<b>'+esc(n)+'</b>').join(', '));});
+    const O=N.filter(n=>{const x=grpSexe(n);return x!=='F'&&x!=='M';});if(O.length)parts.push(O.map(n=>'<b>'+esc(n)+'</b>').join(', '));
+    if(parts.length)h+='<'+'div class="asp-arr">🕒 '+hmFmt(t)+' : '+parts.join(' · ')+'</'+'div>';});
+  const first=BL[0];if(U.length&&first&&first.id===b.id)h+='<'+'div class="asp-arr" style="color:#fde68a;border-color:rgba(251,191,36,.5);background:rgba(251,191,36,.1);">🕒 En retard (heure inconnue) : '+U.map(esc).join(', ')+'</'+'div>';
+  return h;};
+(function(){const st=document.createElement('style');st.textContent=
+ 'html body .asp-b .asp-arr{align-self:auto;color:#a7f3d0;font-weight:400;}html body .asp-arw{align-self:center;color:#a78bfa;font-weight:800;}'
++'html body details.asp-tri{padding:3px 6px;}html body details.asp-tri>summary{cursor:pointer;color:#fde68a;font-weight:700;list-style:none;}html body details.asp-tri>summary::-webkit-details-marker{display:none;}'
++'html body details.asp-tri>summary::before{content:"▸ ";}html body details.asp-tri[open]>summary::before{content:"▾ ";}'
++'html body details.asp-tri .m{gap:3px;padding:2px 0;font-size:.68rem;}html body details.asp-tri .tm{min-width:30px;}html body details.asp-tri .tri-t{padding:0 5px;font-size:.66rem;}html body details.asp-tri .rs{flex:1 1 120px;}'
++'html body details.asp-tri .ft{font-size:.64rem;color:var(--dim2);margin-top:3px;}html body details.asp-tri .ft button{border:1px solid #f59e0b;background:transparent;color:#fde68a;border-radius:6px;font-size:.64rem;cursor:pointer;}'
++'html body .asp-exrow{display:flex;gap:4px;align-items:stretch;}html body .asp-excol{flex:1 1 auto;min-width:0;}html body .asp-exrow .asp-next.solo{flex:0 0 26px;min-width:26px;margin:3px 0;padding:0;justify-content:center;font-size:.8rem;opacity:.5;}'
++'html body .asp-obspop{position:fixed;inset:0;z-index:99990;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:12px;}'
++'html body .asp-obspop .box{background:#0f172a;border:1px solid #3b82f6;border-radius:12px;padding:12px 14px;width:min(420px,100%);display:flex;flex-direction:column;gap:9px;color:#e2e8f0;font-size:.84rem;}'
++'html body .asp-obspop .hd{display:flex;gap:6px;align-items:center;}html body .asp-obspop .hd button{margin-left:auto;border:0;background:#334155;color:#fff;border-radius:7px;cursor:pointer;}'
++'html body .asp-obspop label{display:flex;flex-direction:column;gap:3px;}html body .asp-obspop select{background:#111827;color:#e2e8f0;border:1px solid #334155;border-radius:8px;padding:6px;}'
++'html body .asp-obspop .bt{display:flex;gap:8px;flex-wrap:wrap;}html body .asp-obspop .bt button{border:1px solid #334155;background:#1e293b;color:#e2e8f0;border-radius:8px;padding:7px 12px;cursor:pointer;}html body .asp-obspop .bt .go{background:#15803d;border-color:#15803d;font-weight:700;}'
++'html body .asp-obsbtn{background:#334155 !important;}';
 document.head.appendChild(st);})();
 </script>
 </body>
