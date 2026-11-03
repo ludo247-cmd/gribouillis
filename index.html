@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v391</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v392</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v391</title>
+<title>Gribouillis EPS v392</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -28018,6 +28018,139 @@ renderSeqTab=(function(f){return function(){const r=f.apply(this,arguments);try{
 (function(){const st=document.createElement('style');st.textContent='html body .seq-pjr{display:flex;gap:8px;align-items:center;flex-wrap:wrap;border:1px dashed #334155;border-radius:10px;padding:7px 10px;margin:6px 0;font-size:.8rem;color:#cbd5e1;}html body .seq-pjr .btn-xs{background:#334155;color:#fff;margin-left:auto;}'
  +'html body .seq-pjy{margin:4px 0 10px;}html body .seq-pjy .h{font-weight:700;margin:4px 0 6px;}html body .seq-pjy details.pje:not([open]){padding-bottom:0;}'
  +'html body .seq-pj2{border-left:3px solid var(--pc);padding:4px 0 6px 10px;margin:8px 0;}html body .seq-pj2 select{background:#0f172a;color:#e2e8f0;border:1px solid #334155;border-radius:8px;padding:3px 6px;}';document.head.appendChild(st);})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v392 — séance AS :
+// • « ➜ à la suite » : dans un atelier, glisser une 2e situation (ou un
+//   atelier entier) À DROITE de la 1re → les groupes font les 2 l'une après
+//   l'autre ; le bloc s'élargit, chaque partie a ses horaires (± 5 min).
+// • 3 équipes sur la même FPS = tournoi à 3 : 3 matchs, l'équipe qui ne
+//   joue pas arbitre / observe (rôle choisi d'abord, sinon tirage au sort).
+// • effectif : touche « présents » pour voir qui manque et pourquoi.
+// • synchro : bouton « Diagnostiquer la connexion ».
+// ══════════════════════════════════════════════════════════════════════
+// ── 1. parties consécutives d'un atelier ──
+function aspSegs(b,a,tm){const X=a.exos||[];const n=X.length;const tot=+b.dur||0;if(!n)return [];
+  let used=0,free=0;X.forEach((e,i)=>{if(i<n-1&&+e.dur>0)used+=+e.dur;else free++;});
+  const rest=Math.max(0,tot-used);const each=free?Math.floor(rest/free/5)*5||Math.floor(rest/free):0;
+  let t=tm?tm.a:0;const out=[];X.forEach((e,i)=>{let d=(i<n-1&&+e.dur>0)?+e.dur:each;if(i===n-1)d=Math.max(0,(tm?tm.a+tot:tot)-t);out.push({a:t,b:t+d,dur:d});t+=d;});return out;}
+function aspIsSeq(a){return !!(a&&a.seq&&(a.exos||[]).length>=2);}
+function aspSegDur(bid,aid,k,d){const s=aspS();if(!s)return;const b=aspB(s,bid),a=aspAt(s,bid,aid);if(!b||!a)return;const T=aspTimes(s)[bid];const S=aspSegs(b,a,T);const n=S.length;if(n<2)return;
+  let j=k;if(k===n-1){j=k-1;d=-d;}const cur=S.map(x=>x.dur);const nv=cur[j]+d;const others=cur.reduce((x,y)=>x+y,0)-cur[j]-cur[n-1];
+  if(nv<5||(+b.dur||0)-others-nv<5){toast2('Chaque partie garde au moins 5 min (allonge le bloc avec ＋).');return;}
+  a.exos.forEach((e,i)=>{if(i<n-1)e.dur=cur[i];});a.exos[j].dur=nv;delete a.exos[n-1].dur;aspSave();}
+function aspObserveK(bid,aid,k,gi){const s=aspS();if(!s)return;const a=aspAt(s,bid,aid);if(!a)return;const ex0=a.exos.slice(),g0=(a.groups||[]).slice();
+  try{if(k!=null&&a.exos[k]){const e=a.exos[k];a.exos=[e].concat(ex0.filter(x=>x!==e));}if(gi){const G=gi.map(id=>id);a.groups=G.concat(g0.filter(x=>G.indexOf(x)<0));}aspObserve(bid,aid);}
+  finally{a.exos=ex0;a.groups=g0;}}
+function aspSeqDrop(p,drop){const s=aspS();if(!s)return;const q=drop.slice(4).split(':');const b=aspB(s,q[0]),a=aspAt(s,q[0],q[1]);if(!b||!a)return;let added=[];
+  if(p.indexOf('at:')===0){const z=p.slice(3).split(':');const sb=aspB(s,z[0]);const src=sb&&(sb.ats||[]).find(x=>x.id===z[1]);if(!src||src===a)return;
+    added=(src.exos||[]).slice();if(!added.length){toast2('Cet atelier n\'a pas de situation.');return;}
+    (src.groups||[]).forEach(g=>{if(a.groups.indexOf(g)<0&&sb===b)a.groups.push(g);});
+    sb.ats=sb.ats.filter(x=>x!==src);if(!sb.ats.length)sb.ats.push({id:aspNid('a'),groups:[],exos:[]});}
+  else{const P=aspPayload(p);if(!P)return;let ex=P.ex||null;
+    if(P.exFrom){const a0=aspAt(s,P.exFrom.b,P.exFrom.a);if(!a0||!a0.exos[P.exFrom.k])return;ex=a0.exos.splice(P.exFrom.k,1)[0];}
+    if(!ex)return;added=[ex];if(P.warmLib){try{WARM_TARGET=null;warmEnsure(s);libInsert(P.warmLib);}catch(e){}}}
+  a.exos=(a.exos||[]).concat(added.map(e=>{const c=Object.assign({},e);delete c.dur;return c;}));a.exos.forEach(e=>{delete e.dur;});a.seq=true;
+  saveSeances();renderSeanceTab();try{toast2('➜ À la suite : '+a.exos.map(e=>(aspExInfo(e)||{}).titre||'?').join(' puis '));}catch(e){}}
+function aspSeqOff(bid,aid){const s=aspS();if(!s)return;const a=aspAt(s,bid,aid);if(!a)return;a.seq=false;(a.exos||[]).forEach(e=>{delete e.dur;});aspSave();}
+(function(){
+  try{const oc=sbCanDrop;sbCanDrop=function(p,drop){if(String(drop).indexOf('asn:')===0){const t=String(p).split(':')[0];return ['exo','lib','fps','aw','lw','ae','at'].indexOf(t)>=0;}return oc.apply(this,arguments);};}catch(e){}
+  try{const od=sbDo;sbDo=function(p,drop){if(String(drop).indexOf('asn:')===0){aspSeqDrop(String(p),String(drop));return;}return od.apply(this,arguments);};}catch(e){}
+  try{const om=aspMoveAt;aspMoveAt=function(p,drop){if(String(drop).indexOf('asn:')===0){aspSeqDrop(String(p),String(drop));return;}return om.apply(this,arguments);};}catch(e){}
+})();
+// ── 2. tournoi à 3 équipes ──
+function aspTriTeams(a){if(!a||!aspAtIsFps(a))return null;const T=(a.groups||[]).filter(id=>!/^pop-/.test(String(id)));return T.length===3?T:null;}
+const aspAtRoleLabels0=aspAtRoleLabels;
+aspAtRoleLabels=function(a){if(aspTriTeams(a))return [];return aspAtRoleLabels0.apply(this,arguments);};
+aspAtPlaying=(function(f){return function(s,a){if(aspTriTeams(a))return aspAtMembers(s,a);return f.apply(this,arguments);};})(aspAtPlaying);
+function aspTriHash(str){let h=2166136261;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619);}return (h>>>0)/4294967296;}
+function aspTriWin(s,b,a){const tm=aspTimes(s)[b.id];if(!tm)return {a:0,b:0};if(aspIsSeq(a)){const k=(a.exos||[]).findIndex(e=>{const i=aspExInfo(e);return i&&i.kind==='fps';});const S=aspSegs(b,a,tm);if(S[k])return S[k];}return {a:tm.a,b:tm.a+(+b.dur||0)};}
+function aspTriPlan(s,b,a){const T=aspTriTeams(a);if(!T)return null;const W=aspTriWin(s,b,a);const d=Math.max(1,Math.floor((W.b-W.a)/3));
+  const key=b.id+'|'+a.id;const seed=String(((s.asp.tri||{})[key])||1);const labels=aspAtRoleLabels0(a);const load={};
+  const R=[[0,1,2],[2,0,1],[1,2,0]];
+  return {teams:T,dur:d,seed:seed,matches:R.map((r,i)=>{const t0=W.a+i*d;const pres=aspPresent(s,t0);const g=aspChip(s,T[r[2]]);
+    const rest=((g&&g.members)||[]).filter(n=>pres.indexOf(n)>=0);const used={};
+    const rnd=n=>aspTriHash(seed+'|'+key+'|'+i+'|'+n);
+    const roles=labels.map(l=>{const av=rest.filter(n=>!used[n]);const so=L=>L.slice().sort((x,y)=>(load[x]||0)-(load[y]||0)||rnd(x)-rnd(y))[0];
+      const h=av.filter(n=>aspHasRole(n,l));const n=so(h)||so(av)||null;if(n){used[n]=1;load[n]=(load[n]||0)+1;}return {role:l,name:n,chosen:!!(n&&h.indexOf(n)>=0)};});
+    return {i:i,a:t0,b:t0+d,home:T[r[0]],away:T[r[1]],rest:T[r[2]],roles:roles};})};}
+function aspTeamShort(s,id){const g=aspChip(s,id);const l=String(g&&g.label||'?');return l.split(/\s+/)[0]+(/\(.*\)/.test(l)?'':'');}
+function aspTriHtml(s,b,a,me){const P=aspTriPlan(s,b,a);if(!P)return '';const bi=esc(b.id),ai=esc(a.id);const col=id=>esc(String((aspChip(s,id)||{}).color||'#475569'));
+  const chip=id=>'<span class="tri-t" style="--gc:'+col(id)+'">'+esc(aspTeamShort(s,id))+'</span>';
+  let h='<'+'div class="asp-tri"><'+'div class="h">🏆 <b>Tournoi à 3 équipes</b> · 3 matchs de '+P.dur+'′ · l\'équipe qui ne joue pas arbitre et observe'+(me?'':'<button type="button" onclick="aspTriReroll(\''+bi+'\',\''+ai+'\')" title="Nouveau tirage au sort pour ceux qui n\'ont pas choisi le rôle">🎲</button>')+'</'+'div>';
+  P.matches.forEach(m=>{const mine=me&&m.roles.some(r=>r.name===me);
+    h+='<'+'div class="m'+(mine?' me':'')+'"><span class="tm">'+hmFmt(m.a)+'</span>'+chip(m.home)+'<i>contre</i>'+chip(m.away)+'<span class="rs">'+chip(m.rest)+' : '
+      +m.roles.map(r=>aspRoleIco(r.role)+' '+esc(r.role)+' <b>'+(r.name?esc(r.name):'—')+'</b>'+(r.name&&!r.chosen?' <small title="tiré au sort">🎲</small>':'')).join(' · ')+'</span>'
+      +(me?'':'<button type="button" class="obs" onclick="aspTriObs(\''+bi+'\',\''+ai+'\','+m.i+')">▶ Observer</button>')+'</'+'div>';});
+  return h+'</'+'div>';}
+function aspTriReroll(bid,aid){const s=aspS();if(!s)return;s.asp.tri=s.asp.tri||{};const k=bid+'|'+aid;s.asp.tri[k]=(+s.asp.tri[k]||1)+1;aspSave();}
+function aspTriObs(bid,aid,i){const s=aspS();if(!s)return;const b=aspB(s,bid),a=aspAt(s,bid,aid);const P=a&&aspTriPlan(s,b,a);if(!P)return;const m=P.matches[i];
+  const k=(a.exos||[]).findIndex(e=>{const x=aspExInfo(e);return x&&x.kind==='fps';});aspObserveK(bid,aid,k>=0?k:null,[m.home,m.away]);}
+// ── rendu de l'atelier (parties à la suite + tournoi) et largeur du bloc ──
+aspAtHtml=(function(f){return function(s,b,a,i){let h=f.apply(this,arguments);if(!b||b.kind!=='bloc')return h;try{
+  const t=document.createElement('template');t.innerHTML=h;const box=t.content.querySelector('.asp-at');if(!box)return h;const bi=esc(b.id),ai=esc(a.id);
+  const EX=[...box.querySelectorAll(':scope > .asp-ex')];
+  if(aspTriTeams(a)){box.querySelectorAll('.asp-g.wait').forEach(x=>{x.classList.remove('wait');x.textContent=x.textContent.replace(/^⏸\s*/,'');});}
+  if(aspIsSeq(a)&&EX.length===(a.exos||[]).length){const S=aspSegs(b,a,aspTimes(s)[b.id]);const row=document.createElement('div');row.className='asp-seqrow';EX[0].before(row);
+    EX.forEach((x,k)=>{const sg=document.createElement('div');sg.className='asp-seg';const inf=aspExInfo(a.exos[k]);
+      sg.innerHTML='<'+'div class="sh"><b>'+(k+1)+'</b> '+hmFmt(S[k].a)+'–'+hmFmt(S[k].b)+' <span class="d"><button type="button" onclick="aspSegDur(\''+bi+'\',\''+ai+'\','+k+',-5)" aria-label="5 min de moins">−</button>'+S[k].dur+'′<button type="button" onclick="aspSegDur(\''+bi+'\',\''+ai+'\','+k+',5)" aria-label="5 min de plus">+</button></span></'+'div>';
+      sg.appendChild(x);if(inf&&inf.kind==='fps'&&!aspTriTeams(a)){const ob=document.createElement('button');ob.type='button';ob.className='obs';ob.textContent='▶ Observer';ob.setAttribute('onclick','aspObserveK(\''+bi+'\',\''+ai+'\','+k+')');sg.appendChild(ob);}
+      row.appendChild(sg);if(k<EX.length-1){const ar=document.createElement('span');ar.className='asp-arr';ar.textContent='➜';row.appendChild(ar);}});
+    const nz=document.createElement('div');nz.className='asp-next';nz.dataset.drop='asn:'+b.id+':'+a.id;nz.title='Glisser ici une situation (ou un atelier) pour l\'ajouter à la suite';nz.textContent='＋ ➜';row.appendChild(nz);
+    const off=document.createElement('button');off.type='button';off.className='asp-seqoff';off.textContent='↕ en même temps (au choix)';off.title='Revenir à l\'affichage habituel';off.setAttribute('onclick','aspSeqOff(\''+bi+'\',\''+ai+'\')');row.after(off);}
+  else if(EX.length){const nz=document.createElement('div');nz.className='asp-next solo';nz.dataset.drop='asn:'+b.id+':'+a.id;nz.title='Glisser ici une 2e situation (ou un atelier entier) : les groupes la feront À LA SUITE, le bloc s\'élargit';nz.textContent='➜ ensuite…';EX[EX.length-1].after(nz);}
+  if(aspTriTeams(a)){const d=document.createElement('div');d.innerHTML=aspTriHtml(s,b,a,null);const tri=d.firstElementChild;const rl=box.querySelector('.asp-roles');if(rl)rl.replaceWith(tri);else box.appendChild(tri);}
+  return t.innerHTML;}catch(e){console.warn('v392 at',e);return h;}};})(aspAtHtml);
+aspBlockHtml=(function(f){return function(s,b,tm,idx){let h=f.apply(this,arguments);try{if(b&&b.kind==='bloc'){const n=Math.min(3,Math.max(1,...(b.ats||[]).map(a=>aspIsSeq(a)?(a.exos||[]).length:1)));
+  if(n>1)h=h.replace('<'+'div class="asp-b','<'+'div class="asp-b asp-w'+n);}}catch(e){}return h;};})(aspBlockHtml);
+// mode élève : le tournoi (avec « ton rôle ») sur l'écran de l'atelier
+aspElPagedHtml=(function(f){return function(s){let h=f.apply(this,arguments);try{if(h.indexOf('data-a=')<0)return h;const me=elMeGet(s);const t=document.createElement('template');t.innerHTML=h;let ch=false;
+  t.content.querySelectorAll('.ael-step[data-a]').forEach(st=>{const b=(s.asp.blocks||[]).find(x=>x.id===st.dataset.b);const a=b&&(b.ats||[]).find(x=>x.id===st.dataset.a);if(!a||!aspTriTeams(a))return;
+    const d=document.createElement('div');d.innerHTML=aspTriHtml(s,b,a,me||'—');const anchor=st.querySelector('.ael-roles')||st.querySelector('.ael-with')||st.querySelector('h3');if(anchor){anchor.after(d.firstElementChild);ch=true;}});
+  return ch?t.innerHTML:h;}catch(e){console.warn('v392 el',e);return h;}};})(aspElPagedHtml);
+// ── 3. effectif : qui manque, et pourquoi ──
+const ASP_MISS={};
+function aspMissHtml(s,b,tm){const all=(COMPO.roster||[]).filter(r=>r&&r.name!=null&&(grpSexe(r.name)==='M'||grpSexe(r.name)==='F'));
+  const ab={M:[],F:[]},late={M:[],F:[]};let day='';try{const d=new Date((s.date||'')+'T12:00:00');day=['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'][d.getDay()];}catch(e){}
+  all.forEach(r=>{const x=grpSexe(r.name);if(r.absent){ab[x].push(r.name);return;}const a=aspArr(s,r.name);if(a!=null&&a>0&&a>tm.a)late[x].push(r.name+' ('+hmFmt(a)+')');});
+  const L=(t,A)=>A.length?'<'+'div><b>'+t+' ('+A.length+')</b> : '+A.map(esc).join(', ')+'</'+'div>':'';
+  return '<'+'div class="asp-miss">'+L('👦 absents dans le Sheet (case « présent » décochée)',ab.M)+L('👦 pas encore arrivés à '+hmFmt(tm.a),late.M)+L('👧 absentes dans le Sheet',ab.F)+L('👧 pas encore arrivées à '+hmFmt(tm.a),late.F)
+    +'<'+'div class="cc-dim">Les heures d\'arrivée viennent des colonnes « Fin cours » du '+esc(day||'jour')+' (date de la séance : '+esc((s.date||'').split('-').reverse().join('/'))+') + 5 min. Si l\'AS n\'a pas lieu ce jour-là, change la date de la séance.</'+'div></'+'div>';}
+aspCountHtml=(function(f){return function(s,b,tm){let h=f.apply(this,arguments);if(!h||!b)return h;try{const k=b.id;
+  h=h.replace('<'+'div class="asp-cnt"','<'+'div class="asp-cnt" role="button" tabindex="0" style="cursor:pointer;" onclick="ASP_MISS[\''+esc(k)+'\']=!ASP_MISS[\''+esc(k)+'\'];renderSeanceTab()"').replace('présents</span>','présents '+(ASP_MISS[k]?'▴':'▾ qui manque ?')+'</span>');
+  if(ASP_MISS[k])h+=aspMissHtml(s,b,tm);}catch(e){}return h;};})(aspCountHtml);
+// ── 4. synchro : diagnostic de la connexion ──
+async function syncDiag(){const c=ghCfg();const out=[];const set=t=>{SYNC2.diag=t;const p=E('sync-pan');if(p)syncPanelFill(p);};set('🔎 Test en cours…');
+  const tok=String(c.token||'');if(!tok){set('❌ Pas de jeton GitHub sur cet appareil : Réglages → GitHub.');return;}
+  if(/[^\x21-\x7e]/.test(tok))out.push('⚠️ Le jeton contient un espace, un retour à la ligne ou un caractère invisible : recolle-le dans Réglages → GitHub.');
+  if(navigator.onLine===false){set('❌ Cet ordinateur se dit hors-ligne.');return;}
+  let open=false;try{const r=await fetch('https://api.github.com/zen',{cache:'no-store'});open=r.ok||r.status===403;out.push(open?'✅ GitHub (api.github.com) joignable depuis ce réseau':'⚠️ api.github.com répond '+r.status);}
+  catch(e){out.push('❌ api.github.com est BLOQUÉ depuis cet ordinateur (l\'app s\'ouvre car github.io passe, mais la synchro passe par api.github.com). Causes habituelles : réseau de l\'établissement, antivirus / pare-feu, bloqueur de pub ou extension. 👉 Essaie le partage de connexion de ton téléphone, ou désactive le bloqueur pour ce site, ou un autre navigateur.');set(out.join('\n'));return;}
+  try{const r=await fetch('https://api.github.com/repos/'+encodeURIComponent(c.owner)+'/'+encodeURIComponent(c.brepo),{cache:'no-store',headers:{'Authorization':'Bearer '+tok.trim(),'Accept':'application/vnd.github+json'}});
+    if(r.ok)out.push('✅ Jeton accepté et dépôt de sauvegarde trouvé → relance « Synchroniser maintenant ».');
+    else if(r.status===401)out.push('❌ Jeton refusé (expiré ou mal collé) : crée un nouveau jeton sur GitHub et colle-le dans Réglages → GitHub.');
+    else if(r.status===404)out.push('❌ Dépôt « '+c.brepo+' » introuvable avec ce jeton (jeton sans accès à ce dépôt ?).');
+    else out.push('⚠️ GitHub répond '+r.status);}
+  catch(e){out.push('❌ La demande avec le jeton est bloquée (alors que GitHub est joignable) : un antivirus ou une extension filtre probablement les requêtes authentifiées.');}
+  set(out.join('\n'));}
+syncPanelFill=(function(f){return function(p){const r=f.apply(this,arguments);try{const b=p.querySelector('.sp-b');if(b&&!p.querySelector('.sp-diag')){const bt=document.createElement('button');bt.type='button';bt.className='sp-diag';bt.textContent='🔎 Diagnostiquer la connexion';bt.setAttribute('onclick','syncDiag()');b.appendChild(bt);}
+  if(SYNC2.diag){const d=document.createElement('div');d.className='sp-diagout';d.textContent=SYNC2.diag;p.appendChild(d);}}catch(e){}return r;};})(syncPanelFill);
+(function(){const st=document.createElement('style');st.textContent=
+ 'html body .asp-seqrow{display:flex;align-items:stretch;gap:4px;margin:4px 0;}html body .asp-seg{flex:1 1 0;min-width:0;border:1px solid #334155;border-radius:8px;padding:4px;background:#111827;}'
++'html body .asp-seg .sh{display:flex;align-items:center;gap:4px;font-size:.7rem;color:#cbd5e1;flex-wrap:wrap;}html body .asp-seg .sh>b{background:#7c3aed;color:#fff;border-radius:999px;padding:0 6px;}'
++'html body .asp-seg .d{margin-left:auto;display:inline-flex;align-items:center;gap:2px;}html body .asp-seg .d button{border:1px solid #475569;background:#0f172a;color:#e2e8f0;border-radius:6px;width:22px;height:22px;padding:0;cursor:pointer;}'
++'html body .asp-arr{align-self:center;color:#a78bfa;font-weight:800;}html body .asp-next{border:1px dashed #7c3aed;border-radius:8px;color:#c4b5fd;font-size:.72rem;display:flex;align-items:center;justify-content:center;padding:4px 8px;min-width:44px;}'
++'html body .asp-next.solo{margin:2px 0;justify-content:flex-start;opacity:.55;font-size:.64rem;padding:1px 6px;min-height:0;}html body .asp-next.solo:hover,html body .asp-next.solo.over{opacity:1;}html body .asp-next.over{outline:3px dashed #facc15;outline-offset:-2px;}'
++'html body .asp-seqoff{border:0;background:transparent;color:var(--dim2);font-size:.66rem;cursor:pointer;padding:0 2px;}'
++'@media (min-width:700px){html body .asp-b.asp-w2{grid-column:span 2;}html body .asp-b.asp-w3{grid-column:span 3;}}'
++'html body .asp-tri{border:1px solid #f59e0b;border-radius:8px;padding:5px 6px;margin:5px 0;background:#1c1405;font-size:.72rem;}html body .asp-tri .h{display:flex;gap:6px;align-items:center;flex-wrap:wrap;color:#fde68a;margin-bottom:3px;}'
++'html body .asp-tri .h button{margin-left:auto;border:1px solid #f59e0b;background:transparent;color:#fde68a;border-radius:6px;cursor:pointer;}'
++'html body .asp-tri .m{display:flex;gap:5px;align-items:center;flex-wrap:wrap;padding:3px 0;border-top:1px solid #3f2d0a;}html body .asp-tri .m.me{background:#3f2d0a;border-radius:6px;}'
++'html body .asp-tri .tm{font-weight:800;color:#fbbf24;min-width:38px;}html body .asp-tri .tri-t{background:var(--gc);color:#fff;border-radius:999px;padding:1px 7px;font-weight:700;}html body .asp-tri i{color:var(--dim2);}html body .asp-tri .rs{flex:1 1 220px;color:#e2e8f0;}'
++'html body .asp-tri .obs{padding:2px 7px;}'
++'html body .asp-miss{border:1px solid #334155;border-radius:8px;padding:5px 7px;margin:3px 0;font-size:.7rem;background:#0f172a;display:flex;flex-direction:column;gap:3px;}'
++'html body #sync-pan .sp-diagout{white-space:pre-line;margin-top:8px;border:1px solid #334155;border-radius:8px;padding:7px 9px;background:#111827;font-size:.78rem;line-height:1.4;}';
+document.head.appendChild(st);})();
 </script>
 </body>
 </html>
