@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v404</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v405</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v404</title>
+<title>Gribouillis EPS v405</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -28927,6 +28927,10 @@ aspElPagedHtml=(function(f){return function(s){let h=f.apply(this,arguments);try
 // les objectifs des profils voyagent avec la séance (tablettes)
 elPublish=(function(f){return function(){try{const s=getActiveSeance();if(s&&s.asp){const po={};(CFG.savedPresets||[]).forEach(p=>{if(p&&p.name&&/^FPS ·/.test(p.name))po[p.name]=aspProfObj(p.name);});s.asp.profObj=po;saveSeances();}}catch(e){}return f.apply(this,arguments);};})(elPublish);
 (function(){const st=document.createElement('style');st.textContent='html body .ael-fr ul{margin:4px 0 0 18px;padding:0;}html body .ael-fr li{margin:2px 0;}html body .ael-teams button .late{font-size:.8em;color:#fbbf24;font-weight:700;}';document.head.appendChild(st);})();
+
+// v405 — élèves : un fil rouge n'apparaît que s'il a un objectif chiffré
+aspElPagedHtml=(function(f){return function(s){let h=f.apply(this,arguments);try{if(h.indexOf('ael-fr')<0)return h;const t=document.createElement('template');t.innerHTML=h;
+  t.content.querySelectorAll('.ael-fr').forEach(box=>{box.querySelectorAll('li').forEach(li=>{if(!li.querySelector('b'))li.remove();});if(!box.querySelector('li'))box.remove();});return t.innerHTML;}catch(e){return h;}};})(aspElPagedHtml);
 </script>
 </body>
 </html>
