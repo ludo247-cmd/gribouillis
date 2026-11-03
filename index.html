@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v406</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v407</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v406</title>
+<title>Gribouillis EPS v407</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -28941,6 +28941,33 @@ aspElPagedHtml=(function(f){return function(s){let h=f.apply(this,arguments);try
 const SYNC_EL_KEYS=['grib_archives_v3','grib_seances_v1'];
 function syncElOn(){try{return !!(SEANCE_STATE&&SEANCE_STATE.mode==='eleve');}catch(e){return false;}}
 syncKeys=(function(f){return function(){const L=f.apply(this,arguments);return syncElOn()?L.filter(k=>SYNC_EL_KEYS.indexOf(k)>=0):L;};})(syncKeys);
+
+// ══════════════════════════════════════════════════════════════════════
+// v407 — les vidéos d'une séance reviennent au début de la séance SUIVANTE
+// de la séquence (prof : sous le bandeau séquence ; élèves : écran de
+// présentation / 1re page). Case « ↪ séance suivante » sur chaque vidéo.
+// ══════════════════════════════════════════════════════════════════════
+function seqPrevClips(s){try{if(!s||!s.seqId||typeof seqGet!=='function')return null;const q=seqGet(s.seqId);if(!q)return null;
+  for(let j=(s.seqIdx||0)-1;j>=0;j--){const p=seqSeance(q,j);if(p&&p.id!==s.id){const c=(p.clips||[]).filter(x=>x&&x.url&&x.next!==false);return c.length?{s:p,clips:c}:null;}}}catch(e){console.warn('v407 prev',e);}return null;}
+function seqPrevClipsHtml(s,eleve){const P=seqPrevClips(s);if(!P)return '';const d=P.s.date?seanceDateFr(P.s.date):'';
+  let v='';P.clips.forEach(c=>{const cm=(c.comments||[]).filter(m=>m&&m.text);
+    v+='<'+'div class="spc-it"><b>'+esc(String(c.titre||'Vidéo'))+(c.team?' <small>· '+esc(String(c.team))+'</small>':'')+'</b><video src="'+esc(c.url)+'" controls preload="metadata" playsinline class="clip-video"></video>'
+      +(cm.length?'<'+'div class="spc-cm">'+cm.slice().sort((a,b)=>(a.at||0)-(b.at||0)).map(m=>'💬 '+(m.who?'<b>'+esc(String(m.who))+'</b> : ':'')+esc(String(m.text))).join('<br>')+'</'+'div>':'')+'</'+'div>';});
+  if(eleve)return '<'+'div class="sel-box spc"><h4>🎬 Vidéos de la séance dernière'+(d?' <small>('+esc(d)+')</small>':'')+'</h4><'+'div class="sel-dim">Regardez-les ensemble : qu\'est-ce qu\'on veut réussir mieux aujourd\'hui ?</'+'div><'+'div class="spc-grid">'+v+'</'+'div></'+'div>';
+  return '<details class="spc spc-prof"><summary>🎬 '+P.clips.length+' vidéo'+(P.clips.length>1?'s':'')+' de la séance précédente'+(d?' ('+esc(d)+')':'')+' — à montrer en début de séance</summary><'+'div class="spc-grid">'+v+'</'+'div></details>';}
+seqBannerHtml=(function(f){return function(s){let h=f.apply(this,arguments);try{h+=seqPrevClipsHtml(s,false);}catch(e){console.warn('v407 ban',e);}return h;};})(seqBannerHtml);
+renderEleveStepPresentation=(function(f){return function(s,st){let h=f.apply(this,arguments);try{h=seqPrevClipsHtml(s,true)+h;}catch(e){console.warn('v407 pres',e);}return h;};})(renderEleveStepPresentation);
+aspElPagedHtml=(function(f){return function(s){let h=f.apply(this,arguments);try{const x=seqPrevClipsHtml(s,true);if(!x)return h;const t=document.createElement('template');t.innerHTML=h;
+  const st=t.content.querySelector('.ael-pages > .ael-step');if(!st)return h;const w=document.createElement('div');w.innerHTML=x;const h3=st.querySelector('h3');if(h3)h3.after(w.firstChild);else st.prepend(w.firstChild);return t.innerHTML;}catch(e){console.warn('v407 asp',e);return h;}};})(aspElPagedHtml);
+seanceClipsTeacherHtml=(function(f){return function(s){let h=f.apply(this,arguments);try{(s.clips||[]).forEach(c=>{if(!c||!c.id)return;const k='id="clipvt-'+esc(c.id)+'"';const i=h.indexOf(k);if(i<0)return;const j=h.indexOf('</video>',i);if(j<0)return;
+  const cb='<label class="spc-nx"><input type="checkbox"'+(c.next!==false?' checked':'')+' data-c="'+esc(c.id)+'" onchange="clipSet(this.dataset.c,\'next\',this.checked)"> ↪ à montrer au début de la séance suivante</label>';
+  h=h.slice(0,j+8)+cb+h.slice(j+8);});}catch(e){console.warn('v407 tch',e);}return h;};})(seanceClipsTeacherHtml);
+(function(){const st=document.createElement('style');st.textContent=
+ 'html body .spc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;margin-top:8px;}html body .spc-it{background:rgba(15,23,42,.6);border:1px solid #334155;border-radius:10px;padding:8px;}'
++'html body .spc-it video{width:100%;max-height:260px;border-radius:8px;background:#000;margin-top:4px;}html body .spc-cm{font-size:.75rem;color:#cbd5e1;margin-top:4px;}'
++'html body details.spc-prof{border:1px solid #0f766e;background:rgba(15,118,110,.12);border-radius:10px;padding:6px 10px;margin:6px 0;}html body details.spc-prof summary{cursor:pointer;font-weight:700;font-size:.82rem;}'
++'html body .spc-nx{display:block;font-size:.74rem;color:#5eead4;margin:4px 0;cursor:pointer;}';
+document.head.appendChild(st);})();
 </script>
 </body>
 </html>
