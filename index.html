@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v397</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v398</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v397</title>
+<title>Gribouillis EPS v398</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -28467,6 +28467,69 @@ document.addEventListener('pointerup',e=>{const L=ASP_EXLP;ASP_EXLP=null;if(!L||
   const d=String(L.el.dataset.drag||'');const q=d.split(':');if(q[0]!=='ae')return;const s=aspS();const a=s&&aspAt(s,q[1],q[2]);const ex=a&&(a.exos||[])[+q[3]];if(!ex)return;
   setTimeout(()=>{try{if(ex.k==='lib')libEdit(ex.id);else if(ex.k==='exo')sbEditExo(ex.key);else if(ex.k==='warm')aspOpenWarm();}catch(err){console.warn('v397 lp',err);}},30);},true);
 (function(){const st=document.createElement('style');st.textContent='html body .asp-objbar{min-height:0;padding:3px 8px;margin:0 0 6px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}html body .asp-objbar .asp-bh{margin:0;}html body .asp-objbar .asp-empty.sm{font-size:.66rem;padding:0;margin:0;}html body .asp-ex{touch-action:manipulation;}';document.head.appendChild(st);})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v398 — mode élève / tablettes :
+// • « Qui es-tu ? » propose aussi une TABLETTE DE GROUPE (Garçons, Filles,
+//   clubs) : la tablette suit le groupe ; « ↔ Changer de groupe » ;
+// • écran d'une FPS : comment on marque, règles et critère de réussite
+//   reviennent, vignette de la situation ; le tournoi n'encombre plus ;
+// • 2e écran (choix du match) : arbitre / observateur / touche par match ;
+//   ▶ Match ou ▶ Lancer → feuille d'avant-match (réglage simplifié).
+// • séance prof : petit encart « Objectif » au-dessus de l'échauffement.
+// ══════════════════════════════════════════════════════════════════════
+function aspGTok(me){return typeof me==='string'&&/^@[gc]:/.test(me);}
+function aspGTab(s){const out=[];aspBase().forEach(g=>out.push({tok:'@g:'+g.id,label:g.label,color:g.color,members:g.members}));
+  const C={};(COMPO.roster||[]).forEach(r=>{if(r&&r.name!=null&&!r.absent&&r.club){const c=String(r.club).trim();if(c)(C[c]=C[c]||[]).push(r.name);}});
+  const col={rouge:'#dc2626',jaune:'#ca8a04',bleu:'#2563eb',bleue:'#2563eb',vert:'#16a34a',verte:'#16a34a',orange:'#ea580c',violet:'#7c3aed'};
+  Object.keys(C).sort().forEach(c=>out.push({tok:'@c:'+c,label:'Club '+c,color:col[stripAccents(c).toLowerCase()]||'#475569',members:C[c]}));
+  try{aspChips(s).forEach(g=>{if(g.base||/éq\.|équipe/i.test(String(g.label)))return;if((s.decoupages||[]).some(d=>d.fps&&(d.groupes||[]).some(x=>x.id===g.id)))return;out.push({tok:'@g:'+g.id,label:g.label,color:g.color,members:g.members||[]});});}catch(e){}
+  return out;}
+function aspGOf(s,me){if(!aspGTok(me))return null;return aspGTab(s).find(x=>x.tok===me)||null;}
+aspMyAts=(function(f){return function(s,b,me){const G=aspGOf(s,me);if(!G)return f.apply(this,arguments);const gid=me.indexOf('@g:')===0?me.slice(3):null;
+  return (b.ats||[]).filter(a=>((a.exos||[]).length||(a.groups||[]).length)&&((gid&&(a.groups||[]).indexOf(gid)>=0)||aspAtMembers(s,a).some(n=>G.members.indexOf(n)>=0)));};})(aspMyAts);
+aspMyGroups=(function(f){return function(s,me){const G=aspGOf(s,me);if(G)return [{id:G.tok,label:G.label,color:G.color,members:G.members}];return f.apply(this,arguments);};})(aspMyGroups);
+aspEleveHtml=(function(f){return function(s){let h=f.apply(this,arguments);try{const me=elMeGet(s);
+  if(!me&&h.indexOf('Qui es-tu')>=0){const G=aspGTab(s);if(G.length){const gh='<'+'div class="ael-gtab"><b>📱 Tablette de groupe</b> <span class="cc-dim">(une tablette pour tout un groupe : elle suit le groupe toute la séance)</span><'+'div class="ael-gbtns">'
+      +G.map(g=>'<button type="button" style="--gc:'+esc(g.color||'#475569')+'" data-n="'+esc(g.tok)+'" onclick="aspMe(this.dataset.n)">'+esc(String(g.label))+' <small>'+g.members.length+'</small></button>').join('')+'</'+'div><'+'div class="cc-dim" style="margin-top:6px;">… ou chacun touche son prénom :</'+'div></'+'div>';
+    h=h.replace('<h3>🙋 Qui es-tu ?</h3>','<h3>🙋 Qui es-tu ?</h3>'+gh);}}}catch(e){console.warn('v398 gtab',e);}return h;};})(aspEleveHtml);
+// ── écran d'une FPS : description + critère + vignette ──
+aspEleveExHtml=(function(f){return function(s,e){let h=f.apply(this,arguments);try{const inf=aspExInfo(e);if(!inf||inf.kind!=='fps'||!inf.src)return h;const x=inf.src;const C=x.cfg||{};
+  let add='';const pts=(C.points||[]).filter(Boolean),reg=(C.emblematiques||[]).filter(Boolean);
+  if(pts.length)add+='<'+'div class="sel-rules ael-pts"><b>⚽ Comment on marque</b><ul>'+pts.map(p=>'<li>'+esc(String(p))+'</li>').join('')+'</ul></'+'div>';
+  if(reg.length)add+='<'+'div class="sel-rules ael-reg"><b>📏 Règles</b><ul>'+reg.map(p=>'<li>'+esc(String(p))+'</li>').join('')+'</ul></'+'div>';
+  const cr=(x.criteres||C.criteres||[]).filter(c=>c&&(c.label||typeof c==='string'));
+  if(cr.length){const crTxt=cr.map(c=>{if(typeof c==='string')return esc(c);let t=esc(String(c.label||''));if(c.cible!=null&&c.cible!=='')t+=' <b>'+(c.neg?'≤ ':'≥ ')+esc(String(c.cible))+(/%/.test(c.label||'')?' %':'')+'</b>';return t;}).join(' · ');
+    h=h.replace(/<div class="sel-crit">[\s\S]*?<\/div>/,'');add+='<'+'div class="sel-crit ael-crit">🎯 <b>Je réussis si</b> : '+crTxt+'</'+'div>';}
+  const th=aspThumb(inf);const tv='<span class="ael-vig">'+th+'</span>';
+  h=h.replace(/(<h4[^>]*>)/,'$1'+tv);
+  const j=h.lastIndexOf('</'+'div>');if(add&&j>0)h=h.slice(0,j)+add+h.slice(j);}catch(err){console.warn('v398 ex',err);}return h;};})(aspEleveExHtml);
+aspElPagedHtml=(function(f){return function(s){let h=f.apply(this,arguments);try{const me=elMeGet(s);const t=document.createElement('template');t.innerHTML=h;let ch=false;
+  t.content.querySelectorAll('.ael-pages details.asp-tri').forEach(x=>{x.remove();ch=true;});
+  t.content.querySelectorAll('.ael-pages > .ael-step[data-a]').forEach(st=>{const h3=st.querySelector('h3');if(!h3||h3.querySelector('.ael-vig'))return;const b=(s.asp.blocks||[]).find(x=>x.id===st.dataset.b);const a=b&&(b.ats||[]).find(x=>x.id===st.dataset.a);if(!a)return;
+    const k=st.dataset.k!=null?+st.dataset.k:0;const e=(a.exos||[])[k]||(a.exos||[])[0];const inf=e&&aspExInfo(e);if(!inf||inf.kind==='warm')return;const sp=document.createElement('span');sp.className='ael-vig big';sp.innerHTML=aspThumb(inf);const tt=h3.querySelector('.t');if(tt)tt.after(sp);else h3.prepend(sp);ch=true;});
+  const G=aspGOf(s,me);if(G){const hd=t.content.querySelector('.ael-head');if(hd){const b=hd.querySelector('b');if(b)b.textContent='📱 Tablette '+G.label;hd.querySelectorAll('button').forEach(bt=>{if(/aspMe\(null\)/.test(bt.getAttribute('onclick')||''))bt.textContent='↔ Changer de groupe';});ch=true;}}
+  return ch?t.innerHTML:h;}catch(e){console.warn('v398 pg',e);return h;}};})(aspElPagedHtml);
+// ── 2e écran : rôles par match ; ▶ Match → feuille d'avant-match ──
+trnShow=(function(f){return function(bid,aid,eleve){const r=f.apply(this,arguments);try{const o=E('trn-ov');const s=aspS();if(!o||!s)return r;const b=aspB(s,bid),a=aspAt(s,bid,aid);if(!b||!a)return r;
+  const ids=aspTeamIds(s,a);const P=aspTriPlan(s,b,a);const me=elMeGet(s);
+  o.querySelectorAll('button[data-i]').forEach(bt=>{const i=+bt.dataset.i,j=+bt.dataset.j;const A=ids[i],B=ids[j];const m=P&&P.matches.find(x=>(x.home===A&&x.away===B)||(x.home===B&&x.away===A));
+    bt.addEventListener('click',()=>{ASP_PRM=Date.now();},true);
+    if(!m)return;const card=bt.parentElement;if(!card)return;const d=document.createElement('div');d.className='trn-roles';
+    d.innerHTML='🕒 '+hmFmt(m.a)+' · '+(m.roles.length?m.roles.map(x=>'<span'+(me&&x.name===me?' class="me"':'')+'>'+aspMRIco(x.role)+' '+esc(x.role)+' : <b>'+(x.name?esc(x.name):'—')+'</b></span>').join(' '):'<span class="cc-dim">rôles à donner</span>');
+    bt.before(d);});}catch(e){console.warn('v398 trn',e);}return r;};})(trnShow);
+document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('.ael-obs');if(b)ASP_PRM=Date.now();},true);
+// ── séance prof : encart Objectif au-dessus de l'échauffement ──
+aspHtml=(function(f){return function(s){let h=f.apply(this,arguments);try{const t=document.createElement('template');t.innerHTML=h;const o=t.content.querySelector('.asp-objbar');const g=t.content.querySelector('.asp-grid');
+  if(o&&g){const first=[...g.children].find(x=>x.classList.contains('asp-b'));const st=document.createElement('div');st.className='asp-stack';o.classList.add('in');g.prepend(st);st.appendChild(o);if(first)st.appendChild(first);h=t.innerHTML;}}catch(e){console.warn('v398 obj',e);}return h;};})(aspHtml);
+(function(){const st=document.createElement('style');st.textContent=
+ 'html body .ael-gtab{border:1px solid #334155;border-radius:12px;padding:10px;margin:6px 0 10px;background:#0f172a;}html body .ael-gbtns{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}'
++'html body .ael-gbtns button{border:0;border-radius:12px;padding:14px 18px;font-size:1.05rem;font-weight:800;color:#fff;background:var(--gc);cursor:pointer;min-width:130px;}html body .ael-gbtns small{opacity:.8;font-weight:600;}'
++'html body .ael-vig{display:inline-block;width:44px;height:30px;border-radius:6px;overflow:hidden;vertical-align:middle;margin-right:6px;background:#0f172a;}html body .ael-vig.big{width:72px;height:48px;margin:0 8px;}html body .ael-vig img,html body .ael-vig span{width:100%;height:100%;object-fit:cover;display:flex;align-items:center;justify-content:center;}'
++'html body .ael-pts ul,html body .ael-reg ul{margin:2px 0 6px 18px;padding:0;}html body .ael-crit{background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.5);border-radius:8px;padding:5px 8px;margin-top:6px;}'
++'html body #trn-ov .trn-roles{font-size:.74rem;color:#cbd5e1;margin:4px 0 6px;display:flex;flex-wrap:wrap;gap:6px;justify-content:center;}html body #trn-ov .trn-roles .me{background:#f59e0b;color:#111;border-radius:6px;padding:0 5px;}'
++'html body .asp-stack{display:flex;flex-direction:column;gap:6px;}html body .asp-stack>.asp-b{margin:0;}html body .asp-objbar.in{margin:0;border-style:dashed;}';
+document.head.appendChild(st);})();
 </script>
 </body>
 </html>
