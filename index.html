@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v408</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v409</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v408</title>
+<title>Gribouillis EPS v409</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -29029,6 +29029,20 @@ renderLibTab=(function(f){return function(){const r=f.apply(this,arguments);try{
 +'html body .libs-rbar{align-items:center;}html body .libs-rbar .libs-ry{min-height:32px;font-size:.8rem;}'
 +'html body .libs-fine.mini{margin:0;padding:0 8px;border-radius:999px;}html body .libs-fine.mini summary{min-height:30px;}html body .libs-fine.mini[open]{flex-basis:100%;border-radius:10px;padding:6px 10px;}';
 document.head.appendChild(st);})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v409 — synchro des séances : les vidéos (s.clips) et leurs commentaires
+// sont fusionnés entre appareils (avant : la version d'une tablette
+// pouvait effacer les vidéos ajoutées sur le téléphone du prof).
+// ══════════════════════════════════════════════════════════════════════
+syncMergeVal=(function(f){return function(k,lv,rv){let out=f.apply(this,arguments);if(k!=='grib_seances_v1')return out;
+  try{const L=JSON.parse(lv||'[]'),R=JSON.parse(out||'[]');if(!Array.isArray(L)||!Array.isArray(R))return out;const byR={};R.forEach(x=>{if(x&&x.id)byR[x.id]=x;});let ch=false;
+    L.forEach(x=>{if(!x||!x.id||!Array.isArray(x.clips)||!x.clips.length)return;const r=byR[x.id];if(!r)return;if(!Array.isArray(r.clips))r.clips=[];
+      x.clips.forEach(c=>{if(!c||!c.id)return;const rc=r.clips.find(z=>z&&z.id===c.id);if(!rc){if(r.clipsDel&&r.clipsDel.indexOf(c.id)>=0)return;r.clips.push(c);ch=true;return;}
+        (c.comments||[]).forEach(m=>{if(!m||!m.id)return;if(!Array.isArray(rc.comments))rc.comments=[];const rm=rc.comments.find(z=>z&&z.id===m.id);if(!rm){rc.comments.push(m);ch=true;}else if(!rm.text&&m.text){rm.text=m.text;ch=true;}});});});
+    return ch?JSON.stringify(R):out;}catch(e){console.warn('v409 clips',e);return out;}};})(syncMergeVal);
+// une vidéo supprimée volontairement ne doit pas revenir par la fusion
+clipDel=(function(f){return function(cid){const r=f.apply(this,arguments);try{const s=getActiveSeance();if(s&&!(s.clips||[]).some(c=>c&&c.id===cid)){s.clipsDel=s.clipsDel||[];if(s.clipsDel.indexOf(cid)<0){s.clipsDel.push(cid);saveSeances();}}}catch(e){}return r;};})(clipDel);
 </script>
 </body>
 </html>
