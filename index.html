@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v410</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v412</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v410</title>
+<title>Gribouillis EPS v412</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -29120,6 +29120,82 @@ renderSeqTab=(function(f){return function(){const r=f.apply(this,arguments);try{
 +'html body .bil-ta{width:100%;box-sizing:border-box;min-height:70px;background:#111827;border:1px solid #334155;color:#e2e8f0;border-radius:8px;padding:8px;font-family:inherit;}'
 +'html body .bil-sq{background:#0f766e;color:#fff;margin-left:4px;}html body .bil-sq.done{background:#15803d;}html body .asp-bilbar .asp-fin{background:#15803d;color:#fff;border-color:#15803d;}';
 document.head.appendChild(st);})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v411 — envoi AUTOMATIQUE des matchs au Google Sheets (appareil du prof) :
+// dès qu'un match (tablette ou téléphone) arrive, il est rattaché au match
+// du Planning (clubs + catégories), les 2 tablettes d'un même match sont
+// réunies, puis score + observations partent dans Planning / Observations.
+// + « 🎁 Autre point (faute adverse…) » compte enfin pour NOTRE club.
+// ══════════════════════════════════════════════════════════════════════
+arShCat=(function(f){return function(label){const l=stripAccents(String(label||'')).toLowerCase().trim();
+  if(/reception.*rat/.test(l))return 'rr';if(/passe/.test(l))return 'pd';
+  if(/faute advers/.test(l))return 'ap';
+  if(/advers/.test(l))return null;
+  if(/^[a-z]/.test(l)&&!/^passe/.test(l))return null; // libellé sans pictogramme = action de l'adversaire (anciens profils)
+  return f.apply(this,arguments);};})(arShCat);
+const GSA_KEY='grib_gsauto_v1',GSA_FROM=20261105;let GSA_BUSY=false;
+function gsaLog(){try{return JSON.parse(localStorage.getItem(GSA_KEY)||'{}')||{};}catch(e){return {};}}
+function gsaLogSave(o){try{localStorage.setItem(GSA_KEY,JSON.stringify(o));}catch(e){}}
+function gsaDate(d){const m=String(d||'').match(/(\d+)\/(\d+)\/(\d+)/);return m?(+m[3])*10000+(+m[2])*100+(+m[1]):0;}
+function gsaCats(name){const m=String(name||'').toUpperCase().match(/\b([ABC])\s*[+\/&]\s*([ABC])\b/);return m?[m[1],m[2]].sort().join('/'):'';}
+function gsaGuess(a,M,used){const names=(a.teams||[]).map(t=>t.name||'');const cats=names.map(gsaCats).find(Boolean)||'';if(!cats)return -1;
+  for(let i=0;i<M.length;i++){const m=M[i];if(used[i]||calPlayed(m))continue;
+    const mc=(m.cats||[]).slice().sort().join('/');if(mc!==cats)continue;const cl=names.map(n=>arShClubIn(n,[m.c1,m.c2]));if(cl.some(x=>!x))continue;if(names.length>1&&cl[0]===cl[1])continue;return i;}
+  return -1;}
+function gsaExtra(a){const T={};(a.teams||[]).forEach((t,ti)=>{const L=(a.btnLabels&&a.btnLabels[ti])||[];const cu=(t.stats&&t.stats.custom)||[];const o={rec:0,occ:0,fd:0,cons:0};
+  L.forEach((lab,i)=>{const l=stripAccents(String(lab||'')).toLowerCase();const v=+cu[i]||0;if(!v)return;if(/occasion/.test(l))o.occ+=v;else if(/balle recue|renvoy/.test(l))o.rec+=v;else if(/conserv/.test(l))o.cons+=v;else if(/faute directe/.test(l))o.fd+=v;});T[ti]=o;});return T;}
+function gsaPair(x,y){const s=a=>{const st=((a.teams||[])[0]||{}).stats||{};const tg=((a.rkSets||[]).slice(-1)[0]||{}).target||15;return [Math.min(+st.pts||0,tg),Math.min(+st.scoreAdv||0,tg)];};const X=s(x),Y=s(y);return X[0]===Y[1]&&X[1]===Y[0];}
+async function gsaRun(manual){if(GSA_BUSY)return 0;try{if(typeof GRIB_EXPORT_MODE!=='undefined'&&GRIB_EXPORT_MODE)return 0;if(SEANCE_STATE&&SEANCE_STATE.mode==='eleve')return 0;if(syncInMatch())return 0;}catch(e){}
+  const c=clsActive();if(!c||!c.gs||!c.gs.url)return 0;const g=gsCfg();if(!g.cle)return 0;
+  let A=[];try{A=JSON.parse(localStorage.getItem('grib_archives_v3')||'[]');}catch(e){A=archives||[];}if(!Array.isArray(A))return 0;
+  const log=gsaLog();const cand=A.filter(a=>a&&!a.sheet&&gsaDate(a.date)>=GSA_FROM&&(a.teams||[]).length&&(!a.apsa||a.apsa===CFG.apsa)&&!log[syncArchSig(a)]&&(a.timeline||[]).some(x=>x&&x.length));
+  if(!cand.length)return 0;GSA_BUSY=true;let sent=0;
+  try{if(!(c.cal&&c.cal.m&&c.cal.m.length))await calLoad(true);const c2=clsActive();const M=(c2&&c2.cal&&c2.cal.m)||[];if(!M.length)return 0;
+    const used={};const groups={};
+    cand.sort((x,y)=>gsaDate(x.date)-gsaDate(y.date)).forEach(a=>{let i=-1;
+      // même date + mêmes catégories + autre club déjà rattaché → même match
+      Object.keys(groups).forEach(k=>{if(i>=0)return;const G=groups[k];const m=M[+k];if(G.date!==a.date)return;const names=(a.teams||[]).map(t=>t.name||'');if(gsaCats(names[0])!==(m.cats||[]).slice().sort().join('/'))return;
+        const cl=names.map(n=>arShClubIn(n,[m.c1,m.c2]));if(cl.some(x=>!x))return;const taken=G.list.map(z=>arShClubIn((z.teams[0]||{}).name||'',[m.c1,m.c2]));if(names.length===1&&taken.length===1&&taken[0]!==cl[0]&&gsaPair(G.list[0],a))i=+k;});
+      if(i<0)i=gsaGuess(a,M,used);if(i<0)return;used[i]=1;(groups[i]=groups[i]||{date:a.date,list:[]}).list.push(a);});
+    for(const k of Object.keys(groups)){const m=M[+k];const G=groups[k].list;const s=['',''];let obs=[];
+      G.forEach(a=>{const kk=arShTeamClub(a,m,false);const T=a.teams||[];const tg=((a.rkSets||[]).slice(-1)[0]||{}).target||15;
+        if(T.length>1){const sc=arShScores(a);s[kk[0]]=sc[0];s[kk[1]]=sc[1];}
+        else{const st=T[0].stats||{};s[kk[0]]=Math.min(+st.pts||0,tg);if(s[1-kk[0]]==='')s[1-kk[0]]=+st.scoreAdv||0;}
+        const ex=gsaExtra(a);const O=arShObs(a,m,kk);
+        O.forEach(o=>{if(o.prenom==='— équipe —'){const ti=kk.indexOf([m.c1,m.c2].indexOf(o.club));const e=ex[ti>=0?ti:0]||{};const r=[];if(e.cons)r.push('balles conservées '+e.cons);if(e.rec)r.push('balles reçues '+e.rec);if(e.occ)r.push('occasions BP ratées '+e.occ);if(e.fd)r.push('fautes directes '+e.fd);if(r.length)o.rem=r.join(' · ');}});
+        obs=obs.concat(O);});
+      // la tablette d'un club a son propre score : elle prime pour son club
+      const body={cle:g.cle,action:'resultat',match:m.num,s1:s[0]===''?'':+s[0],s2:s[1]===''?'':+s[1],joue:s[0]!==''&&s[1]!=='',obs,planning:c.calTab||'Planning',observations:(c.calTab&&c.calTab!=='Planning')?c.calTab.replace(/^Planning/,'Observations'):'Observations'};
+      try{const r=await fetch(c.gs.url,{method:'POST',body:JSON.stringify(body),headers:{'Content-Type':'text/plain;charset=utf-8'},redirect:'follow'});const j=JSON.parse(await r.text());
+        if(j&&j.ok){G.forEach(a=>{log[syncArchSig(a)]=m.num;});gsaLogSave(log);m.statut='Joué';sent++;try{toast2('📤 '+m.num+' envoyé au Sheet ('+body.s1+' – '+body.s2+(j.obs?' · '+j.obs+' ligne'+(j.obs>1?'s':''):'')+')');}catch(e){}}
+        else console.warn('gsa',m.num,j);}catch(e){console.warn('gsa send',e);if(manual)alert('Envoi au Sheet impossible : '+e.message);break;}}
+    if(sent){try{calLoad(true);}catch(e){}}}
+  finally{GSA_BUSY=false;}return sent;}
+setTimeout(()=>{gsaRun(false);},20000);setInterval(()=>{try{if(document.visibilityState==='visible')gsaRun(false);}catch(e){}},120000);
+
+// ══════════════════════════════════════════════════════════════════════
+// v412 — séance « rotations » (Terminales volley) : chaque bloc = une
+// rotation (match officiel du Planning + match du terrain 2). Les rotations
+// déjà jouées (statut « Joué » dans le Planning) sont marquées ✓ et sautées :
+// la séance suivante de la séquence reprend toute seule à la bonne rotation.
+// ══════════════════════════════════════════════════════════════════════
+function rotNum(s,key){try{const base=String(key).split('~')[0];const c=(s.matchCfg||{})[base];return c&&c.rotMatch?String(c.rotMatch):'';}catch(e){return '';}}
+function rotIsSeance(s){return !!(s&&s.matchCfg&&Object.keys(s.matchCfg).some(k=>s.matchCfg[k]&&s.matchCfg[k].rotMatch));}
+function rotPlayed(s,key){const n=rotNum(s,key);if(!n)return false;try{const c=clsActive();const M=(c&&c.cal&&c.cal.m)||[];const m=M.find(x=>x.num===n);return !!(m&&calPlayed(m));}catch(e){return false;}}
+function rotSkipPlayed(s){if(!rotIsSeance(s))return false;let ch=false;const st=s.steps||[];
+  st.forEach(x=>{if(seanceStepBase(x.key)==='match'&&rotPlayed(s,x.key)&&x.status!=='done'){x.status='done';ch=true;}});
+  const cur=st.find(x=>x.status==='current');if(cur&&seanceStepBase(cur.key)==='match'&&cur.status==='done'){}
+  if(ch&&!st.some(x=>x.status==='current')){const nx=st.find(x=>x.status==='pending'&&seanceStepBase(x.key)==='match');if(nx)nx.status='current';}
+  else if(ch){const c=st.find(x=>x.status==='current');if(c&&seanceStepBase(c.key)==='match'&&rotPlayed(s,c.key)){c.status='done';const nx=st.find(x=>x.status==='pending'&&seanceStepBase(x.key)==='match');if(nx)nx.status='current';}}
+  return ch;}
+sbStepHtml=(function(f){return function(s,st){let h=f.apply(this,arguments);try{if(st&&seanceStepBase(st.key)==='match'&&rotNum(s,st.key)){const p=rotPlayed(s,st.key);
+  const lab='<span class="rot-b'+(p?' ok':'')+'">'+(p?'✓ joué · ':'')+esc(rotNum(s,st.key))+'</span>';const i=h.indexOf('</div>');if(i>0)h=h.slice(0,i)+lab+h.slice(i);if(p)h=h.replace(/class="sb-step/,'class="sb-step rot-played');}}catch(e){console.warn('v412 sb',e);}return h;};})(sbStepHtml);
+resumeSeance=(function(f){return function(id){const r=f.apply(this,arguments);try{const s=getActiveSeance();if(s&&rotSkipPlayed(s)){saveSeances();try{renderSeanceTab();}catch(e){}}}catch(e){console.warn('v412 resume',e);}return r;};})(resumeSeance);
+// séance suivante de la séquence : on recopie TOUTES les rotations (les jouées seront sautées)
+seqCreateSeance=(function(f){return function(id,k){const r=f.apply(this,arguments);try{const q=seqGet(id);const s=q&&seqSeance(q,k);if(!s)return r;let prev=null;for(let j=k-1;j>=0;j--){prev=seqSeance(q,j);if(prev)break;}
+  if(prev&&rotIsSeance(prev)&&!rotIsSeance(s)){s.steps=prev.steps.map(x=>({key:x.key,status:'pending'}));if(s.steps[0])s.steps[0].status='current';s.matchCfg=JSON.parse(JSON.stringify(prev.matchCfg));s.par=JSON.parse(JSON.stringify(prev.par||{}));rotSkipPlayed(s);saveSeances();try{renderSeanceTab();}catch(e){}}}catch(e){console.warn('v412 seq',e);}return r;};})(seqCreateSeance);
+(function(){const st=document.createElement('style');st.textContent='html body .rot-b{display:inline-block;margin-left:6px;font-size:.66rem;font-weight:700;color:#93c5fd;border:1px solid #1d4ed8;border-radius:6px;padding:0 5px;}html body .rot-b.ok{color:#86efac;border-color:#15803d;}html body .sb-step.rot-played{opacity:.55;}';document.head.appendChild(st);})();
 </script>
 </body>
 </html>
