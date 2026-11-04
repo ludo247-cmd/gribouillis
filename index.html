@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v407</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v408</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v407</title>
+<title>Gribouillis EPS v408</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -28967,6 +28967,67 @@ seanceClipsTeacherHtml=(function(f){return function(s){let h=f.apply(this,argume
 +'html body .spc-it video{width:100%;max-height:260px;border-radius:8px;background:#000;margin-top:4px;}html body .spc-cm{font-size:.75rem;color:#cbd5e1;margin-top:4px;}'
 +'html body details.spc-prof{border:1px solid #0f766e;background:rgba(15,118,110,.12);border-radius:10px;padding:6px 10px;margin:6px 0;}html body details.spc-prof summary{cursor:pointer;font-weight:700;font-size:.82rem;}'
 +'html body .spc-nx{display:block;font-size:.74rem;color:#5eead4;margin:4px 0;cursor:pointer;}';
+document.head.appendChild(st);})();
+
+// ══════════════════════════════════════════════════════════════════════
+// v408 — (1) synchro : une écriture faite au démarrage (avant la 1re
+// récupération du cloud) ne peut plus écraser le cloud avec de vieilles
+// données ; (2) bouton « nouvelle version » : enregistre tout puis met à
+// jour ; (3) bibliothèque compacte : APSA + rayons sur une ligne, un seul ➕.
+// ══════════════════════════════════════════════════════════════════════
+let SYNC_FIRST_DONE=false;
+syncPull=(function(f){return async function(idx){try{const m=syncMeta();if(m&&!SYNC_FIRST_DONE){const t0=(performance&&performance.timeOrigin)||0;let ch=false;
+    Object.keys(m.dirty||{}).forEach(k=>{if((+m.mt[k]||0)>=t0){m.mt[k]=1;ch=true;}});if(ch)syncMetaSave(m);}}catch(e){console.warn('v408 boot',e);}
+  const n=await f.apply(this,arguments);SYNC_FIRST_DONE=true;return n;};})(syncPull);
+// ── nouvelle version ──
+const GRIB_V=(function(){const t=document.querySelector('title');const m=t&&String(t.textContent).match(/v(\d+)/);return m?+m[1]:0;})();
+async function gribVerCheck(){if(!/^https?:$/.test(location.protocol)||!GRIB_V)return;if(typeof GRIB_EXPORT_MODE!=='undefined'&&GRIB_EXPORT_MODE)return;
+  try{const r=await fetch('version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const o=await r.json();if(o&&+o.v>GRIB_V)gribVerBan(+o.v);}catch(e){}}
+function gribVerBan(v){let b=E('ver-ban');if(b){b.querySelector('b').textContent='v'+v;return;}b=document.createElement('div');b.id='ver-ban';
+  b.innerHTML='🆕 Nouvelle version <b>v'+v+'</b> de l\'appli<button type="button">💾 Enregistrer puis mettre à jour</button><span title="Plus tard">✕</span>';
+  b.querySelector('span').onclick=()=>b.remove();
+  b.querySelector('button').onclick=async function(){const bt=this;bt.disabled=true;bt.textContent='⏳ enregistrement…';
+    try{if(syncOn()){clearTimeout(SYNC.t);let w=0;while(SYNC.busy&&w<40){await new Promise(r=>setTimeout(r,250));w++;}await syncNow(true);const m=syncMeta();const left=m?Object.keys(m.dirty||{}).filter(k=>syncKeys().indexOf(k)>=0&&(+m.mt[k]||0)>1):[];
+        if(left.length&&!confirm('⚠️ Certaines données n\'ont pas pu être envoyées ('+left.map(k=>syncKeyName?syncKeyName(k):k).join(', ')+').\nElles restent sur cet appareil. Mettre à jour quand même ?')){bt.disabled=false;bt.textContent='💾 Enregistrer puis mettre à jour';return;}}}
+    catch(e){if(!confirm('Enregistrement impossible ('+e.message+'). Mettre à jour quand même ?')){bt.disabled=false;bt.textContent='💾 Enregistrer puis mettre à jour';return;}}
+    bt.textContent='🔄 mise à jour…';location.replace(location.pathname+'?v='+v);};
+  document.body.appendChild(b);}
+setTimeout(gribVerCheck,8000);setInterval(gribVerCheck,180000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)gribVerCheck();});
+// ── bibliothèque compacte ──
+function libPlusTog(ev){ev&&ev.stopPropagation();const m=E('lib-plus-menu');if(m)m.classList.toggle('open');}
+document.addEventListener('click',e=>{const m=E('lib-plus-menu');if(m&&m.classList.contains('open')&&!(e.target.closest&&e.target.closest('.lib-plus')))m.classList.remove('open');});
+renderLibTab=(function(f){return function(){const r=f.apply(this,arguments);try{const host=E('lib-tab-content');if(!host)return r;const sh=host.querySelector('.lx-shelf');
+  if(sh)sh.querySelectorAll('small').forEach(x=>x.remove());
+  if(typeof LIBX==='undefined'||LIBX.shelf!=='pra')return r;
+  const card=host.querySelector('.card');if(!card)return r;
+  const bar=card.querySelector('.libs-bar'),rbar=card.querySelector('.libs-rbar');
+  const btnRow=[...card.children].find(c=>c.querySelector&&c.querySelector('button[onclick^="libcOpen"]'));
+  const top=document.createElement('div');top.className='libs-top';
+  if(sh){sh.classList.add('mini');top.appendChild(sh);}
+  if(bar)top.appendChild(bar);
+  if(btnRow){const pl=document.createElement('div');pl.className='lib-plus';pl.innerHTML='<button type="button" class="lib-plus-btn" onclick="libPlusTog(event)">➕ Ajouter</button><'+'div id="lib-plus-menu" class="lib-plus-menu"><'+'div class="t">Que veux-tu ajouter ?</'+'div></'+'div>';
+    const menu=pl.querySelector('.lib-plus-menu');
+    const lab={"libcOpen('remed')":'🛠 Situation d\'apprentissage',"libcOpen('match')":'⚽ Match / FPS',"libcOpen('warm')":'🔥 Exercice d\'échauffement',"wcOpen()":'🔥 Échauffement complet (composer)',"libcOpen('oe')":'📘 Objet d\'enseignement',"libVideoNew()":'🎬 Vidéo',"libImportAsk()":'📥 Importer un code'};
+    const order=["libcOpen('remed')","libcOpen('match')","libcOpen('warm')","wcOpen()","libcOpen('oe')","libVideoNew()","libImportAsk()"];
+    const bs=[...btnRow.querySelectorAll('button')];bs.sort((a,b)=>{const ia=order.indexOf(a.getAttribute('onclick')),ib=order.indexOf(b.getAttribute('onclick'));return (ia<0?99:ia)-(ib<0?99:ib);});
+    bs.forEach(b=>{const k=b.getAttribute('onclick');if(lab[k])b.textContent=lab[k];b.removeAttribute('style');b.className='lib-plus-it';b.addEventListener('click',()=>menu.classList.remove('open'));menu.appendChild(b);});
+    btnRow.remove();top.appendChild(pl);}
+  const t=card.querySelector('.card-title');if(t)t.style.display='none';
+  card.insertAdjacentElement('afterbegin',top);
+  if(rbar){const fine=card.querySelector('.libs-fine');if(fine){fine.classList.add('mini');const s=fine.querySelector('summary');if(s)s.textContent='🔎 Recherche';rbar.appendChild(fine);}top.insertAdjacentElement('afterend',rbar);}
+}catch(e){console.warn('v408 lib',e);}return r;};})(renderLibTab);
+(function(){const st=document.createElement('style');st.textContent=
+ 'html body #ver-ban{position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:99998;background:#1e3a8a;color:#fff;border:2px solid #60a5fa;border-radius:12px;padding:8px 12px;display:flex;gap:10px;align-items:center;font-size:.88rem;box-shadow:0 6px 20px rgba(0,0,0,.5);max-width:calc(100vw - 24px);flex-wrap:wrap;}'
++'html body #ver-ban button{border:0;border-radius:9px;background:#16a34a;color:#fff;font-weight:800;padding:8px 12px;cursor:pointer;}html body #ver-ban span{cursor:pointer;opacity:.7;}'
++'html body .lx-shelf.mini{display:inline-flex;gap:0;margin:0;border:1px solid #334155;border-radius:10px;overflow:hidden;flex:0 0 auto;}html body .lx-shelf.mini button{border:0;border-radius:0;padding:6px 10px;font-size:.82rem;flex-direction:row;}'
++'html body .lx-shelf.mini button.on{background:#2563eb;color:#fff;}'
++'html body .libs-top{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:0 0 6px;}html body .libs-top .libs-bar{flex:1 1 300px;margin:0;padding:0;border:0;}'
++'html body .libs-top .libs-sh{min-height:34px;padding:0 10px;font-size:.84rem;border-radius:9px;}'
++'html body .lib-plus{position:relative;flex:0 0 auto;}html body .lib-plus-btn{border:0;border-radius:10px;background:#16a34a;color:#fff;font-weight:800;padding:8px 14px;font-size:.92rem;cursor:pointer;}'
++'html body .lib-plus-menu{display:none;position:absolute;right:0;top:calc(100% + 6px);z-index:500;background:#0f172a;border:1px solid #334155;border-radius:12px;padding:6px;min-width:250px;box-shadow:0 10px 30px rgba(0,0,0,.6);}html body .lib-plus-menu.open{display:block;}'
++'html body .lib-plus-menu .t{font-size:.72rem;color:#94a3b8;padding:4px 8px;}html body .lib-plus-it{display:block;width:100%;text-align:left;border:0;background:transparent;color:#e2e8f0;padding:9px 10px;border-radius:8px;font-size:.88rem;cursor:pointer;}html body .lib-plus-it:hover{background:#1e293b;}'
++'html body .libs-rbar{align-items:center;}html body .libs-rbar .libs-ry{min-height:32px;font-size:.8rem;}'
++'html body .libs-fine.mini{margin:0;padding:0 8px;border-radius:999px;}html body .libs-fine.mini summary{min-height:30px;}html body .libs-fine.mini[open]{flex-basis:100%;border-radius:10px;padding:6px 10px;}';
 document.head.appendChild(st);})();
 </script>
 </body>
