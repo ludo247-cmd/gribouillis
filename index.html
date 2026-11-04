@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v409</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v410</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v409</title>
+<title>Gribouillis EPS v410</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -29043,6 +29043,83 @@ syncMergeVal=(function(f){return function(k,lv,rv){let out=f.apply(this,argument
     return ch?JSON.stringify(R):out;}catch(e){console.warn('v409 clips',e);return out;}};})(syncMergeVal);
 // une vidéo supprimée volontairement ne doit pas revenir par la fusion
 clipDel=(function(f){return function(cid){const r=f.apply(this,arguments);try{const s=getActiveSeance();if(s&&!(s.clips||[]).some(c=>c&&c.id===cid)){s.clipsDel=s.clipsDel||[];if(s.clipsDel.indexOf(cid)<0){s.clipsDel.push(cid);saveSeances();}}}catch(e){}return r;};})(clipDel);
+
+// ══════════════════════════════════════════════════════════════════════
+// v410 — BILAN DE SÉANCE centralisé + « 🏁 Terminer la séance » (AS) :
+// • récupère d'abord les données des tablettes, puis clôt la séance et
+//   ouvre le bilan (matchs, bilans élèves par groupe, vidéos + commentaires,
+//   note du prof) ; imprimable ;
+// • le bilan de chaque séance est accessible depuis l'onglet Séquences ;
+// • AS : le bilan écrit / dicté est rangé PAR GROUPE (Filles, Garçons…),
+//   les 2 tablettes ne s'écrasent plus.
+// ══════════════════════════════════════════════════════════════════════
+recapGet=(function(f){return function(s){try{if(s&&s.asp&&!finCurTeam(s)){const w=aspBilWho(s);const m=((s.asp.bil||{})[w])||{};if(m.recap!=null)return m.recap;}}catch(e){}return f.apply(this,arguments);};})(recapGet);
+recapSet=(function(f){return function(s,v){try{if(s&&s.asp&&!finCurTeam(s)){const w=aspBilWho(s);s.asp.bil=s.asp.bil||{};const m=s.asp.bil[w]=s.asp.bil[w]||{};m.recap=v;m.t=Date.now();return;}}catch(e){}return f.apply(this,arguments);};})(recapSet);
+function bilArch(s){let A=[];try{A=JSON.parse(localStorage.getItem('grib_archives_v3')||'[]');}catch(e){A=archives||[];}
+  const d=s&&s.date?String(s.date).split('-').reverse().join('/'):'';const out=A.filter(a=>a&&d&&a.date===d);
+  if(out.length)return out;try{return seanceMatches(s).map(x=>x.a);}catch(e){return [];}}
+function bilWhoLabel(s,w){try{const G=aspGOf(s,w);if(G)return G.label;}catch(e){}return w==='classe'?'Classe':String(w);}
+function bilItemLabel(k){try{if(k.indexOf('macro:')===0){const id=k.slice(6);return asMacroLabel(id)||id;}const c=getCpByPath(k);if(c)return String((typeof eleveCp==='function'?eleveCp(c):'')||c.label||k);}catch(e){}return k;}
+function bilScore(t){const st=(t&&t.stats)||{};return st.pts||st.buts||0;}
+function bilHtml(s,forPrint){const D='<'+'div';let h='';
+  const q=(s.seqId&&typeof seqGet==='function')?seqGet(s.seqId):null;
+  h+=D+' class="bil-hd"><b>📋 Bilan de la séance</b> · '+esc(seanceDateFr?seanceDateFr(s.date):s.date)+' · '+esc(s.classe||'')+(q?' · '+esc(q.nom)+' (séance '+((s.seqIdx||0)+1)+'/'+q.nb+')':'')
+    +(s.status==='done'?' · <span class="bil-ok">✅ terminée'+(s.finishedAt?' à '+new Date(s.finishedAt).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}):'')+'</span>':' · <span class="bil-cur">en cours</span>')+'</'+'div>';
+  // matchs
+  const M=bilArch(s);h+='<h4>⚽ Matchs ('+M.length+')</h4>';
+  if(!M.length)h+=D+' class="bil-dim">Aucun match enregistré ce jour-là.</'+'div>';
+  M.forEach((a,i)=>{const T=a.teams||[];const t0=T[0],t1=T[1];
+    h+='<details class="bil-m"'+(forPrint?' open':'')+'><summary>'+(a.duration?'⏱ '+esc(a.duration)+' · ':'')+(t1?'<b>'+esc(String(t0.name||'?'))+'</b> '+bilScore(t0)+' – '+bilScore(t1)+' <b>'+esc(String(t1.name||'?'))+'</b>':'<b>'+esc(String((t0&&t0.name)||'Match'))+'</b>')+(a.observer?' <small>· obs. '+esc(String(a.observer))+'</small>':'')+'</summary>';
+    try{h+=D+' class="bil-ts">'+T.map(t=>D+'>'+renderArchiveTeamStats(t)+'</'+'div>').join('')+'</'+'div>';}catch(e){}
+    h+='</details>';});
+  // bilans élèves
+  if(s.asp){const W=Object.keys(s.asp.bil||{});h+='<h4>🙋 Bilans des élèves</h4>';
+    if(!W.length)h+=D+' class="bil-dim">Pas encore de bilan envoyé par les tablettes.</'+'div>';
+    W.forEach(w=>{const m=s.asp.bil[w]||{};const it=Object.keys(m).filter(k=>k!=='t'&&k!=='recap');
+      h+=D+' class="bil-g"><b>'+esc(bilWhoLabel(s,w))+'</b>'+(m.t?' <small>· '+new Date(m.t).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})+'</small>':'')
+        +(it.length?'<ul>'+it.map(k=>'<li>'+(m[k]==='oui'?'✅':m[k]==='non'?'❌':'•')+' '+esc(bilItemLabel(k))+(m[k]!=='oui'&&m[k]!=='non'?' : '+esc(String(m[k])):'')+'</li>').join('')+'</ul>':'')
+        +(m.recap?D+' class="bil-rc">📝 '+esc(String(m.recap))+'</'+'div>':'')+'</'+'div>';});
+    if(s.recap)h+=D+' class="bil-g"><b>Bilan écrit</b>'+D+' class="bil-rc">📝 '+esc(String(s.recap))+'</'+'div></'+'div>';
+    const R=s.asp.res||{};const rk=Object.keys(R).filter(k=>Object.keys(R[k]||{}).length);
+    if(rk.length){h+='<h4>📝 Résultats notés par les élèves</h4>';rk.forEach(k=>{const e=R[k];h+=D+' class="bil-g"><small>'+esc(k.split('|').pop())+'</small><ul>'+Object.keys(e).map(n=>{const v=e[n]||{};const vs=Object.keys(v).filter(z=>z!=='t').map(z=>esc(String(v[z]))).join(' · ');return '<li><b>'+esc(n)+'</b> '+vs+'</li>';}).join('')+'</ul></'+'div>';});}}
+  else{try{h+=seanceBilanHtml(s);}catch(e){}if(s.recap)h+=D+' class="bil-rc">📝 '+esc(String(s.recap))+'</'+'div>';}
+  // vidéos
+  const C=(s.clips||[]).filter(c=>c&&c.url);h+='<h4>🎬 Vidéos ('+C.length+')</h4>';
+  if(!C.length)h+=D+' class="bil-dim">Aucune vidéo.</'+'div>';
+  C.forEach(c=>{const cm=(c.comments||[]).slice().sort((a,b)=>(a.at||0)-(b.at||0));h+=D+' class="bil-v"><b>'+esc(String(c.titre||'Vidéo'))+'</b>'+(c.team?' <small>· '+esc(String(c.team))+'</small>':'')
+    +(forPrint?'':'<video src="'+esc(c.url)+'" controls preload="metadata" playsinline></video><a class="bil-dl" href="'+esc(c.url)+'" target="_blank" rel="noopener" download>⬇️ Télécharger</a>')
+    +(cm.length?'<ul>'+cm.map(m=>'<li>⏱ '+(typeof clipTime==='function'?clipTime(m.at):'')+' <b>'+esc(String(m.who||'Élève'))+'</b> : '+esc(String(m.text||'(audio)'))+'</li>').join('')+'</ul>':'')+'</'+'div>';});
+  // note prof
+  h+='<h4>👩‍🏫 Ma note</h4>'+(forPrint?D+' class="bil-rc">'+esc(String(s.bilanProf||'—'))+'</'+'div>':'<textarea class="bil-ta" data-s="'+esc(s.id)+'" placeholder="Ce qui a marché, ce qu\'il faut reprendre la prochaine fois…" onchange="bilProfSet(this.dataset.s,this.value)">'+esc(String(s.bilanProf||''))+'</textarea>');
+  return h;}
+function bilProfSet(id,v){const s=(SEANCES||[]).find(x=>x.id===id);if(!s)return;s.bilanProf=v;saveSeances();}
+function bilOpen(id){const s=(SEANCES||[]).find(x=>x.id===id);if(!s)return;let o=E('bil-ov');if(o)o.remove();o=document.createElement('div');o.id='bil-ov';
+  o.innerHTML='<'+'div class="bil-box"><'+'div class="bil-bar"><button type="button" onclick="bilPrint(\''+esc(id)+'\')">🖨 Imprimer</button><button type="button" onclick="E(\'bil-ov\').remove()">✕ Fermer</button></'+'div>'+bilHtml(s,false)+'</'+'div>';
+  o.addEventListener('click',e=>{if(e.target===o)o.remove();});document.body.appendChild(o);}
+function bilPrint(id){const s=(SEANCES||[]).find(x=>x.id===id);if(!s)return;const w=window.open('','_blank');if(!w){alert('Autorise les fenêtres pour imprimer.');return;}
+  w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>Bilan '+esc(s.date||'')+'</title><style>body{font-family:system-ui,sans-serif;font-size:12px;color:#111;margin:14mm;}h4{margin:14px 0 4px;border-bottom:1px solid #999;}details summary{list-style:none;font-weight:600;}.bil-ts{display:flex;gap:10px;flex-wrap:wrap;font-size:11px;}.bil-g{margin:4px 0 8px;}.bil-rc{white-space:pre-wrap;border-left:3px solid #999;padding-left:6px;margin:4px 0;}ul{margin:2px 0 2px 18px;padding:0;}@page{size:A4;}</style></head><body>'+bilHtml(s,true)+'<script>setTimeout(function(){print()},400)<\/script></body></html>');w.document.close();}
+async function aspFinish(){const s=aspS?aspS():getActiveSeance();if(!s)return;
+  if(!confirm('🏁 Terminer la séance ?\n\nL\'appli récupère d\'abord les données des tablettes, puis range la séance et ouvre son bilan.\nPense à faire appuyer les élèves sur « 📤 Envoyer les données » avant.'))return;
+  try{if(typeof syncOn==='function'&&syncOn()){toast2('☁️ Récupération des données des tablettes…');await syncNow(true);try{const L=JSON.parse(localStorage.getItem('grib_seances_v1')||'[]');const r=L.find(x=>x&&x.id===s.id);if(r){Object.assign(s,r);}}catch(e){}}}catch(e){console.warn('aspFinish sync',e);}
+  s.status='done';s.finishedAt=Date.now();try{SEANCE_STATE.activeId=null;}catch(e){}saveSeances();setTimeout(function(){try{ghAutoBackup();}catch(e){}},2500);
+  try{if(syncOn())syncNow(false);}catch(e){}try{renderSeanceTab();}catch(e){}bilOpen(s.id);}
+aspHtml=(function(f){return function(s){let h=f.apply(this,arguments);try{const t=document.createElement('template');t.innerHTML=h;const bb=t.content.querySelector('.asp-bilbar .asp-bh');if(bb&&!bb.querySelector('.asp-fin')){
+  const b1=document.createElement('button');b1.type='button';b1.className='asp-rz asp-bilv';b1.textContent='📋 Bilan';b1.setAttribute('onclick','bilOpen(\''+String(s.id).replace(/'/g,'')+'\')');bb.appendChild(b1);
+  const b2=document.createElement('button');b2.type='button';b2.className='asp-rz asp-fin';b2.textContent='🏁 Terminer la séance';b2.setAttribute('onclick','aspFinish()');bb.appendChild(b2);h=t.innerHTML;}}catch(e){console.warn('v410 fin',e);}return h;};})(aspHtml);
+// Séquences : bouton 📋 Bilan à côté de chaque séance
+renderSeqTab=(function(f){return function(){const r=f.apply(this,arguments);try{const host=E('seq-console');if(!host)return r;
+  host.querySelectorAll('button[onclick^="seqOpenSeance("]').forEach(b=>{if(b.nextElementSibling&&b.nextElementSibling.classList.contains('bil-sq'))return;const m=String(b.getAttribute('onclick')).match(/seqOpenSeance\('([^']+)',\s*(\d+)\)/);if(!m)return;
+    const q=seqGet(m[1]);const s=q&&seqSeance(q,+m[2]);if(!s)return;const x=document.createElement('button');x.type='button';x.className='btn-xs bil-sq'+(s.status==='done'?' done':'');x.textContent='📋 Bilan';x.title='Bilan de cette séance';x.setAttribute('onclick','bilOpen(\''+String(s.id).replace(/'/g,'')+'\')');b.after(x);});}catch(e){console.warn('v410 seq',e);}return r;};})(renderSeqTab);
+(function(){const st=document.createElement('style');st.textContent=
+ 'html body #bil-ov{position:fixed;inset:0;z-index:9990;background:rgba(0,0,0,.7);display:flex;align-items:flex-start;justify-content:center;padding:14px;overflow:auto;}'
++'html body .bil-box{background:#0f172a;border:1px solid #334155;border-radius:14px;max-width:900px;width:100%;padding:14px 16px;color:#e2e8f0;font-size:.86rem;}html body .bil-bar{display:flex;gap:8px;justify-content:flex-end;margin-bottom:6px;}html body .bil-bar button{border:0;border-radius:9px;background:#334155;color:#fff;padding:7px 12px;font-weight:700;cursor:pointer;}'
++'html body .bil-hd{font-size:.95rem;}html body .bil-ok{color:#4ade80;}html body .bil-cur{color:#fbbf24;}html body .bil-box h4{margin:14px 0 6px;font-size:.95rem;border-bottom:1px solid #334155;padding-bottom:3px;}'
++'html body .bil-dim{color:#94a3b8;font-size:.8rem;}html body .bil-m{border:1px solid #334155;border-radius:9px;padding:6px 9px;margin:4px 0;}html body .bil-m summary{cursor:pointer;}html body .bil-ts{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:8px;margin-top:6px;}'
++'html body .bil-g{background:#111827;border-radius:9px;padding:6px 10px;margin:5px 0;}html body .bil-g ul,html body .bil-v ul{margin:4px 0 2px 18px;padding:0;}html body .bil-rc{white-space:pre-wrap;border-left:3px solid #6366f1;padding-left:8px;margin:4px 0;color:#cbd5e1;}'
++'html body .bil-v{background:#111827;border-radius:9px;padding:8px 10px;margin:6px 0;}html body .bil-v video{width:100%;max-height:300px;border-radius:8px;background:#000;margin:5px 0;}html body .bil-dl{font-size:.78rem;color:#93c5fd;}'
++'html body .bil-ta{width:100%;box-sizing:border-box;min-height:70px;background:#111827;border:1px solid #334155;color:#e2e8f0;border-radius:8px;padding:8px;font-family:inherit;}'
++'html body .bil-sq{background:#0f766e;color:#fff;margin-left:4px;}html body .bil-sq.done{background:#15803d;}html body .asp-bilbar .asp-fin{background:#15803d;color:#fff;border-color:#15803d;}';
+document.head.appendChild(st);})();
 </script>
 </body>
 </html>
