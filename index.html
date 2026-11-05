@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v414</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v415</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v414</title>
+<title>Gribouillis EPS v415</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -29471,6 +29471,95 @@ function remSimplePrevDraw(){const s=getActiveSeance();const b=E('remsp-box');if
         return w;}}}catch(e){console.warn('rem414 route',e);}
     return oR.apply(this,arguments);};}catch(e){}
 })();
+
+// ══════════════════════════════════════════════════════════════════════
+// v415 — Volley Terminales : profil d'observation « bétonné »
+//   Nos points : 🌟 Beau point (qui a marqué + qui a fait la passe) · 🎁 Autre point (qui)
+//   Points adverses : 🔻 Beau point adverse · 🔻 Autre point adverse · ❌ Réception ratée (qui)
+//   À noter : ✅ Balle conservée · ⬆️ Occasion de BP ratée
+// Appliqué automatiquement quand on lance un match des Terminales depuis le
+// Calendrier (onglet Match) ou depuis une séance de rotations.
+// ══════════════════════════════════════════════════════════════════════
+const VBT_PROF='Volley — Terminales (BP / AP / 3 critères)';
+function vbtProfDef(){const p=bpProfileDef();p.name=VBT_PROF;p.meta=Object.assign({},p.meta||{},{btnsHint:'Beaux points / autres points / 3 critères'});
+  const b=(label,color,o)=>Object.assign({label:label,color:color,isShot:false,isGoal:false,switchTeam:false,secondary:null,pts:0,newPoss:false},o||{});
+  p.dialogBtns=[b('🌟 Beau point','#16a34a',{isShot:true,isGoal:true,pts:1,who:true,pass:true}),b('🎁 Autre point','#7c3aed',{isShot:true,isGoal:true,pts:1,who:true,pass:false}),
+    b('✅ Balle conservée','#475569',{who:false}),b('⬆️ Occasion de BP ratée','#0e7490',{who:false}),
+    b('🔻 Beau point adverse','#dc2626',{pts:1,adv:true,who:false}),b('🔻 Autre point adverse','#ea580c',{pts:1,adv:true,who:false}),b('❌ Réception ratée (point pour eux)','#be185d',{pts:1,adv:true,who:true})];
+  p.customRatios=[{label:'BP / points marqués (BP + AP)',show:true,numCriteria:['btn_0'],denCriteria:['btn_0','btn_1'],target:'50',minVolume:''},
+    {label:'Occasions converties en BP',show:true,numCriteria:['btn_0'],denCriteria:['btn_0','btn_3'],target:'',minVolume:''}];
+  p.rkSetCfg={p:15,n:1,l:15};p.indivObsEnabled=true;p.indivUseBtns=true;return p;}
+function vbtEnsure(){try{if(!Array.isArray(CFG.savedPresets))return -1;let i=CFG.savedPresets.findIndex(x=>x&&x.name===VBT_PROF);if(i<0){CFG.savedPresets.push(vbtProfDef());i=CFG.savedPresets.length-1;try{saveConfig();}catch(e){}}return i;}catch(e){console.warn('vbt',e);return -1;}}
+function vbtMem(){try{CFG.obsSimple=true;saveConfig();}catch(e){}try{const c=prmCfg();c.mem=c.mem||{};c.mem.volley=JSON.parse(JSON.stringify(CFG.dialogBtns||[]));localStorage.setItem(PRM_KEY,JSON.stringify(c));}catch(e){console.warn('vbt mem',e);}}
+function vbtIsTerm(){try{const c=clsActive();return !!(c&&/term/i.test(String(c.nom||'')));}catch(e){return false;}}
+(function(){
+  try{const oP=calPrepTeams;calPrepTeams=function(m,mode,volley){try{if(volley&&vbtIsTerm()){if(CFG.apsa!=='volley'){const bb=document.querySelector('.apsa-btn[data-apsa="volley"]');if(bb)selectAPSA('volley',bb);}const i=vbtEnsure();if(i>=0){applyNamedPreset(i);vbtMem();}}}catch(e){console.warn('vbt cal',e);}return oP.apply(this,arguments);};}catch(e){}
+  try{const oA=seanceApplyMatchProfile;seanceApplyMatchProfile=function(s,key){const r=oA.apply(this,arguments);try{if(s&&s.sport==='volley'&&key){const mc=matchCfgOf(s,key);if(mc&&mc.rotMatch&&!mc.profile){const i=vbtEnsure();if(i>=0){applyNamedPreset(i);vbtMem();}}}}catch(e){console.warn('vbt seance',e);}return r;};}catch(e){}
+  try{setTimeout(vbtEnsure,1500);}catch(e){}
+})();
+// ── v415 b : console « Choix laissés aux élèves » plus simple ─────────
+//  • un contenu = une seule case (plus de répétition sous chaque fil rouge)
+//  • les situations se cochent directement (même en « Libre » : cocher passe en « Choix limité »)
+let RG415=[];
+function rg415Toggle(key,n){const s=getActiveSeance();const ids=RG415[n];if(!s||!ids||!ids.length)return;s.trajet='perso';normalizeRestrictions(s);const r=s.restrictions[key];if(!r)return;
+  if(r.mode==='libre')r.mode='limite';
+  const all=ids.some(id=>r.choix.indexOf(id)>=0);
+  if(r.mode==='impose')r.choix=all?[]:[ids[0]];
+  else if(all)r.choix=r.choix.filter(id=>ids.indexOf(id)<0);else ids.forEach(id=>{if(r.choix.indexOf(id)<0)r.choix.push(id);});
+  saveSeances();renderSeanceTab();try{if(E('remc-ov'))remConsoleDraw(false);}catch(e){}}
+function rg415Chip(key,ids,label,sub,sel,mode){const n=RG415.length;RG415.push(ids);
+  return '<'+'button type="button" class="remed-chip'+(sel?' selected':'')+(sel&&mode==='impose'?' m-impose':'')+'" onclick="rg415Toggle(\''+key+'\','+n+')">'+(sel?(mode==='impose'?'🔒 ':'✓ '):'')+esc(String(label||''))+(sub?'<'+'span class="rsub">'+esc(String(sub))+'</'+'span>':'')+'</'+'button>';}
+function rg415CpGroups(s,oe){const R=seanceRefId(s);const G=[];(oe.micro||[]).forEach(m=>(m.cps||[]).forEach(cp=>{const p=remedCpPath(R,oe.id,m.id,cp.id);const k=cpGroupKey(String(cp.label||''));let g=G.find(x=>x.k===k);if(!g){g={k:k,label:cp.label||'',paths:[]};G.push(g);}g.paths.push(p);}));return G;}
+(function(){
+  try{const oP=renderRestrictionPicker;renderRestrictionPicker=function(s,key){try{const sd=seanceSportDef(s);if(!sd||sd.custom||(key!=='cp'&&key!=='exercices'))return oP.apply(this,arguments);
+      const r=s.restrictions[key];if(key==='cp'&&r.mode==='libre')return '';if(key==='exercices'&&r.mode==='impose'&&false)return '';
+      const sel=id=>r.choix.indexOf(id)>=0;let h='<'+'div class="restr-pick">';
+      if(key==='cp'){const oeIds=allowedOes(s).ids;let any=false;
+        (sd.oe||[]).forEach(o=>{if(oeIds.indexOf(o.id)<0)return;const G=rg415CpGroups(s,o);if(!G.length)return;any=true;let inner='<'+'div class="remed-chip-row">',hs=false;
+          G.forEach(g=>{const on=g.paths.some(sel);if(on)hs=true;inner+=rg415Chip('cp',g.paths,g.label,'',on,r.mode);});inner+='</'+'div>';
+          h+=restrDetails('cp:'+o.id,'📋 '+esc(o.short||o.label||o.id)+(hs?' · ✓':''),inner,true);});
+        if(!any)h+='<'+'div class="restr-sum">Aucun contenu disponible pour les objets autorisés.</'+'div>';return h+'</'+'div>';}
+      // situations : par contenu (regroupé), sans doublon de titre
+      const cps=allowedCps(s).ids;const groups=[];
+      cps.forEach(p=>{const parts=p.split('|');const oe=(sd.oe||[]).find(o=>o.id===parts[1]);const cp=getCpByPath(p);if(!oe||!cp)return;const k=parts[1]+'|'+cpGroupKey(String(cp.label||''));let g=groups.find(x=>x.k===k);if(!g){g={k:k,oe:oe,label:cp.label||'',paths:[]};groups.push(g);}g.paths.push(p);});
+      let any=false;
+      groups.forEach(g=>{const X=[];const pathsAll=rg415CpGroups(s,g.oe).find(z=>cpGroupKey(z.label)===cpGroupKey(g.label));const P=pathsAll?pathsAll.paths:g.paths;
+        P.forEach(p=>seanceAllExoKeys(p).forEach(k=>{const x=exoByKey(k);if(!x)return;const t=cpGroupKey(String(x.exo.titre||''));let y=X.find(z=>z.t===t);if(!y){y={t:t,titre:x.exo.titre||'Situation',keys:[],ex:x.exo};X.push(y);}y.keys.push(k);}));
+        if(!X.length)return;any=true;let inner='<'+'div class="remed-chip-row" style="margin-top:6px;">',hs=false;
+        X.forEach(y=>{const on=y.keys.some(sel);if(on)hs=true;inner+=rg415Chip('exercices',y.keys,y.titre+((y.ex.video)?' 🎬':'')+((y.ex.anim||y.ex.animLib)?' 🎞':''),'',on,r.mode);});inner+='</'+'div>';
+        h+=restrDetails('exo:'+g.k,'🎯 '+esc(g.label)+' <'+'span style="font-weight:400;color:var(--dim2);">· '+esc(g.oe.short||g.oe.label||'')+' · '+X.length+' situation'+(X.length>1?'s':'')+(hs?' · ✓':'')+'</'+'span>',inner,true);});
+      if(!any)h+='<'+'div class="restr-sum">Aucune situation rangée sous les contenus choisis.</'+'div>';
+      return h+'</'+'div>';}catch(e){console.warn('rg415',e);return oP.apply(this,arguments);}};}catch(e){}
+  // en « Libre », la liste des situations s'affiche quand même : cocher = passer en « Choix limité »
+  try{const oR=renderRestrictionsPanel;renderRestrictionsPanel=function(s){RG415=[];let h=oR.apply(this,arguments);try{if(!s||s.customOeMode)return h;const sd=seanceSportDef(s);if(!sd||sd.custom)return h;
+      if(s.restrictions&&s.restrictions.exercices&&s.restrictions.exercices.mode==='libre'){const i=h.indexOf('Situations de remédiation');if(i>0){const j=h.indexOf('<div class="restr-sum">',i);const k=j>0?h.indexOf('</div>',j):-1;
+        if(k>0){const add='<'+'div class="restr-sum" style="margin-top:4px;">👇 Coche ici les situations à proposer (ça passe tout seul en « Choix limité »).</'+'div>'+renderRestrictionPicker(s,'exercices');h=h.slice(0,k+6)+add+h.slice(k+6);}}}}catch(e){console.warn('rg415 panel',e);}return h;};}catch(e){}
+})();
+
+// v415 : le chemin élève ne propose que les objets / contenus qui ont au moins une situation ouverte
+function rs415Ex(s,p){try{normalizeRestrictions(s);const r=s.restrictions.exercices;if(r.mode!=='libre'&&r.choix.length){const K=seanceAllExoKeys(p).filter(x=>r.choix.indexOf(x)>=0);return r.mode==='impose'?K.slice(0,1):K;}return allowedExos(s,p).ids;}catch(e){return allowedExos(s,p).ids;}}
+function rs415Has(s,oeId){try{return allowedCps(s,oeId).ids.some(p=>rs415Ex(s,p).some(k=>exoByKey(k)));}catch(e){return true;}}
+remSimpleHtml=function(s,stepKey){const sd=seanceSportDef(s);if(!sd)return '<'+'div class="sel-box sel-dim">Ton enseignant va te montrer l\'exercice à faire.</'+'div>';
+  const c=((s.eleveChoix&&s.eleveChoix[stepKey])||{}).rs||{};const chg=(f,t)=>'<'+'button type="button" class="sel-change" onclick="remSimpleSet(\''+stepKey+'\',\''+f+'\',null)">↩ '+(t||'Changer')+'</'+'button>';
+  let h='';const ro=allowedOes(s);const oes=ro.ids.map(id=>(sd.oe||[]).find(o=>o.id===id)).filter(Boolean).filter(o=>rs415Has(s,o.id));
+  const oe=oes.length===1?oes[0]:oes.find(o=>o.id===c.oe);
+  if(!oe){h+='<'+'div class="sel-sub">'+esc(nomenEleve('oe'))+'</'+'div><'+'div class="sel-dim">Choisis ce que tu veux améliorer :</'+'div><'+'div class="sel-choices">';
+    oes.forEach(o=>{h+='<'+'button type="button" class="sel-choice" data-v="'+esc(o.id)+'" onclick="remSimpleSet(\''+stepKey+'\',\'oe\',this.dataset.v)">'+esc(String(eleveOe(o)))+'</'+'button>';});return h+'</'+'div>';}
+  h+='<'+'div class="sel-picked" style="margin-bottom:8px;"><'+'div class="sel-text">🎯 '+esc(String(eleveOe(oe)))+'</'+'div>'+(oes.length>1?chg('oe'):'')+'</'+'div>';
+  const G=[];allowedCps(s,oe.id).ids.forEach(p=>{const d=getCpByPath(p);if(!d)return;const k=cpGroupKey(String(eleveCp(d)));let g=G.find(x=>x.k===k);if(!g){g={k:k,p:p,d:d,paths:[]};G.push(g);}g.paths.push(p);});for(let q=G.length-1;q>=0;q--){if(!G[q].paths.some(p=>rs415Ex(s,p).some(k=>exoByKey(k))))G.splice(q,1);}
+  const g=G.length===1?G[0]:G.find(x=>x.p===c.cp);
+  if(!g){h+='<'+'div class="sel-sub">'+esc(nomenEleve('cp'))+'</'+'div><'+'div class="sel-dim">Choisis ce que tu travailles :</'+'div><'+'div class="sel-choices">';
+    G.forEach(x=>{h+='<'+'button type="button" class="sel-choice" data-v="'+esc(x.p)+'" onclick="remSimpleSet(\''+stepKey+'\',\'cp\',this.dataset.v)">'+esc(String(eleveCp(x.d)))+'</'+'button>';});
+    if(!G.length)h+='<'+'div class="sel-box sel-dim">Ton enseignant va te montrer l\'exercice à faire.</'+'div>';return h+'</'+'div>';}
+  h+='<'+'div class="sel-picked" style="margin-bottom:8px;"><'+'div class="sel-text">🔑 '+esc(String(eleveCp(g.d)))+'</'+'div>'+(G.length>1?chg('cp'):'')+'</'+'div>';
+  const X=[],seen={};g.paths.forEach(p=>rs415Ex(s,p).forEach(k=>{const x=exoByKey(k);if(!x)return;const t=cpGroupKey(String(x.exo.titre||''));if(seen[t])return;seen[t]=1;X.push({k:k,x:x});}));
+  const ex=X.length===1?X[0]:X.find(y=>y.k===c.ref);
+  if(!ex){if(!X.length)return h+'<'+'div class="sel-box sel-dim">Ton enseignant va te montrer l\'exercice à faire.</'+'div>';
+    h+='<'+'div class="sel-sub">'+esc(nomenEleve('situation'))+'</'+'div><'+'div class="sel-dim">Choisis ta situation :</'+'div><'+'div class="sel-choices">';
+    X.forEach(y=>{const e=y.x.exo;h+='<'+'button type="button" class="sel-choice" data-v="'+esc(y.k)+'" onclick="remSimpleSet(\''+stepKey+'\',\'ref\',this.dataset.v)">🏃 '+esc(String(e.titre||'Situation'))+(e.video?' 🎬':'')+(e.anim?' 🎞':'')+(e.desc?'<'+'small>'+esc(String(e.desc).split('\n')[0].slice(0,90))+'</'+'small>':'')+'</'+'button>';});return h+'</'+'div>';}
+  if(X.length>1)h+='<'+'div style="text-align:right;margin-bottom:6px;">'+chg('ref','Changer de situation')+'</'+'div>';
+  try{h+=renderEleveExo(ex.x.cpPath,ex.x.exo);}catch(e){h+='<'+'div class="sel-box"><'+'h4>🏃 '+esc(String(ex.x.exo.titre||''))+'</'+'h4><'+'div class="sel-text">'+esc(String(ex.x.exo.desc||''))+'</'+'div></'+'div>';}
+  return h;};
 </script>
 </body>
 </html>
