@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v416</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v418</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v416</title>
+<title>Gribouillis EPS v418</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -29581,6 +29581,247 @@ function hbbEnsure(){try{if(!Array.isArray(CFG.savedPresets))return;let ch=false
     p.meta=Object.assign({},p.meta||{},{btnsHint:k===0?'Boutons seuls : conservée / perdue / tir / but':'Terrain gribouillis + boutons'});CFG.savedPresets.push(p);ch=true;});
   if(ch){try{saveConfig();}catch(e){}}}catch(e){console.warn('hbb',e);}}
 try{setTimeout(hbbEnsure,1600);}catch(e){}
+
+
+// ══════════════════════════════════════════════════════════════════════
+// v417 — synchronisation sûre :
+//  • archives des matchs et moments vidéo FUSIONNÉS entre appareils (plus
+//    jamais une liste qui en écrase une autre) ; suppressions mémorisées ;
+//  • avant d'écraser une autre donnée modifiée ici, une copie de secours ;
+//  • pseudo GitHub / dépôt vides → valeurs par défaut ;
+//  • diagnostic qui vérifie le dépôt, pas seulement le jeton ;
+//  • numéro de version visible ; mise à jour garantie (service worker
+//    « réseau d'abord ») ; code « Installer cette tablette ».
+// ══════════════════════════════════════════════════════════════════════
+(function(){
+// ── pseudo et dépôt jamais vides
+const _ghCfg417=ghCfg;
+ghCfg=function(){const c=_ghCfg417.apply(this,arguments);if(!c.owner||!String(c.owner).trim())c.owner='ludo247-cmd';if(!c.brepo||!String(c.brepo).trim())c.brepo='gribouillis-sauvegardes';c.owner=String(c.owner).trim();c.brepo=String(c.brepo).trim();return c;};
+})();
+
+const SYNC_DEL_KEY='grib_sync_del_v1';
+try{if(GRIB_BACKUP_KEYS.indexOf(SYNC_DEL_KEY)<0)GRIB_BACKUP_KEYS.push(SYNC_DEL_KEY);}catch(e){}
+function s417Hash(str){let h1=0x811c9dc5,h2=5381;for(let i=0;i<str.length;i++){const c=str.charCodeAt(i);h1=Math.imul(h1^c,16777619);h2=(Math.imul(h2,33)+c)|0;}return (h1>>>0).toString(36)+(h2>>>0).toString(36);}
+function s417ArcId(a){if(!a)return'';if(a.id)return String(a.id);
+  return 'a'+s417Hash(JSON.stringify([a.date||'',a.duration||'',a.apsa||'',(a.teams||[]).map(t=>t&&t.name),a.timeline||null,a.playerHistory||null]));}
+function s417ArcSig(a){return [a.date||'',a.duration||'',a.apsa||'',(a.teams||[]).map(t=>t&&t.name).join('|')].join('#');}
+function s417Rich(a){try{return Object.keys(a).length*1e7+JSON.stringify(a).length;}catch(e){return 0;}}
+function s417DelGet(){try{const o=JSON.parse(localStorage.getItem(SYNC_DEL_KEY)||'{}');return o&&typeof o==='object'?o:{};}catch(e){return {};}}
+function s417DelAdd(k,ids){if(!ids||!ids.length)return;const o=s417DelGet();const L=o[k]=Array.isArray(o[k])?o[k]:[];ids.forEach(i=>{if(i&&L.indexOf(i)<0)L.push(i);});if(L.length>3000)o[k]=L.slice(-3000);try{localStorage.setItem(SYNC_DEL_KEY,JSON.stringify(o));}catch(e){}}
+const S417_MERGE={
+  'grib_archives_v3':{id:s417ArcId,sig:s417ArcSig,keep:20},
+  'grib_moments_v1':{id:x=>x&&x.id?String(x.id):'',sig:null,keep:0}
+};
+function s417DateKey(a){const m=String(a&&a.date||'').match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);return m?(+m[3])*10000+(+m[2])*100+(+m[1]):0;}
+// fusion de deux listes (cloud R, appareil L) ; renvoie {list, addedFromLocal}
+function s417Merge(k,R,L,del){const spec=S417_MERGE[k];const D=new Set((del&&del[k])||[]);
+  const out=[];const byId=new Map();const bySig=new Map();let addedL=0;
+  const add=(x,fromLocal)=>{if(!x||typeof x!=='object')return;const id=spec.id(x);if(!id||D.has(id))return;
+    let j=byId.has(id)?byId.get(id):-1;
+    if(j<0&&spec.sig){const sg=spec.sig(x);if(bySig.has(sg)){const jj=bySig.get(sg);const o=out[jj];if(!o.timeline||!x.timeline)j=jj;}}
+    if(j<0){out.push(x);byId.set(id,out.length-1);if(spec.sig)bySig.set(spec.sig(x),out.length-1);if(fromLocal)addedL++;return;}
+    const o=out[j];const rich=s417Rich(x)>s417Rich(o)?x:o,poor=rich===x?o:x;out[j]=Object.assign({},poor,rich);byId.set(id,j);};
+  (Array.isArray(R)?R:[]).forEach(x=>add(x,false));(Array.isArray(L)?L:[]).forEach(x=>add(x,true));
+  if(k==='grib_archives_v3'){const idx=new Map(out.map((x,i)=>[x,i]));out.sort((a,b)=>(s417DateKey(a)-s417DateKey(b))||(idx.get(a)-idx.get(b)));}
+  if(k==='grib_moments_v1')out.sort((a,b)=>(+b.t||0)-(+a.t||0));
+  return {list:out,addedL};}
+function s417Parse(v){try{const x=JSON.parse(v);return Array.isArray(x)?x:null;}catch(e){return null;}}
+// écrit la liste fusionnée sur l'appareil (sans la marquer « à envoyer »)
+function s417WriteLocal(k,list){const spec=S417_MERGE[k];let L=list;if(spec.keep)L=list.slice(-spec.keep);
+  const tryW=v=>{SYNC.applying=true;try{_lsSet.call(localStorage,k,v);return true;}catch(e){return false;}finally{SYNC.applying=false;}};
+  if(!tryW(JSON.stringify(L))){const noImg=L.map(a=>{const c=Object.assign({},a);delete c.snapshotImage;return c;});if(!tryW(JSON.stringify(noImg))){const noA=noImg.map(a=>{const c=Object.assign({},a);delete c.audioData;return c;});tryW(JSON.stringify(noA));}}
+  try{if(k==='grib_archives_v3'&&typeof archives!=='undefined'){const v=s417Parse(_lsGet.call(localStorage,k))||[];archives.length=0;v.forEach(x=>archives.push(x));if(typeof renderArchives==='function'&&E('t-archives')&&E('t-archives').classList.contains('active'))renderArchives();}}catch(e){}}
+// copie de secours d'une donnée modifiée ici avant de la remplacer par celle du cloud
+function s417Backup(k,v){if(v==null)return;try{const B=JSON.parse(_lsGet.call(localStorage,'grib_sync_bak_v1')||'{}')||{};B[k]={t:Date.now(),v:v};_lsSet.call(localStorage,'grib_sync_bak_v1',JSON.stringify(B));}
+  catch(e){try{const B={};B[k]={t:Date.now(),v:v};_lsSet.call(localStorage,'grib_sync_bak_v1',JSON.stringify(B));}catch(e2){console.warn('sync bak',k,e2);}}}
+
+// ── récupération : fusion pour les listes, copie de secours pour le reste
+syncPull=async function(idx){const m=syncMeta();if(!m)return 0;idx=idx||await syncIndex();if(!idx)return 0;let n=0;const del=s417DelGet();
+  // les suppressions d'abord (pour fusionner en connaissant celles des autres appareils)
+  const order=Object.keys(idx.mt).sort((a,b)=>(a===SYNC_DEL_KEY?-1:0)-(b===SYNC_DEL_KEY?-1:0));
+  for(const k of order){if(syncKeys().indexOf(k)<0)continue;const rt=+idx.mt[k]||0,lt=+m.mt[k]||0;if(rt<=lt)continue;
+    const v=await syncRaw(syncPath(k));if(v==null)continue;const cur=_lsGet.call(localStorage,k);
+    if(k===SYNC_DEL_KEY){let R={};try{R=JSON.parse(v)||{};}catch(e){}const Lo=s417DelGet();Object.keys(R).forEach(kk=>{(R[kk]||[]).forEach(i=>{(Lo[kk]=Lo[kk]||[]);if(Lo[kk].indexOf(i)<0)Lo[kk].push(i);});});
+      SYNC.applying=true;try{_lsSet.call(localStorage,k,JSON.stringify(Lo));}catch(e){}SYNC.applying=false;Object.assign(del,Lo);
+      const extra=Object.keys(Lo).some(kk=>(Lo[kk]||[]).some(i=>!(R[kk]||[]).includes(i)));m.mt[k]=rt;if(extra){m.mt[k]=Date.now();m.dirty[k]=1;}else delete m.dirty[k];n++;continue;}
+    if(S417_MERGE[k]){const R=s417Parse(v),L=s417Parse(cur);if(R){const r=s417Merge(k,R,L||[],del);const before=cur;s417WriteLocal(k,r.list);if(_lsGet.call(localStorage,k)!==before)n++;
+        if(r.addedL>0){m.mt[k]=Date.now();m.dirty[k]=1;}else{m.mt[k]=rt;delete m.dirty[k];}continue;}}
+    if(cur!==v){if(m.dirty[k])s417Backup(k,cur);SYNC.applying=true;try{_lsSet.call(localStorage,k,v);n++;}catch(e){console.warn('sync apply',k,e);}SYNC.applying=false;}
+    m.mt[k]=rt;delete m.dirty[k];}
+  syncMetaSave(m);return n;};
+
+// ── envoi : pour les listes, on fusionne avec le cloud juste avant d'écrire
+syncPush=async function(){const m=syncMeta();if(!m)return 0;const c=ghCfg();const keys=Object.keys(m.dirty).filter(k=>syncKeys().indexOf(k)>=0);if(!keys.length)return 0;
+  const idx=(await syncIndex())||{v:1,mt:{}};let n=0;const del=s417DelGet();
+  for(const k of keys){const rt=+idx.mt[k]||0;let lt=+m.mt[k]||0;let v=_lsGet.call(localStorage,k);if(v==null)continue;
+    if(S417_MERGE[k]){let R=null;try{R=s417Parse(await syncRaw(syncPath(k)));}catch(e){throw e;}
+      const r=s417Merge(k,R||[],s417Parse(v)||[],del);v=JSON.stringify(r.list);s417WriteLocal(k,r.list);m.mt[k]=lt=Math.max(lt,rt)+1;}
+    else if(k===SYNC_DEL_KEY){try{const R=JSON.parse((await syncRaw(syncPath(k)))||'{}')||{};const Lo=s417DelGet();Object.keys(R).forEach(kk=>{(R[kk]||[]).forEach(i=>{(Lo[kk]=Lo[kk]||[]);if(Lo[kk].indexOf(i)<0)Lo[kk].push(i);});});v=JSON.stringify(Lo);SYNC.applying=true;try{_lsSet.call(localStorage,k,v);}catch(e){}SYNC.applying=false;m.mt[k]=lt=Math.max(lt,rt)+1;}catch(e){throw e;}}
+    else if(rt>lt)continue; // une version plus récente existe ailleurs : elle sera récupérée
+    await ghPut(c.brepo,syncPath(k),new TextEncoder().encode(v),'sync '+k);idx.mt[k]=lt;delete m.dirty[k];n++;}
+  if(n){for(let t=0;t<3;t++){try{const cur=(await syncIndex())||{v:1,mt:{}};Object.keys(idx.mt).forEach(k=>{if((+idx.mt[k]||0)>(+cur.mt[k]||0))cur.mt[k]=idx.mt[k];});cur.at=Date.now();cur.device=SYNC.dev;
+      await ghPut(c.brepo,'sync/index.json',new TextEncoder().encode(JSON.stringify(cur)),'sync index');break;}catch(e){if(t===2)throw e;await new Promise(r=>setTimeout(r,800));}}}
+  syncMetaSave(m);return n;};
+
+// ── « Tout reprendre du cloud » ne jette plus les matchs de cet appareil
+syncPanelRun=(function(f){return async function(a){if(a===2){if(!confirm('Reprendre les données du cloud sur cet appareil ?\n\nLes matchs et moments vidéo de cet appareil sont GARDÉS et ajoutés à ceux du cloud. Les autres réglages non envoyés sont remplacés (une copie de secours est gardée).'))return;
+    const keep={};Object.keys(S417_MERGE).forEach(k=>{keep[k]=_lsGet.call(localStorage,k);});syncMetaSave({mt:{},dirty:{}});
+    try{const idx=await syncIndex();await syncPull(idx);const m=syncMeta();let extra=false;Object.keys(keep).forEach(k=>{const L=s417Parse(keep[k]);if(!L||!L.length)return;const R=s417Parse(_lsGet.call(localStorage,k))||[];const r=s417Merge(k,R,L,s417DelGet());if(r.addedL){s417WriteLocal(k,r.list);m.mt[k]=Date.now();m.dirty[k]=1;extra=true;}});syncMetaSave(m);if(extra)await syncNow(false);location.reload();return;}
+    catch(e){syncBadge('⚠️ synchro',e.message);return;}}
+  return f.apply(this,arguments);};})(syncPanelRun);
+// premier démarrage d'un appareil déjà rempli : « données du cloud » garde aussi ses matchs
+syncFirst=(function(f){return async function(){const keep={};Object.keys(S417_MERGE).forEach(k=>{keep[k]=_lsGet.call(localStorage,k);});
+  try{_lsSet.call(localStorage,'grib_sync_keep417',JSON.stringify(keep));}catch(e){}return f.apply(this,arguments);};})(syncFirst);
+setTimeout(function(){try{const raw=_lsGet.call(localStorage,'grib_sync_keep417');if(!raw)return;const keep=JSON.parse(raw)||{};if(!syncMeta())return;const m=syncMeta();let extra=false;
+  Object.keys(keep).forEach(k=>{const L=s417Parse(keep[k]);if(!L||!L.length)return;const R=s417Parse(_lsGet.call(localStorage,k))||[];const r=s417Merge(k,R,L,s417DelGet());if(r.addedL){s417WriteLocal(k,r.list);m.mt[k]=Date.now();m.dirty[k]=1;extra=true;}});
+  syncMetaSave(m);localStorage.removeItem('grib_sync_keep417');if(extra&&syncOn())syncNow(false);}catch(e){console.warn('keep417',e);}},9000);
+
+// ── suppressions mémorisées (sinon la fusion ferait réapparaître le match)
+deleteArchive=function(i){if(!confirm('Supprimer ce match des archives ?\nIl sera aussi retiré des autres appareils.'))return;const a=archives[i];if(a)s417DelAdd('grib_archives_v3',[s417ArcId(a)]);archives.splice(i,1);saveArchives();renderArchives();};
+clearAllArchives=(function(f){return function(){const ids=(archives||[]).map(s417ArcId);const n0=archives.length;const r=f.apply(this,arguments);try{if(archives.length<n0)s417DelAdd('grib_archives_v3',ids);}catch(e){}return r;};})(clearAllArchives);
+momDel=(function(f){return function(id){const before=momList().length;const r=f.apply(this,arguments);try{if(momList().length<before)s417DelAdd('grib_moments_v1',[id]);}catch(e){}return r;};})(momDel);
+// chaque nouveau match reçoit un identifiant stable
+saveArchives=(function(f){return function(){try{(archives||[]).forEach(a=>{if(a&&!a.id)a.id=s417ArcId(a);});}catch(e){}return f.apply(this,arguments);};})(saveArchives);
+
+// ── diagnostic : affiche et vérifie le dépôt
+syncDiag=(function(f){return async function(){const c=ghCfg();await f.apply(this,arguments);try{
+  let line='📦 Dépôt utilisé : '+c.owner+'/'+c.brepo;
+  try{const r=await fetch('https://api.github.com/repos/'+encodeURIComponent(c.owner)+'/'+encodeURIComponent(c.brepo)+'/contents/sync/index.json?t='+Date.now(),{cache:'no-store',headers:{'Authorization':'Bearer '+String(c.token||'').trim(),'Accept':'application/vnd.github.raw+json'}});
+    line+=r.ok?'\n✅ Index de synchro lu dans le cloud : tout est prêt.':(r.status===404?'\n⚠️ Pas encore d\'index dans ce dépôt (normal au tout premier envoi).':'\n❌ Lecture de l\'index impossible ('+r.status+').');}
+  catch(e){line+='\n❌ Lecture de l\'index bloquée : '+e.message;}
+  SYNC2.diag=(SYNC2.diag?SYNC2.diag+'\n':'')+line;const p=E('sync-pan');if(p)syncPanelFill(p);}catch(e){}};})(syncDiag);
+
+// ── 📲 Installer une autre tablette (code à copier) / coller un code
+function s417Code(){const c=ghCfg();const o={o:c.owner,r:c.brepo,t:c.token,cl:(function(){try{const x=JSON.parse(localStorage.getItem('grib_classes_v1')||'{}');return x.active||'';}catch(e){return '';}})()};
+  return 'GRIB1-'+btoa(unescape(encodeURIComponent(JSON.stringify(o))));}
+function s417InstallShow(){const ov=document.createElement('div');ov.id='s417-ov';ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100000;display:flex;align-items:center;justify-content:center;padding:14px;';
+  const c=ghCfg();const has=!!c.token;
+  ov.innerHTML='<div style="background:#0f172a;border:2px solid #3b82f6;border-radius:14px;padding:16px;max-width:480px;width:100%;color:#e2e8f0;font-size:.9rem;">'
+   +'<b style="font-size:1.02rem;">📲 Installer une tablette</b>'
+   +(has?'<p style="margin:8px 0 4px;"><b>Sur ce téléphone</b> : copie ce code, envoie-le-toi (message, mail) et colle-le sur la tablette.</p><textarea id="s417-code" readonly style="width:100%;height:70px;font-size:.72rem;background:#020617;color:#cbd5e1;border:1px solid #334155;border-radius:8px;">'+esc(s417Code())+'</textarea>'
+     +'<button type="button" id="s417-copy" style="width:100%;min-height:42px;margin:6px 0;border:none;border-radius:9px;background:#15803d;color:#fff;font-weight:800;">📋 Copier le code</button>'
+     +'<p style="font-size:.74rem;color:#fca5a5;margin:2px 0 10px;">⚠️ Ce code contient ta clé de synchro : ne le donne pas aux élèves.</p>':'')
+   +'<p style="margin:8px 0 4px;"><b>Sur la tablette à installer</b> : colle ici le code reçu.</p><textarea id="s417-in" placeholder="GRIB1-…" style="width:100%;height:60px;font-size:.78rem;background:#020617;color:#e2e8f0;border:1px solid #334155;border-radius:8px;"></textarea>'
+   +'<button type="button" id="s417-go" style="width:100%;min-height:42px;margin:6px 0;border:none;border-radius:9px;background:#2563eb;color:#fff;font-weight:800;">✅ Installer cette tablette</button>'
+   +'<div id="s417-msg" style="font-size:.8rem;min-height:1em;"></div>'
+   +'<button type="button" id="s417-x" style="width:100%;min-height:36px;border:none;border-radius:9px;background:transparent;color:#94a3b8;">Fermer</button></div>';
+  document.body.appendChild(ov);ov.querySelector('#s417-x').onclick=()=>ov.remove();
+  const cp=ov.querySelector('#s417-copy');if(cp)cp.onclick=()=>{const t=ov.querySelector('#s417-code');try{navigator.clipboard.writeText(t.value).then(()=>{cp.textContent='✅ Copié';},()=>{t.select();document.execCommand('copy');cp.textContent='✅ Copié';});}catch(e){t.select();try{document.execCommand('copy');cp.textContent='✅ Copié';}catch(e2){}}};
+  ov.querySelector('#s417-go').onclick=async()=>{const msg=ov.querySelector('#s417-msg');const raw=ov.querySelector('#s417-in').value.trim().replace(/\s+/g,'');
+    let o=null;try{o=JSON.parse(decodeURIComponent(escape(atob(raw.replace(/^GRIB1-/,'')))));}catch(e){}
+    if(!o||!o.t){msg.textContent='❌ Code illisible : recopie-le en entier (il commence par GRIB1-).';return;}
+    const g=(function(){try{return JSON.parse(localStorage.getItem(GH_KEY)||'{}')||{};}catch(e){return {};}})();g.owner=o.o||'ludo247-cmd';g.brepo=o.r||'gribouillis-sauvegardes';g.token=o.t;g.sync=true;
+    try{localStorage.setItem(GH_KEY,JSON.stringify(g));}catch(e){msg.textContent='❌ Enregistrement impossible : '+e.message;return;}
+    msg.textContent='⏳ Récupération de tes classes…';
+    try{const keep={};Object.keys(S417_MERGE).forEach(k=>{keep[k]=_lsGet.call(localStorage,k);});
+      syncMetaSave({mt:{},dirty:{}});const idx=await syncIndex();if(!idx){msg.textContent='❌ Le cloud ne répond pas avec ce code (réseau ?). Lance le diagnostic dans la synchro.';return;}
+      await syncPull(idx);const m=syncMeta();Object.keys(keep).forEach(k=>{const L=s417Parse(keep[k]);if(!L||!L.length)return;const R=s417Parse(_lsGet.call(localStorage,k))||[];const r=s417Merge(k,R,L,s417DelGet());if(r.addedL){s417WriteLocal(k,r.list);m.mt[k]=Date.now();m.dirty[k]=1;}});syncMetaSave(m);
+      if(o.cl){try{const x=JSON.parse(_lsGet.call(localStorage,'grib_classes_v1')||'{}');if(x&&Array.isArray(x.list)&&x.list.some(c=>c.id===o.cl||c.nom===o.cl)){x.active=o.cl;SYNC.applying=true;_lsSet.call(localStorage,'grib_classes_v1',JSON.stringify(x));SYNC.applying=false;}}catch(e){}}
+      msg.textContent='✅ Tablette installée : rechargement…';setTimeout(()=>location.reload(),800);}
+    catch(e){msg.textContent='❌ '+e.message+' — lance le diagnostic dans la synchro.';}};}
+syncPanelFill=(function(f){return function(p){const r=f.apply(this,arguments);try{const b=p.querySelector('.sp-b');if(b&&!p.querySelector('.sp-inst')){const bt=document.createElement('button');bt.type='button';bt.className='sp-inst';bt.style.background='#1d4ed8';bt.textContent='📲 Installer une tablette (code)';bt.onclick=s417InstallShow;b.insertBefore(bt,b.children[1]||null);}
+  const dim=p.querySelector('.sp-dim');if(dim&&dim.textContent.indexOf('version')<0)dim.textContent+=' · version v'+GRIB_V;}catch(e){}return r;};})(syncPanelFill);
+// tablette vide (pas de synchro, pas de classe) : proposer l'installation
+setTimeout(function(){try{if(typeof GRIB_EXPORT_MODE!=='undefined'&&GRIB_EXPORT_MODE)return;if(syncOn())return;let n=0;try{n=((JSON.parse(localStorage.getItem('grib_classes_v1')||'{}')||{}).list||[]).length;}catch(e){}if(n)return;
+  if(E('s417-ban'))return;const b=document.createElement('div');b.id='s417-ban';b.style.cssText='position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:99990;background:#1d4ed8;color:#fff;border-radius:12px;padding:10px 14px;font-weight:700;box-shadow:0 6px 20px rgba(0,0,0,.5);max-width:92vw;';
+  b.innerHTML='📲 Tablette pas encore installée : <button type="button" style="margin-left:8px;border:none;border-radius:8px;padding:6px 10px;background:#fff;color:#1d4ed8;font-weight:800;">Coller mon code</button>';b.querySelector('button').onclick=()=>{b.remove();s417InstallShow();};document.body.appendChild(b);}catch(e){}},2500);
+
+// ── numéro de version visible
+(function(){try{const st=document.createElement('style');st.textContent='#s417-ver{position:fixed;right:calc(6px + env(safe-area-inset-right,0px));bottom:calc(4px + env(safe-area-inset-bottom,0px));z-index:9;font:600 10px/1 system-ui,sans-serif;color:#64748b;opacity:.85;pointer-events:none;}';document.head.appendChild(st);
+  const d=document.createElement('div');d.id='s417-ver';d.textContent='v'+GRIB_V;document.body.appendChild(d);}catch(e){}})();
+
+// ── mise à jour garantie : service worker « réseau d'abord » pour la page
+(function(){try{if(!('serviceWorker' in navigator)||!/^https:$/.test(location.protocol))return;if(typeof GRIB_EXPORT_MODE!=='undefined'&&GRIB_EXPORT_MODE)return;if(/eleve\.html$/.test(location.pathname))return;
+  navigator.serviceWorker.register('sw-app.js',{scope:'./'}).catch(e=>console.warn('sw-app',e));}catch(e){}})();
+
+
+// ══════════════════════════════════════════════════════════════════════
+// v418 — écrans plus simples après la séance du 06/11 :
+//  • caméra « moments » : plein écran, juste l'étoile (réglages derrière ⚙) ;
+//  • fiche d'un moment : équipe + verdict + Fini ; fil rouge et mot repliés ;
+//  • bilan de séance : seulement les matchs DE cette séance, les bilans
+//    audio transcrits, les moments filmés, les fils rouges réellement notés ;
+//  • Séquences sur téléphone : la 1re colonne n'est plus figée.
+// ══════════════════════════════════════════════════════════════════════
+(function(){
+const _momRender418=momRender;
+momRender=function(){if(!MOM.open||!MOM.stream){document.body.classList.remove('mf-on');const r=_momRender418.apply(this,arguments);return r;}
+  let p=E('mom-cam');if(!p){p=document.createElement('div');p.id='mom-cam';document.body.appendChild(p);}
+  p.className='mom-full';document.body.classList.add('mf-on');
+  p.innerHTML='<video playsinline muted autoplay></video>'
+   +'<'+'div class="mf-top"><span class="mf-rec">● REC</span><span class="mf-hint">rien n\'est gardé sans ⭐</span><span style="flex:1"></span>'
+   +'<button type="button" onclick="MOM.opts=!MOM.opts;momRender()" title="Réglages">⚙</button>'
+   +'<button type="button" onclick="momListOpen()" title="Mes moments">📂 '+momList().length+'</button>'
+   +'<button type="button" onclick="MOM.open=false;MOM.opts=false;momRender()" title="Réduire (la caméra continue)">▾</button>'
+   +'<button type="button" onclick="MOM.opts=false;momStop()" title="Couper la caméra">■</button></'+'div>'
+   +'<button type="button" class="mf-star" onclick="momStar()"'+(MOM.busy?' disabled':'')+'>⭐</button>'
+   +(MOM.opts?'<'+'div class="mf-opts"><'+'div class="mom-row"><span>Garder</span>'+[5,10,15,20].map(n=>'<button type="button" class="'+(MOM.pre===n?'on':'')+'" onclick="MOM.pre='+n+';momCfgSave();momRotate();momRender()">'+n+' s avant</button>').join('')+'</'+'div>'
+     +'<'+'div class="mom-row"><span>Puis</span>'+[0,3,5].map(n=>'<button type="button" class="'+(MOM.post===n?'on':'')+'" onclick="MOM.post='+n+';momCfgSave();momRender()">+'+n+' s après</button>').join('')+'</'+'div>'
+     +'<label class="mom-chk"><input type="checkbox"'+(MOM.send?' checked':'')+' onchange="MOM.send=this.checked;momCfgSave()"> ☁️ Envoyer chaque moment dans ton dépôt GitHub privé (sinon il reste sur cet appareil)</label></'+'div>':'');
+  const v=p.querySelector('video');if(v&&MOM.stream)v.srcObject=MOM.stream;
+  // l'écran reste allumé pendant qu'on filme
+  try{if(navigator.wakeLock&&!MOM.wl)navigator.wakeLock.request('screen').then(w=>{MOM.wl=w;w.addEventListener('release',()=>{MOM.wl=null;});}).catch(()=>{});}catch(e){}};
+momStop=(function(f){return function(){try{if(MOM.wl){MOM.wl.release();MOM.wl=null;}}catch(e){}return f.apply(this,arguments);};})(momStop);
+
+// fiche d'un moment, version courte
+function m418Short(l){l=String(l||'');const i=l.indexOf(':');let s=i>3?l.slice(0,i):l;s=s.trim();return s.length>44?s.slice(0,42)+'…':s;}
+momTagOpen=function(id){const m=momList().find(x=>x.id===id);if(!m)return;momTagClose();const T=momTeams();const q=lx2Q;const oeSel=MOM.tagOe||momCurOe();const M=momMicros(oeSel);const OEs=momOeList();
+  const Q=esc(q(id));const re='momTagOpen('+Q+')';
+  const o=document.createElement('div');o.id='mom-tag';o.className='mom-sheet m418';
+  o.innerHTML='<'+'div class="mom-box"><'+'div class="m4-h"><b>⭐ Moment de '+new Date(m.t).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})+' · '+m.dur+' s</b><button type="button" class="m4-x" onclick="momTagClose()">✕</button></'+'div>'
+    +'<'+'div class="m4-l">Équipe</'+'div><'+'div class="m4-r">'+T.concat(['Les deux']).map(n=>'<button type="button" class="'+(m.team===n?'on':'')+'" onclick="momUpd('+Q+',x=>x.team='+esc(q(n))+');'+re+'">'+esc(n)+'</button>').join('')+'</'+'div>'
+    +'<'+'div class="m4-l">Verdict</'+'div><'+'div class="m4-r"><button type="button" class="'+(m.ok==='ok'?'on':'')+'" onclick="momUpd('+Q+',x=>x.ok=\'ok\');'+re+'">✅ Bon exemple</button><button type="button" class="'+(m.ok==='work'?'on':'')+'" onclick="momUpd('+Q+',x=>x.ok=\'work\');'+re+'">⏳ À travailler</button></'+'div>'
+    +'<details class="m4-d"'+(MOM.tagFr?' open':'')+' ontoggle="MOM.tagFr=this.open"><summary>🎯 Fil rouge <small>(facultatif)</small>'+(m.lab?' : <b>'+esc(m418Short(m.lab))+'</b>':'')+'</summary><'+'div class="m4-r">'
+      +(M.length?M.map(x=>'<button type="button" class="'+(m.mi===x.mi?'on':'')+'" title="'+esc(x.lab)+'" onclick="momUpd('+Q+',y=>{y.oe='+esc(q(x.oe))+';y.mi='+esc(q(x.mi))+';y.lab='+esc(q(x.lab))+';});'+re+'">'+esc(m418Short(x.lab))+'</button>').join(''):'<small class="cc-dim">choisis l\'objet ↓</small>')
+      +'</'+'div><'+'div class="m4-r">'+OEs.map(O=>'<button type="button" class="alt'+(oeSel===O.id?' on':'')+'" onclick="MOM.tagOe='+esc(q(O.id))+';'+re+'">'+esc(O.short||O.label)+'</button>').join('')+'</'+'div></details>'
+    +'<details class="m4-d"'+(m.note?' open':'')+'><summary>✏️ Un mot <small>(facultatif, pas de nom d\'élève)</small></summary><input class="mom-note" value="'+esc(m.note||'')+'" onchange="momUpd('+Q+',x=>x.note=this.value)"></details>'
+    +'<'+'div class="m4-f"><button type="button" onclick="momPlay('+Q+')">▶ Revoir</button><button type="button" class="ok" onclick="momTagClose()">✓ Fini</button></'+'div>'
+    +'<'+'div class="m4-dest">'+(typeof momDest==='function'?momDest(m):'')+'</'+'div></'+'div>';
+  document.body.appendChild(o);};
+
+// bilan de séance : les matchs de CETTE séance seulement
+bilArch=function(s){let A=[];try{A=JSON.parse(localStorage.getItem('grib_archives_v3')||'[]');}catch(e){A=archives||[];}
+  if(!s)return [];const byId=A.filter(a=>a&&a.seanceId&&a.seanceId===s.id);if(byId.length)return byId;
+  const d=s.date?String(s.date).split('-').reverse().join('/'):'';const sp=String(s.sport||s.apsa||'').toLowerCase();
+  const out=A.filter(a=>a&&d&&a.date===d&&(!a.seanceId)&&(!sp||String(a.apsa||'').toLowerCase()===sp));
+  if(out.length)return out;try{return seanceMatches(s).map(x=>x.a);}catch(e){return [];}};
+// fils rouges : seulement ceux qui ont reçu une réponse
+seanceBilanHtml=(function(f){return function(s){const _br=bilanRows;let h='';try{bilanRows=function(){const R=_br.apply(this,arguments);return R.filter((r,i)=>i===0||!/^Fil rouge/.test(r[0])||(r[5]!=null&&String(r[5]).trim()!==''&&String(r[5]).trim()!=='—'));};h=f.apply(this,arguments);}finally{bilanRows=_br;}
+  return h.replace('Pas encore d\'auto-évaluation des élèves.','Aucun fil rouge noté par les élèves pendant cette séance.');};})(seanceBilanHtml);
+function m418Moments(s){let L=[];try{L=momList();}catch(e){return [];}const d=s.date||'';
+  return L.filter(m=>m&&(m.seance===s.id||(!m.seance&&d&&new Date(m.t).toISOString().slice(0,10)===d&&(!m.sp||!s.sport||m.sp===s.sport))));}
+bilHtml=(function(f){return function(s,forPrint){let h=f.apply(this,arguments);try{
+  // bilans audio transcrits, sous chaque match
+  const M=bilArch(s);const tr=M.map((a,i)=>{const t=[a.transcriptionText,a.transcriptEq1,a.transcriptEq2].filter(x=>x&&String(x).trim().length>1);return t.length?'<'+'div class="bil-g"><b>🎙 Match '+(i+1)+(a.teams&&a.teams[0]?' · '+esc(String(a.teams[0].name||'')):'')+'</b><'+'div class="bil-rc">'+t.map(x=>esc(String(x))).join('<br>')+'</'+'div></'+'div>':'';}).filter(Boolean);
+  const audioH=tr.length?'<h4>🎙 Bilans audio ('+tr.length+')</h4>'+tr.join(''):'';
+  // moments filmés
+  const MM=m418Moments(s);const q=lx2Q;
+  const momH='<h4>⭐ Moments filmés ('+MM.length+')</h4>'+(MM.length?'<'+'div class="bil-mom">'+MM.map(m=>'<button type="button" class="m4-mb" onclick="momPlay('+esc(q(m.id))+')">▶ '+(m.ok==='ok'?'✅ ':m.ok==='work'?'⏳ ':'')+esc(m.team||'')+' · '+new Date(m.t).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})+(m.lab?'<small>'+esc(m418Short(m.lab))+'</small>':'')+'</button>').join('')+'</'+'div>':'<'+'div class="bil-dim">Aucun moment filmé pendant cette séance.</'+'div>');
+  const k=h.indexOf('<h4>🎬 Vidéos');h=k>=0?h.slice(0,k)+audioH+momH+h.slice(k):h+audioH+momH;}catch(e){console.warn('bil418',e);}return h;};})(bilHtml);
+
+const st=document.createElement('style');st.textContent=
+ 'html body #mom-cam.mom-full{position:fixed;inset:0;z-index:9000;background:#000;display:block;}'
++'html body #mom-cam.mom-full video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000;}'
++'html body #mom-cam.mom-full .mf-top{position:absolute;left:0;right:0;top:0;display:flex;align-items:center;gap:8px;padding:calc(8px + env(safe-area-inset-top,0px)) calc(10px + env(safe-area-inset-right,0px)) 8px calc(10px + env(safe-area-inset-left,0px));background:linear-gradient(rgba(0,0,0,.6),rgba(0,0,0,0));color:#fff;}'
++'html body #mom-cam.mom-full .mf-top button{min-width:44px;min-height:40px;border:none;border-radius:10px;background:rgba(15,23,42,.75);color:#fff;font-size:1.05rem;font-weight:700;}'
++'html body #mom-cam.mom-full .mf-rec{color:#f87171;font-weight:800;}html body #mom-cam.mom-full .mf-hint{font-size:.75rem;opacity:.8;}'
++'html body #mom-cam.mom-full .mf-star{position:absolute;right:calc(22px + env(safe-area-inset-right,0px));bottom:calc(22px + env(safe-area-inset-bottom,0px));width:min(30vmin,150px);height:min(30vmin,150px);border-radius:999px;border:4px solid rgba(255,255,255,.85);background:#f59e0b;color:#111;font-size:min(14vmin,70px);box-shadow:0 8px 30px rgba(0,0,0,.6);}'
++'html body #mom-cam.mom-full .mf-star:active{transform:scale(.94);}html body #mom-cam.mom-full .mf-star:disabled{opacity:.5;}'
++'html body #mom-cam.mom-full .mf-opts{position:absolute;left:calc(10px + env(safe-area-inset-left,0px));top:calc(60px + env(safe-area-inset-top,0px));max-width:min(520px,calc(100vw - 200px));background:rgba(11,18,32,.95);border:1px solid #334155;border-radius:12px;padding:10px;color:#e2e8f0;}'
++'@media (orientation:portrait){html body #mom-cam.mom-full .mf-star{left:50%;right:auto;transform:translateX(-50%);}html body #mom-cam.mom-full .mf-star:active{transform:translateX(-50%) scale(.94);}html body #mom-cam.mom-full .mf-opts{max-width:calc(100vw - 20px);right:10px;}}'
++'html body #mom-tag.m418{z-index:9600;}html body .m418 .mom-box{max-width:520px;}html body .m418 .m4-h{display:flex;align-items:center;gap:8px;margin-bottom:6px;}html body .m418 .m4-h b{flex:1;font-size:1rem;}html body .m418 .m4-x{min-width:40px;min-height:40px;border:none;border-radius:10px;background:#1e293b;color:#fff;}'
++'html body .m418 .m4-l{font-size:.72rem;color:#94a3b8;margin:8px 0 3px;text-transform:uppercase;letter-spacing:.05em;}html body .m418 .m4-r{display:flex;flex-wrap:wrap;gap:6px;}'
++'html body .m418 .m4-r button{min-height:46px;padding:6px 14px;border-radius:12px;border:1px solid #334155;background:#1e293b;color:#e2e8f0;font-weight:700;font-size:.95rem;}html body .m418 .m4-r button.on{background:#2563eb;border-color:#60a5fa;color:#fff;}html body .m418 .m4-r button.alt{min-height:34px;font-size:.78rem;font-weight:600;opacity:.85;}'
++'html body .m418 .m4-d{margin-top:8px;border:1px solid #1e293b;border-radius:10px;padding:6px 8px;}html body .m418 .m4-d summary{cursor:pointer;font-size:.85rem;color:#cbd5e1;min-height:30px;display:flex;align-items:center;gap:4px;flex-wrap:wrap;}html body .m418 .m4-d .m4-r{margin-top:6px;}'
++'html body .m418 .m4-d .m4-r button{min-height:38px;font-size:.82rem;}html body .m418 .mom-note{width:100%;margin-top:6px;}'
++'html body .m418 .m4-f{display:flex;gap:8px;margin-top:12px;}html body .m418 .m4-f button{flex:1;min-height:50px;border:none;border-radius:12px;background:#334155;color:#fff;font-weight:800;font-size:1rem;}html body .m418 .m4-f button.ok{flex:2;background:#15803d;}'
++'html body .m418 .m4-dest{font-size:.72rem;color:#94a3b8;margin-top:8px;}'
++'html body .bil-mom{display:flex;flex-wrap:wrap;gap:6px;}html body .m4-mb{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-height:44px;padding:6px 12px;border-radius:10px;border:1px solid #334155;background:#1e293b;color:#e2e8f0;font-weight:700;}html body .m4-mb small{font-weight:500;color:#94a3b8;}'
++'html body.mf-on #fullscreen-btn{display:none!important;}'
++'@media (max-width:760px){html body .seq-grid th:first-child,html body .seq-grid td:first-child{position:static;min-width:130px;}}';
+document.head.appendChild(st);
+try{if(MOM.open&&MOM.stream)momRender();}catch(e){}
+})();
 </script>
 </body>
 </html>
