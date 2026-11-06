@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v419</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v420</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v419</title>
+<title>Gribouillis EPS v420</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -29871,6 +29871,60 @@ renderSeanceTab=(function(f){return function(){const r=f.apply(this,arguments);t
 +'html body .seq-cell{min-width:36px;height:28px;}'
 +'html body .seq-grid select{max-width:96px;}'
 +'}';document.head.appendChild(st);})();
+
+
+// ══════════════════════════════════════════════════════════════════════
+// v420 — • bilans audio : dès que le texte est là, le son est retiré
+//          (la mémoire ne sature plus) ; sans texte, le son est gardé ;
+//        • 🔒 code d'ouverture, à activer appareil par appareil (tablettes
+//          que les élèves manipulent) ; il est aussi demandé pour quitter
+//          le mode élève. Le code se règle depuis n'importe quel appareil.
+// ══════════════════════════════════════════════════════════════════════
+function a420Txt(a){const t=[];try{if(Array.isArray(a.transcriptionText))a.transcriptionText.forEach(x=>t.push(x));else t.push(a.transcriptionText);}catch(e){}t.push(a.transcriptEq1,a.transcriptEq2);return t.filter(x=>x&&String(x).trim().length>2);}
+function a420Strip(list){let n=0;(list||[]).forEach(a=>{if(!a||!Array.isArray(a.audioData))return;if(!(a.audioData[0]||a.audioData[1]))return;if(!a420Txt(a).length)return;a.audioData=[null,null];a.audioTexte=1;n++;});return n;}
+saveArchives=(function(f){return function(){try{a420Strip(archives);}catch(e){}return f.apply(this,arguments);};})(saveArchives);
+// une fois au démarrage : nettoyer les anciens enregistrements déjà transcrits
+setTimeout(function(){try{if(a420Strip(archives))saveArchives();}catch(e){console.warn('a420',e);}},3000);
+
+// ── 🔒 code d'ouverture
+const LOCK_CODE_KEY='grib_lock_code_v1';      // synchronisé : empreinte du code
+const LOCK_DEV_KEY='grib_lock_dev_v1';        // cet appareil seulement : verrou actif ?
+try{if(GRIB_BACKUP_KEYS.indexOf(LOCK_CODE_KEY)<0)GRIB_BACKUP_KEYS.push(LOCK_CODE_KEY);}catch(e){}
+function l420H(c){return 'h'+s417Hash('grib-lock|'+String(c||'').trim());}
+function l420Code(){try{return localStorage.getItem(LOCK_CODE_KEY)||'';}catch(e){return '';}}
+function l420On(){try{return _lsGet.call(localStorage,LOCK_DEV_KEY)==='1'&&!!l420Code();}catch(e){return false;}}
+function l420Ask(title,ok,cancelable){const o=document.createElement('div');o.className='l420-ov';
+  o.innerHTML='<'+'div class="l420-box"><b>🔒 '+esc(title)+'</b><input type="password" inputmode="numeric" autocomplete="off" class="l420-in" placeholder="Code"><'+'div class="l420-msg"></'+'div><'+'div class="l420-b">'+(cancelable?'<button type="button" class="l420-c">Annuler</button>':'')+'<button type="button" class="l420-ok">Valider</button></'+'div></'+'div>';
+  document.body.appendChild(o);const inp=o.querySelector('input');setTimeout(()=>{try{inp.focus();}catch(e){}},50);
+  const go=()=>{if(l420H(inp.value)===l420Code()){o.remove();ok();}else{o.querySelector('.l420-msg').textContent='❌ Code faux';inp.value='';inp.focus();}};
+  o.querySelector('.l420-ok').onclick=go;inp.addEventListener('keydown',e=>{if(e.key==='Enter')go();});const c=o.querySelector('.l420-c');if(c)c.onclick=()=>o.remove();return o;}
+// à l'ouverture
+(function(){try{if(typeof GRIB_EXPORT_MODE!=='undefined'&&GRIB_EXPORT_MODE)return;if(!l420On())return;if(sessionStorage.getItem('grib_unlocked')==='1')return;
+  const o=l420Ask('Cet appareil est protégé',()=>{try{sessionStorage.setItem('grib_unlocked','1');}catch(e){}},false);o.classList.add('l420-start');}catch(e){}})();
+// pour quitter le mode élève
+setSeanceMode=(function(f){return function(mode){const self=this,args=arguments;try{if(mode!=='eleve'&&SEANCE_STATE&&SEANCE_STATE.mode==='eleve'&&l420On()){l420Ask('Code pour revenir en mode enseignant',()=>f.apply(self,args),true);return;}}catch(e){}return f.apply(this,arguments);};})(setSeanceMode);
+// réglage (dans la synchro)
+function l420Panel(){const o=document.createElement('div');o.className='l420-ov';const has=!!l420Code(),on=l420On();
+  o.innerHTML='<'+'div class="l420-box" style="text-align:left;"><b>🔒 Code d\'ouverture</b>'
+   +'<p class="l420-p">Le code est le même sur tous tes appareils. Tu choisis ici si <b>cet appareil</b> le demande à l\'ouverture et pour quitter le mode élève.</p>'
+   +'<label class="l420-chk"><input type="checkbox" id="l420-dev"'+(on?' checked':'')+(has?'':' disabled')+'> Demander le code sur cet appareil</label>'
+   +'<p class="l420-p" style="margin-top:10px;">'+(has?'Changer le code :':'Choisis un code (4 chiffres ou plus) :')+'</p><input type="password" inputmode="numeric" class="l420-in" id="l420-n1" placeholder="Nouveau code"><input type="password" inputmode="numeric" class="l420-in" id="l420-n2" placeholder="Retape-le">'
+   +'<'+'div class="l420-msg"></'+'div><'+'div class="l420-b"><button type="button" class="l420-c">Fermer</button><button type="button" class="l420-ok">Enregistrer</button></'+'div></'+'div>';
+  document.body.appendChild(o);const msg=o.querySelector('.l420-msg');
+  o.querySelector('#l420-dev').onchange=function(){const want=this.checked;const apply=()=>{try{_lsSet.call(localStorage,LOCK_DEV_KEY,want?'1':'0');sessionStorage.setItem('grib_unlocked','1');}catch(e){}msg.textContent=want?'✅ Cet appareil demandera le code.':'✅ Cet appareil ne demande plus le code.';};
+    if(!want&&l420On()){this.checked=true;l420Ask('Code actuel',()=>{o.querySelector('#l420-dev').checked=false;apply();},true);return;}apply();};
+  o.querySelector('.l420-c').onclick=()=>o.remove();
+  o.querySelector('.l420-ok').onclick=()=>{const a=o.querySelector('#l420-n1').value.trim(),b=o.querySelector('#l420-n2').value.trim();if(!a){o.remove();return;}
+    if(a.length<4){msg.textContent='Au moins 4 caractères.';return;}if(a!==b){msg.textContent='Les deux codes sont différents.';return;}
+    const save=()=>{try{localStorage.setItem(LOCK_CODE_KEY,l420H(a));}catch(e){}msg.textContent='✅ Code enregistré (il arrive sur tes autres appareils à la prochaine synchro).';o.querySelector('#l420-dev').disabled=false;};
+    if(has)l420Ask('Code actuel',save,true);else save();};}
+syncPanelFill=(function(f){return function(p){const r=f.apply(this,arguments);try{const b=p.querySelector('.sp-b');if(b&&!p.querySelector('.sp-lock')){const bt=document.createElement('button');bt.type='button';bt.className='sp-lock';bt.textContent='🔒 Code d\'ouverture'+(l420On()?' (actif ici)':'');bt.onclick=l420Panel;b.appendChild(bt);}}catch(e){}return r;};})(syncPanelFill);
+(function(){const st=document.createElement('style');st.textContent=
+ 'html body .l420-ov{position:fixed;inset:0;z-index:100001;background:rgba(2,6,23,.92);display:flex;align-items:center;justify-content:center;padding:16px;}html body .l420-ov.l420-start{background:#020617;}'
++'html body .l420-box{background:#0f172a;border:2px solid #3b82f6;border-radius:14px;padding:18px;width:min(380px,100%);color:#e2e8f0;text-align:center;display:flex;flex-direction:column;gap:8px;}html body .l420-box b{font-size:1.05rem;}'
++'html body .l420-in{font-size:1.4rem;text-align:center;letter-spacing:.3em;padding:10px;border-radius:10px;border:1px solid #334155;background:#020617;color:#fff;}html body .l420-msg{min-height:1.2em;color:#fca5a5;font-size:.85rem;}'
++'html body .l420-b{display:flex;gap:8px;}html body .l420-b button{flex:1;min-height:46px;border:none;border-radius:10px;font-weight:800;background:#334155;color:#fff;}html body .l420-b .l420-ok{background:#15803d;}'
++'html body .l420-p{font-size:.82rem;color:#cbd5e1;margin:0;}html body .l420-chk{display:flex;gap:8px;align-items:center;font-size:.9rem;}';document.head.appendChild(st);})();
 </script>
 </body>
 </html>
