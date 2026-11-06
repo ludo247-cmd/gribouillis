@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v415</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v416</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v415</title>
+<title>Gribouillis EPS v416</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -29560,6 +29560,27 @@ remSimpleHtml=function(s,stepKey){const sd=seanceSportDef(s);if(!sd)return '<'+'
   if(X.length>1)h+='<'+'div style="text-align:right;margin-bottom:6px;">'+chg('ref','Changer de situation')+'</'+'div>';
   try{h+=renderEleveExo(ex.x.cpPath,ex.x.exo);}catch(e){h+='<'+'div class="sel-box"><'+'h4>🏃 '+esc(String(ex.x.exo.titre||''))+'</'+'h4><'+'div class="sel-text">'+esc(String(ex.x.exo.desc||''))+'</'+'div></'+'div>';}
   return h;};
+
+// ══════════════════════════════════════════════════════════════════════
+// v416 — profils d'observation « Handball basique » (boutons seuls /
+// mode gribouillis), ajoutés seulement s'ils n'existent pas.
+// ══════════════════════════════════════════════════════════════════════
+const HBB_NAMES=['Handball basique — boutons','Handball basique — gribouillis'];
+function hbbBase(){
+  const g=(CFG.savedPresets||[]).find(x=>x&&x.name==='Générique — Handball');
+  if(g)return JSON.parse(JSON.stringify(g));
+  return {apsa:'🤾',apsaKey:'handball',gameMode:'1eq',dialogBtns:[
+    {label:'✅ Conservée',color:'#16a34a',isShot:false,isGoal:false,switchTeam:false,secondary:null,pts:0,newPoss:false},
+    {label:'❌ Perdue',color:'#dc2626',isShot:false,isGoal:false,switchTeam:true,secondary:null,pts:0,newPoss:true},
+    {label:'🤾 Tir',color:'#c05621',isShot:true,isGoal:false,switchTeam:true,secondary:null,pts:0,newPoss:true},
+    {label:'🤾 But !',color:'#b45309',isShot:true,isGoal:true,switchTeam:true,secondary:null,pts:1,newPoss:true}],
+    customRatios:[],showRZ:false,showPertes:false,indivObsEnabled:false,r1:true,r2:true,r3:true,r4:false,r5:false,r6:true,countdownMode:true,musicMode:true,pauseDur:0,nbPeriods:2,periodDur:4};
+}
+function hbbEnsure(){try{if(!Array.isArray(CFG.savedPresets))return;let ch=false;
+  HBB_NAMES.forEach((n,k)=>{if(CFG.savedPresets.some(x=>x&&x.name===n))return;const p=hbbBase();delete p.generic;p.name=n;p.obsSimple=(k===0);
+    p.meta=Object.assign({},p.meta||{},{btnsHint:k===0?'Boutons seuls : conservée / perdue / tir / but':'Terrain gribouillis + boutons'});CFG.savedPresets.push(p);ch=true;});
+  if(ch){try{saveConfig();}catch(e){}}}catch(e){console.warn('hbb',e);}}
+try{setTimeout(hbbEnsure,1600);}catch(e){}
 </script>
 </body>
 </html>
