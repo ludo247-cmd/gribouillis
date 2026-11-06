@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v418</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v419</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v418</title>
+<title>Gribouillis EPS v419</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -29822,6 +29822,55 @@ const st=document.createElement('style');st.textContent=
 document.head.appendChild(st);
 try{if(MOM.open&&MOM.stream)momRender();}catch(e){}
 })();
+
+
+// ══════════════════════════════════════════════════════════════════════
+// v419 — • l'app ne change plus de classe toute seule pendant la journée :
+//          le soir (à partir de 18 h), elle prépare UNE fois la 1re classe
+//          du lendemain, c'est tout ;
+//        • « 🏁 Terminer la séance » toujours visible en haut de la séance ;
+//        • Séquences sur téléphone : 1re colonne figée mais étroite et lisible.
+// ══════════════════════════════════════════════════════════════════════
+const EDT_PREP_KEY='grib_edt_prep_v1';
+function e419Iso(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function e419FirstOf(d){const j=d.getDay(),iso=e419Iso(d);let best=null;
+  clsData().list.forEach(c=>edtSlots(c).forEach(x=>{if(+x.j!==j)return;if(c.jours&&typeof c.jours==='object'&&Object.keys(c.jours).length&&!c.jours[iso])return;const a=edtMin(x.h1);if(!best||a<best.a)best={c,x,a,iso};}));return best;}
+edtAutoStart=function(){
+  try{if(SEANCE_STATE&&SEANCE_STATE.mode==='eleve')return false;}catch(e){}
+  try{const now=new Date();if(now.getHours()<18)return false;
+    let t=null;for(let k=1;k<=7&&!t;k++){const d=new Date(now.getFullYear(),now.getMonth(),now.getDate()+k);t=e419FirstOf(d);}
+    if(!t)return false;let done='';try{done=localStorage.getItem(EDT_PREP_KEY)||'';}catch(e){}
+    if(done===t.iso)return false;try{localStorage.setItem(EDT_PREP_KEY,t.iso);}catch(e){}
+    const d=clsData();if(d.active!==t.c.id)clsActivate(t.c.id);
+    const ap=edtApsaOf(t.c,t.iso);if(ap&&ap!==CFG.apsa){try{qjGoSport(ap);}catch(e){}}
+    const jr=new Date(t.iso+'T12:00:00').toLocaleDateString('fr-FR',{weekday:'long'});
+    try{toast2('🌙 Prête pour '+jr+' '+edtFmtH(t.x.h1)+' : '+t.c.nom+(ap?' · '+calSportName(ap):''));}catch(e){}
+  }catch(e){console.warn('edt419',e);}
+  return false;};
+
+// 🏁 Terminer la séance, pour toutes les séances
+async function s419Finish(){const s=getActiveSeance();if(!s)return;
+  if(!confirm('🏁 Terminer la séance ?\n\nL\'appli récupère d\'abord les données des tablettes, puis range la séance et ouvre son bilan.'))return;
+  try{if(typeof syncOn==='function'&&syncOn()){try{toast2('☁️ Récupération des données des tablettes…');}catch(e){}await syncNow(true);try{const L=JSON.parse(localStorage.getItem('grib_seances_v1')||'[]');const r=L.find(x=>x&&x.id===s.id);if(r)Object.assign(s,r);}catch(e){}}}catch(e){console.warn('s419 sync',e);}
+  try{const el=E('seance-recap-input');if(el&&el.value)s.recap=el.value;}catch(e){}
+  try{markSeanceStepDone('fin');}catch(e){}
+  s.status='done';s.finishedAt=Date.now();try{SEANCE_STATE.activeId=null;}catch(e){}saveSeances();
+  setTimeout(function(){try{ghAutoBackup();}catch(e){}},2500);try{if(syncOn())syncNow(false);}catch(e){}
+  try{renderSeanceTab();}catch(e){}bilOpen(s.id);}
+renderSeanceTab=(function(f){return function(){const r=f.apply(this,arguments);try{
+  const tab=E('t-seance');const s=getActiveSeance();if(!tab||!s||tab.querySelector('.s419-fin'))return r;
+  const b=tab.querySelector('button[onclick^="setSeanceMode(\'eleve\')"]');if(!b||!b.parentNode)return r;
+  const fin=document.createElement('button');fin.type='button';fin.className='btn-xs s419-fin';fin.style.cssText='background:#15803d;color:#fff;font-weight:800;';fin.textContent='🏁 Terminer la séance';fin.onclick=s419Finish;
+  const bil=document.createElement('button');bil.type='button';bil.className='btn-xs s419-bil';bil.style.cssText='background:#0f766e;color:#fff;';bil.textContent='📋 Bilan';bil.onclick=()=>bilOpen(s.id);
+  b.parentNode.insertBefore(bil,b);b.parentNode.insertBefore(fin,bil);}catch(e){console.warn('s419',e);}return r;};})(renderSeanceTab);
+
+(function(){const st=document.createElement('style');st.textContent=
+ '@media (max-width:760px){'
++'html body .seq-grid th:first-child,html body .seq-grid td:first-child{position:sticky;left:0;z-index:2;min-width:38vw;width:40vw;max-width:42vw;font-size:.7rem;line-height:1.25;padding:5px 6px;box-shadow:2px 0 0 var(--border);word-break:break-word;hyphens:auto;}'
++'html body .seq-grid th,html body .seq-grid td{padding:4px 3px;}html body .seq-grid th:not(:first-child),html body .seq-grid td:not(:first-child){width:54px;min-width:54px;}html body .seq-grid{min-width:0;}html body .seq-grid td:not(:first-child){white-space:normal;}html body .seq-grid td:not(:first-child) button:not(.seq-cell){display:block;width:100%;font-size:.6rem;padding:4px 2px;margin:2px 0;white-space:normal;line-height:1.1;}'
++'html body .seq-cell{min-width:36px;height:28px;}'
++'html body .seq-grid select{max-width:96px;}'
++'}';document.head.appendChild(st);})();
 </script>
 </body>
 </html>
