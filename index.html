@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v437</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v438</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v437</title>
+<title>Gribouillis EPS v438</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -30940,6 +30940,86 @@ gribVerBan=function(v){let b=E('ver-ban');if(b){b.querySelector('b').textContent
     if(cfg){cfg.removeAttribute('style');cfg.className='btn-xs blue m437-cfg';cfg.textContent='⚙ Configurer';title.style.display='flex';title.style.alignItems='center';title.appendChild(cfg);}}
   row.style.display='none';}catch(e){console.warn('m437',e);}})();
 (function(){const st=document.createElement('style');st.textContent='html body .m437-cfg{margin-left:auto;min-height:34px;padding:4px 10px!important;font-size:.78rem;text-transform:none;letter-spacing:0;}';document.head.appendChild(st);})();
+
+
+
+// ══════════════════════════════════════════════════════════════════════
+// v438 — MODE ÉLÈVE : bouton « 📚 Ressources » (tablettes de la classe)
+//   📏 Les règles de notre match (FPS de la séquence + fiche)
+//   👁 Comment observer (boutons de l'outil d'observation + ce qu'on regarde)
+//   🎽 Les postes (si le sport en a)
+//   🎬 Les situations et leurs vidéos (fiche 📄)
+//   🏆 Le classement du championnat
+//   📊 Mes statistiques (match après match, sur cette tablette)
+// Rien n'est ajouté dans le fichier « Envoyer aux élèves ».
+// ══════════════════════════════════════════════════════════════════════
+let RS438={open:'',nom:''};
+function rs438Seq(s){try{if(s&&s.seqId)return seqGet(s.seqId);}catch(e){}try{return seqCurrentFor(clsActive());}catch(e){return null;}}
+function rs438Fps(s,q){const ids=[];try{const oes=pj430Oes(s);if(q&&q.fpsA)oes.forEach(o=>{const x=q.fpsA[o];if(x&&x.id)ids.push(x.id);});if(q&&Array.isArray(q.fps))q.fps.forEach(i=>ids.push(i));}catch(e){}
+  const L=(()=>{try{return libLoad();}catch(e){return [];}})();const out=[];ids.forEach(i=>{if(out.some(x=>x.id===i))return;const it=L.find(x=>x&&x.id===i);if(it)out.push(it);});return out;}
+function rs438Sec(id,ico,title,body){const on=RS438.open===id;return '<'+'div class="rs438-s'+(on?' on':'')+'"><button type="button" class="rs438-h" aria-expanded="'+on+'" onclick="RS438.open=(RS438.open===\''+id+'\'?\'\':\''+id+'\');rs438Open()"><span>'+ico+' '+esc(title)+'</span><b>'+(on?'▾':'▸')+'</b></button>'+(on?'<'+'div class="rs438-b">'+body+'</'+'div>':'')+'</'+'div>';}
+function rs438Rules(s,q){const F=rs438Fps(s,q);let h='';
+  F.forEach(it=>{let p={};try{p=f424Parse(it.desc);}catch(e){}
+    h+='<'+'div class="rs438-card"><b>'+esc(it.titre||'Notre match')+'</b>'+(p.But?'<p><b>Le but :</b> '+esc(p.But)+'</p>':'')+(p['Règles']?'<p><b>Les règles :</b> '+esc(p['Règles'])+'</p>':'')
+     +(!p.But&&!p['Règles']&&it.objectif?'<p>'+esc(it.objectif)+'</p>':'')+'<button type="button" class="rs438-btn" onclick="f424Open(\''+esc(it.id)+'\')">📄 Voir la fiche</button></'+'div>';});
+  if(!h){try{pj430Oes(s).forEach(id=>{const r=j423Oe(id);if(r&&r.O.fpsTxt)h+='<'+'div class="rs438-card"><b>'+esc(r.O.short||r.O.label)+'</b><p style="white-space:pre-line">'+esc(r.O.fpsTxt)+'</p></'+'div>';});}catch(e){}}
+  return h||'<p class="rs438-v">Ton enseignant n\'a pas encore choisi la forme de match.</p>';}
+function rs438Obs(s){let h='';try{const B=(CFG.dialogBtns||[]).filter(b=>b&&b.label);if(B.length)h+='<p>Pendant le match, on touche un bouton à chaque action :</p><'+'div class="rs438-chips">'+B.map(b=>'<span style="border-color:'+esc(b.color||'#334155')+'">'+esc(b.label)+'</span>').join('')+'</'+'div>';}catch(e){}
+  try{const M=[];pj430Oes(s).forEach(id=>{const r=j423Oe(id);if(r&&r.O.macroLabels)r.O.macroLabels.forEach(x=>{if(M.indexOf(x)<0)M.push(x);});});if(M.length)h+='<p><b>Ce qu\'on regarde :</b></p><ul>'+M.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>';}catch(e){}
+  h+='<p class="rs438-v">Conseil : un observateur regarde une seule équipe et ne parle pas aux joueurs pendant le match.</p>';return h;}
+function rs438Postes(s){let sp='';try{sp=po429Sp(s);}catch(e){}const P=sp&&typeof PO429!=='undefined'?PO429[sp]:null;if(!P)return '';
+  return Object.keys(P).map(k=>{const x=P[k];return '<'+'div class="rs438-card"><b>'+esc(x[0])+'</b><p>'+esc(x[1])+'</p><p class="rs438-obj">🎯 '+esc(x[2])+'</p>'+(x[3]?'<p class="rs438-v">'+esc(x[3])+'</p>':'')+'</'+'div>';}).join('');}
+function rs438Sits(s){let L=[];try{const ids=pj430Exos(s).map(x=>x.id);const A=libLoad();L=ids.map(i=>A.find(x=>x&&x.id===i)).filter(Boolean);}catch(e){}
+  if(!L.length)return '<p class="rs438-v">Pas encore de situation pour cet objet.</p>';
+  return L.map(it=>'<'+'div class="rs438-row"><span>'+esc(it.titre||'')+(it.video?' 🎬':'')+'</span><button type="button" class="rs438-btn" onclick="f424Open(\''+esc(it.id)+'\')">📄 Fiche</button>'+(it.video&&/^https?:/.test(String(it.video))?'<a class="rs438-btn" href="'+esc(it.video)+'" target="_blank" rel="noopener">▶ Vidéo</a>':'')+'</'+'div>').join('');}
+function rs438Class(q){const c=q&&q.champ;if(!c||!c.on||!(c.clubs||[]).length)return '<p class="rs438-v">Pas de championnat dans cette séquence.</p>';let T={};try{T=chpStand(c);}catch(e){return '';}
+  const nm=id=>{const k=c.clubs.find(x=>x.id===id);return k?k:{nom:id,col:'#64748b'};};
+  const tot=c.clubs.map(k=>({k,p:(T[k.id]||{}).tot||0})).sort((a,b)=>b.p-a.p);
+  let h='<table class="rs438-t"><tr><th>Club</th><th>Points</th></tr>'+tot.map((x,i)=>'<tr><td><span class="rs438-dot" style="background:'+esc(x.k.col||'#64748b')+'"></span>'+(i+1)+'. '+esc(x.k.nom)+'</td><td><b>'+x.p+'</b></td></tr>').join('')+'</table>';
+  (c.niv||[]).forEach((n,ni)=>{const R=c.clubs.map(k=>({k,v:((T[k.id]||{}).niv||[])[ni]||{j:0,v:0,n:0,d:0,pts:0}})).filter(x=>x.v.j).sort((a,b)=>b.v.pts-a.v.pts);if(!R.length)return;
+    h+='<p><b>'+esc(n)+'</b></p><table class="rs438-t"><tr><th>Club</th><th>J</th><th>V</th><th>N</th><th>D</th><th>Pts</th></tr>'+R.map(x=>'<tr><td>'+esc(x.k.nom)+'</td><td>'+x.v.j+'</td><td>'+x.v.v+'</td><td>'+x.v.n+'</td><td>'+x.v.d+'</td><td><b>'+x.v.pts+'</b></td></tr>').join('')+'</table>';});
+  return h;}
+function rs438Names(s){const N=[];try{(s.groupes||[]).forEach(g=>(g.members||[]).forEach(m=>{if(N.indexOf(m)<0)N.push(m);}));}catch(e){}
+  if(!N.length){try{(COMPO.roster||[]).forEach(r=>{const n=r&&(r.name||r.nom);if(n&&N.indexOf(n)<0)N.push(n);});}catch(e){}}return N.sort((a,b)=>a.localeCompare(b,'fr'));}
+function rs438Stats(s){const N=rs438Names(s);let h='<label class="rs438-l" for="rs438-nom">Mon prénom</label><select id="rs438-nom" onchange="RS438.nom=this.value;rs438Open()"><option value="">— choisir —</option>'+N.map(n=>'<option'+(n===RS438.nom?' selected':'')+'>'+esc(n)+'</option>').join('')+'</select>';
+  if(!RS438.nom)return h+'<p class="rs438-v">Choisis ton prénom pour voir tes chiffres, match après match.</p>';
+  let A=[];try{A=(typeof archives!=='undefined'&&archives)||JSON.parse(localStorage.getItem('grib_archives_v3')||'[]');}catch(e){}
+  const sp=String(s.sport||CFG.apsa||'');const rows=[];
+  A.forEach(a=>{if(!a||(sp&&a.apsa&&a.apsa!==sp))return;const H=(a.playerHistory||[]).filter(x=>x&&x.nom===RS438.nom);if(!H.length)return;const d={};H.forEach(x=>{const k=(x.label||x.type||'action')+(x.conc?' (encaissé)':'');d[k]=(d[k]||0)+1;});rows.push({date:a.date||'',d,n:H.length});});
+  if(!rows.length)return h+'<p class="rs438-v">Pas encore d\'actions enregistrées à ton nom sur cette tablette. L\'observateur doit choisir ton prénom pendant le match.</p>';
+  const keys=[];rows.forEach(r=>Object.keys(r.d).forEach(k=>{if(keys.indexOf(k)<0)keys.push(k);}));
+  h+='<'+'div class="rs438-scroll"><table class="rs438-t"><tr><th>Match</th>'+keys.map(k=>'<th>'+esc(k)+'</th>').join('')+'</tr>'+rows.slice(-12).map(r=>'<tr><td>'+esc(r.date)+'</td>'+keys.map(k=>'<td>'+(r.d[k]||0)+'</td>').join('')+'</tr>').join('')+'</table></'+'div>';
+  const tot={};rows.forEach(r=>Object.keys(r.d).forEach(k=>{tot[k]=(tot[k]||0)+r.d[k];}));
+  h+='<p><b>En tout ('+rows.length+' match'+(rows.length>1?'s':'')+') :</b> '+keys.map(k=>esc(k)+' '+tot[k]).join(' · ')+'</p>';return h;}
+function rs438Open(){const s=getActiveSeance();if(!s)return;const q=rs438Seq(s);let ov=E('rs438-ov');const y=ov?ov.querySelector('.rs438-box').scrollTop:0;if(!ov){ov=document.createElement('div');ov.id='rs438-ov';ov.className='eq428-ovl';ov.onclick=e=>{if(e.target===ov)ov.remove();};document.body.appendChild(ov);}
+  const po=rs438Postes(s);
+  ov.innerHTML='<'+'div class="po429-box rs438-box"><'+'div class="eq428-h"><b>📚 Ressources</b><button type="button" class="eq428-x" aria-label="Fermer" onclick="E(\'rs438-ov\').remove()">✕</button></'+'div>'
+   +rs438Sec('regles','📏','Les règles de notre match',RS438.open==='regles'?rs438Rules(s,q):'')
+   +rs438Sec('obs','👁','Comment observer',RS438.open==='obs'?rs438Obs(s):'')
+   +(po?rs438Sec('postes','🎽','Les postes',RS438.open==='postes'?po:''):'')
+   +rs438Sec('sits','🎬','Les situations et leurs vidéos',RS438.open==='sits'?rs438Sits(s):'')
+   +rs438Sec('class','🏆','Le classement',RS438.open==='class'?rs438Class(q):'')
+   +rs438Sec('stats','📊','Mes statistiques',RS438.open==='stats'?rs438Stats(s):'')+'</'+'div>';
+  try{ov.querySelector('.rs438-box').scrollTop=y;}catch(e){}}
+renderSeanceTab=(function(f){return function(){const r=f.apply(this,arguments);try{if(typeof GRIB_EXPORT_MODE!=='undefined'&&GRIB_EXPORT_MODE)return r;
+  const host=E('seance-tab-content');const s=getActiveSeance();if(!host||!s||!SEANCE_STATE||SEANCE_STATE.mode!=='eleve')return r;
+  if(!host.querySelector('.rs438-eb')){const b=document.createElement('button');b.type='button';b.className='rs438-eb';b.textContent='📚 Ressources';b.onclick=()=>{RS438.open='';rs438Open();};
+    const pj=host.querySelector('.pj430-eb');if(pj){const w=document.createElement('div');w.className='rs438-row2';pj.parentNode.insertBefore(w,pj);w.appendChild(pj);w.appendChild(b);}else host.insertBefore(b,host.firstChild);}
+ }catch(e){console.warn('rs438',e);}return r;};})(renderSeanceTab);
+(function(){const st=document.createElement('style');st.textContent=
+ 'html body .rs438-eb{display:block;width:100%;min-height:52px;margin:0 0 10px;border:none;border-radius:12px;background:#0f766e;color:#fff;font-weight:900;font-size:1.05rem;}'
++'html body .rs438-row2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0 0 10px;}html body .rs438-row2 > button{margin:0!important;}'
++'html body .rs438-s{border:1px solid #334155;border-radius:12px;margin-top:8px;overflow:hidden;}html body .rs438-s.on{border-color:#0f766e;}'
++'html body .rs438-h{display:flex;justify-content:space-between;align-items:center;width:100%;min-height:50px;border:none;background:#111827;color:#e2e8f0;font-weight:800;font-size:1rem;padding:0 12px;text-align:left;}'
++'html body .rs438-b{padding:8px 12px 12px;font-size:.92rem;line-height:1.4;}html body .rs438-b p{margin:6px 0;}html body .rs438-b ul{margin:4px 0 0;padding-left:18px;}'
++'html body .rs438-card{background:#0f172a;border:1px solid #334155;border-radius:10px;padding:8px 10px;margin-top:6px;}html body .rs438-obj{color:#fde68a;}html body .rs438-v{color:#94a3b8;font-size:.85rem;}'
++'html body .rs438-btn{display:inline-flex;align-items:center;min-height:38px;margin:4px 6px 0 0;padding:0 10px;border:none;border-radius:8px;background:#334155;color:#fff;font-weight:700;text-decoration:none;}'
++'html body .rs438-row{display:flex;flex-wrap:wrap;align-items:center;gap:4px;border-bottom:1px solid #1e293b;padding:6px 0;}html body .rs438-row span{flex:1 1 100%;font-weight:700;}'
++'html body .rs438-chips{display:flex;flex-wrap:wrap;gap:6px;}html body .rs438-chips span{border:2px solid #334155;border-radius:999px;padding:4px 10px;font-weight:700;}'
++'html body .rs438-t{width:100%;border-collapse:collapse;margin-top:6px;font-size:.85rem;}html body .rs438-t th,html body .rs438-t td{border-bottom:1px solid #1e293b;padding:5px 4px;text-align:center;}html body .rs438-t td:first-child,html body .rs438-t th:first-child{text-align:left;}'
++'html body .rs438-dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;}html body .rs438-scroll{overflow-x:auto;}'
++'html body .rs438-l{display:block;font-weight:700;margin:4px 0;}html body #rs438-nom{width:100%;min-height:44px;background:#0f172a;color:#e2e8f0;border:1px solid #334155;border-radius:8px;padding:0 8px;}';
+ document.head.appendChild(st);})();
 </script>
 </body>
 </html>
