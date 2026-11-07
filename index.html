@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v430</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v431</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v430</title>
+<title>Gribouillis EPS v431</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -30532,6 +30532,99 @@ renderSeanceTab=(function(f){return function(){const r=f.apply(this,arguments);t
  'html body .m430{background:#0f172a;border:1px solid #334155;border-radius:12px;padding:8px 10px;margin:0 0 10px;}html body .m430-h{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px;}'
 +'html body .m430-s{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;}html body .m430-c{flex:0 0 auto;min-height:38px;border:1px solid #334155;border-radius:999px;background:#111827;color:#e2e8f0;font-weight:700;font-size:.8rem;padding:0 12px;white-space:nowrap;}'
 +'html body .m430-c.ok{border-color:#15803d;background:#052e16;}';
+ document.head.appendChild(st);})();
+
+
+// ══════════════════════════════════════════════════════════════════════
+// v431 — • 🎯 MON PROJET (élèves acteurs) : la prof règle la liberté
+//          (Imposé · Choix limité · Libre · Non) pour le point de focus (CP),
+//          l'exercice, le poste et l'auto-évaluation ; en mode élève, un
+//          bouton « 🎯 Mon projet » apparaît (seulement si c'est réglé) :
+//          projet d'équipe + projet de binôme, puis bilan après le match.
+//          Les projets reviennent par la synchro (clé à part, fusionnée).
+//        • 🧭 PENSE-BÊTE en classe : quoi observer, l'habillage de la séance
+//          à ne pas oublier, observer / faire les équipes à la volée ;
+//        • « Faire cours » rendu discret.
+// ══════════════════════════════════════════════════════════════════════
+const PJ430_KEY='grib_proj430_v1';
+try{if(GRIB_BACKUP_KEYS.indexOf(PJ430_KEY)<0)GRIB_BACKUP_KEYS.push(PJ430_KEY);}catch(e){}
+try{S417_MERGE[PJ430_KEY]={id:x=>x&&x.id?String(x.id):'',sig:null,keep:0};}catch(e){}
+function pj430All(){try{const a=JSON.parse(localStorage.getItem(PJ430_KEY)||'[]');return Array.isArray(a)?a:[];}catch(e){return [];}}
+function pj430Put(rec){const a=pj430All();const i=a.findIndex(x=>x.id===rec.id);rec.ts=Date.now();if(i>=0)a[i]=Object.assign({},a[i],rec);else a.push(rec);try{localStorage.setItem(PJ430_KEY,JSON.stringify(a.slice(-600)));}catch(e){}}
+function pj430Oes(s){let ids=[];try{ids=[s.oeId].concat(s.oeExtra||[]).filter(Boolean);}catch(e){}if(!ids.length&&s.seqId){try{const q=seqGet(s.seqId);ids=(q&&q.oeIds)||[];}catch(e){}}return ids;}
+function pj430Cps(s){const out=[],seen={};pj430Oes(s).forEach(id=>{const r=j423Oe(id);if(!r)return;(r.O.micro||[]).forEach(m=>(m.cps||[]).forEach(c=>{const lab=String(c.label||'').replace(/^CP\s*\d+\s*[—-]\s*/i,'');const k=lab.toLowerCase();if(seen[k]||seen[c.id])return;seen[k]=seen[c.id]=1;out.push({id:c.id,lab,fr:String(m.label||'').replace(/^Frm\s*\d+\s*[—-]\s*/i,'')});}));});return out;}
+function pj430Exos(s){let L=[];try{L=libLoad();}catch(e){}const O=pj430Oes(s);return L.filter(x=>x&&O.indexOf(x.oe)>=0&&x.kind!=='seance'&&x.kind!=='match').map(x=>({id:x.id,lab:x.titre}));}
+const PJ430_ROWS=[['cp','Point de focus (CP)'],['exo','Exercice d\'entraînement'],['po','Poste'],['ae','Auto-évaluation']];
+function pj430Cfg(s){return s&&s.lib430||null;}
+function pj430On(s){const c=pj430Cfg(s);return !!(c&&PJ430_ROWS.some(r=>c[r[0]]&&c[r[0]]!=='off'));}
+// ── panneau prof
+function pj430Prof(){const old=E('pj430-ov');if(old)old.remove();const s=getActiveSeance();if(!s)return;const c=s.lib430||(s.lib430={cp:'off',exo:'off',po:'off',ae:'off',team:true,duo:true,cpSel:[],exoSel:[]});
+  const CP=pj430Cps(s),EX=pj430Exos(s);const hasPo=typeof po429Sp==='function'&&!!po429Sp(s);
+  const m=(k,v,l,col)=>'<button type="button" class="pj430-m'+(c[k]===v?' on':'')+'" style="'+(c[k]===v?'background:'+col+';border-color:'+col+';':'')+'" onclick="pj430Set(\''+k+'\',\''+v+'\')">'+l+'</button>';
+  let h='<'+'div class="po429-box"><'+'div class="eq428-h"><b>🎯 Liberté des élèves</b><button type="button" class="eq428-x" aria-label="Fermer" onclick="E(\'pj430-ov\').remove()">✕</button></'+'div>'
+   +'<p class="po429-p">Rien n\'est réglé = « Mon projet » n\'apparaît pas chez les élèves (la séance reste comme d\'habitude).</p>'
+   +'<'+'div class="eq428-l">Le projet se fait</'+'div><'+'div class="eq428-r"><button type="button" class="eq428-c'+(c.team?' on':'')+'" onclick="pj430Tog(\'team\')">par équipe</button><button type="button" class="eq428-c'+(c.duo?' on':'')+'" onclick="pj430Tog(\'duo\')">par binôme</button></'+'div>'
+   +'<'+'div class="pj430-g"><span></span><b>Non</b><b>Imposé</b><b>Limité</b><b>Libre</b>'
+   +PJ430_ROWS.filter(r=>r[0]!=='po'||hasPo).map(r=>'<span class="pj430-rl">'+r[1]+'</span>'+m(r[0],'off','—','#475569')+(r[0]==='ae'?m(r[0],'imp','oui','#b91c1c')+'<span></span><span></span>':m(r[0],'imp','●','#b91c1c')+m(r[0],'lim','●','#a16207')+m(r[0],'lib','●','#15803d'))).join('')+'</'+'div>';
+  const list=(key,arr,title)=>{if(!(c[key]==='imp'||c[key]==='lim'))return '';const sel=c[key+'Sel']||[];
+    return '<'+'div class="eq428-l">'+title+(c[key]==='imp'?' (coche celui que tu imposes)':' (coche ce que tu proposes)')+'</'+'div>'+(arr.length?arr.map(x=>'<label class="d429-it"><input type="checkbox"'+(sel.indexOf(x.id)>=0?' checked':'')+' onchange="pj430Pick(\''+key+'\',\''+esc(x.id)+'\',this.checked)"> <span><b>'+esc(x.lab)+'</b>'+(x.fr?'<small>'+esc(x.fr)+'</small>':'')+'</span></label>').join(''):'<p class="po429-p">Rien à proposer : choisis d\'abord l\'objet de la séance.</p>');};
+  h+=list('cp',CP,'CP proposés')+list('exo',EX,'Exercices proposés');
+  const R=pj430All().filter(x=>x.sid===s.id);
+  if(R.length)h+='<'+'div class="eq428-l">Projets reçus ('+R.length+')</'+'div>'+R.map(x=>'<p class="po429-p"><b>'+esc(x.who||'')+'</b> · '+esc(x.cpLab||'—')+(x.exoLab?' · '+esc(x.exoLab):'')+(x.po?' · '+esc(x.po):'')+(x.ae?' · bilan : '+(x.ae==='ok'?'✓':x.ae==='mid'?'~':'✗'):'')+(x.next?' · « '+esc(x.next)+' »':'')+'</p>').join('');
+  h+='</'+'div>';const ov=document.createElement('div');ov.id='pj430-ov';ov.className='eq428-ovl';ov.innerHTML=h;ov.onclick=e=>{if(e.target===ov)ov.remove();};document.body.appendChild(ov);}
+function pj430Set(k,v){const s=getActiveSeance();if(!s)return;s.lib430=s.lib430||{};s.lib430[k]=v;saveSeances();pj430Prof();}
+function pj430Tog(k){const s=getActiveSeance();if(!s)return;s.lib430[k]=!s.lib430[k];if(!s.lib430.team&&!s.lib430.duo)s.lib430.team=true;saveSeances();pj430Prof();}
+function pj430Pick(key,id,on){const s=getActiveSeance();if(!s)return;const c=s.lib430;const L=c[key+'Sel']=c[key+'Sel']||[];const i=L.indexOf(id);
+  if(c[key]==='imp'){c[key+'Sel']=on?[id]:[];}else{if(on&&i<0)L.push(id);if(!on&&i>=0)L.splice(i,1);}saveSeances();if(c[key]==='imp')pj430Prof();}
+// ── côté élève
+const PJ430_UI={team:'',duo:[]};
+function pj430Opts(s,key,ALL){const c=pj430Cfg(s);const mode=c[key];if(mode==='off'||!mode)return null;if(mode==='lib')return ALL;const sel=c[key+'Sel']||[];return ALL.filter(x=>sel.indexOf(x.id)>=0);}
+function pj430Rec(s,kind){const t=PJ430_UI.team;if(!t)return null;const who=kind==='duo'?PJ430_UI.duo.slice().sort().join(' + '):t;if(kind==='duo'&&PJ430_UI.duo.length<1)return null;
+  const id=s.id+'|'+kind+'|'+who;return pj430All().find(x=>x.id===id)||{id,sid:s.id,kind,team:t,who};}
+function pj430Eleve(){const old=E('pj430e-ov');if(old)old.remove();const s=getActiveSeance();if(!s||!pj430On(s))return;const c=pj430Cfg(s);const G=s.groupes||[];
+  let h='<'+'div class="po429-box" style="border-color:#a78bfa;"><'+'div class="eq428-h"><b>🎯 Mon projet</b><button type="button" class="eq428-x" aria-label="Fermer" onclick="E(\'pj430e-ov\').remove()">✕</button></'+'div>';
+  h+='<'+'div class="eq428-l">Mon équipe</'+'div><'+'div class="eq428-r">'+(G.length?G.map(g=>'<button type="button" class="eq428-c'+(PJ430_UI.team===g.label?' on':'')+'" style="border-color:'+esc(g.color||'#334155')+'" onclick="PJ430_UI.team=this.dataset.t;PJ430_UI.duo=[];pj430Eleve()" data-t="'+esc(g.label)+'">'+esc(g.label)+'</button>').join(''):'<span class="po429-p">Les équipes ne sont pas encore faites.</span>')+'</'+'div>';
+  const g=G.find(x=>x.label===PJ430_UI.team);
+  if(g){const kinds=[];if(c.team)kinds.push('team');if(c.duo)kinds.push('duo');
+    if(c.duo)h+='<'+'div class="eq428-l">Mon binôme (touche 2 noms)</'+'div><'+'div class="eq428-r">'+g.members.map(n=>'<button type="button" class="eq428-c'+(PJ430_UI.duo.indexOf(n)>=0?' on':'')+'" data-n="'+esc(n)+'" onclick="pj430Duo(this.dataset.n)">'+esc(n)+'</button>').join('')+'</'+'div>';
+    kinds.forEach(kd=>{const r=pj430Rec(s,kd);if(!r)return;h+='<'+'div class="pj430-card"><b>'+(kd==='team'?'Projet de l\'équipe '+esc(g.label):'Projet du binôme '+esc(r.who))+'</b>'+pj430Form(s,r,kd)+'</'+'div>';});}
+  h+='</'+'div>';const ov=document.createElement('div');ov.id='pj430e-ov';ov.className='eq428-ovl';ov.innerHTML=h;ov.onclick=e=>{if(e.target===ov)ov.remove();};document.body.appendChild(ov);}
+function pj430Duo(n){const i=PJ430_UI.duo.indexOf(n);if(i>=0)PJ430_UI.duo.splice(i,1);else{PJ430_UI.duo.push(n);if(PJ430_UI.duo.length>2)PJ430_UI.duo.shift();}pj430Eleve();}
+function pj430Form(s,r,kd){const CP=pj430Opts(s,'cp',pj430Cps(s)),EX=pj430Opts(s,'exo',pj430Exos(s));const c=pj430Cfg(s);let h='';const rid=esc(r.id);
+  const pick=(f,lf,x)=>'<button type="button" class="pj430-o'+(r[f]===x.id?' on':'')+'" onclick="pj430Save(\''+rid+'\',\''+kd+'\',{'+f+':this.dataset.v,'+lf+':this.dataset.l})" data-v="'+esc(x.id)+'" data-l="'+esc(x.lab)+'">'+esc(x.lab)+'</button>';
+  if(CP&&CP.length)h+='<'+'div class="eq428-l">1. Sur quoi on se concentre ?</'+'div>'+CP.map(x=>pick('cp','cpLab',x)).join('');
+  if(EX&&EX.length)h+='<'+'div class="eq428-l">2. Pour s\'entraîner pendant l\'attente</'+'div>'+EX.map(x=>'<'+'div class="pj430-x">'+pick('exo','exoLab',x)+'<button type="button" class="j423-b" aria-label="Fiche" onclick="f424Open(\''+esc(x.id)+'\')">📄</button></'+'div>').join('');
+  if(c.po&&c.po!=='off'&&typeof PO429!=='undefined'){const sp=po429Sp(s),D=PO429[sp];if(D)h+='<'+'div class="eq428-l">3. Mon poste</'+'div><'+'div class="eq428-r">'+Object.keys(D).map(k=>'<button type="button" class="eq428-c'+(r.po===D[k][0]?' on':'')+'" onclick="pj430Save(\''+rid+'\',\''+kd+'\',{po:this.dataset.p,poObj:this.dataset.o})" data-p="'+esc(D[k][0])+'" data-o="'+esc(D[k][2])+'">'+esc(D[k][0])+'</button>').join('')+'</'+'div>'+(r.poObj?'<p class="po429-obj">🎯 '+esc(r.poObj)+'</p>':'');}
+  if(c.ae&&c.ae!=='off'){h+='<'+'div class="eq428-l">Après le match : notre focus ?</'+'div><'+'div class="eq428-r">'+[['ok','✓ Réussi'],['mid','~ Presque'],['ko','✗ Pas encore']].map(a=>'<button type="button" class="eq428-c'+(r.ae===a[0]?' on':'')+'" onclick="pj430Save(\''+rid+'\',\''+kd+'\',{ae:\''+a[0]+'\'})">'+a[1]+'</button>').join('')+'</'+'div>'
+    +'<textarea class="j423-t" placeholder="Pour le prochain match, on garde ou on change ?" onchange="pj430Save(\''+rid+'\',\''+kd+'\',{next:this.value},1)">'+esc(r.next||'')+'</textarea>';}
+  return h;}
+function pj430Save(id,kd,patch,quiet){const s=getActiveSeance();if(!s)return;const r=pj430Rec(s,kd)||{};pj430Put(Object.assign({},r,{id},patch));try{if(typeof syncOn==='function'&&syncOn())syncNow(false);}catch(e){}if(!quiet)pj430Eleve();}
+// ── 🧭 pense-bête en classe
+const PB430=['Rôles donnés (arbitre, observateur, coach)','Consignes de sécurité dites','Matériel prêt (chasubles, plots, ballons)','But et critère de réussite annoncés','Variante plus facile / plus difficile prévue','Temps de bilan gardé en fin de séance','Valoriser une réussite à voix haute','Lien avec la séance précédente'];
+function pb430Open(){const old=E('pb430-ov');if(old)old.remove();const s=getActiveSeance();if(!s)return;const P=s.pb430||{};
+  const CP=pj430Cps(s).slice(0,6);let reg=null;try{const q=s.seqId&&seqGet(s.seqId);const R=(q&&q.reg428)||[];reg=R[R.length-1]||null;}catch(e){}
+  let h='<'+'div class="po429-box" style="border-color:#0ea5e9;"><'+'div class="eq428-h"><b>🧭 Pense-bête</b><button type="button" class="eq428-x" aria-label="Fermer" onclick="E(\'pb430-ov\').remove()">✕</button></'+'div>'
+   +'<'+'div class="eq428-r"><button type="button" class="eq428-c" onclick="E(\'pb430-ov\').remove();eq428Open(true)">👥 Équipes à la volée</button><button type="button" class="eq428-c" onclick="E(\'pb430-ov\').remove();goTab(\'t-home\')">👁 Observer un match</button>'+(typeof po429Sp==='function'&&po429Sp(s)?'<button type="button" class="eq428-c" onclick="E(\'pb430-ov\').remove();po429Open()">🎽 Postes</button>':'')+'</'+'div>';
+  if(reg)h+='<'+'div class="eq428-l">Ta régulation du '+esc(reg.date)+'</'+'div><p class="po429-p">'+esc(reg.note||'')+(reg.obs&&reg.obs.length?' ('+esc(reg.obs.join(' ; '))+')':'')+'</p>';
+  if(CP.length)h+='<'+'div class="eq428-l">À observer chez les élèves</'+'div>'+CP.map(x=>'<p class="po429-p">👁 '+esc(x.lab)+'<br><small style="color:#94a3b8">'+esc(x.fr)+'</small></p>').join('');
+  h+='<'+'div class="eq428-l">L\'habillage de la séance</'+'div>'+PB430.map((t,i)=>'<label class="d429-it"><input type="checkbox"'+(P[i]?' checked':'')+' onchange="pb430Set('+i+',this.checked)"> <span>'+esc(t)+'</span></label>').join('');
+  h+='</'+'div>';const ov=document.createElement('div');ov.id='pb430-ov';ov.className='eq428-ovl';ov.innerHTML=h;ov.onclick=e=>{if(e.target===ov)ov.remove();};document.body.appendChild(ov);}
+function pb430Set(i,v){const s=getActiveSeance();if(!s)return;s.pb430=s.pb430||{};s.pb430[i]=v;saveSeances();}
+// ── accroches
+renderSeanceTab=(function(f){return function(){const r=f.apply(this,arguments);try{const host=E('seance-tab-content');const s=getActiveSeance();if(!host||!s)return r;
+  if(SEANCE_STATE&&SEANCE_STATE.mode==='eleve'){if(pj430On(s)&&!host.querySelector('.pj430-eb')){const b=document.createElement('button');b.type='button';b.className='pj430-eb';b.textContent='🎯 Mon projet';b.onclick=pj430Eleve;host.insertBefore(b,host.firstChild);}return r;}
+  const ref=host.querySelector('.po429-b')||host.querySelector('.eq428-b');
+  if(ref&&!host.querySelector('.pb430-b')){const mk=(cl,t,fn)=>{const b=document.createElement('button');b.type='button';b.className=ref.className.replace(/eq428-b|po429-b/,cl);b.textContent=t;b.onclick=fn;return b;};
+    const pb=mk('pb430-b','🧭 Pense-bête',pb430Open);const lj=mk('pj430-b','🎯 Liberté élèves'+(pj430On(s)?' ✓':''),pj430Prof);ref.parentNode.insertBefore(lj,ref.nextSibling);ref.parentNode.insertBefore(pb,ref.nextSibling);}
+ }catch(e){console.warn('p431',e);}return r;};})(renderSeanceTab);
+(function(){const st=document.createElement('style');st.textContent=
+ 'html body #seance-tab-content > #crs-enter{min-height:0!important;padding:6px 12px!important;border-radius:10px!important;background:#7f1d1d!important;opacity:.85;font-size:.85rem!important;width:auto!important;display:inline-flex!important;flex-direction:row!important;gap:8px!important;align-items:center!important;}html body #seance-tab-content > #crs-enter small{display:none!important;}'
++'html body .pj430-g{display:grid;grid-template-columns:1.5fr repeat(4,minmax(0,1fr));gap:4px;align-items:center;text-align:center;margin-top:10px;font-size:.78rem;}html body .pj430-rl{text-align:left;font-weight:700;}'
++'html body .pj430-m{min-height:38px;border:1px solid #334155;border-radius:8px;background:#111827;color:#fff;font-weight:800;}'
++'html body .pj430-eb{display:block;width:100%;min-height:52px;margin:0 0 10px;border:none;border-radius:12px;background:#7c3aed;color:#fff;font-weight:900;font-size:1.05rem;}'
++'html body .pj430-card{background:#111827;border:1px solid #4c1d95;border-radius:12px;padding:10px;margin-top:10px;}html body .pj430-o{display:block;width:100%;text-align:left;min-height:44px;margin:4px 0;border:1px solid #334155;border-radius:10px;background:#0f172a;color:#e2e8f0;padding:6px 10px;}html body .pj430-o.on{border:2px solid #a78bfa;background:#2e1065;color:#fff;}'
++'html body .pj430-x{display:flex;gap:6px;align-items:center;}html body .pj430-x .pj430-o{flex:1;}'
++'html body .pb430-b{background:#0369a1!important;color:#fff!important;font-weight:800;}html body .pj430-b{background:#6d28d9!important;color:#fff!important;font-weight:800;}';
  document.head.appendChild(st);})();
 </script>
 </body>
