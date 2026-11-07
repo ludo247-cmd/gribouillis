@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v426</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v427</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v426</title>
+<title>Gribouillis EPS v427</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -30225,6 +30225,99 @@ SPORT_POSTE_ALIASES.rugby={'demi de melee':'DM','demi-de-melee':'DM','dm':'DM','
   'ailier':'AIL','ail':'AIL','11':'AIL','14':'AIL',
   'arriere':'ARR','arr':'ARR','15':'ARR'};
 }catch(e){console.warn('p426',e);}
+
+
+// ══════════════════════════════════════════════════════════════════════
+// v427 — • Séance de gym en deux onglets « 🛠 Préparer » / « ▶ Faire cours »
+//          (modèle C, à l'essai en gym) ; « 🧒 Mode élève » toujours visible ;
+//          « Renommer les étapes » replié ;
+//        • la barre du bas (équipe · chrono · DÉMARRER) n'apparaît plus que
+//          dans Match, Composition et les séances de sports collectifs ;
+//        • chrono à rebours : « dernière action » — à 0 le temps continue
+//          (+0:04…) jusqu'à ce que tu touches « 🏁 Coup de sifflet ».
+// ══════════════════════════════════════════════════════════════════════
+// ── 1. barre du bas
+(function(){const st=document.createElement('style');st.textContent=
+ 'html body:has(#t-classes.active) .setup-footer,html body:has(#t-seq.active) .setup-footer,html body:has(#t-org.active) .setup-footer,html body:has(#t-archives.active) .setup-footer,html body:has(#t-lib.active) .setup-footer,html body:has(#t-settings.active) .setup-footer,html body:has(#t-params.active) .setup-footer,html body.c427-gym:has(#t-seance.active) .setup-footer{display:none!important;}';
+ document.head.appendChild(st);})();
+
+// ── 2. séance de gym : Préparer / Faire cours
+const C427_KEY='grib_c427_tab_v1';
+function c427IsGym(s){try{return !!s&&fpsNormSp(s.sport)==='gymna';}catch(e){return false;}}
+function c427Tab(s){let m={};try{m=JSON.parse(sessionStorage.getItem(C427_KEY)||'{}');}catch(e){}if(m[s.id])return m[s.id];
+  const t=new Date();const iso=t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0');return s.date===iso?'cours':'prep';}
+function c427Set(v){const s=getActiveSeance();if(!s)return;let m={};try{m=JSON.parse(sessionStorage.getItem(C427_KEY)||'{}');}catch(e){}m[s.id]=v;try{sessionStorage.setItem(C427_KEY,JSON.stringify(m));}catch(e){}renderSeanceTab();try{window.scrollTo(0,0);E('seance-tab-content').scrollIntoView({block:'start'});}catch(e){}}
+renderSeanceTab=(function(f){return function(){const r=f.apply(this,arguments);try{
+  const s=getActiveSeance();const host=E('seance-tab-content');const gym=c427IsGym(s)&&!!host;document.body.classList.toggle('c427-gym',gym);
+  if(!gym||(SEANCE_STATE&&SEANCE_STATE.mode==='eleve'))return r;
+  const tab=c427Tab(s);host.classList.add('c427');host.classList.toggle('c427-prep',tab==='prep');host.classList.toggle('c427-cours',tab==='cours');
+  const old=host.querySelector('.c427-seg');if(old)old.remove();
+  const seg=document.createElement('div');seg.className='c427-seg';
+  seg.innerHTML='<'+'div class="c427-tabs" role="tablist"><button type="button" role="tab" aria-selected="'+(tab==='prep')+'" class="'+(tab==='prep'?'on':'')+'" onclick="c427Set(\'prep\')">🛠 Préparer</button><button type="button" role="tab" aria-selected="'+(tab==='cours')+'" class="'+(tab==='cours'?'on':'')+'" onclick="c427Set(\'cours\')">▶ Faire cours</button></'+'div><button type="button" class="c427-el" onclick="setSeanceMode(\'eleve\')">🧒 Mode élève</button>';
+  host.insertBefore(seg,host.firstChild);
+  const card=[...host.children].find(c=>c.classList&&c.classList.contains('card')&&c.querySelector('.sb'));
+  const mark=(el,k)=>{if(el)el.setAttribute('data-c427',k);};
+  mark(host.querySelector(':scope > #crs-enter'),'cours');mark(host.querySelector(':scope > details.chk-box'),'prep');
+  if(card){[...card.children].forEach(c=>{const cl=c.classList||{contains:()=>false};const t=(c.textContent||'');
+    if(cl.contains('se-bar')||cl.contains('se-gym')||cl.contains('seq-banner'))mark(c,'prep');
+    else if(cl.contains('el-wrap'))mark(c,'cours');
+    else if(cl.contains('remed-step')){mark(c,/BILAN DE SÉANCE/i.test(t)?'both':'prep');}
+    else if(c.querySelector&&c.querySelector('.s419-fin')){mark(c,'both');c.querySelectorAll(':scope > button').forEach(b=>{const x=b.textContent||'';
+        if(/mode élève/i.test(x))b.setAttribute('data-c427','none');else if(/Terminer|Bilan/.test(x))b.setAttribute('data-c427','cours');else b.setAttribute('data-c427','prep');});}
+    else if(/Revenir à l'historique/.test(t)&&/mode élève/i.test(t)){mark(c,'prep');c.querySelectorAll(':scope > button').forEach(b=>{if(/mode élève/i.test(b.textContent||''))b.setAttribute('data-c427','none');});}});
+    const bar=card.querySelector('.se-bar');if(bar&&!bar.querySelector('.c427-ren')){const ren=[...bar.querySelectorAll('.se-ren')];const lab=[...bar.querySelectorAll('.cc-dim')].find(x=>/Renommer/.test(x.textContent||''));
+      if(ren.length){const d=document.createElement('details');d.className='c427-ren';d.innerHTML='<summary>✏️ Renommer les étapes</summary>';ren.forEach(b=>d.appendChild(b));if(lab)lab.remove();bar.appendChild(d);}}}
+ }catch(e){console.warn('c427',e);}return r;};})(renderSeanceTab);
+(function(){const st=document.createElement('style');st.textContent=
+ 'html body .c427-seg{display:flex;gap:6px;align-items:stretch;margin:0 0 8px;position:sticky;top:44px;z-index:40;background:var(--bg,#0b1220);padding:4px 0;}'
++'html body .c427-tabs{flex:1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));background:#111a2e;border:1px solid #334155;border-radius:12px;padding:3px;gap:3px;}'
++'html body .c427-tabs button{min-height:42px;border:none;border-radius:9px;background:transparent;color:#cbd5e1;font-weight:800;font-size:.9rem;}html body .c427-tabs button.on{background:#3b82f6;color:#fff;}'
++'html body .c427-el{min-height:42px;border:none;border-radius:12px;background:#7c3aed;color:#fff;font-weight:800;padding:0 12px;white-space:nowrap;}'
++'html body #seance-tab-content.c427-prep [data-c427="cours"],html body #seance-tab-content.c427-cours [data-c427="prep"],html body #seance-tab-content.c427 [data-c427="none"]{display:none!important;}'
++'html body .c427-ren{flex-basis:100%;}html body .c427-ren summary{cursor:pointer;color:#94a3b8;font-size:.8rem;min-height:30px;line-height:30px;}html body .c427-ren .se-ren{margin:3px 4px 0 0;}';
+ document.head.appendChild(st);})();
+
+// ── 3. chrono : dernière action avant le coup de sifflet
+let LA427=false;
+function la427On(){if(CFG.lastAction===undefined)return /foot/i.test(String(CFG.apsa||CFG.sport||''))||!CFG.apsa;return !!CFG.lastAction;}
+function la427Whistle(){if(!LA427)return;LA427=false;const b=E('la427-btn');if(b)b.remove();const ch=document.querySelector('.chrono');if(ch)ch.classList.remove('la427');
+  try{timerOn=false;clearInterval(timerID);}catch(e){}
+  try{matchSec=Math.min(matchSec,curPeriod*totalPeriodSec);}catch(e){}
+  try{const a=(curPeriod>=CFG.nbPeriods)?audioFinMatch:audioFinPeriode;safePlayAudio(a);}catch(e){}
+  if(curPeriod<CFG.nbPeriods){curPeriod++;updatePeriodInd();isPeriodTransition=true;openPauseBetweenPeriods();}else stopMatch();}
+startChrono=function(){
+  if(timerOn)return;timerOn=true;finAudioStarted=false;
+  E('btn-pp').innerText='⏸ Pause';E('btn-pp').style.background='rgba(202,138,4,.9)';
+  chronoAnchorMs=Date.now();chronoAnchorSec=matchSec;
+  timerID=setInterval(()=>{
+    matchSec=chronoAnchorSec+Math.round((Date.now()-chronoAnchorMs)/1000);
+    const elapsed=matchSec-(curPeriod-1)*totalPeriodSec;const remaining=totalPeriodSec-elapsed;
+    const display=CFG.countdownMode?(remaining<0?'+'+fmt(-remaining):fmt(remaining)):fmt(matchSec);
+    if(E('chrono-top'))E('chrono-top').innerText=display;
+    if(CFG.musicMode&&CFG.countdownMode&&!finAudioStarted){const isLast=(curPeriod>=CFG.nbPeriods);const fa=isLast?audioFinMatch:audioFinPeriode;let dur=0;try{dur=fa.duration;}catch(e){}if(dur&&!isNaN(dur)&&remaining<=dur){finAudioStarted=true;safePlayAudio(fa);}}
+    if(CFG.countdownMode&&CFG.buzzerBeaterEnabled){const t1=CFG.bb1Trigger||20,t2=CFG.bb2Trigger||3;const lvl=remaining>0&&remaining<=t2?2:remaining>0&&remaining<=t1?1:0;if(lvl!==buzzerLevel){buzzerLevel=lvl;buzzerActive=lvl>0;updateBuzzerZone();}}
+    if(CFG.countdownMode&&remaining<=0){
+      if(la427On()&&!CFG.musicMode){
+        if(!LA427){LA427=true;buzzerActive=false;try{updateBuzzerZone();}catch(e){}const ch=document.querySelector('.chrono');if(ch)ch.classList.add('la427');
+          if(!E('la427-btn')){const b=document.createElement('button');b.type='button';b.id='la427-btn';b.innerHTML='🏁 Coup de sifflet<small>dernière action en cours</small>';b.onclick=la427Whistle;(E('s-match')||document.body).appendChild(b);}
+          try{if(navigator.vibrate)navigator.vibrate([120,80,120]);}catch(e){}}
+        if(-remaining>=90)la427Whistle();
+        return;}
+      buzzerActive=false;updateBuzzerZone();timerOn=false;clearInterval(timerID);
+      if(curPeriod<CFG.nbPeriods){curPeriod++;updatePeriodInd();isPeriodTransition=true;openPauseBetweenPeriods();}else stopMatch();
+    }
+  },1000);
+};
+stopMatch=(function(f){return function(){LA427=false;try{const b=E('la427-btn');if(b)b.remove();}catch(e){}return f.apply(this,arguments);};})(stopMatch);
+// option dans les réglages du chrono
+(function(){try{const box=E('countdown-opts');if(!box||E('la427-opt'))return;const d=document.createElement('div');d.className='check-row';d.id='la427-opt';
+  d.innerHTML='<input type="checkbox" id="la427-ck"><label for="la427-ck">Dernière action : à 0, le temps continue jusqu\'au coup de sifflet (pas en mode musique)</label>';box.appendChild(d);
+  const ck=E('la427-ck');ck.checked=la427On();ck.onchange=()=>{CFG.lastAction=ck.checked;try{saveConfig();}catch(e){}};}catch(e){}})();
+(function(){const st=document.createElement('style');st.textContent=
+ 'html body .chrono.la427{border-color:#f97316!important;color:#fb923c!important;animation:la427p 1s infinite;}@keyframes la427p{50%{opacity:.55;}}'
++'html body #la427-btn{position:fixed;left:50%;transform:translateX(-50%);bottom:84px;z-index:9990;min-height:64px;padding:8px 26px;border:none;border-radius:16px;background:#ea580c;color:#fff;font-size:1.25rem;font-weight:900;box-shadow:0 8px 30px rgba(0,0,0,.6);display:flex;flex-direction:column;align-items:center;}'
++'html body #la427-btn small{font-size:.75rem;font-weight:600;opacity:.9;}';
+ document.head.appendChild(st);})();
 </script>
 </body>
 </html>
