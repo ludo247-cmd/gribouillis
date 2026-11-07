@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v436</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v437</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v436</title>
+<title>Gribouillis EPS v437</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -30924,6 +30924,22 @@ gribVerBan=function(v){let b=E('ver-ban');if(b){b.querySelector('b').textContent
     catch(e){if(!confirm('Enregistrement impossible pour l\'instant ('+e.message+').\nRien n\'est perdu : tout reste sur ce téléphone.\n\nMettre à jour quand même ?')){reset(bt);return;}}
     bt.textContent='🔄 mise à jour…';location.replace(location.pathname+'?v='+v);};
   document.body.appendChild(b);};
+
+
+
+// ══════════════════════════════════════════════════════════════════════
+// v437 — Match : la ligne « Mode : 1 équipe / 2 équipes » du haut est
+// retirée ; on garde le choix « Une équipe / Deux équipes » plus bas
+// (il règle déjà le mode). « ⚙ Configurer » passe en petit bouton dans
+// le titre de la carte. Le sélecteur reste en mémoire (caché) : rien ne
+// change dans le fonctionnement.
+// ══════════════════════════════════════════════════════════════════════
+(function(){try{const gm=E('game-mode');if(!gm)return;const row=gm.closest('.form-row');const card=gm.closest('.card');if(!row||!card)return;
+  const cfg=row.querySelector('button[onclick*="goToDialogConfig"]');const title=card.querySelector('.card-title');
+  if(title){[...title.childNodes].forEach(n=>{if(n.nodeType===3&&/APSA\s*&\s*Mode/.test(n.textContent))n.textContent='APSA';});
+    if(cfg){cfg.removeAttribute('style');cfg.className='btn-xs blue m437-cfg';cfg.textContent='⚙ Configurer';title.style.display='flex';title.style.alignItems='center';title.appendChild(cfg);}}
+  row.style.display='none';}catch(e){console.warn('m437',e);}})();
+(function(){const st=document.createElement('style');st.textContent='html body .m437-cfg{margin-left:auto;min-height:34px;padding:4px 10px!important;font-size:.78rem;text-transform:none;letter-spacing:0;}';document.head.appendChild(st);})();
 </script>
 </body>
 </html>
