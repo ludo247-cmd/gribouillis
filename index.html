@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v423</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v424</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v423</title>
+<title>Gribouillis EPS v424</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -30081,6 +30081,101 @@ function j423Scan(root){try{const R=root||document;
 +'html body .j423-s{margin-top:12px!important;color:#94a3b8;font-size:.8rem;}html body .j423-fr{margin-top:10px;}html body .j423-fr summary{cursor:pointer;font-weight:700;color:#fde68a;min-height:30px;}'
 +'html body .j423-go{margin-top:10px;width:100%;min-height:42px;border:none;border-radius:10px;background:#1e3a8a;color:#fff;font-weight:700;}'
 +'html body .j423-l{display:block;margin-top:12px;font-size:.76rem;color:#94a3b8;}html body .j423-t{width:100%;min-height:60px;margin-top:4px;background:#020617;color:#e2e8f0;border:1px solid #334155;border-radius:8px;padding:6px;font-size:.82rem;box-sizing:border-box;}';
+ document.head.appendChild(st);})();
+
+
+// ══════════════════════════════════════════════════════════════════════
+// v424 — 📄 FICHE SITUATION À DEUX PRÉSENTATIONS : un bouton « 📄 Fiche »
+// à côté de l'ampoule ouvre la situation en fiche imprimable (A4) ;
+// le bouton « ⇄ » bascule entre « Prof / élève » (modèle Lamotte) et
+// « Carte » (modèle Gribouillis). Le dernier choix est retenu.
+// ══════════════════════════════════════════════════════════════════════
+const F424_KEY='grib_fiche_mode_v1';
+function f424Mode(){try{return localStorage.getItem(F424_KEY)==='carte'?'carte':'lamotte';}catch(e){return 'lamotte';}}
+function f424Arr(v){if(Array.isArray(v))return v;if(typeof v==='string'&&v.trim().charAt(0)==='['){try{return JSON.parse(v.replace(/'/g,'"'));}catch(e){}}return v?[v]:[];}
+function f424Parse(desc){const out={};const L=['Variables / évolutions','Variables','Évolutions','Évolution','Evolution','Dispositif','Règles','But','Source','Niveau','Critères / observables','Critères','Réussite','Pour simplifier','Pour complexifier','Simplifier','Complexifier','Organisation','Déroulé type'];
+  const s=String(desc||'');const re=new RegExp('(^|\\n|[.;]\\s+)('+L.map(x=>x.replace(/[.*+?^${}()|[\]\\/]/g,'\\$&')).join('|')+')\\s*:','g');
+  const hits=[];let m;while((m=re.exec(s))){hits.push({k:m[2],i:m.index+m[1].length,j:re.lastIndex});}
+  if(!hits.length){out.reste=s.trim();return out;}
+  if(hits[0].i>0)out.reste=s.slice(0,hits[0].i).trim();
+  hits.forEach((h,n)=>{let k=h.k;if(/^Variables|^Évolution|^Evolution/.test(k))k='Variables';if(/^Critères/.test(k))k='Critères';if(/Simplifier$/i.test(k))k='Simplifier';if(/Complexifier$/i.test(k))k='Complexifier';
+    const t=s.slice(h.j,n+1<hits.length?hits[n+1].i:s.length).trim().replace(/[.;]\s*$/,'');out[k]=(out[k]?out[k]+' ; ':'')+t;});return out;}
+function f424Split(t){return String(t||'').split(/\s*;\s+|\n+/).map(x=>x.trim()).filter(Boolean);}
+function f424Vars(p,J){let simp=p.Simplifier||'',comp=p.Complexifier||'',other='';const v=p.Variables||'';
+  if(v){const a=v.search(/[⊖Θ]/),b=v.search(/⊕/);if(a>=0||b>=0){if(a>=0)simp=(simp?simp+' ; ':'')+v.slice(a+1,b>a?b:undefined).trim().replace(/^[:\s]+|[;\s]+$/g,'');if(b>=0)comp=(comp?comp+' ; ':'')+v.slice(b+1,a>b?a:undefined).trim().replace(/^[:\s]+|[;\s]+$/g,'');}else other=v;}
+  return {simp,comp,other};}
+function f424Cps(it){const paths=[it.cp].concat(f424Arr(it.cpAlso)).filter(Boolean);const r=[];
+  paths.forEach(p=>{const a=String(p).split('|');try{const O=(REMED_CONTENT[a[0]].oe||[]).find(o=>o.id===a[1]);const M=O&&(O.micro||[]).find(m=>m.id===a[2]);const C=M&&(M.cps||[]).find(c=>c.id===a[3]);if(C)r.push({O,M,C});}catch(e){}});return r;}
+function f424Oe(it){try{for(const sp of Object.keys(REMED_CONTENT)){const O=(REMED_CONTENT[sp].oe||[]).find(o=>o.id===it.oe);if(O)return O;}}catch(e){}return null;}
+function f424Crit(it){return f424Arr(it.criteres).map(c=>typeof c==='string'?c:((c.label||'')+(c.cible!=null&&c.cible!==''?' : '+(c.neg?'au plus ':'')+c.cible:''))).filter(Boolean);}
+function f424Ul(a){a=a.filter(Boolean);return a.length?'<ul>'+a.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>':'<p class="f424-v">—</p>';}
+function f424Media(it){let h='';try{if(it.anim&&it.anim.json)h+=thumbImgHtml(it.anim,'🎞');}catch(e){}
+  if(!h&&it.image&&/^(data:image|https?:)/.test(String(it.image)))h='<img src="'+esc(it.image)+'" alt="">';
+  let b='';try{if(it.anim&&it.anim.json){const r=animReg(it.anim);b+='<button type="button" class="f424-play" onclick="animPlay(__animReg['+r+'])">▶ Animation</button>';}}catch(e){}
+  if(it.video&&/^https?:/.test(String(it.video)))b+='<a class="f424-play" href="'+esc(it.video)+'" target="_blank" rel="noopener">▶ Vidéo</a>';
+  return {img:h,btn:b};}
+function f424Data(it){const p=f424Parse(it.desc),J=(typeof JUST423!=='undefined'&&JUST423[it.id])||{},cps=f424Cps(it),O=f424Oe(it)||(cps[0]&&cps[0].O)||null;
+  let src=p.Source||'';if(!src){const t=f424Arr(it.tags).find(t=>/source/i.test(t));if(t)src=String(t).replace(/^#?\s*Source\s*:\s*/i,'');}
+  const sp=(it.apsa||'').toString();return {it,p,J,cps,O,src,sp,crit:f424Crit(it),roles:f424Arr(it.roles),vars:f424Vars(p,J),media:f424Media(it),why:(typeof JUST422!=='undefined'&&JUST422[it.id])||''};}
+function f424Lamotte(D){const it=D.it,p=D.p;const acq=[it.objectif].concat(D.cps.map(x=>String(x.C.label||'').replace(/^CP\s*\d+\s*[—-]\s*/,''))).filter(Boolean);
+  const ressent=[];D.cps.forEach(x=>{const a=x.C.attendu||{};if(a.action)ressent.push(a.action);if(a.perception)ressent.push('Repérer : '+a.perception);});
+  const disp=f424Split(p.Dispositif||p.Organisation||p.reste);if(it.minJ)disp.push('À partir de '+it.minJ+' élèves');if(D.roles.length)disp.push('Rôles : '+D.roles.join(', '));
+  const obs=[];if(D.crit.length)obs.push('(O) '+D.crit.join(' · '));D.cps.forEach(x=>{if(x.M&&x.M.label)obs.push('(R) Fil rouge : '+String(x.M.label).replace(/^Frm\s*\d+\s*[—-]\s*/i,''));});
+  return '<div class="f424-head"><div><div class="f424-k">'+esc(D.sp)+(D.O?' · '+esc(D.O.short||D.O.label):'')+'</div><h2>'+esc(it.titre)+'</h2></div>'+(p.Niveau?'<span class="f424-niv">'+esc(p.Niveau)+'</span>':'')+'</div>'
+   +(D.why?'<p class="f424-amb">'+esc(D.why)+'</p>':'')
+   +'<div class="f424-lam"><div class="f424-ch f424-pr">Ce que l\'enseignant…</div><div class="f424-ch f424-el">Ce que l\'élève…</div>'
+   +'<div class="f424-c"><b class="f424-tp">Cherche à faire acquérir</b>'+f424Ul(acq)+'</div><div class="f424-c"><b class="f424-te">Doit faire</b><p>'+esc(p.But||'—')+'</p></div>'
+   +'<div class="f424-c"><b class="f424-tp">Met en place</b>'+f424Ul(disp)+'</div><div class="f424-c"><b class="f424-te">Doit respecter</b>'+f424Ul(f424Split(p['Règles']))+'</div>'
+   +'<div class="f424-c"><b class="f424-tp">Observe (O) et régule (R)</b>'+f424Ul(obs)+'</div><div class="f424-c"><b class="f424-te">Doit réussir</b>'+f424Ul(D.crit.length?D.crit:f424Split(p['Réussite']||p['Critères']))+(ressent.length?'<b class="f424-te" style="margin-top:6px;">Doit comprendre et / ou ressentir</b>'+f424Ul(ressent):'')+'</div>'
+   +'<div class="f424-c"><b class="f424-tp">Illustration et matériel</b><div class="f424-med">'+D.media.img+'</div>'+D.media.btn+'</div>'
+   +'<div class="f424-c"><b class="f424-te">Peut modifier</b>'+(D.vars.simp?'<p><b class="f424-m">⊖ Plus facile :</b> '+esc(D.vars.simp)+'</p>':'')+(D.vars.comp?'<p><b class="f424-p">⊕ Plus difficile :</b> '+esc(D.vars.comp)+'</p>':'')+(D.vars.other?'<p>'+esc(D.vars.other)+'</p>':'')+(!D.vars.simp&&!D.vars.comp&&!D.vars.other?'<p class="f424-v">—</p>':'')+'</div>'
+   +'</div>'+(D.src?'<p class="f424-src">Source : '+esc(D.src)+'</p>':'');}
+function f424Carte(D){const it=D.it,p=D.p,J=D.J;const how=[];D.cps.forEach(x=>{const a=x.C.attendu||{};if(a.action)how.push(a.action);});
+  const chips=[];if(it.minJ)chips.push(['Groupe','dès '+it.minJ+' élèves']);if(D.roles.length)chips.push(['Rôles',D.roles.join(', ')]);if(it.terrain)chips.push(['Espace',String(it.terrain)]);
+  const adapt=(J.e||[]).map(r=>'<div><b>'+esc(r[0])+'</b><br>'+esc(r[1]||'')+'</div>').join('');
+  return '<div class="f424-tags"><span class="f424-sp">'+esc(D.sp)+'</span>'+(D.O?'<span>Objet : '+esc(D.O.short||D.O.label)+'</span>':'')+'</div><h2>'+esc(it.titre)+'</h2>'
+   +'<div class="f424-top"><div class="f424-vis"><div class="f424-med">'+(D.media.img||'<span class="f424-v">Pas de schéma</span>')+'</div>'+D.media.btn+'</div><div class="f424-r">'
+   +(chips.length?'<div class="f424-chips">'+chips.map(c=>'<div><small>'+esc(c[0])+'</small><b>'+esc(c[1])+'</b></div>').join('')+'</div>':'')
+   +'<div class="f424-pel"><div class="f424-t2">Pour l\'élève</div><p><b>Je dois :</b> '+esc(p.But||it.objectif||'—')+'</p>'+(p['Règles']?'<p><b>Les règles :</b> '+esc(p['Règles'])+'</p>':'')
+   +(D.crit.length?'<p><b>J\'ai réussi si :</b> '+esc(D.crit.join(' · '))+'</p>':'')+(how.length?'<p><b>Pour y arriver :</b> '+esc(how.join(' ; '))+'</p>':'')+'</div></div></div>'
+   +'<div class="f424-two"><div><div class="f424-t3">Déroulement</div>'+f424Ul(f424Split(p.Dispositif||p.Organisation||p.reste))+'</div><div><div class="f424-t3">Observer et réguler</div>'+f424Ul([D.crit.length?'Je regarde : '+D.crit.join(' · '):''].concat(D.cps.map(x=>x.M&&x.M.label?'Fil rouge : '+String(x.M.label).replace(/^Frm\s*\d+\s*[—-]\s*/i,''):'')))+'</div></div>'
+   +((adapt||D.vars.simp||D.vars.comp)?'<div class="f424-t3">Adapter selon les élèves</div>'+(adapt?'<div class="f424-ad">'+adapt+'</div>':'')+((D.vars.simp||D.vars.comp)?'<p>'+(D.vars.simp?'<b class="f424-m">⊖</b> '+esc(D.vars.simp)+' ':'')+(D.vars.comp?'<b class="f424-p">⊕</b> '+esc(D.vars.comp):'')+'</p>':''):'')
+   +((J.c&&J.c.length)||D.why?'<div class="f424-why"><div class="f424-t3">Pourquoi ces contraintes</div>'+(D.why?'<p>'+esc(D.why)+'</p>':'')+(J.c&&J.c.length?'<ul>'+J.c.map(r=>'<li><b>'+esc(r[0])+' :</b> '+esc(r[1]||'')+'</li>').join('')+'</ul>':'')+'</div>':'')
+   +(D.src?'<p class="f424-src">Source : '+esc(D.src)+'</p>':'');}
+function f424Find(id){try{return libLoad().find(x=>x&&x.id===id)||null;}catch(e){return null;}}
+function f424Open(idOrItem){const it=typeof idOrItem==='string'?f424Find(idOrItem):idOrItem;if(!it)return;const old=document.querySelector('.f424-ov');if(old)old.remove();
+  const o=document.createElement('div');o.className='f424-ov';document.body.appendChild(o);document.body.classList.add('f424-on');
+  const draw=()=>{const m=f424Mode();let body='';try{const D=f424Data(it);body=m==='carte'?f424Carte(D):f424Lamotte(D);}catch(e){console.warn('f424',e);body='<p>Impossible d\'afficher la fiche.</p>';}
+    o.innerHTML='<'+'div class="f424-bar"><button type="button" class="f424-sw">⇄ '+(m==='carte'?'Voir en Prof / élève':'Voir en Carte')+'</button><button type="button" class="f424-pt">🖨 Imprimer</button><button type="button" class="f424-x">✕</button></'+'div><'+'div class="f424-page f424-'+m+'">'+body+'</'+'div>';
+    o.querySelector('.f424-sw').onclick=()=>{try{localStorage.setItem(F424_KEY,m==='carte'?'lamotte':'carte');}catch(e){}draw();};
+    o.querySelector('.f424-pt').onclick=()=>window.print();o.querySelector('.f424-x').onclick=close;};
+  const close=()=>{o.remove();document.body.classList.remove('f424-on');};o.onclick=e=>{if(e.target===o)close();};draw();}
+function f424Btn(it){if(!it)return null;const b=document.createElement('button');b.type='button';b.className='j423-b f424-b';b.textContent='📄';b.title='Fiche (prof / élève ou carte)';b.setAttribute('aria-label','Ouvrir la fiche');
+  b.onclick=e=>{e.preventDefault();e.stopPropagation();f424Open(it);};return b;}
+// accroches : à côté de l'ampoule
+sbExoModal=(function(f){return function(k){const r=f.apply(this,arguments);try{const ov=E('sbx-ov');const x=exoByKey(k);if(ov&&x&&x.exo){const head=ov.querySelector('.lib-pick-box > div');if(head&&!head.querySelector('.f424-b')){const id=j423LibOf(x.exo);const it=(id&&f424Find(id))||x.exo;const b=f424Btn(it);const cl=[...head.querySelectorAll(':scope > button')].pop();if(b)head.insertBefore(b,cl||null);}}}catch(e){console.warn('f424 sbx',e);}return r;};})(sbExoModal);
+libTileOpen=(function(f){return function(id){const r=f.apply(this,arguments);try{const top=document.querySelector('.lib-card-ov .box > div');const it=f424Find(id);if(top&&it&&!top.querySelector('.f424-b')){top.style.display='flex';top.style.justifyContent='flex-end';top.style.gap='6px';const b=f424Btn(it);top.insertBefore(b,top.querySelector('button:not(.j423-b)'));}}catch(e){console.warn('f424 tile',e);}return r;};})(libTileOpen);
+libcRender=(function(f){return function(){const r=f.apply(this,arguments);try{const L=LIBC;const ov=E('libc-ov');if(L&&L.editId&&ov){const box=ov.querySelector('.lib-pick-box')||ov.firstElementChild;const it=f424Find(L.editId);if(box&&it&&!box.querySelector('.f424-b')){const b=f424Btn(it);b.classList.add('j423-fl');box.insertBefore(b,box.firstChild);}}}catch(e){console.warn('f424 libc',e);}return r;};})(libcRender);
+(function(){const st=document.createElement('style');st.textContent=
+ 'html body .f424-ov{position:fixed;inset:0;z-index:100003;background:rgba(2,6,23,.8);overflow:auto;padding:10px;}'
++'html body .f424-bar{position:sticky;top:0;display:flex;gap:6px;justify-content:flex-end;max-width:794px;margin:0 auto 8px;z-index:2;}html body .f424-bar button{min-height:44px;border:none;border-radius:10px;padding:6px 12px;font-weight:800;background:#334155;color:#fff;}html body .f424-bar .f424-sw{background:#0f766e;margin-right:auto;}'
++'html body .f424-page{background:#fff;color:#18212e;max-width:794px;margin:0 auto;box-sizing:border-box;padding:28px 30px;border-radius:6px;font-family:Carlito,Calibri,Arial,sans-serif;font-size:15px;line-height:1.4;}'
++'html body .f424-page h2{margin:0;font-size:1.9rem;line-height:1.05;color:#1f4e79;font-family:"Barlow Condensed","Arial Narrow",Arial,sans-serif;}html body .f424-page ul{margin:3px 0 0;padding-left:18px;}html body .f424-page p{margin:3px 0;}html body .f424-v{color:#6b7280;}'
++'html body .f424-head{display:flex;justify-content:space-between;align-items:flex-end;gap:10px;border-bottom:3px solid #1f4e79;padding-bottom:6px;margin-bottom:6px;}html body .f424-k{font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#4b5563;}html body .f424-niv{background:#1f4e79;color:#fff;border-radius:4px;padding:3px 10px;font-weight:700;}'
++'html body .f424-amb{font-style:italic;color:#374151;}html body .f424-lam{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border:1.5px solid #1f4e79;margin-top:8px;}'
++'html body .f424-ch{color:#fff;padding:5px 10px;font-weight:700;font-size:1.05rem;}html body .f424-pr{background:#1f4e79;}html body .f424-el{background:#c2410c;}'
++'html body .f424-c{padding:8px 10px;border-bottom:1px solid #cfd5dd;}html body .f424-c:nth-child(odd){border-right:1.5px solid #1f4e79;}html body .f424-tp{color:#1f4e79;display:block;}html body .f424-te{color:#c2410c;display:block;}'
++'html body .f424-m{color:#166534;}html body .f424-p{color:#b91c1c;}html body .f424-src{margin-top:10px!important;font-size:.8rem;color:#4b5563;border-top:1px solid #cfd5dd;padding-top:4px;}'
++'html body .f424-med img,html body .f424-med svg{max-width:100%;max-height:220px;display:block;margin:4px auto;}html body .f424-play{display:inline-block;margin:4px 6px 0 0;min-height:36px;padding:6px 10px;border-radius:8px;border:none;background:#7c3aed;color:#fff;font-weight:700;text-decoration:none;}'
++'html body .f424-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:4px;font-size:.8rem;font-weight:700;}html body .f424-tags span{border:1px solid #0f766e;color:#0f766e;border-radius:999px;padding:2px 9px;}html body .f424-tags .f424-sp{background:#0f766e;color:#fff;}'
++'html body .f424-carte h2{color:#18212e;}html body .f424-top{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.6fr);gap:12px;margin-top:8px;}html body .f424-vis{background:#eef6f5;border-radius:10px;padding:8px;text-align:center;}'
++'html body .f424-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;}html body .f424-chips div{border:1px solid #cfd5dd;border-radius:8px;padding:4px 8px;}html body .f424-chips small{display:block;font-size:.72rem;color:#4b5563;}'
++'html body .f424-pel{background:#fff7ed;border:1.5px solid #c2410c;border-radius:10px;padding:8px 10px;}html body .f424-t2{font-weight:800;color:#9a3412;font-size:1.05rem;}'
++'html body .f424-two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:10px;}html body .f424-t3{font-weight:800;color:#0f766e;border-bottom:2px solid #0f766e;margin-top:10px;}'
++'html body .f424-ad{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:4px;}html body .f424-ad div{background:#f1f4f8;border-radius:8px;padding:6px 8px;font-size:.9rem;}'
++'html body .f424-why{background:#fffbeb;border:1px solid #d97706;border-radius:10px;padding:4px 10px 8px;margin-top:10px;}html body .f424-why .f424-t3{color:#92400e;border-color:#d97706;}'
++'@media (max-width:640px){html body .f424-lam,html body .f424-top,html body .f424-two,html body .f424-ad{grid-template-columns:1fr;}html body .f424-c:nth-child(odd){border-right:none;}html body .f424-page{padding:16px;}}'
++'@media print{@page{size:A4;margin:10mm;}body.f424-on > *:not(.f424-ov){display:none!important;}body.f424-on .f424-ov{position:static;background:none;padding:0;overflow:visible;}body.f424-on .f424-bar{display:none;}body.f424-on .f424-page{max-width:none;padding:0;border-radius:0;}body.f424-on .f424-play{display:none;}}';
  document.head.appendChild(st);})();
 </script>
 </body>
