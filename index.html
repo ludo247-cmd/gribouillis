@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v433</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v434</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v433</title>
+<title>Gribouillis EPS v434</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -30775,6 +30775,35 @@ setTimeout(()=>{try{bn433Build();bn433Sync();}catch(e){}},1500);
 +'html body:not(.mode-eleve):not(.nav-off) #s-setup.hidden ~ #sync-badge{bottom:8px!important;}'
 +'}';
  document.head.appendChild(st);})();
+
+
+
+// ══════════════════════════════════════════════════════════════════════
+// v434 — Parcours du métier : chaque étape ouvre vraiment le bon endroit
+//   Année → emploi du temps + programmation de la classe ;
+//   Séquence → ouvre la séquence en cours ; Évaluation → sa partie
+//   « Évaluation de la séquence » ; Postes → ouvre la prochaine séance
+//   puis les postes (plus d'alerte « Ouvre d'abord une séance »).
+// ══════════════════════════════════════════════════════════════════════
+function m434Year(){const c=clsActive();if(!c){clsOpen();return;}try{edtOpen(c.id);}catch(e){clsOpen();}}
+function m434Seq(then){const q=m429Seq();goTab('t-seq');if(!q){renderSeqTab();return;}try{SEQ_UI.open=q.id;}catch(e){}renderSeqTab();
+  setTimeout(()=>{try{if(then){then();return;}const h=E('t-seq');if(h)h.scrollIntoView({block:'start'});window.scrollTo(0,0);}catch(e){}},60);}
+function m434Eval(){m434Seq(()=>{const s=[...document.querySelectorAll('#t-seq summary')].find(x=>/Évaluation de la séquence/i.test(x.textContent||''));
+  if(s){const d=s.parentElement;if(d&&d.tagName==='DETAILS')d.open=true;s.scrollIntoView({block:'start',behavior:'smooth'});}});}
+function m434Postes(){const c=clsActive();const s=getActiveSeance();
+  if(s&&(!c||!s.classeId||s.classeId===c.id)){goTab('t-seance');setTimeout(()=>{try{po429Open();}catch(e){}},120);return;}
+  const q=m429Seq();if(!q){alert('Crée d\'abord la séquence de cette classe (onglet Séquences).');return;}
+  let k=-1;const n=(q.cols||[]).length;for(let i=0;i<n;i++){const x=seqSeance(q,i);if(x&&x.status!=='done'&&x.status!=='ended'&&x.status!=='closed'){k=i;break;}}
+  if(k<0)for(let i=n-1;i>=0;i--){if(seqSeance(q,i)){k=i;break;}}
+  if(k<0){alert('Prépare d\'abord une séance de la séquence : les postes se donnent dans la séance.');m434Seq();return;}
+  seqOpenSeance(q.id,k);setTimeout(()=>{try{po429Open();}catch(e){}},250);}
+m429Steps=(function(f){return function(){const S=f.apply(this,arguments);try{S.forEach(x=>{
+  if(x[1]==='Année')x[4]='m434Year()';
+  else if(x[1]==='Séquence')x[4]='m434Seq()';
+  else if(x[1]==='Évaluation')x[4]='m434Eval()';
+  else if(x[1]==='Postes et rôles')x[4]='m434Postes()';});
+  const q=m429Seq();if(q&&!po429Sp({sport:q.sport||q.apsa||''}))return S.filter(x=>x[1]!=='Postes et rôles');}catch(e){}return S;};})(m429Steps);
+try{if(document.querySelector('#t-seq.active'))renderSeqTab();}catch(e){}
 </script>
 </body>
 </html>
