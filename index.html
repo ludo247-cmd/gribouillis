@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v424</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v425</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v424</title>
+<title>Gribouillis EPS v425</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -30176,6 +30176,38 @@ libcRender=(function(f){return function(){const r=f.apply(this,arguments);try{co
 +'html body .f424-why{background:#fffbeb;border:1px solid #d97706;border-radius:10px;padding:4px 10px 8px;margin-top:10px;}html body .f424-why .f424-t3{color:#92400e;border-color:#d97706;}'
 +'@media (max-width:640px){html body .f424-lam,html body .f424-top,html body .f424-two,html body .f424-ad{grid-template-columns:1fr;}html body .f424-c:nth-child(odd){border-right:none;}html body .f424-page{padding:16px;}}'
 +'@media print{@page{size:A4;margin:10mm;}body.f424-on > *:not(.f424-ov){display:none!important;}body.f424-on .f424-ov{position:static;background:none;padding:0;overflow:visible;}body.f424-on .f424-bar{display:none;}body.f424-on .f424-page{max-width:none;padding:0;border-radius:0;}body.f424-on .f424-play{display:none;}}';
+ document.head.appendChild(st);})();
+
+
+// ══════════════════════════════════════════════════════════════════════
+// v425 — barre des classes réduite à un simple bandeau : le menu des
+// classes prend toute la place ; « Mettre à jour la liste » et « Gérer
+// les classes » sont aussi dans le menu déroulant ; il ne reste que deux
+// petites icônes (🔄 ⚙) sur une seule ligne.
+// ══════════════════════════════════════════════════════════════════════
+function cb425Pick(sel){const v=sel.value;const a=clsActive();
+  if(v==='__cb_sync'||v==='__cb_cls'){sel.value=(a&&a.id)||(localStorage.getItem('grib_libre')==='1'?'__libre':'');
+    if(v==='__cb_sync'&&a)clsSync(a.id,false);else clsOpen();return;}
+  clsActivate(v);}
+renderClassBar=(function(f){return function(){const r=f.apply(this,arguments);try{const host=E('class-bar');if(!host)return r;host.classList.add('cb425');
+  const sel=host.querySelector('select');const a=clsActive();
+  if(sel&&!sel.querySelector('option[value="__cb_cls"]')){sel.removeAttribute('onchange');sel.onchange=function(){cb425Pick(this);};
+    const sep=document.createElement('option');sep.disabled=true;sep.textContent='──────────';sel.appendChild(sep);
+    if(a&&a.gs&&a.gs.url){const o=document.createElement('option');o.value='__cb_sync';o.textContent='🔄 Mettre à jour la liste (Sheets)';sel.appendChild(o);}
+    const o2=document.createElement('option');o2.value='__cb_cls';o2.textContent='⚙ Gérer les classes';sel.appendChild(o2);}
+  host.querySelectorAll(':scope > button').forEach(b=>{const t=b.textContent;if(/Mettre à jour/.test(t)){b.textContent='🔄';b.title='Relire la liste dans le Google Sheets';b.setAttribute('aria-label','Mettre à jour la liste');b.classList.add('cb425-i');}
+    else if(/Classes/.test(t)&&!/Créer/.test(t)){b.textContent='⚙';b.title='Gérer les classes';b.setAttribute('aria-label','Gérer les classes');b.classList.add('cb425-i');}});
+  const ic=host.querySelector(':scope > span:first-child');if(ic&&ic.textContent.trim()==='🏫')ic.classList.add('cb425-h');
+ }catch(e){console.warn('cb425',e);}return r;};})(renderClassBar);
+try{renderClassBar();}catch(e){}
+(function(){const st=document.createElement('style');st.textContent=
+ 'html body #class-bar.cb425{flex-wrap:nowrap;gap:5px;padding:3px 52px 3px 8px;margin:0 0 6px;border-radius:10px;min-height:0;}'
++'html body #class-bar.cb425 .cb425-h{font-size:.95rem;line-height:1;}'
++'html body #class-bar.cb425 select{flex:1 1 auto;min-width:0;max-width:none;font-size:.85rem;padding:4px 6px;}'
++'html body #class-bar.cb425 .cb-info{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:0 1 auto;}'
++'html body #class-bar.cb425 .cb-sp{flex:0 0 0;}'
++'html body #class-bar.cb425 .cb425-i{flex:0 0 auto;min-width:32px;min-height:32px;padding:2px 6px!important;font-size:.95rem;line-height:1;border-radius:8px;}'
++'@media (max-width:760px){html body #class-bar.cb425 .cb-info{display:none;}}';
  document.head.appendChild(st);})();
 </script>
 </body>
