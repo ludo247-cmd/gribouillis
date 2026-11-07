@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v427</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v429</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v427</title>
+<title>Gribouillis EPS v429</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -30317,6 +30317,200 @@ stopMatch=(function(f){return function(){LA427=false;try{const b=E('la427-btn');
  'html body .chrono.la427{border-color:#f97316!important;color:#fb923c!important;animation:la427p 1s infinite;}@keyframes la427p{50%{opacity:.55;}}'
 +'html body #la427-btn{position:fixed;left:50%;transform:translateX(-50%);bottom:84px;z-index:9990;min-height:64px;padding:8px 26px;border:none;border-radius:16px;background:#ea580c;color:#fff;font-size:1.25rem;font-weight:900;box-shadow:0 8px 30px rgba(0,0,0,.6);display:flex;flex-direction:column;align-items:center;}'
 +'html body #la427-btn small{font-size:.75rem;font-weight:600;opacity:.9;}';
+ document.head.appendChild(st);})();
+
+
+// ══════════════════════════════════════════════════════════════════════
+// v428 — 👥 ÉQUIPES : un seul bouton pour faire les équipes de la séance.
+// Comment ? (au hasard · équilibrées · dans les clubs) · Combien ? ·
+// Qui ? · Équilibrer sur (niveau, filles / garçons, postes). Ensuite on
+// touche un élève pour le changer d'équipe. Le « Pas le temps ? Tirage au
+// sort » de la séance est remplacé par ce bouton.
+// ══════════════════════════════════════════════════════════════════════
+const EQ428={how:'eq',n:4,pop:'all',niv:true,fg:true,po:true};
+try{const sv=JSON.parse(localStorage.getItem('grib_eq428_v1')||'null');if(sv)Object.assign(EQ428,sv);}catch(e){}
+function eq428Save(){try{localStorage.setItem('grib_eq428_v1',JSON.stringify(EQ428));}catch(e){}}
+function eq428Build(names,n){const o=EQ428;const info=names.map(x=>{const r=rosterOf(x)||{};return {n:x,note:o.niv?(+r.note||3):3,sx:o.fg?(grpSexe(x)||''):'',po:o.po?(posteCodeOf(r)||'?'):'?',r:Math.random()};});
+  const T=[];for(let k=0;k<n;k++)T.push({m:[],sum:0,cat:{}});
+  if(o.how==='rand'){info.sort((a,b)=>a.r-b.r).forEach((p,i)=>T[i%n].m.push(p));return T.map(t=>t.m.map(p=>p.n));}
+  const key=p=>p.po+'|'+p.sx;const cats={};info.forEach(p=>{(cats[key(p)]=cats[key(p)]||[]).push(p);});
+  Object.keys(cats).sort((a,b)=>cats[a].length-cats[b].length).forEach(c=>{cats[c].sort((a,b)=>b.note-a.note||a.r-b.r).forEach(p=>{const t=T.slice().sort((x,y)=>(x.cat[c]||0)-(y.cat[c]||0)||x.m.length-y.m.length||x.sum-y.sum||Math.random()-.5)[0];t.m.push(p);t.sum+=p.note;t.cat[c]=(t.cat[c]||0)+1;});});
+  return T.map(t=>t.m.sort((a,b)=>b.note-a.note).map(p=>p.n));}
+function eq428Clubs(names){const m={};names.forEach(x=>{const r=rosterOf(x)||{};const c=String(r.club||'').trim()||'Sans club';(m[c]=m[c]||[]).push(x);});return m;}
+function eq428Run(){const s=getActiveSeance();if(!s){alert('Ouvre d\'abord une séance.');return;}const o=EQ428;
+  const names=genPool(s,o.pop);if(names.length<2){alert('Pas assez d\'élèves présents ('+names.length+'). Vérifie la liste de la classe et les absents.');return;}
+  const stamp=Date.now().toString(36);let G=[];
+  if(o.how==='club'){const C=eq428Clubs(names);Object.keys(C).sort().forEach((c,ci)=>{const arr=C[c];const k=Math.max(1,Math.min(o.n,arr.length));const T=k>1?eq428Build(arr,k):[arr];
+      T.forEach((m,j)=>G.push({id:'eq'+stamp+'c'+ci+'k'+j,label:c+(T.length>1?' '+String.fromCharCode(65+j):''),color:(EQ_NAMES[ci%EQ_NAMES.length]||EQ_NAMES[0])[1],members:m,src:'gen'}));});}
+  else{const n=Math.max(2,Math.min(6,o.n));if(names.length<n){alert('Pas assez d\'élèves ('+names.length+') pour '+n+' équipes.');return;}
+    G=eq428Build(names,n).map((m,k)=>({id:'eq'+stamp+'k'+k,label:EQ_NAMES[k][0],color:EQ_NAMES[k][1],members:m,src:'gen',team3:n}));}
+  s.groupes=G;try{ensureLeaders(s);}catch(e){}
+  const lab=(o.how==='rand'?'Au hasard':o.how==='club'?'Dans les clubs':'Équilibrées')+' · '+(o.how==='club'?o.n+' par club':o.n+' équipes')+(o.pop==='F'?' · filles':o.pop==='M'?' · garçons':'');
+  try{decoupSave(s,lab);}catch(e){}saveSeances();eq428Save();try{renderSeanceTab();}catch(e){}eq428Open(true);}
+function eq428Move(gi,mi){const s=getActiveSeance();if(!s||!s.groupes)return;const G=s.groupes;const nm=G[gi].members.splice(mi,1)[0];const to=(gi+1)%G.length;G[to].members.push(nm);saveSeances();try{renderSeanceTab();}catch(e){}eq428Open(true);}
+function eq428Open(showRes){const old=E('eq428-ov');if(old)old.remove();const s=getActiveSeance();const o=EQ428;
+  const ch=(on,l,fn)=>'<button type="button" class="eq428-c'+(on?' on':'')+'" aria-pressed="'+(on?'true':'false')+'" onclick="'+fn+'">'+l+'</button>';
+  let cnt={all:0,F:0,M:0};try{cnt=genCounts();}catch(e){}
+  let h='<'+'div class="eq428-box"><'+'div class="eq428-h"><b>👥 Équipes'+(s?' · '+esc(s.classe||s.equipeLabel||''):'')+'</b><span class="eq428-d">'+cnt.all+' présents</span><button type="button" class="eq428-x" aria-label="Fermer" onclick="E(\'eq428-ov\').remove()">✕</button></'+'div>'
+   +'<'+'div class="eq428-l">1. Comment ?</'+'div><'+'div class="eq428-r">'+ch(o.how==='rand','🎲 Au hasard',"EQ428.how='rand';eq428Open()")+ch(o.how==='eq','⚖️ Équilibrées',"EQ428.how='eq';eq428Open()")+ch(o.how==='club','🏠 Dans les clubs',"EQ428.how='club';eq428Open()")+'</'+'div>'
+   +'<'+'div class="eq428-l">2. Combien '+(o.how==='club'?'d\'équipes par club':'d\'équipes')+' ?</'+'div><'+'div class="eq428-r">'+(o.how==='club'?[1,2,3]:[2,3,4,5,6]).map(n=>ch(o.n===n,String(n),'EQ428.n='+n+';eq428Open()')).join('')+'</'+'div>'
+   +'<'+'div class="eq428-l">3. Qui ?</'+'div><'+'div class="eq428-r">'+ch(o.pop==='all','Tous ('+cnt.all+')',"EQ428.pop='all';eq428Open()")+ch(o.pop==='F','Filles ('+cnt.F+')',"EQ428.pop='F';eq428Open()")+ch(o.pop==='M','Garçons ('+cnt.M+')',"EQ428.pop='M';eq428Open()")+'</'+'div>'
+   +(o.how!=='rand'?'<'+'div class="eq428-l">4. Équilibrer sur</'+'div><'+'div class="eq428-r">'+ch(o.niv,'📊 Niveau','EQ428.niv=!EQ428.niv;eq428Open()')+ch(o.fg,'⚧ Filles / garçons','EQ428.fg=!EQ428.fg;eq428Open()')+ch(o.po,'🧤 Postes','EQ428.po=!EQ428.po;eq428Open()')+'</'+'div>':'')
+   +'<'+'div class="eq428-r" style="margin-top:12px;"><button type="button" class="eq428-go" onclick="eq428Run()">✓ Faire les équipes</button></'+'div>';
+  if(showRes&&s&&s.groupes&&s.groupes.length){h+='<'+'div class="eq428-l" style="margin-top:12px;">Résultat · touche un élève pour l\'envoyer dans l\'équipe suivante</'+'div><'+'div class="eq428-res">'
+    +s.groupes.map((g,gi)=>'<'+'div class="eq428-t" style="border-color:'+esc(g.color||'#475569')+'"><b style="color:'+esc(g.color||'#e2e8f0')+'">'+esc(g.label)+' · '+g.members.length+'</b>'+g.members.map((m,mi)=>{const r=rosterOf(m)||{};const p=posteCodeOf(r);return '<button type="button" onclick="eq428Move('+gi+','+mi+')">'+esc(m)+(p?' <small>'+esc(p)+'</small>':'')+'</button>';}).join('')+'</'+'div>').join('')+'</'+'div>';}
+  h+='</'+'div>';const ov=document.createElement('div');ov.id='eq428-ov';ov.innerHTML=h;ov.onclick=e=>{if(e.target===ov)ov.remove();};document.body.appendChild(ov);eq428Save();}
+// bouton dans la séance
+renderSeanceTab=(function(f){return function(){const r=f.apply(this,arguments);try{const host=E('seance-tab-content');const s=getActiveSeance();if(!host||!s||(SEANCE_STATE&&SEANCE_STATE.mode==='eleve'))return r;
+  host.querySelectorAll('button[onclick^="seanceRandomMenu"]').forEach(b=>{b.style.display='none';});
+  if(host.querySelector('.eq428-b'))return r;const b=document.createElement('button');b.type='button';b.className='btn-xs eq428-b';b.textContent='👥 Équipes';b.onclick=()=>eq428Open(true);
+  const seg=host.querySelector('.c427-seg');if(seg){b.classList.add('c427-eqb');seg.insertBefore(b,seg.querySelector('.c427-el'));return r;}
+  const fin=host.querySelector('.s419-fin');if(fin&&fin.parentNode)fin.parentNode.insertBefore(b,fin);}catch(e){console.warn('eq428',e);}return r;};})(renderSeanceTab);
+(function(){const st=document.createElement('style');st.textContent=
+ 'html body #eq428-ov{position:fixed;inset:0;z-index:100004;background:rgba(2,6,23,.8);display:flex;align-items:flex-start;justify-content:center;overflow:auto;padding:12px;}'
++'html body .eq428-box{background:#0f172a;border:2px solid #0f766e;border-radius:14px;padding:14px;width:min(560px,100%);color:#e2e8f0;}'
++'html body .eq428-h{display:flex;align-items:center;gap:8px;font-size:1.1rem;}html body .eq428-h b{flex:1;}html body .eq428-d{color:#94a3b8;font-size:.8rem;}html body .eq428-x{min-width:40px;min-height:40px;border:none;border-radius:10px;background:#1e293b;color:#fff;}'
++'html body .eq428-l{font-size:.75rem;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;margin:12px 0 6px;}html body .eq428-r{display:flex;flex-wrap:wrap;gap:6px;}'
++'html body .eq428-c{min-height:42px;padding:6px 12px;border-radius:10px;border:1px solid #334155;background:#111827;color:#e2e8f0;font-weight:700;}html body .eq428-c.on{background:#0f766e;border-color:#14b8a6;color:#fff;}'
++'html body .eq428-go{flex:1;min-height:48px;border:none;border-radius:12px;background:#16a34a;color:#fff;font-weight:900;font-size:1rem;}'
++'html body .eq428-res{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;}html body .eq428-t{border:2px solid;border-radius:10px;padding:6px;display:flex;flex-direction:column;gap:4px;}'
++'html body .eq428-t button{text-align:left;min-height:34px;border:none;border-radius:8px;background:#1e293b;color:#e2e8f0;padding:4px 8px;}html body .eq428-t small{color:#94a3b8;}'
++'html body .eq428-b{background:#0f766e!important;color:#fff!important;font-weight:800;}html body .c427-eqb{min-height:42px;border-radius:12px;padding:0 10px!important;}';
+ document.head.appendChild(st);})();
+
+
+// ══════════════════════════════════════════════════════════════════════
+// v429 — • 🎽 POSTES (d'après Bourbousson, « Symbiose interpersonnelle ») :
+//          un poste par élève, un brassard par équipe, l'objectif du poste,
+//          la rotation (tout le monde essaie avant de choisir), le bilan ✓ ~ ✗ ;
+//        • 🧭 PARCOURS DU MÉTIER : les étapes, où en est la classe, et les
+//          nouvelles étapes 🔍 Diagnostic guidé et 🔁 Régulation entre séances.
+// ══════════════════════════════════════════════════════════════════════
+const PO429={
+ volley:{PAS:['Passeur','Je donne des ballons hauts, près du filet, devant l\'attaquant.','Passes exploitables : au moins 6 sur 10','Je me place sous le ballon avant qu\'il arrive ; touche haute à 10 doigts'],
+   LIB:['Libéro','Je reçois le service et défends le fond : le ballon doit remonter haut vers le passeur.','Réceptions réussies : au moins 60 %','Prêt sur les appuis, je lis la trajectoire tôt ; manchette orientée vers le passeur'],
+   ATT:['Attaquant','Je finis l\'action : smash ou balle placée dans la zone libre.','Attaques gagnantes : au moins 3 par set','Élan, appel 2 pieds, frappe au point haut ; je regarde la défense avant de frapper']},
+ rugby:{DM:['Demi de mêlée','Je sors le ballon vite et je l\'envoie aux 3/4.','Sorties propres : au moins 8 sur 10','Je suis toujours au ballon ; passe vissée devant le receveur'],
+   TQ:['3/4','J\'attaque la ligne, je fixe et je fais la passe au bon moment.','Avancées sur la ligne d\'avantage : 5 par match','Course droite, je fixe mon vis-à-vis avant de passer'],
+   AIL:['Ailier','Je finis sur l\'aile : j\'utilise ma vitesse pour marquer.','Essais ou franchissements : 2 par match','Je reste large, je garde le ballon côté extérieur'],
+   ARR:['Arrière','Je couvre le fond : je récupère les ballons et je relance.','Ballons de fond récupérés : 4 sur 5','Placement en retrait, je relance si l\'espace est là']},
+ handball:{GK:['Gardien','Je protège mon but et je relance vite.','Arrêts : 1 tir sur 3','Je suis le ballon, je ferme l\'angle ; relance immédiate'],
+   ARR:['Arrière','Je tire de loin ou je fixe pour libérer un partenaire.','Tirs cadrés : 3 sur 5','J\'attaque l\'intervalle, je décide vite : tir ou passe'],
+   DC:['Demi-centre','J\'organise l\'attaque et je distribue.','Passes décisives : 3 par match','Je lis la défense, je lance la combinaison'],
+   PIV:['Pivot','Je joue dans la défense : bloc, réception, tir près du but.','Ballons reçus au pivot : 3 par match','Je me rends disponible dans le dos des défenseurs'],
+   AIL:['Ailier','Je cours devant en contre-attaque et je finis dans l\'angle.','Buts en contre-attaque : 2 par match','Je pars tôt, je reste large']},
+ basketball:{MEN:['Meneur','Je fais circuler le ballon (cœur d\'étoile) : je marque moins, je fais jouer.','Ballons distribués en zone avant : 3 par possession','Je reste en soutien derrière, je reviens vite après la passe'],
+   AIL:['Ailier','Je cours devant et je finis en tir en course (bonus × 2).','Tirs en course : 4 par match','Je pars tôt, j\'écarte le jeu'],
+   PIV:['Pivot / pointe','J\'étire la défense et je suis prêt à recevoir sous le panier.','Ballons reçus près du panier : 3 par match','Je me place sous le cercle, mains prêtes']},
+ football:{GK:['Gardien','Je protège mon but et je relance juste.','Relances réussies : 7 sur 10','Je suis placé avant le tir ; relance vers le côté libre'],
+   DC:['Défenseur','Je ferme l\'axe et je relance propre.','Ballons récupérés : 5 par match','Je reste entre l\'adversaire et le but'],
+   COTES:['Latéral','Je défends mon côté et je monte quand c\'est possible.','Montées utiles : 3 par match','Je reste large, je surveille mon ailier'],
+   MC:['Milieu','Je fais le lien : je récupère et je fais avancer le jeu.','Passes vers l\'avant réussies : 6 par match','Je regarde avant de recevoir'],
+   ATT:['Attaquant','Je finis l\'action et j\'appelle dans la profondeur.','Tirs cadrés : 3 par match','J\'appelle dans le dos de la défense']}
+};
+function po429Sp(s){const x=String((s&&s.sport)||CFG.apsa||'').toLowerCase();if(/volley/.test(x))return 'volley';if(/rugby/.test(x))return 'rugby';if(/hand/.test(x))return 'handball';if(/basket/.test(x))return 'basketball';if(/foot/.test(x))return 'football';return '';}
+function po429Hist(s){const H={};try{(SEANCES||[]).forEach(z=>{if(!z||z.id===s.id||!z.postes428)return;if(s.seqId&&z.seqId!==s.seqId)return;Object.keys(z.postes428).forEach(n=>{const p=z.postes428[n]&&z.postes428[n].po;if(!p)return;(H[n]=H[n]||{})[p]=(H[n][p]||0)+1;});});}catch(e){}return H;}
+function po429Set(n,f,v){const s=getActiveSeance();if(!s)return;const P=s.postes428||(s.postes428={});const x=P[n]||(P[n]={});
+  if(f==='br'&&v){const g=(s.groupes||[]).find(g=>g.members.indexOf(n)>=0);if(g)g.members.forEach(m=>{if(P[m])P[m].br=false;});}
+  x[f]=v;saveSeances();po429Open();}
+function po429Auto(){const s=getActiveSeance();if(!s)return;const sp=po429Sp(s),D=PO429[sp];if(!D)return;const codes=Object.keys(D);const H=po429Hist(s);const P=s.postes428||(s.postes428={});
+  (s.groupes||[]).forEach(g=>{const used={};g.members.slice().sort(()=>Math.random()-.5).forEach(n=>{const h=H[n]||{};const c=codes.slice().sort((a,b)=>((used[a]||0)-(used[b]||0))||((h[a]||0)-(h[b]||0))||Math.random()-.5)[0];used[c]=(used[c]||0)+1;P[n]=Object.assign(P[n]||{},{po:c});});});
+  saveSeances();po429Open();}
+function po429Open(){const old=E('po429-ov');if(old)old.remove();const s=getActiveSeance();if(!s){alert('Ouvre d\'abord une séance.');return;}
+  const sp=po429Sp(s),D=PO429[sp];if(!D){alert('Les postes existent pour le volley, le rugby, le handball, le basket et le foot.');return;}
+  const P=s.postes428||{},H=po429Hist(s),codes=Object.keys(D);
+  let h='<'+'div class="po429-box"><'+'div class="eq428-h"><b>🎽 Postes · '+esc(SEQ_SPORT_NAMES&&SEQ_SPORT_NAMES[s.sport]||sp)+'</b><button type="button" class="eq428-x" aria-label="Fermer" onclick="E(\'po429-ov\').remove()">✕</button></'+'div>'
+   +'<p class="po429-p">Chacun joue un poste ; un brassard 🎽 par équipe (son porteur a le bonus du poste). Tout le monde essaie chaque poste avant de choisir le sien en fin de séquence.</p>'
+   +'<'+'div class="po429-cards">'+codes.map(c=>'<'+'div class="po429-card"><b>'+esc(D[c][0])+'</b><span>'+esc(D[c][1])+'</span><span class="po429-obj">🎯 '+esc(D[c][2])+'</span><span class="po429-res">💪 '+esc(D[c][3])+'</span></'+'div>').join('')+'</'+'div>';
+  if(!(s.groupes||[]).length)h+='<p class="po429-p">Fais d\'abord les équipes (👥 Équipes).</p>';
+  else{h+='<'+'div class="eq428-r" style="margin:10px 0;"><button type="button" class="eq428-c" onclick="po429Auto()">🔄 Répartir les postes (rotation)</button></'+'div>';
+    h+=(s.groupes||[]).map(g=>'<'+'div class="po429-team" style="border-color:'+esc(g.color||'#475569')+'"><b style="color:'+esc(g.color||'#fff')+'">'+esc(g.label)+'</b>'+g.members.map(n=>{const x=P[n]||{};const hn=H[n]||{};const todo=codes.filter(c=>!hn[c]&&x.po!==c);const q=JSON.stringify(n).replace(/"/g,'&quot;');
+      return '<'+'div class="po429-row"><span class="po429-n">'+esc(n)+'</span><select aria-label="Poste de '+esc(n)+'" onchange="po429Set('+q+',\'po\',this.value)"><option value="">—</option>'+codes.map(c=>'<option value="'+c+'"'+(x.po===c?' selected':'')+'>'+esc(D[c][0])+'</option>').join('')+'</select>'
+       +'<button type="button" class="po429-br'+(x.br?' on':'')+'" aria-pressed="'+(x.br?'true':'false')+'" title="Brassard" onclick="po429Set('+q+',\'br\','+(!x.br)+')">🎽</button>'
+       +['ok','mid','ko'].map(k=>'<button type="button" class="po429-r'+(x.res===k?' on':'')+'" aria-label="Objectif '+(k==='ok'?'atteint':k==='mid'?'presque':'pas atteint')+'" onclick="po429Set('+q+',\'res\',\''+k+'\')">'+(k==='ok'?'✓':k==='mid'?'~':'✗')+'</button>').join('')
+       +'<small class="po429-h">'+(Object.keys(hn).length?'déjà : '+Object.keys(hn).map(c=>D[c]?D[c][0]+(hn[c]>1?' ×'+hn[c]:''):c).join(', '):'premier poste')+(todo.length&&Object.keys(hn).length?' · à essayer : '+todo.map(c=>D[c][0]).join(', '):'')+'</small></'+'div>';}).join('')+'</'+'div>').join('');}
+  h+='<p class="po429-src">D\'après J. Bourbousson, « Symbiose interpersonnelle en sports collectifs : figures géométriques et attributions de rôles », AFRAPS 2023. Objectifs de départ : à ajuster à ta classe.</p></'+'div>';
+  const ov=document.createElement('div');ov.id='po429-ov';ov.className='eq428-ovl';ov.innerHTML=h;ov.onclick=e=>{if(e.target===ov)ov.remove();};document.body.appendChild(ov);}
+
+// ── 🧭 parcours du métier
+function m429Seq(){try{return seqCurrentFor(clsActive());}catch(e){return null;}}
+function m429Steps(){const c=clsActive(),q=m429Seq();let n=0;try{n=(COMPO.roster||[]).length;}catch(e){}let pr={done:0};try{if(q)pr=seqProgress(q);}catch(e){}
+  return [
+   ['🗓','Année','programmation des APSA, emploi du temps',!!(c&&c.prog&&Object.keys(c.prog).length),'clsOpen()'],
+   ['🏫','Rentrée','classe, élèves, clubs, fichiers Sheet',n>0,'clsOpen()',n?n+' élèves':''],
+   ['🔍','Diagnostic','séance diagnostic guidée → objet d\'enseignement',!!(q&&q.diag428),'d429Open()',q&&q.diag428?'fait le '+q.diag428.date:'nouveau'],
+   ['🧩','Séquence','objets, contenus, FPS, grille d\'évaluation',!!(q&&(q.oeIds||[]).length),"goTab('t-seq')",q?(q.nom||''):''],
+   ['📅','Séances','préparer, faire cours, observer, bilan',!!pr.done,"goTab('t-seance')",q?pr.done+' / '+(q.nb||'?')+' faites':''],
+   ['🎽','Postes et rôles','chacun son poste, son objectif (Bourbousson)',false,'po429Open()','dans la séance'],
+   ['🔁','Régulation','entre deux séances : ce qui change d\'après les bilans',!!(q&&(q.reg428||[]).length),'r429Open()',q&&(q.reg428||[]).length?(q.reg428.length+' régulation'+(q.reg428.length>1?'s':'')):'nouveau'],
+   ['📝','Évaluation','fin de séquence, puis Sheet',!!(q&&q.cadre&&q.cadre.ev),"goTab('t-seq')"],
+   ['📚','Bilan de séquence','ce qui a marché, à réutiliser',false,'','à venir'],
+   ['🩹','Vie de classe','dispenses, absences, rôles adaptés',false,'','à venir'],
+   ['📈','Suivi pluriannuel','tests, compétences, dans le Sheet',false,'clsOpen()']];}
+function m429Open(){const old=E('m429-ov');if(old)old.remove();const c=clsActive();const S=m429Steps();
+  let h='<'+'div class="po429-box"><'+'div class="eq428-h"><b>🧭 Parcours du métier'+(c?' · '+esc(c.nom):'')+'</b><button type="button" class="eq428-x" aria-label="Fermer" onclick="E(\'m429-ov\').remove()">✕</button></'+'div><ol class="m429-l">'
+   +S.map((x,i)=>'<li class="'+(x[3]?'ok':'')+'"><span class="m429-i">'+x[0]+'</span><span class="m429-t"><b>'+esc(x[1])+'</b><small>'+esc(x[2])+(x[5]?' · '+esc(x[5]):'')+'</small></span>'+(x[4]?'<button type="button" onclick="E(\'m429-ov\').remove();'+x[4]+'">'+(x[3]?'✓ Voir':'Ouvrir')+'</button>':'<span class="m429-w">'+esc(x[5]||'')+'</span>')+'</li>').join('')+'</ol></'+'div>';
+  const ov=document.createElement('div');ov.id='m429-ov';ov.className='eq428-ovl';ov.innerHTML=h;ov.onclick=e=>{if(e.target===ov)ov.remove();};document.body.appendChild(ov);}
+function m429OeList(q){const sp=(q&&q.sport)||CFG.apsa;const R=(REMED_CONTENT[sp]||{}).oe||[];return R.filter(o=>JUST423[o.id]&&(JUST423[o.id].c||[]).length);}
+// 🔍 diagnostic guidé
+function d429Open(){const old=E('d429-ov');if(old)old.remove();const q=m429Seq();if(!q){alert('Crée d\'abord la séquence de cette classe (onglet Séquences).');return;}
+  const L=m429OeList(q);if(!L.length){alert('Pas encore de comportements types pour ce sport.');return;}const T=(q.diag428&&q.diag428.ticks)||[];
+  let h='<'+'div class="po429-box"><'+'div class="eq428-h"><b>🔍 Diagnostic · '+esc(q.nom||'')+'</b><button type="button" class="eq428-x" aria-label="Fermer" onclick="E(\'d429-ov\').remove()">✕</button></'+'div>'
+   +'<p class="po429-p">Pendant la 1re séance (jeu libre ou match), coche ce que tu vois chez beaucoup d\'élèves. L\'app classe ensuite les objets d\'enseignement.</p>';
+  const items=[];L.forEach(o=>(JUST423[o.id].c||[]).forEach((c,i)=>items.push({k:o.id+'#'+i,t:c[0],d:c[1]})));
+  h+='<'+'div class="d429-list">'+items.map(it=>'<label class="d429-it"><input type="checkbox" value="'+esc(it.k)+'"'+(T.indexOf(it.k)>=0?' checked':'')+'> <span><b>'+esc(it.t)+'</b><small>'+esc(it.d)+'</small></span></label>').join('')+'</'+'div>'
+   +'<'+'div class="eq428-r" style="margin-top:10px;"><button type="button" class="eq428-go" onclick="d429Calc()">Voir les objets proposés</button></'+'div><'+'div id="d429-res"></'+'div></'+'div>';
+  const ov=document.createElement('div');ov.id='d429-ov';ov.className='eq428-ovl';ov.innerHTML=h;ov.onclick=e=>{if(e.target===ov)ov.remove();};document.body.appendChild(ov);if(T.length)d429Calc(true);}
+function d429Calc(quiet){const q=m429Seq();if(!q)return;const ticks=[...document.querySelectorAll('#d429-ov input:checked')].map(x=>x.value);const L=m429OeList(q);
+  const sc=L.map(o=>{const n=(JUST423[o.id].c||[]).length;const k=ticks.filter(t=>t.split('#')[0]===o.id).length;return {o,k,n,p:n?k/n:0};}).filter(x=>x.k>0).sort((a,b)=>b.p-a.p||b.k-a.k);
+  const d=new Date();const date=String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0');
+  seqUpdate(q.id,z=>{z.diag428={date,ticks,top:sc.slice(0,3).map(x=>x.o.id)};});
+  const box=E('d429-res');if(!box)return;if(!sc.length){box.innerHTML='<p class="po429-p">Coche au moins un comportement.</p>';return;}const cur=(seqGet(q.id)||q).oeIds||[];
+  box.innerHTML='<'+'div class="eq428-l">Objets proposés (diagnostic enregistré)</'+'div>'+sc.map((x,i)=>'<'+'div class="d429-oe"><span><b>'+(i+1)+'. '+esc(x.o.short||x.o.label)+'</b><small>'+x.k+' comportement'+(x.k>1?'s':'')+' sur '+x.n+'</small><span class="d429-bar"><span style="width:'+Math.round(x.p*100)+'%"></span></span></span>'
+   +(cur.indexOf(x.o.id)>=0?'<span class="m429-w">✓ dans la séquence</span>':'<button type="button" class="eq428-c" onclick="seqToggleOe(\''+esc(q.id)+'\',\''+esc(x.o.id)+'\');d429Calc()">＋ Choisir</button>')+'<button type="button" class="j423-b" aria-label="Pourquoi" onclick="j423Pop(\'oe\',\''+esc(x.o.id)+'\')">💡</button></'+'div>').join('');}
+// 🔁 régulation entre séances
+function r429Open(){const old=E('r429-ov');if(old)old.remove();const q=m429Seq();if(!q){alert('Crée d\'abord la séquence de cette classe (onglet Séquences).');return;}
+  const oes=(q.oeIds||[]).map(id=>{const r=j423Oe(id);return r&&r.O;}).filter(Boolean);const R=q.reg428||[];
+  let h='<'+'div class="po429-box"><'+'div class="eq428-h"><b>🔁 Régulation · '+esc(q.nom||'')+'</b><button type="button" class="eq428-x" aria-label="Fermer" onclick="E(\'r429-ov\').remove()">✕</button></'+'div>'
+   +'<p class="po429-p">Après la séance : coche ce qui a coincé, l\'app te propose des situations et des fils rouges pour la prochaine fois. Ta note s\'affichera dans la préparation de la séance suivante.</p>';
+  if(!oes.length)h+='<p class="po429-p">Choisis d\'abord l\'objet de la séquence (ou fais le 🔍 diagnostic).</p>';
+  oes.forEach(O=>{const C=(JUST423[O.id]&&JUST423[O.id].c)||[];h+='<'+'div class="eq428-l">'+esc(O.short||O.label)+'</'+'div>'+C.map((c,i)=>'<label class="d429-it"><input type="checkbox" data-oe="'+esc(O.id)+'" value="'+i+'"> <span><b>'+esc(c[0])+'</b></span></label>').join('');});
+  h+='<label class="eq428-l" for="r429-n">Ma note pour la prochaine séance</label><textarea id="r429-n" class="j423-t" placeholder="Ex : refaire le 2c1 avec blocage, réduire le terrain…"></textarea>'
+   +'<'+'div class="eq428-r" style="margin-top:8px;"><button type="button" class="eq428-c" onclick="r429Prop()">Voir les propositions</button><button type="button" class="eq428-go" onclick="r429Save()">💾 Enregistrer la régulation</button></'+'div><'+'div id="r429-res"></'+'div>';
+  if(R.length)h+='<'+'div class="eq428-l">Régulations précédentes</'+'div>'+R.slice().reverse().map(x=>'<p class="po429-p"><b>'+esc(x.date)+'</b> · '+esc(x.note||'')+(x.obs&&x.obs.length?' <small>('+esc(x.obs.join(' ; '))+')</small>':'')+'</p>').join('');
+  h+='</'+'div>';const ov=document.createElement('div');ov.id='r429-ov';ov.className='eq428-ovl';ov.innerHTML=h;ov.onclick=e=>{if(e.target===ov)ov.remove();};document.body.appendChild(ov);}
+function r429Ticks(){return [...document.querySelectorAll('#r429-ov input:checked')].map(x=>({oe:x.dataset.oe,i:+x.value}));}
+function r429Prop(){const T=r429Ticks();const box=E('r429-res');if(!box)return;const oes=[...new Set(T.map(t=>t.oe))];if(!oes.length){box.innerHTML='<p class="po429-p">Coche au moins une difficulté.</p>';return;}
+  let L=[];try{L=libLoad();}catch(e){}
+  box.innerHTML=oes.map(id=>{const r=j423Oe(id);const O=r&&r.O;const sits=L.filter(x=>x&&x.oe===id&&x.kind!=='seance').slice(0,6);const M=((O&&O.micro)||[]).slice(0,4);
+    return '<'+'div class="eq428-l">Pour « '+esc(O?(O.short||O.label):id)+' »</'+'div>'+(sits.length?sits.map(x=>'<'+'div class="d429-oe"><span><b>'+esc(x.titre)+'</b><small>'+esc(x.kind==='match'?'situation de match':'situation')+'</small></span><button type="button" class="j423-b" aria-label="Fiche" onclick="f424Open(\''+esc(x.id)+'\')">📄</button><button type="button" class="j423-b" aria-label="Pourquoi" onclick="j423Pop(\'sit\',\''+esc(x.id)+'\')">💡</button></'+'div>').join(''):'<p class="po429-p">Pas encore de situation rangée sous cet objet.</p>')
+      +(M.length?'<p class="po429-p">🧵 Fils rouges à amplifier : '+M.map(m=>esc(String(m.label||'').replace(/^Frm\s*\d+\s*[—-]\s*/i,''))).join(' · ')+'</p>':'');}).join('');}
+function r429Save(){const q=m429Seq();if(!q)return;const T=r429Ticks();const note=(E('r429-n')||{}).value||'';if(!T.length&&!note.trim()){alert('Coche une difficulté ou écris une note.');return;}
+  const obs=T.map(t=>{const c=(JUST423[t.oe]&&JUST423[t.oe].c||[])[t.i];return c?c[0]:'';}).filter(Boolean);const d=new Date();const date=String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0');
+  seqUpdate(q.id,z=>{(z.reg428=z.reg428||[]).push({date,ts:Date.now(),note:note.trim(),obs});});try{toast2('🔁 Régulation enregistrée : elle s\'affichera dans la prochaine séance');}catch(e){}r429Open();}
+// rappel de la dernière régulation dans la séance à préparer + boutons 🎽 / 🔁
+renderSeanceTab=(function(f){return function(){const r=f.apply(this,arguments);try{const host=E('seance-tab-content');const s=getActiveSeance();if(!host||!s||(SEANCE_STATE&&SEANCE_STATE.mode==='eleve'))return r;
+  const eqb=host.querySelector('.eq428-b');if(eqb&&!host.querySelector('.po429-b')&&po429Sp(s)){const b=document.createElement('button');b.type='button';b.className=eqb.className.replace('eq428-b','po429-b');b.textContent='🎽 Postes';b.onclick=po429Open;eqb.parentNode.insertBefore(b,eqb.nextSibling);}
+  if(s.status!=='done'&&s.seqId&&!host.querySelector('.r429-ban')){const q=seqGet(s.seqId);const R=(q&&q.reg428)||[];const last=R[R.length-1];
+    if(last&&(!s.createdAt||!last.ts||last.ts<=Date.now())){const d=document.createElement('div');d.className='r429-ban';d.innerHTML='<b>🔁 Régulation du '+esc(last.date)+'</b> '+esc(last.note||'')+(last.obs&&last.obs.length?' <small>('+esc(last.obs.join(' ; '))+')</small>':'')+' <button type="button" class="btn-xs" onclick="r429Open()">Voir</button>';
+      const seg=host.querySelector('.c427-seg');if(seg)seg.insertAdjacentElement('afterend',d);else host.insertBefore(d,host.firstChild);}}
+ }catch(e){console.warn('p429',e);}return r;};})(renderSeanceTab);
+// accès : menu des classes + écran Classes
+renderClassBar=(function(f){return function(){const r=f.apply(this,arguments);try{const sel=E('class-bar')&&E('class-bar').querySelector('select');if(sel&&!sel.querySelector('option[value="__m429"]')){const o=document.createElement('option');o.value='__m429';o.textContent='🧭 Parcours du métier';const cl=sel.querySelector('option[value="__cb_cls"]');sel.insertBefore(o,cl||null);
+  const prev=sel.onchange;sel.onchange=function(){if(this.value==='__m429'){const a=clsActive();this.value=(a&&a.id)||'';m429Open();return;}if(prev)return prev.call(this);};}}catch(e){}return r;};})(renderClassBar);
+try{renderClassBar();}catch(e){}
+(function(){const st=document.createElement('style');st.textContent=
+ 'html body .eq428-ovl{position:fixed;inset:0;z-index:100004;background:rgba(2,6,23,.8);display:flex;align-items:flex-start;justify-content:center;overflow:auto;padding:12px;}'
++'html body .po429-box{background:#0f172a;border:2px solid #7c3aed;border-radius:14px;padding:14px;width:min(640px,100%);color:#e2e8f0;}html body .po429-p{color:#cbd5e1;font-size:.85rem;margin:6px 0;}html body .po429-src{color:#94a3b8;font-size:.72rem;margin-top:10px;}'
++'html body .po429-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:6px;margin-top:6px;}html body .po429-card{background:#111827;border:1px solid #334155;border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:3px;font-size:.8rem;}html body .po429-card b{color:#c4b5fd;font-size:.9rem;}html body .po429-obj{color:#fde68a;}html body .po429-res{color:#94a3b8;}'
++'html body .po429-team{border:2px solid;border-radius:10px;padding:6px;margin-top:8px;}html body .po429-row{display:flex;flex-wrap:wrap;align-items:center;gap:4px;padding:4px 0;border-top:1px solid #1e293b;}html body .po429-n{min-width:90px;font-weight:700;}'
++'html body .po429-row select{background:#020617;color:#e2e8f0;border:1px solid #334155;border-radius:8px;padding:6px;min-height:36px;}html body .po429-br,html body .po429-r{min-width:36px;min-height:36px;border:1px solid #334155;border-radius:8px;background:#111827;color:#e2e8f0;font-weight:800;}'
++'html body .po429-br.on{background:#7c3aed;border-color:#a78bfa;}html body .po429-r.on{background:#0f766e;border-color:#14b8a6;color:#fff;}html body .po429-h{flex-basis:100%;color:#94a3b8;font-size:.72rem;}'
++'html body .m429-l{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:6px;}html body .m429-l li{display:flex;align-items:center;gap:8px;background:#111827;border:1px solid #334155;border-radius:10px;padding:8px;}html body .m429-l li.ok{border-color:#15803d;}'
++'html body .m429-i{font-size:1.2rem;width:28px;text-align:center;}html body .m429-t{flex:1;display:flex;flex-direction:column;}html body .m429-t small{color:#94a3b8;}html body .m429-l button{min-height:38px;border:none;border-radius:8px;background:#1d4ed8;color:#fff;font-weight:700;padding:0 10px;}html body .m429-l li.ok button{background:#15803d;}html body .m429-w{color:#94a3b8;font-size:.75rem;}'
++'html body .d429-list{display:flex;flex-direction:column;gap:4px;max-height:50vh;overflow:auto;}html body .d429-it{display:flex;gap:8px;align-items:flex-start;background:#111827;border-radius:8px;padding:8px;cursor:pointer;}html body .d429-it input{width:20px;height:20px;margin-top:2px;}html body .d429-it small{display:block;color:#94a3b8;font-size:.75rem;}'
++'html body .d429-oe{display:flex;align-items:center;gap:6px;background:#111827;border-radius:8px;padding:8px;margin-top:4px;}html body .d429-oe>span:first-child{flex:1;display:flex;flex-direction:column;}html body .d429-oe small{color:#94a3b8;}html body .d429-bar{height:6px;background:#1e293b;border-radius:3px;margin-top:4px;}html body .d429-bar span{display:block;height:6px;background:#f59e0b;border-radius:3px;}'
++'html body .r429-ban{background:#1e1b4b;border:1px solid #6366f1;border-radius:10px;padding:8px 10px;margin:0 0 8px;font-size:.85rem;}html body .r429-ban small{color:#a5b4fc;}html body .po429-b{background:#7c3aed!important;color:#fff!important;font-weight:800;}';
  document.head.appendChild(st);})();
 </script>
 </body>
