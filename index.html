@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v425</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v426</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v425</title>
+<title>Gribouillis EPS v426</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -30209,6 +30209,22 @@ try{renderClassBar();}catch(e){}
 +'html body #class-bar.cb425 .cb425-i{flex:0 0 auto;min-width:32px;min-height:32px;padding:2px 6px!important;font-size:.95rem;line-height:1;border-radius:8px;}'
 +'@media (max-width:760px){html body #class-bar.cb425 .cb-info{display:none;}}';
  document.head.appendChild(st);})();
+
+
+// ══════════════════════════════════════════════════════════════════════
+// v426 — postes reconnus dans la liste de classe (colonnes Poste1/2/3) :
+// volley (passeur, libéro, attaquant) et rugby (demi de mêlée, 3/4,
+// ailier, arrière). Les équipes équilibrées les répartissent.
+// ══════════════════════════════════════════════════════════════════════
+try{
+SPORT_POSTE_ALIASES.volley={'passeur':'PAS','passeuse':'PAS','pas':'PAS','setter':'PAS','meneur':'PAS',
+  'libero':'LIB','lib':'LIB','receptionneur':'LIB','receptionneuse':'LIB','defenseur':'LIB',
+  'attaquant':'ATT','attaquante':'ATT','att':'ATT','pointu':'ATT','central':'ATT','centrale':'ATT','r4':'ATT','receptionneur attaquant':'ATT','smasheur':'ATT','smasheuse':'ATT'};
+SPORT_POSTE_ALIASES.rugby={'demi de melee':'DM','demi-de-melee':'DM','dm':'DM','9':'DM','melee':'DM',
+  '3/4':'TQ','3/4 centre':'TQ','trois quarts':'TQ','trois-quarts':'TQ','trois quart':'TQ','centre':'TQ','ouvreur':'TQ','demi d ouverture':'TQ',"demi d'ouverture":'TQ','10':'TQ','12':'TQ','13':'TQ',
+  'ailier':'AIL','ail':'AIL','11':'AIL','14':'AIL',
+  'arriere':'ARR','arr':'ARR','15':'ARR'};
+}catch(e){console.warn('p426',e);}
 </script>
 </body>
 </html>
