@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v435</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v436</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v435</title>
+<title>Gribouillis EPS v436</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -30900,6 +30900,30 @@ try{Object.assign(JUST423,{
     if(ch){libSave(a);localStorage.setItem(LIBSEED_KEY,JSON.stringify(F));}}catch(e){console.warn('lib435',e);}
 })();
 try{lx2SeedCu=(function(f){return function(sp,id){return f.apply(this,arguments)||((CU_SEED435[sp]||[]).find(x=>x.id===id))||null;};})(lx2SeedCu);}catch(e){}
+
+
+
+// ══════════════════════════════════════════════════════════════════════
+// v436 — « Enregistrer puis mettre à jour » : on attend vraiment la fin de
+// la synchro en cours (connexion lente) et on réessaie une fois avant de
+// parler de données non envoyées. Message plus clair : rien n'est perdu.
+// ══════════════════════════════════════════════════════════════════════
+gribVerBan=function(v){let b=E('ver-ban');if(b){b.querySelector('b').textContent='v'+v;return;}b=document.createElement('div');b.id='ver-ban';
+  b.innerHTML='🆕 Nouvelle version <b>v'+v+'</b> de l\'appli<button type="button">💾 Enregistrer puis mettre à jour</button><span title="Plus tard">✕</span>';
+  b.querySelector('span').onclick=()=>b.remove();
+  const reset=bt=>{bt.disabled=false;bt.textContent='💾 Enregistrer puis mettre à jour';};
+  const left=()=>{const m=syncMeta();return m?Object.keys(m.dirty||{}).filter(k=>syncKeys().indexOf(k)>=0&&(+m.mt[k]||0)>1):[];};
+  const waitIdle=async(bt,max)=>{let w=0;while(SYNC.busy&&w<max){bt.textContent='⏳ synchro en cours… '+Math.round(w/4)+' s';await new Promise(r=>setTimeout(r,250));w++;}return !SYNC.busy;};
+  b.querySelector('button').onclick=async function(){const bt=this;bt.disabled=true;bt.textContent='⏳ enregistrement…';
+    try{if(syncOn()){clearTimeout(SYNC.t);
+        for(let essai=0;essai<2;essai++){const idle=await waitIdle(bt,240);if(!idle)break;bt.textContent='⏳ envoi des données…';await syncNow(true);if(!left().length)break;}
+        const L=left();
+        if(SYNC.busy||L.length){const noms=L.map(k=>syncKeyName?syncKeyName(k):k).join(', ');
+          if(!confirm((SYNC.busy?'⏳ La synchro est encore en cours (connexion lente).':'⚠️ Pas encore envoyé'+(noms?' : '+noms:'')+'.')
+            +'\n\nRien n\'est perdu : tout reste sur ce téléphone et partira à la prochaine synchro.\n\nOK = mettre à jour maintenant · Annuler = attendre et réessayer')){reset(bt);return;}}}}
+    catch(e){if(!confirm('Enregistrement impossible pour l\'instant ('+e.message+').\nRien n\'est perdu : tout reste sur ce téléphone.\n\nMettre à jour quand même ?')){reset(bt);return;}}
+    bt.textContent='🔄 mise à jour…';location.replace(location.pathname+'?v='+v);};
+  document.body.appendChild(b);};
 </script>
 </body>
 </html>
