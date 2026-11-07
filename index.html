@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v431</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v432</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v431</title>
+<title>Gribouillis EPS v432</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -30625,6 +30625,93 @@ renderSeanceTab=(function(f){return function(){const r=f.apply(this,arguments);t
 +'html body .pj430-card{background:#111827;border:1px solid #4c1d95;border-radius:12px;padding:10px;margin-top:10px;}html body .pj430-o{display:block;width:100%;text-align:left;min-height:44px;margin:4px 0;border:1px solid #334155;border-radius:10px;background:#0f172a;color:#e2e8f0;padding:6px 10px;}html body .pj430-o.on{border:2px solid #a78bfa;background:#2e1065;color:#fff;}'
 +'html body .pj430-x{display:flex;gap:6px;align-items:center;}html body .pj430-x .pj430-o{flex:1;}'
 +'html body .pb430-b{background:#0369a1!important;color:#fff!important;font-weight:800;}html body .pj430-b{background:#6d28d9!important;color:#fff!important;font-weight:800;}';
+ document.head.appendChild(st);})();
+
+
+
+// ══════════════════════════════════════════════════════════════════════
+// v432 — • Biblio : les tags « Source : … » ne s'affichent plus dans la liste
+//          des tags (la source reste sur la fiche) ;
+//        • fiche Prof / élève : 2 colonnes même sur téléphone, « Doit
+//          respecter » rempli (règles ou contraintes), cases modifiables ✏️ ;
+//        • une seule 💡 par situation ;
+//        • haut de la séance sur téléphone : 4 boutons + « ⋯ Plus ».
+// ══════════════════════════════════════════════════════════════════════
+
+// ── 1. tags : on retire les « Source : … »
+libAllTags=(function(f){return function(){const a=f.apply(this,arguments);const keep=[];try{if(LIB_UI&&LIB_UI.tag)keep.push(LIB_UI.tag);}catch(e){}try{if(LIBC&&LIBC.f&&LIBC.f.tags)LIBC.f.tags.forEach(t=>keep.push(t));}catch(e){}
+  return a.filter(t=>!/^#?\s*Source\s*:/i.test(String(t))||keep.indexOf(t)>=0);};})(libAllTags);
+
+// ── 2. fiche Prof / élève modifiable
+const F432_KEY='grib_fiche_edit_v1';
+function f432All(){try{return JSON.parse(localStorage.getItem(F432_KEY)||'{}')||{};}catch(e){return {};}}
+function f432Get(id){const a=f432All();return (a[id]&&a[id].c)||{};}
+function f432Put(id,c){const a=f432All();a[id]={id,c,ts:Date.now()};try{localStorage.setItem(F432_KEY,JSON.stringify(a));}catch(e){}try{syncNow(false);}catch(e){}}
+try{if(GRIB_BACKUP_KEYS.indexOf(F432_KEY)<0)GRIB_BACKUP_KEYS.push(F432_KEY);}catch(e){}
+let F432_EDIT=false;
+function f432Cell(id,key,side,title,lines,extra){const ov=f432Get(id);const has=Object.prototype.hasOwnProperty.call(ov,key);const L=has?String(ov[key]).split('\n').map(x=>x.trim()).filter(Boolean):lines.filter(Boolean);
+  const cls=side==='p'?'f424-tp':'f424-te';
+  if(F432_EDIT)return '<div class="f424-c"><b class="'+cls+'">'+esc(title)+'</b><textarea class="f432-t" data-k="'+key+'" rows="'+Math.max(3,L.length+1)+'" placeholder="Une idée par ligne">'+esc(L.join('\n'))+'</textarea>'+(extra||'')+'</div>';
+  return '<div class="f424-c"><b class="'+cls+'">'+esc(title)+'</b>'+(L.length?f424Ul(L):'<p class="f424-v">— <small>(✏️ Modifier pour compléter)</small></p>')+(extra||'')+'</div>';}
+f424Lamotte=function(D){const it=D.it,p=D.p,J=D.J||{},id=it.id||'';
+  const acq=[it.objectif].concat(D.cps.map(x=>String(x.C.label||'').replace(/^CP\s*\d+\s*[—-]\s*/,'')));
+  const ressent=[];D.cps.forEach(x=>{const a=x.C.attendu||{};if(a.action)ressent.push(a.action);if(a.perception)ressent.push('Repérer : '+a.perception);});
+  const disp=f424Split(p.Dispositif||p.Organisation||p.reste);if(it.minJ)disp.push('À partir de '+it.minJ+' élèves');if(D.roles.length)disp.push('Rôles : '+D.roles.join(', '));
+  const obs=[];if(D.crit.length)obs.push('(O) '+D.crit.join(' · '));D.cps.forEach(x=>{if(x.M&&x.M.label)obs.push('(R) Fil rouge : '+String(x.M.label).replace(/^Frm\s*\d+\s*[—-]\s*/i,''));});
+  let resp=f424Split(p['Règles']);if(!resp.length&&J.c&&J.c.length)resp=J.c.map(r=>r[0]);
+  const faire=f424Split(p.But||'');if(!faire.length&&it.objectif)faire.push(it.objectif);
+  const reus=D.crit.length?D.crit:f424Split(p['Réussite']||p['Critères']);
+  const vars=[];if(D.vars.simp)vars.push('⊖ Plus facile : '+D.vars.simp);if(D.vars.comp)vars.push('⊕ Plus difficile : '+D.vars.comp);if(D.vars.other)vars.push(D.vars.other);if(!vars.length&&J.e&&J.e.length)J.e.forEach(r=>vars.push(r[0]+(r[1]?' : '+r[1]:'')));
+  const med='<div class="f424-med">'+D.media.img+'</div>'+D.media.btn;
+  return '<div class="f424-head"><div><div class="f424-k">'+esc(D.sp)+(D.O?' · '+esc(D.O.short||D.O.label):'')+'</div><h2>'+esc(it.titre)+'</h2></div>'+(p.Niveau?'<span class="f424-niv">'+esc(p.Niveau)+'</span>':'')+'</div>'
+   +(D.why?'<p class="f424-amb">'+esc(D.why)+'</p>':'')
+   +'<div class="f424-lam"><div class="f424-ch f424-pr">Ce que l\'enseignant…</div><div class="f424-ch f424-el">Ce que l\'élève…</div>'
+   +f432Cell(id,'acq','p','Cherche à faire acquérir',acq)+f432Cell(id,'faire','e','Doit faire',faire)
+   +f432Cell(id,'disp','p','Met en place',disp)+f432Cell(id,'resp','e','Doit respecter',resp)
+   +f432Cell(id,'obs','p','Observe (O) et régule (R)',obs)+f432Cell(id,'reus','e','Doit réussir',reus)
+   +f432Cell(id,'mat','p','Illustration et matériel',[],med)+f432Cell(id,'ress','e','Doit comprendre et / ou ressentir',ressent)
+   +'<div class="f424-c f424-c2"></div>'+f432Cell(id,'vars','e','Peut modifier',vars)
+   +'</div>'+(D.src?'<p class="f424-src">Source : '+esc(D.src)+'</p>':'');};
+f424Open=(function(f){return function(idOrItem){F432_EDIT=false;f.apply(this,arguments);try{const o=document.querySelector('.f424-ov');if(!o)return;
+  const it=typeof idOrItem==='string'?f424Find(idOrItem):idOrItem;if(!it||!it.id)return;
+  const deco=()=>{const bar=o.querySelector('.f424-bar');if(!bar||bar.querySelector('.f432-ed'))return;const lam=!!o.querySelector('.f424-lamotte');if(!lam)return;
+    const b=document.createElement('button');b.type='button';b.className='f432-ed';b.textContent=F432_EDIT?'✓ Enregistrer':'✏️ Modifier';
+    b.onclick=()=>{if(F432_EDIT){const c=Object.assign({},f432Get(it.id));o.querySelectorAll('.f432-t').forEach(t=>{if(t.value!==t.defaultValue||Object.prototype.hasOwnProperty.call(c,t.dataset.k))c[t.dataset.k]=t.value;});f432Put(it.id,c);F432_EDIT=false;try{toast2('📄 Fiche gardée');}catch(e){}}else F432_EDIT=true;redraw();};
+    bar.insertBefore(b,bar.querySelector('.f424-pt'));
+    if(F432_EDIT){const z=document.createElement('button');z.type='button';z.className='f432-z';z.textContent='↺';z.title='Revenir au texte de l\'app';z.onclick=()=>{const a=f432All();delete a[it.id];try{localStorage.setItem(F432_KEY,JSON.stringify(a));}catch(e){}F432_EDIT=false;redraw();};bar.insertBefore(z,b);}};
+  const redraw=()=>{const pg=o.querySelector('.f424-page');if(!pg)return;try{const D=f424Data(it);pg.innerHTML=f424Lamotte(D);}catch(e){console.warn('f432',e);}const old=o.querySelector('.f432-ed');if(old)old.remove();const z=o.querySelector('.f432-z');if(z)z.remove();deco();};
+  deco();
+  try{new MutationObserver(()=>deco()).observe(o,{childList:true});}catch(e){}
+ }catch(e){console.warn('f432 open',e);}};})(f424Open);
+
+// ── 3. haut de la séance sur téléphone
+let T432_OPEN=false;
+function t432Toggle(){T432_OPEN=!T432_OPEN;const h=E('seance-tab-content');if(h)h.classList.toggle('t432-open',T432_OPEN);const b=h&&h.querySelector('.t432-more');if(b)b.textContent=T432_OPEN?'✕ Moins':'⋯ Plus';}
+renderSeanceTab=(function(f){return function(){const r=f.apply(this,arguments);try{const host=E('seance-tab-content');if(!host||!getActiveSeance()||(SEANCE_STATE&&SEANCE_STATE.mode==='eleve'))return r;
+  host.classList.toggle('t432-open',T432_OPEN);
+  const fin=host.querySelector('.s419-fin');const row=fin&&fin.parentNode;
+  if(row&&!row.querySelector('.t432-more')){let lastP=null;
+    [...row.querySelectorAll(':scope > button')].forEach(b=>{const t=b.textContent||'';if((host.classList.contains('c427-cours')?/Équipes|Pense-bête|mode élève|Envoyer aux élèves|Terminer|Bilan/i:/Équipes|Pense-bête|mode élève|Envoyer aux élèves/i).test(t)){b.classList.add('t432-p');lastP=b;}else b.classList.add('t432-x');});
+    const m=document.createElement('button');m.type='button';m.className='btn-xs t432-more';m.textContent=T432_OPEN?'✕ Moins':'⋯ Plus';m.onclick=t432Toggle;
+    if(lastP&&lastP.nextSibling)row.insertBefore(m,lastP.nextSibling);else row.appendChild(m);}
+  const asp=host.querySelector('button[onclick="aspEnable()"]');if(asp)(asp.parentElement&&asp.parentElement.children.length===1?asp.parentElement:asp).classList.add('t432-x');
+  const seg=host.querySelector('.c427-seg');if(seg){const lj=seg.querySelector('.pj430-b');if(lj)lj.setAttribute('data-c427','prep');}
+ }catch(e){console.warn('t432',e);}return r;};})(renderSeanceTab);
+
+(function(){const st=document.createElement('style');st.textContent=
+// fiche : 2 colonnes partout
+ '@media (max-width:640px){html body .f424-lam{grid-template-columns:repeat(2,minmax(0,1fr))!important;}html body .f424-lam .f424-c:nth-child(odd){border-right:1.5px solid #1f4e79!important;}html body .f424-lamotte{font-size:12.5px;padding:10px!important;}html body .f424-lamotte h2{font-size:1.4rem;}html body .f424-lamotte .f424-c{padding:6px 6px;}html body .f424-lamotte .f424-ch{font-size:.85rem;padding:4px 6px;}html body .f424-lamotte ul{padding-left:14px;}html body .f424-bar button{padding:6px 9px;font-size:.85rem;}}'
++'html body .f432-t{width:100%;box-sizing:border-box;font:inherit;font-size:.92em;border:1px dashed #1f4e79;border-radius:6px;padding:4px;background:#f8fafc;color:#18212e;resize:vertical;margin-top:3px;}'
++'html body .f424-bar .f432-ed{background:#b45309;}html body .f424-bar .f432-z{background:#475569;}html body .f424-c2{border-right:1.5px solid #1f4e79;}'
++'@media print{body.f424-on .f432-t{border:none;background:none;}}'
+// une seule ampoule
++'html body .lib-card-ov .box:has(> div:first-child > .j423-b) > :not(:first-child) .j423-b,html body .lib-card-ov .box:has(> div > .j423-b) .j421,html body .lib-card-ov .box:has(> div > .j423-b) .remed-exo-title .j423-b,html body .lib-card-ov .box:has(> div > .j423-b) h3 .j423-b{display:none!important;}'
++'html body #sbx-ov .lib-pick-box:has(> div > .j423-b) .remed-exo-title .j423-b,html body #sbx-ov .lib-pick-box:has(> div > .j423-b) .j421{display:none!important;}'
++'html body #libc-ov .lib-pick-box:has(> .j423-b) .j421{display:none!important;}'
+// haut de séance (téléphone)
++'html body .t432-more{display:none;}'
++'@media (max-width:760px){html body #seance-tab-content:not(.t432-open) .t432-x{display:none!important;}html body .t432-more{display:inline-flex;background:#334155!important;color:#fff!important;}'
++'html body .c427-seg{flex-wrap:wrap;}html body .c427-seg .c427-tabs{flex:1 1 100%;}html body .c427-seg > button{flex:1 1 0;min-width:0;min-height:40px!important;font-size:.78rem!important;padding:0 6px!important;white-space:normal!important;line-height:1.1;}}';
  document.head.appendChild(st);})();
 </script>
 </body>
