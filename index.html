@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v449</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v450</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v449</title>
+<title>Gribouillis EPS v450</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -31648,6 +31648,71 @@ function g449Sw(){try{const host=E('seance-tab-content');if(!host)return;const s
 g442Apply=(function(f){return function(){const r=f.apply(this,arguments);g449Sw();return r;};})(g442Apply);
 renderSeanceTab=(function(f){return function(){const r=f.apply(this,arguments);g449Sw();return r;};})(renderSeanceTab);
 (function(){const st=document.createElement('style');st.textContent='html body .g449-on{display:block;width:100%;min-height:46px;margin:8px 0;border:1px dashed #a78bfa;border-radius:12px;background:#1e1b4b;color:#ddd6fe;font-weight:800;font-size:.95rem;}';document.head.appendChild(st);})();
+
+
+
+// ══════════════════════════════════════════════════════════════════════
+// v450 — PLACE DE STOCKAGE (le navigateur limite à ~5 Mo par site)
+//  1. captures du terrain allégées (~10-15 Ko au lieu de 40-90 Ko) ;
+//  2-3. les « essais » (match sans action, sans élève, sans bilan audio)
+//     vont dans une 🗑 Corbeille : cachés des archives, image retirée au
+//     bout de 7 jours ; on peut les restaurer avant. Rien n'est retiré de
+//     la liste (les liens séance → match restent justes) ;
+//  4. jauge « Place utilisée » dans Réglages + bouton « Alléger » ;
+//  5. enregistrement audio retiré au bout de 30 jours (le texte reste).
+// ══════════════════════════════════════════════════════════════════════
+const ST450_MAX=5242880;
+function st450Sec(d){const m=/^(\d+):(\d{2})$/.exec(String(d||''));return m?(+m[1])*60+(+m[2]):0;}
+function st450Ev(a){let n=0;(a&&a.timeline||[]).forEach(t=>{if(Array.isArray(t))n+=t.length;});return n;}
+function st450Txt(a){try{return a420Txt(a).length>0;}catch(e){return false;}}
+function st450Audio(a){return !!(a&&Array.isArray(a.audioData)&&(a.audioData[0]||a.audioData[1]));}
+function st450Essai(a){if(!a||a.e450||a.keep450)return false;const ph=(a.playerHistory||[]).length,ev=st450Ev(a),rk=(a.rkPts||[]).some(x=>x&&x.length);
+  if(ph||rk||st450Txt(a)||st450Audio(a))return false;return ev===0||(st450Sec(a.duration)<60&&ev<5);}
+function st450Date(a){const m=String(a&&a.date||'').match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);return m?new Date(+m[3],+m[2]-1,+m[1]).getTime():0;}
+// la version allégée / mise à la corbeille l'emporte lors des fusions de synchro
+try{s417Rich=(function(f){return function(a){let r=f.apply(this,arguments);try{if(a&&a.e450)r+=(a.e450.del?4e12:2e12);if(a&&a.snap450)r+=1e12;if(a&&a.au450)r+=1e12;}catch(e){}return r;};})(s417Rich);}catch(e){}
+// 1. images
+let ST450_BUSY=false;
+function st450Shrink(src){return new Promise(res=>{try{const im=new Image();im.onload=()=>{try{const W=360,sc=Math.min(1,W/(im.naturalWidth||W));const c=document.createElement('canvas');c.width=Math.max(1,Math.round((im.naturalWidth||W)*sc));c.height=Math.max(1,Math.round((im.naturalHeight||W)*sc));
+  c.getContext('2d').drawImage(im,0,0,c.width,c.height);res(c.toDataURL('image/jpeg',0.6));}catch(e){res(null);}};im.onerror=()=>res(null);im.src=src;}catch(e){res(null);}});}
+async function st450Images(){if(ST450_BUSY||typeof archives==='undefined')return 0;ST450_BUSY=true;let n=0;
+  try{for(const a of archives){if(!a||a.snap450||!a.snapshotImage||a.snapshotImage.length<25000)continue;const s=await st450Shrink(a.snapshotImage);if(s&&s.length<a.snapshotImage.length){a.snapshotImage=s;a.snap450=1;n++;}else a.snap450=1;}
+    if(n)saveArchives();}catch(e){console.warn('st450 img',e);}ST450_BUSY=false;return n;}
+// 2-3 & 5. essais → corbeille ; vieux essais → image retirée ; audio > 30 jours retiré
+function st450Tidy(){if(typeof archives==='undefined')return 0;let ch=0;const now=Date.now(),D=86400000;
+  archives.forEach(a=>{if(!a)return;
+    if(st450Essai(a)){a.e450={t:now};ch++;}
+    if(a.e450&&!a.e450.del&&now-(+a.e450.t||now)>7*D){delete a.snapshotImage;a.audioData=[null,null];a.e450.del=1;ch++;}
+    if(st450Audio(a)){const d=st450Date(a);if(d&&now-d>30*D){a.audioData=[null,null];a.au450=1;ch++;}}});
+  if(ch)saveArchives();return ch;}
+function st450Restore(id){const a=(archives||[]).find(x=>x&&s417ArcId(x)===id);if(!a)return;delete a.e450;a.keep450=1;saveArchives();renderArchives();try{st450Panel();}catch(e){}}
+// archives : on cache les essais, on affiche la corbeille
+renderArchives=(function(f){return function(){const r=f.apply(this,arguments);try{const el=E('archives-list');if(!el)return r;const rows=[...el.querySelectorAll(':scope > .arch-item')];const N=archives.length;
+  rows.forEach((d,ri)=>{const a=archives[N-1-ri];if(a&&a.e450)d.style.display='none';});
+  const T=archives.filter(a=>a&&a.e450);if(T.length){const box=document.createElement('details');box.className='st450-bin';
+    box.innerHTML='<summary>🗑 Corbeille : '+T.length+' essai'+(T.length>1?'s':'')+' (matchs sans action ni élève)</summary><p class="st450-dim">Ils restent cachés ; leur image est retirée au bout de 7 jours. Touchez « Restaurer » pour en garder un.</p>'
+     +T.slice().reverse().map(a=>'<div class="st450-r"><span>'+esc(a.date||'')+' · '+esc(a.apsa||'')+' · '+esc(a.duration||'')+(a.e450.del?' · <i>image retirée</i>':'')+'</span><button type="button" onclick="st450Restore(\''+esc(s417ArcId(a))+'\')">↩ Restaurer</button></div>').join('');el.appendChild(box);}}catch(e){console.warn('st450 arch',e);}return r;};})(renderArchives);
+// les nouveaux matchs : après la capture, on l'allège ; l'essai passe à la corbeille
+captureArchiveSnapshot=(function(f){return function(){const r=f.apply(this,arguments);setTimeout(()=>{st450Images();},600);return r;};})(captureArchiveSnapshot);
+// 4. jauge
+function st450Usage(){const L=[];let t=0;for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);const n=k.length+((_lsGet.call(localStorage,k)||'').length);t+=n;L.push([k,n]);}L.sort((a,b)=>b[1]-a[1]);return {t,L};}
+function st450Fmt(n){return (n/1048576).toFixed(n<1048576?2:1).replace('.',',')+' Mo';}
+const ST450_NAMES={grib_archives_v3:'Archives des matchs',grib_lib_v1:'Bibliothèque',grib_seances_v1:'Séances',grib_sync_bak_v1:'Copies de secours (synchro)',grib_cfg_v10:'Réglages',grib_remed_edits_v1:'Remédiations modifiées',grib_referentiels_v1:'Référentiels',grib_ced_user_v1:'Fiches CEDREPS',studioEPS_lib:'Studio schémas',grib_sequences_v1:'Séquences',grib_classes_v1:'Classes'};
+function st450Panel(){const host=E('t-settings');if(!host)return;let p=E('st450');if(!p){p=document.createElement('div');p.id='st450';host.insertBefore(p,host.firstChild);}
+  const U=st450Usage();const pc=Math.min(100,Math.round(U.t/ST450_MAX*100));const col=pc>85?'#ef4444':pc>65?'#f59e0b':'#22c55e';
+  const nImg=(archives||[]).filter(a=>a&&a.snapshotImage&&!a.snap450&&a.snapshotImage.length>=25000).length,nEs=(archives||[]).filter(a=>st450Essai(a)).length,nBin=(archives||[]).filter(a=>a&&a.e450).length;
+  p.innerHTML='<b>💾 Place utilisée sur cet appareil</b><div class="st450-bar"><i style="width:'+pc+'%;background:'+col+'"></i></div><div class="st450-dim">'+st450Fmt(U.t)+' sur ≈ 5 Mo ('+pc+' %)'+(pc>85?' — <b style="color:#fca5a5">presque plein : touche « Alléger »</b>':'')+'</div>'
+   +'<div class="st450-top">'+U.L.slice(0,5).map(x=>'<span>'+esc(ST450_NAMES[x[0]]||x[0])+' <em>'+st450Fmt(x[1])+'</em></span>').join('')+'</div>'
+   +'<button type="button" class="st450-go" onclick="st450Go(this)">🧹 Alléger'+((nImg||nEs)?' ('+[nImg?nImg+' image'+(nImg>1?'s':''):'',nEs?nEs+' essai'+(nEs>1?'s':''):''].filter(Boolean).join(', ')+')':'')+'</button>'
+   +(nBin?'<div class="st450-dim">🗑 '+nBin+' essai'+(nBin>1?'s':'')+' dans la corbeille (onglet Archives).</div>':'')
+   +'<div class="st450-dim">Automatique : images allégées, essais à la corbeille, audio retiré après 30 jours (la transcription reste).</div>';}
+async function st450Go(b){if(b){b.disabled=true;b.textContent='⏳ Allègement…';}const n1=await st450Images();const n2=st450Tidy();try{renderArchives();}catch(e){}st450Panel();try{toast2('🧹 '+n1+' image(s) allégée(s), '+n2+' rangement(s)');}catch(e){}}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-tab="t-settings"]');if(b)setTimeout(()=>{try{st450Panel();}catch(x){}},120);},true);
+setTimeout(()=>{try{st450Tidy();st450Images();}catch(e){console.warn('st450',e);}},6000);
+(function(){const st=document.createElement('style');st.textContent='html body #st450{margin:8px 0 12px;padding:10px 12px;border:1px solid #334155;border-radius:12px;background:#0f172a;}html body .st450-bar{height:12px;border-radius:99px;background:#1e293b;overflow:hidden;margin:8px 0 4px;}html body .st450-bar i{display:block;height:100%;}'
++'html body .st450-dim{font-size:.78rem;color:#94a3b8;margin:4px 0;}html body .st450-top{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0;}html body .st450-top span{font-size:.75rem;background:#1e293b;border-radius:99px;padding:3px 9px;color:#cbd5e1;}html body .st450-top em{color:#93c5fd;font-style:normal;}'
++'html body .st450-go{min-height:44px;width:100%;border:none;border-radius:10px;background:#0f766e;color:#fff;font-weight:800;margin:6px 0;}'
++'html body .st450-bin{margin:10px 0;border:1px dashed #475569;border-radius:10px;padding:6px 10px;}html body .st450-bin summary{font-weight:700;color:#cbd5e1;min-height:36px;cursor:pointer;}html body .st450-r{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:.82rem;padding:4px 0;border-top:1px solid #1e293b;}html body .st450-r button{min-height:36px;border:1px solid #334155;border-radius:8px;background:#0f172a;color:#93c5fd;font-weight:700;padding:0 10px;}';document.head.appendChild(st);})();
 </script>
 </body>
 </html>
