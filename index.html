@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v452</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v453</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v452</title>
+<title>Gribouillis EPS v453</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -31807,6 +31807,100 @@ function sb452Oe(){G442.show='pres';g442Apply();const host=E('seance-tab-content
 +'html body .sb452{display:flex;flex-direction:column;gap:8px;margin:4px 0 10px;}html body .sb452-oe{min-height:46px;border:none;border-radius:10px;background:#7c3aed;color:#fff;font-weight:800;font-size:.95rem;}'
 +'html body .sb452-t{color:#e2e8f0;font-size:.9rem;margin-top:4px;}html body .sb452-p{display:flex;flex-wrap:wrap;gap:6px;}html body .sb452-p button{min-height:40px;border:1px solid #334155;border-radius:99px;background:#0f172a;color:#cbd5e1;font-weight:700;padding:0 12px;font-size:.82rem;}html body .sb452-p button.on{background:#1d4ed8;border-color:#1d4ed8;color:#fff;}'
 +'html body .sb452-dim{font-size:.75rem;color:#94a3b8;}html body #seance-tab-content.g442 .sb-step.g442-open .sb-empty{cursor:pointer;text-decoration:underline;color:#c4b5fd;}';document.head.appendChild(st);})();
+
+
+
+// ══════════════════════════════════════════════════════════════════════
+// v453 — GYM × CAHIER DU CEDREPS N°19
+//  • les 4 FPS du cahier deviennent de vraies fiches (Biblio, séance,
+//    bibliothèque des blocs) : ateliers du tourneur (OE A), carton plein
+//    et duo (OE B), quatuor (OE C) — tag « FPS » ;
+//  • Biblio didactique : « 📖 Pourquoi cet objet ? » (compétence, fonds
+//    culturel, contraintes → OE, fils rouges, CP, conduite attendue,
+//    stratégies d'intervention), reformulé, avec le lien vers le PDF ;
+//  • la section « ⚽ FPS » de chaque objet de gym liste ses FPS ;
+//  • les sources de la Biblio didactique deviennent cliquables (📂).
+// ══════════════════════════════════════════════════════════════════════
+(function(){
+const SRC=" Source : Cahier du CEDREPS n°19, gymnastique acrobatique";
+const OEL={'gym-a':'OE A — Rentrer la tête','gym-b':'OE B — Les bras acrobatiques','gym-c':'OE C — Tourner tendu, enchaîner'};
+const it=(id,oe,titre,objectif,L,crit,roles,pages)=>({id:'lib-ced19-'+id,kind:'remed',titre,objectif,desc:L.concat(['Source : Cahier du CEDREPS n°19, gymnastique acrobatique — '+pages+'.']).join('\n'),image:null,video:null,
+  criteres:crit.map(c=>({label:c,cible:3,collectif:false,neg:false})),roles,apsa:'Gymnastique',oe,oeLab:OEL[oe],cp:'gymnastique|'+oe,oeAlso:[],cpAlso:[],tags:['FPS','CEDREPS']});
+const A=[
+it('fps-a','gym-a','FPS · Les ateliers du tourneur (rotation avant)','Rouler en avant dans l\'axe annoncé et réussir l\'arrivée demandée, sur des agrès variés.',
+ ['Dispositif : 4 à 5 ateliers doublés pour une classe d\'une trentaine, équipes de 4 (1 acrobate, des observateurs). ① plan incliné, arriver sur les pieds ; ② tapis : rouler à droite, à gauche ou tout droit selon l\'annonce ; ③ rouler sur une barre basse et arriver dans une zone tracée sur un plinth ; ④ rouler depuis un plan surélevé (hauteur de hanche) ; ⑤ en brouette (jambes tenues), rouler depuis l\'appui horizontal sur les mains.',
+  'But : 3 essais consécutifs par élève et par atelier ; les équipes peuvent se défier sur un, deux ou tous les ateliers.',
+  'Règles : à chaque essai les observateurs cochent 2 cases — l\'axe annoncé est-il respecté ? l\'arrivée demandée est-elle respectée ? Même observation partout, quel que soit l\'agrès.',
+  'Critères : axe de rotation conservé ; arrivée réussie (contre-bas, contre-haut, position finale demandée).',
+  'Pour simplifier (stratégie 1) : orienter le regard vers la tête — « regarde entre tes jambes », « fixe la croix au sol ».',
+  'Pour complexifier (stratégie 2) : matérialiser l\'arrivée par un cercle plus ou moins loin où poser les pieds, puis les mains — pour obliger à se repérer vite après la verticale renversée.'],
+ ['Axe de rotation conservé','Arrivée demandée respectée'],['Acrobate','Observateur'],'OE A, pp. 428-431'),
+it('fps-carton','gym-b','FPS · Le carton plein','Réussir 3 sauts différents arrivée en contre-haut sur les mains : rouler sans bruit, tomber plat dos, se redresser.',
+ ['Dispositif : élan court (10-15 m), mini-trampoline, arrivée en contre-haut sur un gros tapis dont l\'avant est plus rigide ; sur ce bord, 3 à 4 zones de pose des mains de 30 cm, écartées du bord (sécurité) : chacun choisit sa zone et la fait évoluer.',
+  'But : réaliser à égale valeur les 3 sauts — ① « amortir » et rouler en avant dans l\'axe jusqu\'aux pieds (bras amortisseurs) ; ② « appui » et tomber plat dos d\'un seul bloc (bras appuis) ; ③ « percuter » et se redresser sur les pieds, saut de lapin (bras percuteurs).',
+  'Règles : 3 passages consécutifs, chacun comparé à la fiche de schémas que la classe construit au fil de la séquence ; les observateurs s\'appuient sur les schémas, pas sur leur avis.',
+  'Critères : arrivée amortie, sans bruit ; plat dos d\'un seul bloc ; bras qui se redressent et ne restent pas sur le tapis.',
+  'Pour simplifier : zone de mains plus proche, élan raccourci.',
+  'Pour complexifier : zone plus lointaine ; enchaîner avec le duo (même observables : la tête, les bras).'],
+ ['Arrivée amortie, sans bruit','Plat dos d\'un seul bloc','Redressement bras hauts'],['Acrobate','Observateur','Pareur'],'OE B, pp. 436-438'),
+it('fps-duo','gym-b','FPS · Le duo','Présenter à deux un mini-enchaînement continu et identique, avec une figure à deux démontée par un renversement.',
+ ['Dispositif : la classe est partagée entre le carton plein et le duo ; mêmes observables (la tête, les bras). Une fiche de route : solo libre → figure à deux (montage, tenue, démontage) → roulade + saut + roulade → ATR → solo de fin.',
+  'But : figures à deux choisies dans une liste courte, voltigeur sur les mains dès la 1re figure ; démontage sans aller-retour, obligatoirement par une rotation avant. Sauts au choix (lapin, accroupi, droit… jusqu\'au salto selon le niveau) ; ATR au choix : contre un tapis tenu à la verticale et tomber plat dos avec lui, tomber plat dos tapis à plat, ou ATR roulade.',
+  'Règles : chaque élève présente au plus 3 éléments de son niveau ; les observateurs regardent d\'abord des points de passage (figure, roulade-saut-roulade, ATR), puis tout l\'enchaînement.',
+  'Critères : continuité (pas d\'arrêt, de geste parasite, de répétition) ; identique (les deux font pareil, en même temps) ; la liaison saut → roulade se fait pieds-mains, sans retour debout.',
+  'Pour simplifier (stratégie 1) : orienter l\'observation sur l\'endroit de l\'arrêt.',
+  'Pour complexifier (stratégie 2) : « regarde tes mains dès la pose, jusqu\'à ce que tes pieds renversent le tapis tenu par tes camarades ».'],
+ ['Continuité (pas d\'arrêt)','Identique entre les deux','Liaison pieds-mains-pieds'],['Acrobate','Acrobate','Observateur'],'OE B, pp. 438-440'),
+it('fps-quatuor','gym-c','FPS · Le quatuor','Produire à 4 un enchaînement continu et synchronisé de figures et de rotations avant tendues, selon une carte de route.',
+ ['Dispositif : groupes de 4 ; espace scénique imposé avec départ et arrivées ; 5 figures collectives (4 duos et 1 quatuor) et des acrobaties individuelles en rotation avant avec appuis manuels.',
+  'But : ① 1er duo imposé (rappel du niveau précédent, duos affinitaires) ; ② montage du quatuor, chacun rejoignant la figure sans rompre la continuité ; ③ démontage vers un 2e duo libre (nouveaux partenaires) ; ④ solos libres pour rejoindre une figure ou conclure, à son niveau.',
+  'Règles : la carte de route est schématisée et obligatoire, construite progressivement ; montage et démontage sans aller-retour, par la verticale renversée (ATR ou rotation avant) ; le quatuor valorise le renversé plutôt que la hauteur.',
+  'Critères : niveau d\'utilisation des bras acrobatiques ; rotation avant tendue réussie ; continuité (arrêts, parasites, blancs) ; différences entre partenaires ; respect de la carte de route.',
+  'Pour simplifier (stratégie 3) : zoom sur la liaison qui casse la continuité, 3 passages comparés aux schémas.',
+  'Pour complexifier (stratégie 4) : rotation tendue plus lente depuis un contre-haut (tremplin puis plan surélevé) pour laisser le temps de se repérer.'],
+ ['Rotation avant tendue','Continuité','Identique entre partenaires','Carte de route respectée'],['Acrobate','Chorégraphe','Observateur'],'OE C, pp. 441-446')];
+try{const F=JSON.parse(localStorage.getItem(LIBSEED_KEY)||'{}');const a=libLoad().slice();let ch=false;
+  A.forEach(x=>{if(F[x.id])return;if(!a.some(y=>y&&y.id===x.id))a.push(x);F[x.id]=1;ch=true;});
+  if(ch){libSave(a);localStorage.setItem(LIBSEED_KEY,JSON.stringify(F));}}catch(e){console.warn('ced19',e);}
+})();
+// ── « Pourquoi cet objet ? » (reformulé d'après le Cahier 19) ──
+const J453={
+ 'gym-a':{p:'pp. 428-431',
+  comp:'Construire une rotation avant simple avec appuis manuels, où centre de rotation et centre de gravité se confondent, pour des formes acrobatiques simples et sûres.',
+  pour:['Entrer en acrobatie, c\'est défier la verticale (« je me renverse ») et ses automatismes de terrien (« je ne regarde plus où je vais ») : l\'élève accepte de se perdre pour se retrouver.','Le rentré de tête est la base de la sécurité de toute la vie d\'acrobate.','Choix assumé : la rotation avec appuis manuels plutôt que le salto, qui mène moins loin vers une acrobatie enchaînée.'],
+  contr:['Conserver l\'axe annoncé oblige à relier le menton et la direction : menton à gauche → je roule à droite, menton sur la poitrine → tout droit.','Varier et préciser les arrivées oblige à prendre vite des informations sur l\'espace d\'arrivée : on « éclaire » la zone aveugle après la verticale renversée.','3 essais observés et cochés : on répète assez pour apprendre, et l\'observation se construit sans jugement de valeur.'],
+  fr:['Fil rouge 1 (axe) : vérifie la maîtrise du rentré de tête.','Fil rouge 2 (arrivée) : renseigne sur la qualité de la prise d\'information après la verticale.'],
+  cp:['CP1 (rentré de tête ↔ rotation) ← Frm 1 « je ne vais pas où je regarde », Frm 2 ordre poussée des jambes / rentrée de tête.','CP2 (éclairer la zone aveugle) ← accélérer ou ralentir la rotation avec les mains sur les genoux ; savoir quand on est assis, quand le dos touche.'],
+  cond:'Le tourneur : il roule dans l\'axe sans se faire mal, en contre-bas comme en contre-haut, et se « retrouve » tout de suite après la verticale.',
+  strat:['1. Rester dans la FPS et orienter le regard (la tête, la croix au sol).','2. Rester dans la FPS avec une consigne vers un CP (cercle d\'arrivée à atteindre).']},
+ 'gym-b':{p:'pp. 432-440',
+  comp:'Maîtriser la rotation avant avec appuis manuels pour réaliser au moins deux liaisons pieds-mains-pieds dans un enchaînement à deux, synchronisé, vu et jugé ; réussir 3 sauts arrivée en contre-haut.',
+  pour:['Les bras acrobatiques ont trois rôles : amortisseurs (rouler après un vol), appuis (se renverser sans tourner, tomber plat dos), percuteurs (contrer la rotation et se redresser, épaule ouverte, regard sur les mains).','Traiter les trois à égale valeur fait contraster épaule, moment du rentré de tête et obliques renversées : c\'est ce contraste qui fait apprendre.'],
+  contr:['Le vol avant l\'arrivée en contre-haut (carton plein) donne du temps et dissocie poussée des jambes, rôle des bras et rentré de tête.','La synchronisation à deux (duo) fait chercher pourquoi on s\'arrête : la liaison pieds-pieds arrête, la liaison pieds-mains-pieds assure la continuité.','La différence entre les deux acrobates fait prendre conscience du contrôle : ne pas faire pareil, ce n\'est pas maîtriser.','Gros tapis (risque objectif réduit sans aseptiser le vol) et schémas qui évoluent avec la classe.'],
+  fr:['Fils rouges 1-2-3 (carton plein) : arrivée trop bruyante = pas de bras amortisseurs ; pas plat d\'un bloc = tête trop tôt et bras appuis non maîtrisés ; bras restés sur le tapis = pas de bras percuteurs.','Fils rouges 4-5 (duo) : continuité et identique.'],
+  cp:['CP1 ouvrir l\'épaule pendant le vol ← Frm1 mains devant la tête.','CP2 moment du rentré de tête avec les bras amortisseurs ← Frm3 et Frm5 (liaison).','CP3 conserver l\'ouverture d\'épaule : bras appuis ← Frm2.','CP5 axe du corps à l\'arrivée selon le saut ← Frm4 bonne zone de pose des mains.'],
+  cond:'Le tourneur équilibriste : il vole, arrive sur les mains bras tendus et choisit de rouler, de tomber plat dos ou de se redresser ; il enchaîne deux formes sans revenir debout.',
+  strat:['1. Rester dans la FPS et orienter (« dans quelle zone pose-t-il les mains quand ses bras sont le plus tendus ? »).','2. Consigne vers un CP (« regarde tes mains dès la pose »).','3. Zoom FPS sur un CP.','4. Situation spécifique quand l\'échec persiste.']},
+ 'gym-c':{p:'pp. 441-446',
+  comp:'Produire à plusieurs un enchaînement acrobatique et artistique, vu et jugé, comprenant différentes rotations avant avec appuis manuels dont la grande rotation corps tendu.',
+  pour:['On réinvestit les objets A et B dans un contexte plus renversé, plus précis par rapport à la verticale et plus rapide : la zone aveugle se réduit encore.','La co-motricité donne un sens à l\'aide : aider son partenaire et se montrer solidaires.'],
+  contr:['Synchronisation de deux acrobates : la maîtrise est authentifiée par le double, pas par une appréciation subjective ; on peut nommer la différence (oubli, contrôle, liaison).','Figures à deux ou à quatre démontées par la verticale renversée : pas d\'aller-retour, donc retour obligé au rôle des bras.','Espace scénique et 1er duo imposés : on garde le temps pour l\'acrobatie plutôt que pour la composition.','Carte de route obligatoire : se mettre en projet, le contrôler en équipe.'],
+  fr:['Niveau d\'utilisation des bras acrobatiques (a-b-c-d) et rotation avant tendue : la compétence acrobatique.','Continuité, identique, carte de route : la maîtrise de l\'enchaînement.'],
+  cp:['CP1 continuité ← Frm1 causes de discontinuité (mémoire, liaison).','CP2 différence entre acrobates ← Frm2 causes des différences.','CP3 percuter en position renversée ← Frm3 se grandir avant la verticale.','CP4 rester ouvert en position aérienne ← Frm4 se grandir après la verticale.'],
+  cond:'L\'acrobate-chorégraphe : il combine bras percuteurs et bras appuis dans une rotation tendue, seul ou avec d\'autres, au sein d\'un enchaînement mémorisé.',
+  strat:['1. Orienter vers l\'endroit de la discontinuité, puis zoomer sur la liaison.','3. Zoom FPS : 3 passages comparés aux schémas (« tu arrives groupé sur les fesses »).','4. Situation spécifique : rotation tendue depuis un contre-haut, plus lente.']}};
+function j453Html(id){const J=J453[id];if(!J)return '';const ul=a=>'<ul class="j453-ul">'+a.map(t=>'<li>'+esc(t)+'</li>').join('')+'</ul>';
+  return '<'+'div class="j453"><p><b>Compétence visée.</b> '+esc(J.comp)+'</p><p><b>Pourquoi cet objet ?</b></p>'+ul(J.pour)+'<p><b>Les contraintes de la FPS → ce qu\'elles obligent à apprendre</b></p>'+ul(J.contr)
+   +'<p><b>Les fils rouges macro → ce qu\'ils vérifient</b></p>'+ul(J.fr)+'<p><b>Contenus prioritaires ← fils rouges micro</b></p>'+ul(J.cp)+'<p><b>Conduite attendue.</b> '+esc(J.cond)+'</p>'
+   +'<p><b>Intervenir (stratégies du Cahier 18)</b></p>'+ul(J.strat)+'<'+'div class="lx2-src">📚 Reformulé d\'après le Cahier du CEDREPS n°19, gymnastique acrobatique, '+esc(J.p)+'</'+'div></'+'div>';}
+try{lx2D=(function(f){return function(key,sum,body,cls){const r=f.apply(this,arguments);try{const m=/^c\|gymnastique\|(gym-[abc])\|m$/.exec(String(key||''));if(m)return f.call(this,'c|gymnastique|'+m[1]+'|j453','📖 Pourquoi cet objet ? <small>Cahier 19</small>',j453Html(m[1]),'')+r;}catch(e){}return r;};})(lx2D);}catch(e){}
+// la section « ⚽ FPS » d'un objet de gym montre ses FPS (fiches taguées FPS)
+try{lx2CedObj=(function(f){return function(sp,O,lib){try{if(sp==='gymnastique'&&O)lib=(lib||[]).map(x=>(x&&x.kind!=='match'&&x.oe===O.id&&(x.tags||[]).indexOf('FPS')>=0)?Object.assign({},x,{kind:'match'}):x);}catch(e){}return f.call(this,sp,O,lib);};})(lx2CedObj);}catch(e){}
+// sources de la Biblio didactique cliquables
+try{const _s=src443Scan;src443Scan=function(root){_s.apply(this,arguments);try{(root||document).querySelectorAll('.lx2-src').forEach(el=>{if(el.dataset.src443)return;el.dataset.src443='1';const L=src443Find(el.textContent);if(L.length)el.insertAdjacentHTML('beforeend',' '+src443Html(L));});}catch(e){}};}catch(e){}
+// la bibliothèque des blocs : filtre « FPS »
+try{pk451Fill=(function(f){return function(){f.apply(this,arguments);try{const ov=E('pk451');const fb=ov&&ov.querySelector('.pk451-f');if(fb&&!fb.querySelector('[data-f453]')&&pk451List().some(x=>(x.tags||[]).indexOf('FPS')>=0)){const b=document.createElement('button');b.type='button';b.dataset.f453='1';b.textContent='FPS';if(PK451.f==='tag:FPS')b.className='on';b.onclick=()=>{PK451.f='tag:FPS';pk451Fill();};fb.appendChild(b);}}catch(e){}};})(pk451Fill);}catch(e){}
+(function(){const st=document.createElement('style');st.textContent='html body .j453{font-size:.88rem;line-height:1.5;}html body .j453 p{margin:8px 0 4px;}html body .j453-ul{margin:0 0 4px;padding-left:18px;}html body .j453-ul li{margin:3px 0;}';document.head.appendChild(st);})();
 </script>
 </body>
 </html>
