@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v450</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v451</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v450</title>
+<title>Gribouillis EPS v451</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -31713,6 +31713,47 @@ setTimeout(()=>{try{st450Tidy();st450Images();}catch(e){console.warn('st450',e);
 +'html body .st450-dim{font-size:.78rem;color:#94a3b8;margin:4px 0;}html body .st450-top{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0;}html body .st450-top span{font-size:.75rem;background:#1e293b;border-radius:99px;padding:3px 9px;color:#cbd5e1;}html body .st450-top em{color:#93c5fd;font-style:normal;}'
 +'html body .st450-go{min-height:44px;width:100%;border:none;border-radius:10px;background:#0f766e;color:#fff;font-weight:800;margin:6px 0;}'
 +'html body .st450-bin{margin:10px 0;border:1px dashed #475569;border-radius:10px;padding:6px 10px;}html body .st450-bin summary{font-weight:700;color:#cbd5e1;min-height:36px;cursor:pointer;}html body .st450-r{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:.82rem;padding:4px 0;border-top:1px solid #1e293b;}html body .st450-r button{min-height:36px;border:1px solid #334155;border-radius:8px;background:#0f172a;color:#93c5fd;font-weight:700;padding:0 10px;}';document.head.appendChild(st);})();
+
+
+
+// ══════════════════════════════════════════════════════════════════════
+// v451 — DÉROULÉ : toucher « Déposez une situation ici » ouvre la
+// bibliothèque du sport de la séance ; toucher une situation la pose
+// directement dans ce bloc (sans glisser-déposer). Recherche + filtres.
+// ══════════════════════════════════════════════════════════════════════
+const PK451={step:'',q:'',f:''};
+function pk451Sport(){const s=getActiveSeance();try{return libSportKeyOf({apsa:s&&s.sport,sport:s&&s.sport})||'';}catch(e){return '';}}
+function pk451List(){const sp=pk451Sport();let L=[];try{L=libLoad().filter(x=>x&&x.kind!=='warm'&&x.titre);}catch(e){}
+  if(sp)L=L.filter(x=>{try{return libSportKeyOf(x)===sp;}catch(e){return false;}});return L;}
+function pk451Open(stepKey){PK451.step=stepKey;PK451.q='';PK451.f='';const old=E('pk451');if(old)old.remove();const ov=document.createElement('div');ov.id='pk451';ov.className='eq428-ovl';ov.onclick=e=>{if(e.target===ov)ov.remove();};
+  let lab=stepKey;try{lab=seanceStepDef(stepKey).label+seanceStepNum(getActiveSeance(),stepKey);}catch(e){}
+  ov.innerHTML='<'+'div class="pk451-box"><'+'div class="eq428-h"><b>📚 Remplir « '+esc(lab)+' »</b><button type="button" class="eq428-x" aria-label="Fermer" onclick="E(\'pk451\').remove()">✕</button></'+'div>'
+   +'<input type="search" class="pk451-q" placeholder="Chercher (roulade, ATR, défi…)" oninput="PK451.q=this.value;pk451Fill()"><'+'div class="pk451-f"></'+'div><'+'div class="pk451-l"></'+'div></'+'div>';
+  document.body.appendChild(ov);pk451Fill();}
+function pk451Fill(){const ov=E('pk451');if(!ov)return;const L=pk451List();
+  const F=[['','Toutes']];const seen={};L.forEach(x=>{if(x.oe&&x.oeLab&&!seen[x.oe]){seen[x.oe]=1;F.push(['oe:'+x.oe,x.oeLab.split('—')[0].trim()]);}});
+  [["tag:Gym à l'école","Gym à l'école"],['tag:défis','Défis'],['tag:échauffement','Échauffement']].forEach(t=>{if(L.some(x=>(x.tags||[]).indexOf(t[0].slice(4))>=0))F.push(t);});
+  ov.querySelector('.pk451-f').innerHTML=F.map(f=>'<button type="button" class="'+(PK451.f===f[0]?'on':'')+'" onclick="PK451.f=\''+f[0].replace(/'/g,"\\'")+'\';pk451Fill()">'+esc(f[1])+'</button>').join('');
+  const q=PK451.q.trim().toLowerCase();const norm=t=>String(t||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');const qn=norm(q);
+  const R=L.filter(x=>{if(PK451.f.indexOf('oe:')===0&&x.oe!==PK451.f.slice(3))return false;if(PK451.f.indexOf('tag:')===0&&(x.tags||[]).indexOf(PK451.f.slice(4))<0)return false;
+    if(qn&&norm(x.titre+' '+(x.objectif||'')+' '+(x.tags||[]).join(' ')).indexOf(qn)<0)return false;return true;});
+  ov.querySelector('.pk451-l').innerHTML=(R.length?R.slice(0,150).map(x=>'<'+'div class="pk451-i"><button type="button" class="pk451-add" onclick="pk451Pick(\''+esc(x.id)+'\')"><b>'+esc(x.titre)+'</b>'+(x.objectif?'<small>'+esc(String(x.objectif).slice(0,110))+'</small>':'')+'</button><button type="button" class="pk451-see" title="Voir la fiche" onclick="pk451See(this,\''+esc(x.id)+'\')">👁</button></'+'div>').join(''):'<p class="pk451-dim">Aucune situation trouvée.</p>')
+   +(R.length>150?'<p class="pk451-dim">'+(R.length-150)+' autres : affinez la recherche.</p>':'');}
+function pk451See(b,id){const row=b.parentElement;const nx=row.nextElementSibling;if(nx&&nx.classList.contains('pk451-d')){nx.remove();return;}const x=libLoad().find(y=>y.id===id);if(!x)return;const d=document.createElement('div');d.className='pk451-d';d.textContent=String(x.desc||x.objectif||'');row.insertAdjacentElement('afterend',d);}
+function pk451Pick(id){const k=PK451.step;if(!k)return;try{sbDo('lib:'+id,'step:'+k);}catch(e){console.warn('pk451',e);alert('Impossible d\'ajouter cette situation ici.');return;}
+  const ov=E('pk451');if(ov)ov.remove();try{toast2('✅ Situation ajoutée');}catch(e){}}
+document.addEventListener('click',e=>{try{const h=e.target.closest&&e.target.closest('#seance-tab-content .sb-drop-hint');if(!h)return;const d=h.closest('[data-drop^="step:"]');if(!d)return;
+  e.preventDefault();e.stopPropagation();pk451Open(d.getAttribute('data-drop').slice(5));}catch(x){console.warn('pk451 click',x);}},true);
+(function(){const st=document.createElement('style');st.textContent='html body #seance-tab-content .sb-drop-hint{cursor:pointer;}html body #seance-tab-content .sb-drop-hint::after{content:"📚 Touchez pour choisir dans la bibliothèque";display:block;margin-top:4px;color:#93c5fd;font-weight:700;font-size:.8rem;}'
++'html body .pk451-box{background:#0f172a;border:1px solid #334155;border-radius:14px;padding:12px;width:min(640px,94vw);max-height:88vh;display:flex;flex-direction:column;gap:8px;}'
++'html body .pk451-q{min-height:44px;border-radius:10px;border:1px solid #334155;background:#020617;color:#e2e8f0;padding:0 12px;font-size:1rem;}'
++'html body .pk451-f{display:flex;flex-wrap:wrap;gap:5px;}html body .pk451-f button{min-height:36px;border:1px solid #334155;border-radius:99px;background:#0f172a;color:#cbd5e1;font-weight:700;padding:0 10px;font-size:.8rem;}html body .pk451-f button.on{background:#1d4ed8;border-color:#1d4ed8;color:#fff;}'
++'html body .pk451-l{overflow:auto;display:flex;flex-direction:column;gap:6px;}html body .pk451-i{display:flex;gap:6px;}html body .pk451-add{flex:1;text-align:left;min-height:48px;border:1px solid #334155;border-radius:10px;background:#111c33;color:#f1f5f9;padding:8px 10px;display:flex;flex-direction:column;gap:2px;}'
++'html body .pk451-add small{color:#94a3b8;font-weight:500;}html body .pk451-see{min-width:44px;border:1px solid #334155;border-radius:10px;background:#0f172a;color:#cbd5e1;}html body .pk451-dim{color:#94a3b8;font-size:.82rem;}html body .pk451-d{white-space:pre-wrap;font-size:.8rem;color:#cbd5e1;background:#020617;border-radius:8px;padding:8px;margin:-2px 0 4px;}';document.head.appendChild(st);})();
+// accents des titres « Gym à l'école » (le fichier source est en capitales sans accents)
+(function(){try{const F=JSON.parse(localStorage.getItem(LIBSEED_KEY)||'{}');if(F['acc451'])return;const M={'Roulade arriere':'Roulade arrière','Saut groupe ':'Saut groupé ','En araignee':'En araignée','En elephant':'En éléphant','Cuillere':'Cuillère','Equilibre ':'Équilibre ','Atr ':'ATR ','A 4 pattes':'À 4 pattes','Par dessus poutre':'Par-dessus la poutre','S accroupir':'S\'accroupir','Demi tour':'Demi-tour','Saut demi tour':'Saut demi-tour','Renversement arriere':'Renversement arrière','Le x ':'Le X '};
+  const a=libLoad().slice();let ch=false;a.forEach(x=>{if(!x||!/^lib-gec-/.test(x.id))return;let t=x.titre;Object.keys(M).forEach(k=>{if(t.indexOf(k)===0||t.indexOf(' '+k)>=0||t.indexOf(k)>=0)t=t.split(k).join(M[k]);});if(t!==x.titre){x.titre=t;ch=true;}});
+  F['acc451']=1;if(ch)libSave(a);localStorage.setItem(LIBSEED_KEY,JSON.stringify(F));}catch(e){console.warn('acc451',e);}})();
 </script>
 </body>
 </html>
