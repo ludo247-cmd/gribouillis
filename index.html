@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v440</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v441</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v440</title>
+<title>Gribouillis EPS v441</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -31143,6 +31143,31 @@ setTimeout(()=>{try{os440Btn();updateFooter();qjStatus();}catch(e){}},300);
  'html body .os440-i{display:flex;justify-content:space-between;align-items:center;width:100%;min-height:48px;margin-top:6px;border:1px solid #334155;border-radius:10px;background:#0f172a;color:#e2e8f0;font-weight:800;padding:0 12px;}html body .os440-i small{color:#94a3b8;font-weight:600;}html body .os440-i.on{border-color:#3b82f6;background:#172554;}html body .os440-new{justify-content:center;border-style:dashed;color:#93c5fd;}'
 +'html body .qj-prof .os440-addp{border:1px dashed #60a5fa!important;color:#93c5fd!important;background:transparent!important;}html body .eq-c.os440-addt{border-style:dashed!important;color:#93c5fd!important;}';
  document.head.appendChild(st);})();
+
+
+
+// ══════════════════════════════════════════════════════════════════════
+// v441 — SÉANCE DE GYM ALLÉGÉE
+//  • on retire ce qui n'a pas de sens en gym : Horaires (AS), Travail
+//    spécifique par poste, regroupement par postes, Matchs (FPS), Rôles
+//    arbitres/capitaines, Nomenclature, Objectifs individuels, App
+//    tablettes, Mots de l'écran élève, tuile « ⚽ Match » ;
+//  • « 🧭 Étape d'entraînement » devient « ➕ Atelier » ;
+//  • « ⑥ Remédiations » devient « ⑥ Situations et ateliers » ;
+//  • les situations de gym de la bibliothèque (salto, enchaînement…)
+//    apparaissent enfin dans les listes (elles étaient filtrées).
+// ══════════════════════════════════════════════════════════════════════
+libSportKeyOf=(function(f){return function(x){const k=f.apply(this,arguments);if(k)return k;try{const a=String((x&&(x.apsa||x.sport))||'');if(/gym|acro/i.test(a))return 'gymnastique';}catch(e){}return k;};})(libSportKeyOf);
+function g441Clean(){const host=E('seance-tab-content');const s=getActiveSeance();if(!host||!s||!c427IsGym(s))return;
+  ['hor','match','roles','nomen','indiv'].forEach(k=>host.querySelectorAll('details[data-k="'+k+'"]').forEach(d=>d.classList.add('g441-x')));
+  host.querySelectorAll('.remed-axe-box,.el-wrap').forEach(d=>d.classList.add('g441-x'));
+  host.querySelectorAll('details > summary').forEach(sm=>{const t=sm.textContent||'';if(/Regroupement des postes|Mots de l.écran élève|Réussite des élèves en remédiation/.test(t))sm.parentElement.classList.add('g441-x');
+    if(/^⑥\s*Remédiations/.test(t.trim())){const w=document.createTreeWalker(sm,NodeFilter.SHOW_TEXT);let n;while((n=w.nextNode())){if(/Remédiations/.test(n.textContent)){n.textContent=n.textContent.replace('Remédiations','Situations et ateliers');break;}}}});
+  host.querySelectorAll('.sb-pal button,.sb-pal span').forEach(t=>{if(/^⚽\s*FPS$/.test((t.textContent||'').trim()))t.classList.add('g441-x');});
+  host.querySelectorAll('.sb-tile[data-drag="new:match"]').forEach(t=>t.classList.add('g441-x'));
+  host.querySelectorAll('.sb-tile[data-drag="new:remediation"]').forEach(t=>{if(!/Atelier/.test(t.textContent))t.textContent='➕ Atelier';});}
+renderSeanceTab=(function(f){return function(){const r=f.apply(this,arguments);try{g441Clean();}catch(e){console.warn('g441',e);}return r;};})(renderSeanceTab);
+(function(){const st=document.createElement('style');st.textContent='html body #seance-tab-content .g441-x{display:none!important;}';document.head.appendChild(st);})();
 </script>
 </body>
 </html>
