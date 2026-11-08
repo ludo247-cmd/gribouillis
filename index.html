@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v442</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v443</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v442</title>
+<title>Gribouillis EPS v443</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -31223,6 +31223,61 @@ try{c427Set=(function(f){return function(){const r=f.apply(this,arguments);try{g
 +'html body .g442-row{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0;}html body .g442-row button{min-height:42px;border:1px solid #334155;border-radius:999px;background:#0f172a;color:#cbd5e1;font-weight:700;padding:0 12px;}html body .g442-row button.on{background:#1d4ed8;border-color:#1d4ed8;color:#fff;}'
 +'html body .g442-sw{display:block;margin:4px 0 10px auto;border:none;background:transparent;color:#94a3b8;font-size:.8rem;text-decoration:underline;min-height:32px;}';
  document.head.appendChild(st);})();
+
+
+
+// ══════════════════════════════════════════════════════════════════════
+// v443 — SOURCES → DRIVE : à côté de chaque source reconnue (fiche 📄,
+// ampoule 💡, carte de la bibliothèque), un lien « 📂 » ouvre le
+// document dans ton Google Drive.
+// ══════════════════════════════════════════════════════════════════════
+const SRC443=[ // [motif, id Drive, libellé court, groupe]
+ [/Janicot/i,'1BWuEoF3AOvCSqEp-SekBMUp8mBVLV_tg','Janicot · salto'],
+ [/Herrada|Enchaîner, c.est gagné/i,'1vk0vMDHu10_9pTS-wKF7ptKcNhBoC35Y','Herrada · enchaîner'],
+ [/Lefèvre|L.élève gymnaste/i,'1_uQkYZr-4-kyycujrDhIpgGh7ciluE6H','Lefèvre · l\'élève gymnaste'],
+ [/Casanova|quitte ou double/i,'1FR3upJdM_jmI7qBLvPVE54HDb-1mPam4','Gym débutant / débrouillé / lycéen'],
+ [/Gym 3B — Les 3 ateliers/i,'1FeBEV4UoA_3WVzSwFYzcExhJs2nWnrTL','Fiche 3 ateliers 3B'],
+ [/CEDREPS n°19[^;]*(gymnastique|acrosport|OE C)/i,'1imlSVDEDdbq0dj9gbbkkcsewoUW8EKim','CEDREPS 19 · gym','ced'],
+ [/CEDREPS n°19[^;]*danse/i,'159dlTrMXUm9ac6MXXMv_aV4OYaW1bQyn','CEDREPS 19 · danse','ced'],
+ [/CEDREPS n°19[^;]*Musculation/i,'17eJufAiuwM3VITiGw-MfEF6UovE-k4PG','CEDREPS · musculation','ced'],
+ [/Cahier du CEDREPS n°19/i,'1y42duqj1UN9IUXZw1418iCORqHyaFJC1','Cahier du CEDREPS 19','ced'],
+ [/Dubourdieu|Sizun/i,'12NsSsxcd1lYyGrO5ygm2yBROxjhTlJuC','Dubourdieu & Sizun · dodgeball'],
+ [/L\. Dal|dodgeball n.est pas/i,'1z2L6rx9SViZKq0H3WLZR6GL7cBJb5-1S','Dal · dodgeball'],
+ [/Magnain|Déposséder les adversaires/i,'1MsocvpLroIDNARc12rCUe7Oe9ju9cNfV','Magnain · handball'],
+ [/EPS des émotions/i,'1G7POgbh4fbLHZsTizHm2fN1L6CIOVc7U','Visioli · émotions'],
+ [/EPIC inclusif|Groupe EPIC|L\. Peyre|Laurent Peyre/i,'1k7fEsCHYftEBNHb2w56wdjd7nK2B_O__','EPIC · volley'],
+ [/Grandgeorge|touche haute/i,'14YTZZCi0SzafaLw8qosDlKO_ndF8iclW','Grandgeorge · touche haute'],
+ [/Van de Kerkhove — Dossier Enseigner l.EPS n°6/i,'1p6r8sWNzp2vZIf1hSo8YX79UggI97qrB','Van de Kerkhove · badminton','vdk'],
+ [/Coopér@ction/i,'14uH8nmuOLkDge-YKACJLyw0_eReK_841','Coopér@ction · volley','vdk'],
+ [/Jeannin \(partie pratique\)/i,'1UAcVJ2sbX2wh2nzk0ijqCb4JHtAYJ8xJ','Jeannin · partie pratique'],
+ [/Jeannin \(partie théorique\)/i,'12prSKeKAcnST3Togb07Jl9iJDGtr1QfQ','Jeannin · partie théorique'],
+ [/Tomaszower/i,'1VWDhmrPQYvnr2U145qWEkLx4HyBI8YSC','Tomaszower & Jeannin · hand à 4'],
+ [/Continuum football/i,'1fRQthE9C3RGVfGC8oMMclttTOqKYf3Wa','Continuum foot Créteil'],
+ [/Contre-Pied[^;]*(HS n°8|hors-série n°8)/i,'1sT2LCESZBCWa1RtIAyRPFQH5Edmiq7vH','Contre-Pied badminton'],
+ [/Larivière|Passe à l.attaque/i,'1cPAoQ6ziccGh6F3EcNGwo2Nx3JGxnWWl','Larivière · badminton'],
+ [/Geay[^;]*Mayeko|parcours de formation équilibré/i,'1avnR_ZGf86CSnLsvbeiLEQCqKzSxMyqK','Geay & Mayeko · badminton'],
+ [/Kuehn/i,'1nawZ3AIV23Z2_cJrmEUR0iJlbKVJxIkD','Kuehn · badminton'],
+ [/Rolan[^;]*leviers|L.élève badiste|Des leviers pour enseigner en EPS, chap\. 16/i,'1P0ycszIGzM--QIW6dS6amMsXV0-YRQiW','Rolan · l\'élève badiste'],
+ [/Brunel|L.élève volleyeur/i,'1Qc9NTui8dh9BCp68AdI-KqG3tr-9ZOV5','Brunel · l\'élève volleyeur'],
+ [/Ranque|smash pour tous/i,'12EQY88pUANGnx16XIq1GRZOUNa_uPhuY','Un smash pour tous'],
+ [/Peyre[^;]*Macé|moins habiles/i,'12GXK1TC5R8YGaVkI9Q87jmabhdSymBJs','Foot pour les moins habiles'],
+ [/Mayeko[^;]*Visioli|Comportements individualistes/i,'1-7yUUqHBr2ICxdMH1XiYLW59YrikJcgd','Mayeko & Visioli · contrats'],
+ [/préparation tactique en football/i,'1spLTqro9AWAZa3i-eztjw0k4Y1j3l3-h','La préparation tactique en football'],
+ [/Metzler/i,'1W6AS-VqUnePHBYhDIAFbQ30R4131_vQs','Metzler · volley'],
+ [/Mascret[^;]*débrouillé|Enrichir son expérience en badminton/i,'1zKsZQ67EcZ12_g0wIk-7Xf6fSkGsYjb4','Mascret · enrichir (badminton)'],
+ [/Mascret[^;]*débutant|première expérience en badminton/i,'1zqJ2eR6hyZZ1Wxf0NbdB8NDtIcwBHhru','Mascret · première expérience (badminton)'],
+ [/Llobet|Cerati|expérience en volley-ball/i,'1e6GYmxy_nahwbEamFRCI_G936kPn6LhE','Volley · débutant / débrouillé / lycéen'],
+ [/Travert|Quang|expérience en football/i,'1SdVj8wu7PDciPzCgcSNBlyv7JlXhdpPn','Foot · débutant / débrouillé / lycéen'],
+ [/Deutz|Approfondir son expérience en badminton/i,'1LO0apUsXQzvrioyTyLpBOntSGxHpVQze','Badminton · dossier EPS']];
+function src443Find(txt){const t=String(txt||'');const out=[],grp={};SRC443.forEach(r=>{if(!r[0].test(t))return;if(r[3]){if(grp[r[3]])return;grp[r[3]]=1;}if(!out.some(x=>x[1]===r[1]))out.push(r);});return out;}
+function src443Html(L){return '<span class="src443">'+L.map(r=>'<a href="https://drive.google.com/file/d/'+r[1]+'/view" target="_blank" rel="noopener" title="Ouvrir dans ton Drive">📂 '+esc(r[2])+'</a>').join('')+'</span>';}
+function src443Scan(root){try{if(!root||!root.querySelectorAll)return;
+  root.querySelectorAll('.f424-src,.j423-s').forEach(el=>{if(el.dataset.src443)return;el.dataset.src443='1';const L=src443Find(el.textContent);if(L.length)el.insertAdjacentHTML('beforeend',' '+src443Html(L));});
+  root.querySelectorAll('.lib-card-ov .box, #libc-ov .lib-pick-box').forEach(box=>{if(box.querySelector('.src443-row,input[type=search]'))return;const t=box.textContent||'';if(!/Source\s*:/i.test(t))return;const L=src443Find(t);if(!L.length)return;
+    const d=document.createElement('div');d.className='src443-row';d.innerHTML='<b>Source dans ton Drive :</b> '+src443Html(L);const j=box.querySelector('.j421');if(j)box.insertBefore(d,j);else box.appendChild(d);});}catch(e){console.warn('src443',e);}}
+try{new MutationObserver(ms=>{let go=false;ms.forEach(m=>{if(m.addedNodes&&m.addedNodes.length)go=true;});if(go)src443Scan(document.body);}).observe(document.body,{childList:true,subtree:true});}catch(e){}
+(function(){const st=document.createElement('style');st.textContent='html body .src443{display:inline-flex;flex-wrap:wrap;gap:4px;margin-left:4px;}html body .src443 a{display:inline-flex;align-items:center;min-height:30px;padding:2px 8px;border-radius:999px;background:#1e3a8a;color:#dbeafe!important;font-size:.78rem;font-weight:700;text-decoration:none;font-style:normal;}'
++'html body .src443-row{margin:8px 0;font-size:.85rem;}@media print{html body .src443{display:none!important;}}';document.head.appendChild(st);})();
 </script>
 </body>
 </html>
