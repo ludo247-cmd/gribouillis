@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v439</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v440</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v439</title>
+<title>Gribouillis EPS v440</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -31090,6 +31090,59 @@ s417InstallShow=(function(f){return function(){const r=f.apply(this,arguments);t
   const l=document.createElement('label');l.style.cssText='display:flex;gap:8px;align-items:center;margin:6px 0;font-weight:700;';l.innerHTML='<input type="checkbox" id="tab439-ck" checked style="width:22px;height:22px;"> 📱 C\'est une tablette élève (elle n\'envoie que matchs, projets et bilans)';
   go.parentNode.insertBefore(l,go);const h=go.onclick;go.onclick=function(){try{const raw=ov.querySelector('#s417-in').value.trim().replace(/\s+/g,'');let o=null;try{o=JSON.parse(decodeURIComponent(escape(atob(raw.replace(/^GRIB1-/,'')))));}catch(e){}
     if(o&&o.t){if(ov.querySelector('#tab439-ck').checked)_lsSet.call(localStorage,TAB439_ROLE,'tablette');else localStorage.removeItem(TAB439_ROLE);}}catch(e){}return h.apply(this,arguments);};}}catch(e){console.warn('tab439 inst',e);}return r;};})(s417InstallShow);
+
+
+
+// ══════════════════════════════════════════════════════════════════════
+// v440 — onglet Match
+//  • « ＋ Équipe » visible directement à côté des équipes ;
+//  • bouton « ➕ Autre sport » (liste : Dodgeball…) : un autre sport
+//    utilise l'outil d'un sport de base (dodgeball → handball) mais n'a
+//    que SES profils ; ses profils n'apparaissent plus en handball ;
+//  • « ＋ Nouveau profil » à la fin de la liste des profils.
+// ══════════════════════════════════════════════════════════════════════
+(function(){try{let ch=false;(CFG.savedPresets||[]).forEach(p=>{if(p&&!p.sport2&&/^\s*(FPS · )?Dodgeball/i.test(p.name||'')){p.sport2='Dodgeball';ch=true;}});if(ch)saveConfig();}catch(e){}})();
+function os440S2(p){return (p&&(p.sport2||(/^\s*(FPS · )?Dodgeball/i.test(p.name||'')?'Dodgeball':'')))||'';}
+try{dg421ProfDef=(function(f){return function(){const p=f.apply(this,arguments);p.sport2='Dodgeball';return p;};})(dg421ProfDef);}catch(e){}
+function os440List(){const S=[];(CFG.savedPresets||[]).forEach(p=>{const k=os440S2(p);if(k&&S.indexOf(k)<0)S.push(k);});(CFG.os440Extra||[]).forEach(s=>{if(S.indexOf(s)<0)S.push(s);});return S.sort((a,b)=>a.localeCompare(b,'fr'));}
+function os440Btn(){const row=document.querySelector('.apsa-btn[data-apsa="badminton"]');const par=row&&row.parentElement;if(!par)return;let b=par.querySelector('.os440-b');
+  if(!b){b=document.createElement('button');b.type='button';b.className='apsa-btn os440-b';b.onclick=os440Menu;par.appendChild(b);}
+  const on=!!CFG.sport2;b.innerHTML='<span class="ai">'+(on?'🎯':'➕')+'</span>'+esc(on?CFG.sport2:'Autre sport');b.classList.toggle('active',on);
+  if(on)par.querySelectorAll('.apsa-btn[data-apsa]').forEach(x=>x.classList.remove('active'));}
+function os440Menu(){const old=E('os440-ov');if(old){old.remove();return;}const ov=document.createElement('div');ov.id='os440-ov';ov.className='eq428-ovl';ov.onclick=e=>{if(e.target===ov)ov.remove();};
+  const L=os440List();const base={football:'⚽ Football',handball:'🤾 Handball',basketball:'🏀 Basket',volley:'🏐 Volley',badminton:'🏸 Badminton'};
+  ov.innerHTML='<'+'div class="po429-box"><'+'div class="eq428-h"><b>➕ Autre sport</b><button type="button" class="eq428-x" aria-label="Fermer" onclick="E(\'os440-ov\').remove()">✕</button></'+'div>'
+   +(L.length?L.map(s=>'<button type="button" class="os440-i'+(CFG.sport2===s?' on':'')+'" onclick="os440Pick(\''+esc(s).replace(/'/g,"\\'")+'\')">'+esc(s)+'<small>'+esc(base[os440Base(s)]||'')+'</small></button>').join(''):'<p class="rs438-v">Aucun autre sport pour l\'instant.</p>')
+   +'<button type="button" class="os440-i os440-new" onclick="os440Add()">＋ Ajouter un sport…</button>'
+   +(CFG.sport2?'<button type="button" class="os440-i" onclick="os440Pick(\'\')">↩ Revenir aux sports habituels</button>':'')+'</'+'div>';
+  document.body.appendChild(ov);}
+function os440Base(s){const p=(CFG.savedPresets||[]).find(x=>x&&os440S2(x)===s&&x.apsaKey);return (p&&p.apsaKey)||((CFG.os440BaseMap||{})[s])||CFG.apsa||'handball';}
+function os440Pick(s){const ov=E('os440-ov');if(ov)ov.remove();if(!s){CFG.sport2='';try{saveConfig();}catch(e){}os440Btn();try{qjStatus();}catch(e){}return;}
+  const base=os440Base(s);const btn=document.querySelector('.apsa-btn[data-apsa="'+base+'"]');try{selectAPSA(base,btn);}catch(e){}
+  CFG.sport2=s;try{const P=CFG.savedPresets||[];const cur=P[CFG.activePresetIndexT1];if(os440S2(cur)!==s){const i=P.findIndex(x=>os440S2(x)===s);if(i>=0)applyNamedPreset(i);}}catch(e){}try{saveConfig();}catch(e){}os440Btn();try{qjStatus();}catch(e){}try{toast2('🎯 '+s+' (outil '+base+')');}catch(e){}}
+function os440Add(){const n=(prompt('Nom du sport (ex. Dodgeball, Ultimate, Tchoukball) :')||'').trim();if(!n)return;
+  const b=(prompt('Il utilisera l\'outil d\'observation de quel sport ?\nfootball · handball · basketball · volley · badminton','handball')||'').trim().toLowerCase();
+  const ok=['football','handball','basketball','volley','badminton'];const base=ok.indexOf(b)>=0?b:'handball';
+  CFG.os440Extra=CFG.os440Extra||[];if(CFG.os440Extra.indexOf(n)<0)CFG.os440Extra.push(n);CFG.os440BaseMap=CFG.os440BaseMap||{};CFG.os440BaseMap[n]=base;try{saveConfig();}catch(e){}os440Pick(n);}
+selectAPSA=(function(f){return function(){if(CFG.sport2){CFG.sport2='';}const r=f.apply(this,arguments);try{os440Btn();}catch(e){}return r;};})(selectAPSA);
+// profils : seulement ceux du sport choisi (autre sport ou sports habituels)
+qjProfHtml=(function(f){return function(){let h=f.apply(this,arguments)||'';const P=CFG.savedPresets||[];const s2=CFG.sport2||'';
+  try{const d=document.createElement('div');d.innerHTML=h;d.querySelectorAll('.qj-prof button').forEach(b=>{const m=/qjProfPick\((\d+)\)/.exec(b.getAttribute('onclick')||'');if(!m)return;const p=P[+m[1]]||{};if(os440S2(p)!==s2)b.remove();});
+    d.querySelectorAll('.qj-prof .row').forEach(r=>{if(!r.querySelector('button')){const t=r.previousElementSibling;if(t&&t.classList.contains('t'))t.remove();r.remove();}});
+    let box=d.querySelector('.qj-prof');if(!box){box=document.createElement('div');box.className='qj-prof';d.appendChild(box);}
+    const add='<'+'div class="row os440-addrow"><button type="button" class="os440-addp" onclick="os440NewProf()">＋ Nouveau profil'+(s2?' ('+esc(s2)+')':'')+'</button></'+'div>';box.insertAdjacentHTML('beforeend',add);h=d.innerHTML;}catch(e){console.warn('os440 prof',e);}return h;};})(qjProfHtml);
+function os440NewProf(){const n0=(CFG.savedPresets||[]).length;try{saveCurrentPreset();}catch(e){console.warn(e);return;}const L=CFG.savedPresets||[];if(L.length<=n0)return;const p=L[L.length-1];
+  if(CFG.sport2)p.sport2=CFG.sport2;else delete p.sport2;if(p.meta&&p.meta.fpsId)delete p.meta.fpsId;try{saveConfig();}catch(e){}
+  try{applyNamedPreset(L.length-1);}catch(e){}try{qjStatus();}catch(e){}
+  if(confirm('Profil « '+p.name+' » créé à partir des boutons actuels.\nLe modifier maintenant (boutons, ratios) ?')){try{editProfileFromHome(L.length-1);}catch(e){console.warn(e);}}}
+// équipes : bouton « ＋ Équipe » visible
+eqChips=(function(f){return function(){const r=f.apply(this,arguments);try{const row=document.querySelector('#eq-chips .eq-row');if(row&&!row.querySelector('.os440-addt')){const b=document.createElement('button');b.type='button';b.className='eq-c os440-addt';b.textContent='＋ Équipe';
+  b.onclick=()=>{try{addTeam();}catch(e){}const d=document.querySelector('details.eq-edit');if(d){d.open=true;setTimeout(()=>{const ins=d.querySelectorAll('#team-editor input[type=text]');const last=ins[ins.length-1];if(last){last.focus();last.select();}},60);}};row.appendChild(b);}}catch(e){}return r;};})(eqChips);
+setTimeout(()=>{try{os440Btn();updateFooter();qjStatus();}catch(e){}},300);
+(function(){const st=document.createElement('style');st.textContent=
+ 'html body .os440-i{display:flex;justify-content:space-between;align-items:center;width:100%;min-height:48px;margin-top:6px;border:1px solid #334155;border-radius:10px;background:#0f172a;color:#e2e8f0;font-weight:800;padding:0 12px;}html body .os440-i small{color:#94a3b8;font-weight:600;}html body .os440-i.on{border-color:#3b82f6;background:#172554;}html body .os440-new{justify-content:center;border-style:dashed;color:#93c5fd;}'
++'html body .qj-prof .os440-addp{border:1px dashed #60a5fa!important;color:#93c5fd!important;background:transparent!important;}html body .eq-c.os440-addt{border-style:dashed!important;color:#93c5fd!important;}';
+ document.head.appendChild(st);})();
 </script>
 </body>
 </html>
