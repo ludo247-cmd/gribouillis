@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v454</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v455</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v454</title>
+<title>Gribouillis EPS v455</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -31926,6 +31926,177 @@ setTimeout(ca454Paint,800);
 (function(){const st=document.createElement('style');st.textContent='html body #seance-tab-content.ca454-s{box-shadow:inset 0 4px 0 var(--ca454);}'
 +'html body .seq-card.ca454-c{box-shadow:inset 0 3px 0 var(--ca454);}html body .ca454-t{display:inline-block;font-size:.66rem;font-weight:800;color:#0b1220;border-radius:5px;padding:1px 5px;vertical-align:middle;letter-spacing:.03em;}'
 +'html body .ca454-d{position:absolute;top:4px;left:4px;font-size:.6rem;font-weight:800;color:#0b1220;border-radius:5px;padding:1px 5px;letter-spacing:.03em;}';document.head.appendChild(st);})();
+
+
+
+// ══════════════════════════════════════════════════════════════════════
+// v455 — ÉDITEUR DE PARCOURS (gym + parkour), d'après la maquette V2
+//  • 📚 banque d'éléments par famille, 2 à 4 degrés, un « chute si… »
+//    PAR DEGRÉ, photo, vidéo (passage YouTube début-fin) ;
+//  • dans un bloc ouvert (vue en blocs) : « 🔀 Parcours » → postes
+//    numérotés (élément précis ou « au choix dans la famille »), forme
+//    (parcours à degrés / circuit chrono / combinaisons à points qui
+//    baissent), options chrono & essais ;
+//  • ⏱ Passage : l'élève choisit ses degrés, chrono, chutes = essais,
+//    note = difficulté + barème double entrée essais × temps (réglable) ;
+//  • 🖨 Fiche atelier A4 avec QR code vers la vidéo de chaque élément.
+// ══════════════════════════════════════════════════════════════════════
+const PK455_KEY='grib_pk_bank_v1';
+try{if(GRIB_BACKUP_KEYS.indexOf(PK455_KEY)<0)GRIB_BACKUP_KEYS.push(PK455_KEY);}catch(e){}
+try{const _kn=syncKeyName;syncKeyName=function(k){return k===PK455_KEY?'Banque d\'éléments (parcours)':_kn.apply(this,arguments);};}catch(e){}
+const PK455_FAM=['Tourner avant','Tourner arrière','Se renverser','Sauter · voler','Équilibre','Franchir','Barres · suspension','Vitesse'];
+const PK455_SEED=[['Roue','Se renverser','gym'],['Roulade arrière','Tourner arrière','gym'],['Bascule ATR','Se renverser','gym'],['Rotation avant','Tourner avant','gym'],['Poutre','Équilibre','gym'],['Franchissement','Franchir','gym'],['Tic-tac','Se renverser','gym'],['Barres','Barres · suspension','gym'],
+ ['Roulade de sécurité','Tourner avant','parkour'],['Saut de chat','Franchir','parkour'],['Passe-muraille','Franchir','parkour'],['Précision','Équilibre','parkour']];
+function pk455Bank(){let L=null;try{L=JSON.parse(localStorage.getItem(PK455_KEY)||'null');}catch(e){}
+  if(!Array.isArray(L)){L=PK455_SEED.map((r,i)=>({id:'pk'+(i+1),nom:r[0],fam:r[1],src:r[2],deg:[{t:'',ch:''},{t:'',ch:''},{t:'',ch:''}],img:'',vid:'',t0:'',t1:''}));try{localStorage.setItem(PK455_KEY,JSON.stringify(L));}catch(e){}}return L;}
+function pk455Save(L){try{localStorage.setItem(PK455_KEY,JSON.stringify(L));}catch(e){alert('Enregistrement impossible : place insuffisante.');}}
+function pk455El(id){return pk455Bank().find(x=>x.id===id)||null;}
+function pk455Sec(v){const m=/^(?:(\d+):)?(\d+)$/.exec(String(v||'').trim());return m?(+(m[1]||0))*60+(+m[2]):0;}
+function pk455Yt(e){const u=String(e&&e.vid||'');const m=/(?:youtu\.be\/|v=|shorts\/|embed\/)([\w-]{6,})/.exec(u);if(!m)return u;const s=pk455Sec(e.t0);return 'https://www.youtube.com/watch?v='+m[1]+(s?'&t='+s+'s':'');}
+function pk455Cfg(s,k,make){if(!s)return null;s.pk455=s.pk455||{};if(!s.pk455[k]&&make)s.pk455[k]={on:false,forme:'degres',chrono:true,essais:true,limite:45,v0:5,postes:[],bar:{rows:['1 essai','2 essais','3+'],cols:['< 40 s','40-50 s','50-60 s','> 60 s'],lim:[40,50,60],tab:[[6,5,4,3],[5,4,3,2],[4,3,2,1]]},dif:2};return s.pk455[k]||null;}
+function pk455SaveS(){try{saveSeances();}catch(e){}}
+function pk455PosteLab(p){if(p.fam)return '🎲 Au choix : '+p.fam;const e=pk455El(p.e);return e?e.nom:'(élément supprimé)';}
+function pk455PosteDeg(p){if(p.fam)return 4;const e=pk455El(p.e);return e?(e.deg||[]).length:3;}
+// ── panneau dans le bloc ouvert ──
+function pk455Panel(){try{const host=E('seance-tab-content');if(!host||!host.classList.contains('g442'))return;const st=host.querySelector('#sb-root .sb-step.g442-open');if(!st)return;const k=st.dataset.g442;
+  if(!k||seanceStepBase(k)!=='remediation')return;const body=st.querySelector('.sb-body');if(!body)return;const s=getActiveSeance();const C=pk455Cfg(s,k,false);
+  let bar=body.querySelector('.pk455-bar');if(!bar){bar=document.createElement('div');bar.className='pk455-bar';body.insertBefore(bar,body.firstChild);}
+  bar.innerHTML='<'+'div class="pk455-sw"><button type="button" class="'+(C&&C.on?'':'on')+'" onclick="event.stopPropagation();pk455On(\''+k+'\',false)">Situations</button><button type="button" class="'+(C&&C.on?'on':'')+'" onclick="event.stopPropagation();pk455On(\''+k+'\',true)">🔀 Parcours</button></'+'div>';
+  let p=body.querySelector('.pk455');if(!(C&&C.on)){if(p)p.remove();return;}if(!p){p=document.createElement('div');p.className='pk455';bar.insertAdjacentElement('afterend',p);}
+  const F=[['degres','Parcours à degrés'],['circuit','Circuit chrono'],['combos','Combinaisons à points']];
+  p.innerHTML='<'+'div class="pk455-ch">'+F.map(f=>'<button type="button" class="'+(C.forme===f[0]?'on':'')+'" onclick="event.stopPropagation();pk455Set(\''+k+'\',\'forme\',\''+f[0]+'\')">'+f[1]+'</button>').join('')+'</'+'div>'
+   +'<'+'div class="pk455-ch">'+[['chrono','⏱ Chrono'],['essais','🔁 Essais comptés']].map(o=>'<button type="button" class="'+(C[o[0]]?'on':'')+'" onclick="event.stopPropagation();pk455Set(\''+k+'\',\''+o[0]+'\',!'+(!!C[o[0]])+')">'+o[1]+'</button>').join('')
+   +(C.forme==='circuit'?'<label class="pk455-lim">limite <input type="number" min="10" max="600" value="'+(+C.limite||45)+'" onclick="event.stopPropagation()" onchange="pk455Set(\''+k+'\',\'limite\',+this.value)"> s</label>':'')
+   +(C.forme==='combos'?'<label class="pk455-lim">valeur de départ <input type="number" min="1" max="20" value="'+(+C.v0||5)+'" onclick="event.stopPropagation()" onchange="pk455Set(\''+k+'\',\'v0\',+this.value)"></label>':'')+'</'+'div>'
+   +'<'+'div class="pk455-ps">'+(C.postes.length?C.postes.map((q,i)=>{const e=q.e?pk455El(q.e):null;return '<'+'div class="pk455-p"><b class="n">'+(i+1)+'</b><span class="t">'+esc(pk455PosteLab(q))+(e&&e.img?' 📷':'')+(e&&e.vid?' 🎬':'')+'<small>'+pk455PosteDeg(q)+' degrés</small></span>'
+      +'<button type="button" aria-label="Monter" onclick="event.stopPropagation();pk455Mv(\''+k+'\','+i+',-1)">↑</button><button type="button" aria-label="Descendre" onclick="event.stopPropagation();pk455Mv(\''+k+'\','+i+',1)">↓</button>'+(q.e?'<button type="button" aria-label="Modifier l\'élément" onclick="event.stopPropagation();pk455Edit(\''+q.e+'\')">✏️</button>':'')+'<button type="button" aria-label="Retirer" onclick="event.stopPropagation();pk455Del(\''+k+'\','+i+')">✕</button></'+'div>';}).join(''):'<p class="pk455-dim">Aucun poste. Ajoute des éléments depuis la banque.</p>')+'</'+'div>'
+   +'<'+'div class="pk455-act"><button type="button" onclick="event.stopPropagation();pk455Pick(\''+k+'\')">＋ Poste</button><button type="button" onclick="event.stopPropagation();pk455Pass(\''+k+'\')">⏱ Passage</button><button type="button" onclick="event.stopPropagation();pk455Print(\''+k+'\')">🖨 Fiche atelier</button><button type="button" onclick="event.stopPropagation();pk455BarEd(\''+k+'\')">📊 Barème</button></'+'div>'
+   +'<'+'div class="pk455-gold">Règles d\'or : jamais tourner avec le poids sur la nuque · chute = non validé · réception en roulade de sécurité</'+'div>';}catch(e){console.warn('pk455',e);}}
+function pk455On(k,on){const s=getActiveSeance();const C=pk455Cfg(s,k,true);C.on=!!on;pk455SaveS();pk455Panel();}
+function pk455Set(k,f,v){const s=getActiveSeance();const C=pk455Cfg(s,k,true);C[f]=v;pk455SaveS();pk455Panel();}
+function pk455Mv(k,i,d){const C=pk455Cfg(getActiveSeance(),k,true);const j=i+d;if(j<0||j>=C.postes.length)return;const t=C.postes[i];C.postes[i]=C.postes[j];C.postes[j]=t;pk455SaveS();pk455Panel();}
+function pk455Del(k,i){const C=pk455Cfg(getActiveSeance(),k,true);C.postes.splice(i,1);pk455SaveS();pk455Panel();}
+g442Apply=(function(f){return function(){const r=f.apply(this,arguments);pk455Panel();return r;};})(g442Apply);
+renderSeanceTab=(function(f){return function(){const r=f.apply(this,arguments);pk455Panel();return r;};})(renderSeanceTab);
+// ── banque : choisir / créer / modifier ──
+const PK455UI={k:'',f:'',q:''};
+function pk455Ov(id,inner){const o=E(id);if(o)o.remove();const ov=document.createElement('div');ov.id=id;ov.className='eq428-ovl pk455-ov';ov.onclick=e=>{if(e.target===ov)ov.remove();};ov.innerHTML='<'+'div class="pk455-box">'+inner+'</'+'div>';document.body.appendChild(ov);return ov;}
+function pk455Pick(k){PK455UI.k=k;PK455UI.f='';PK455UI.q='';pk455Ov('pk455-b','<'+'div class="eq428-h"><b>📚 Banque d\'éléments</b><button type="button" class="eq428-x" aria-label="Fermer" onclick="E(\'pk455-b\').remove()">✕</button></'+'div><input type="search" class="pk451-q" placeholder="Chercher un élément" oninput="PK455UI.q=this.value;pk455BankFill()"><'+'div class="pk451-f pk455-ff"></'+'div><'+'div class="pk455-l"></'+'div><button type="button" class="pk455-new" onclick="pk455Edit(\'\')">＋ Nouvel élément</button>');pk455BankFill();}
+function pk455BankFill(){const ov=E('pk455-b');if(!ov)return;const B=pk455Bank();const fams=PK455_FAM.filter(f=>B.some(e=>e.fam===f)).concat([...new Set(B.map(e=>e.fam))].filter(f=>PK455_FAM.indexOf(f)<0));
+  ov.querySelector('.pk455-ff').innerHTML=['Tout'].concat(fams).map(f=>{const v=f==='Tout'?'':f;return '<button type="button" class="'+(PK455UI.f===v?'on':'')+'" onclick="PK455UI.f=\''+esc(v).replace(/'/g,"\\'")+'\';pk455BankFill()">'+esc(f)+'</button>';}).join('');
+  const n=t=>String(t||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');const q=n(PK455UI.q);
+  const L=B.filter(e=>(!PK455UI.f||e.fam===PK455UI.f)&&(!q||n(e.nom+' '+e.fam).indexOf(q)>=0));
+  let h='';if(PK455UI.f&&PK455UI.k)h+='<'+'div class="pk455-i"><button type="button" class="pk451-add" onclick="pk455Add(\'\',\''+esc(PK455UI.f).replace(/'/g,"\\'")+'\')"><b>🎲 Au choix dans la famille « '+esc(PK455UI.f)+' »</b><small>L\'élève prend l\'élément qu\'il veut dans cette famille (degré 1 à 4).</small></button></'+'div>';
+  h+=L.map(e=>'<'+'div class="pk455-i"><button type="button" class="pk451-add" onclick="'+(PK455UI.k?'pk455Add(\''+e.id+'\',\'\')':'pk455Edit(\''+e.id+'\')')+'"><b>'+esc(e.nom)+(e.img?' 📷':'')+(e.vid?' 🎬':'')+'</b><small>'+esc(e.fam)+' · '+(e.src==='parkour'?'parkour':'gym')+' · '+(e.deg||[]).length+' degrés'+((e.deg||[]).some(d=>d.t)?'':' · à compléter')+'</small></button><button type="button" class="pk451-see" aria-label="Modifier" onclick="pk455Edit(\''+e.id+'\')">✏️</button></'+'div>').join('');
+  ov.querySelector('.pk455-l').innerHTML=h||'<p class="pk455-dim">Aucun élément.</p>';}
+function pk455Add(eid,fam){const C=pk455Cfg(getActiveSeance(),PK455UI.k,true);C.postes.push(eid?{e:eid}:{fam:fam});pk455SaveS();const ov=E('pk455-b');if(ov)ov.remove();pk455Panel();try{toast2('✅ Poste '+C.postes.length+' ajouté');}catch(e){}}
+function pk455Edit(id){const B=pk455Bank();let e=id?B.find(x=>x.id===id):null;const isNew=!e;if(!e)e={id:'pk'+Date.now().toString(36),nom:'',fam:PK455UI.f||PK455_FAM[0],src:'gym',deg:[{t:'',ch:''},{t:'',ch:''},{t:'',ch:''}],img:'',vid:'',t0:'',t1:''};
+  const fams=[...new Set(PK455_FAM.concat(B.map(x=>x.fam)))];const D=e.deg||[];
+  pk455Ov('pk455-e','<'+'div class="eq428-h"><b>'+(isNew?'Nouvel élément':'Modifier l\'élément')+'</b><button type="button" class="eq428-x" aria-label="Fermer" onclick="E(\'pk455-e\').remove()">✕</button></'+'div>'
+   +'<label class="pk455-fl">Nom<input id="pk455-nom" type="text" value="'+esc(e.nom)+'"></label>'
+   +'<'+'div class="pk455-2"><label class="pk455-fl">Famille<input id="pk455-fam" type="text" list="pk455-fams" value="'+esc(e.fam)+'"><datalist id="pk455-fams">'+fams.map(f=>'<option value="'+esc(f)+'">').join('')+'</datalist></label>'
+   +'<label class="pk455-fl">Origine<select id="pk455-src"><option value="gym"'+(e.src!=='parkour'?' selected':'')+'>Gym</option><option value="parkour"'+(e.src==='parkour'?' selected':'')+'>Parkour</option></select></label></'+'div>'
+   +'<'+'div class="pk455-nd">Nombre de degrés '+[2,3,4].map(n=>'<button type="button" class="'+(D.length===n?'on':'')+'" onclick="pk455Nd('+n+')">'+n+'</button>').join('')+'</'+'div><'+'div id="pk455-degs"></'+'div>'
+   +'<label class="pk455-fl">Photo ou animation (lien d\'image)<input id="pk455-img" type="url" placeholder="https://…" value="'+esc(e.img||'')+'"></label>'
+   +'<label class="pk455-fl">Vidéo (lien YouTube, Drive…)<input id="pk455-vid" type="url" placeholder="https://youtu.be/…" value="'+esc(e.vid||'')+'"></label>'
+   +'<'+'div class="pk455-2"><label class="pk455-fl">Début (m:ss)<input id="pk455-t0" type="text" placeholder="1:12" value="'+esc(e.t0||'')+'"></label><label class="pk455-fl">Fin (m:ss)<input id="pk455-t1" type="text" placeholder="1:18" value="'+esc(e.t1||'')+'"></label></'+'div>'
+   +'<'+'div class="pk455-act">'+(isNew?'':'<button type="button" class="del" onclick="pk455Rm(\''+e.id+'\')">🗑 Supprimer</button>')+'<button type="button" class="ok" onclick="pk455Ok(\''+e.id+'\','+(isNew?1:0)+')">Enregistrer</button></'+'div>');
+  PK455UI.deg=D.map(d=>({t:d.t||'',ch:d.ch||''}));pk455DegFill();}
+function pk455DegRead(){document.querySelectorAll('#pk455-degs .pk455-dg').forEach((r,i)=>{if(!PK455UI.deg[i])return;PK455UI.deg[i].t=r.querySelector('.t').value;PK455UI.deg[i].ch=r.querySelector('.c').value;});}
+function pk455DegFill(){const h=E('pk455-degs');if(!h)return;const C=['#86efac','#fde047','#fdba74','#fca5a5'];h.innerHTML=PK455UI.deg.map((d,i)=>'<'+'div class="pk455-dg"><b style="background:'+C[i]+'">'+(i+1)+'</b><'+'div><input class="t" type="text" placeholder="Degré '+(i+1)+' : ce qu\'on fait" value="'+esc(d.t)+'"><input class="c" type="text" placeholder="Chute si…" value="'+esc(d.ch)+'"></'+'div></'+'div>').join('');
+  document.querySelectorAll('.pk455-nd button').forEach(b=>b.classList.toggle('on',+b.textContent===PK455UI.deg.length));}
+function pk455Nd(n){pk455DegRead();while(PK455UI.deg.length<n)PK455UI.deg.push({t:'',ch:''});PK455UI.deg.length=n;pk455DegFill();}
+function pk455Ok(id,isNew){pk455DegRead();const nom=E('pk455-nom').value.trim();if(!nom){alert('Donne un nom à l\'élément.');return;}const B=pk455Bank();let e=B.find(x=>x.id===id);if(!e){e={id};B.push(e);}
+  Object.assign(e,{nom,fam:E('pk455-fam').value.trim()||PK455_FAM[0],src:E('pk455-src').value,deg:PK455UI.deg.map(d=>({t:d.t.trim(),ch:d.ch.trim()})),img:E('pk455-img').value.trim(),vid:E('pk455-vid').value.trim(),t0:E('pk455-t0').value.trim(),t1:E('pk455-t1').value.trim()});
+  pk455Save(B);E('pk455-e').remove();pk455BankFill();pk455Panel();try{toast2('✅ Élément enregistré');}catch(x){}}
+function pk455Rm(id){if(!confirm('Supprimer cet élément de la banque ?'))return;pk455Save(pk455Bank().filter(x=>x.id!==id));E('pk455-e').remove();pk455BankFill();pk455Panel();}
+// ── barème double entrée essais × temps ──
+function pk455BarEd(k){const C=pk455Cfg(getActiveSeance(),k,true);const b=C.bar;
+  pk455Ov('pk455-r','<'+'div class="eq428-h"><b>📊 Barème du parcours</b><button type="button" class="eq428-x" aria-label="Fermer" onclick="E(\'pk455-r\').remove()">✕</button></'+'div>'
+   +'<p class="pk455-dim">Points « essais × temps » : la case au croisement. Seuils de temps en secondes (séparés par des virgules).</p>'
+   +'<label class="pk455-fl">Seuils de temps (s)<input id="pk455-lim" type="text" value="'+esc(b.lim.join(', '))+'"></label>'
+   +'<table class="chp-t pk455-t"><thead><tr><th>essais \\ temps</th>'+b.cols.map(c=>'<th>'+esc(c)+'</th>').join('')+'</tr></thead><tbody>'+b.rows.map((r,ri)=>'<tr><td class="l">'+esc(r)+'</td>'+b.cols.map((_,ci)=>'<td><input type="number" step="0.5" value="'+(+b.tab[ri][ci]||0)+'" data-r="'+ri+'" data-c="'+ci+'"></td>').join('')+'</tr>').join('')+'</tbody></table>'
+   +'<label class="pk455-fl">Points de difficulté par degré choisi<input id="pk455-dif" type="number" step="0.25" value="'+(+C.dif||0)+'"></label><p class="pk455-dim">Note = difficulté (somme des degrés × ce coefficient, ) + case du tableau. Sans chrono, on prend la 1re colonne.</p>'
+   +'<'+'div class="pk455-act"><button type="button" class="ok" onclick="pk455BarOk(\''+k+'\')">Enregistrer</button></'+'div>');}
+function pk455BarOk(k){const C=pk455Cfg(getActiveSeance(),k,true);const b=C.bar;const lim=E('pk455-lim').value.split(/[;,]/).map(x=>+String(x).replace(',','.')).filter(x=>x>0).sort((a,b)=>a-b);
+  if(lim.length){b.lim=lim;b.cols=['< '+lim[0]+' s'].concat(lim.slice(1).map((v,i)=>lim[i]+'-'+v+' s'),['> '+lim[lim.length-1]+' s']);b.tab=b.rows.map((_,ri)=>b.cols.map((_,ci)=>(b.tab[ri]&&b.tab[ri][ci]!=null)?b.tab[ri][ci]:0));}
+  document.querySelectorAll('#pk455-r .pk455-t input').forEach(i=>{const r=+i.dataset.r,c=+i.dataset.c;if(b.tab[r]&&c<b.tab[r].length)b.tab[r][c]=+i.value||0;});C.dif=+E('pk455-dif').value||0;pk455SaveS();E('pk455-r').remove();try{toast2('📊 Barème enregistré');}catch(e){}}
+function pk455Note(C,deg,ess,sec){const b=C.bar;const r=Math.min(b.rows.length-1,Math.max(0,(ess||1)-1));let c=0;if(C.chrono&&sec>0){c=b.lim.findIndex(l=>sec<l);if(c<0)c=b.lim.length;}c=Math.min(c,b.cols.length-1);
+  const dif=deg.reduce((a,d)=>a+(+d||0),0)*(+C.dif||0);return {dif,cell:+b.tab[r][c]||0,r,c,total:Math.round((dif+(+b.tab[r][c]||0))*100)/100};}
+// ── passage (juge) ──
+const PK455P={k:'',deg:[],t0:0,acc:0,run:false,ess:1,tm:0,nom:''};
+function pk455Pass(k){const s=getActiveSeance();const C=pk455Cfg(s,k,true);if(!C.postes.length){alert('Ajoute d\'abord des postes.');return;}
+  Object.assign(PK455P,{k,deg:C.postes.map(()=>0),t0:0,acc:0,run:false,ess:1,nom:''});const names=[];try{(COMPO.roster||[]).forEach(r=>{if(r&&r.name)names.push(r.name);});}catch(e){}
+  pk455Ov('pk455-p','<'+'div class="eq428-h"><b>⏱ Passage</b><button type="button" class="eq428-x" aria-label="Fermer" onclick="pk455Stop(true);E(\'pk455-p\').remove()">✕</button></'+'div><'+'div id="pk455-pb"></'+'div><datalist id="pk455-nms">'+names.map(n=>'<option value="'+esc(n)+'">').join('')+'</datalist>');pk455PassFill();}
+function pk455Elapsed(){return PK455P.acc+(PK455P.run?(Date.now()-PK455P.t0):0);}
+function pk455Fmt(ms){const s=ms/1000;return Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0')+','+Math.floor((ms%1000)/100);}
+function pk455Tick(){const el=E('pk455-clk');if(el)el.textContent=pk455Fmt(pk455Elapsed());if(PK455P.run)PK455P.tm=requestAnimationFrame(pk455Tick);}
+function pk455Go(){if(PK455P.run){pk455Stop();}else{PK455P.t0=Date.now();PK455P.run=true;pk455Tick();}pk455PassFill();}
+function pk455Stop(silent){if(PK455P.run){PK455P.acc+=Date.now()-PK455P.t0;PK455P.run=false;cancelAnimationFrame(PK455P.tm);}if(!silent)pk455PassFill();}
+function pk455PassFill(){const h=E('pk455-pb');if(!h)return;const s=getActiveSeance();const C=pk455Cfg(s,PK455P.k,true);const nm=(E('pk455-nm')||{}).value;if(nm!=null)PK455P.nom=nm;
+  const COL=['#86efac','#fde047','#fdba74','#fca5a5'];const sec=pk455Elapsed()/1000;const N=pk455Note(C,PK455P.deg,PK455P.ess,sec);
+  if(C.forme==='combos'){pk455Combos(h,C);return;}
+  h.innerHTML='<label class="pk455-fl">Élève<input id="pk455-nm" type="text" list="pk455-nms" value="'+esc(PK455P.nom)+'" placeholder="Nom de l\'élève"></label>'
+   +C.postes.map((q,i)=>{const e=q.e?pk455El(q.e):null;const n=pk455PosteDeg(q);const d=PK455P.deg[i];const dd=e&&d?(e.deg||[])[d-1]:null;
+     return '<'+'div class="pk455-pp"><'+'div class="h"><b class="n">'+(i+1)+'</b><span>'+esc(pk455PosteLab(q))+'</span>'+(e&&e.vid?'<a href="'+esc(pk455Yt(e))+'" target="_blank" rel="noopener">🎬</a>':'')+'</'+'div><'+'div class="d">'
+      +Array.from({length:n},(_,j)=>'<button type="button" class="'+(d===j+1?'on':'')+'" style="--c:'+COL[j]+'" onclick="PK455P.deg['+i+']='+(d===j+1?0:j+1)+';pk455PassFill()">'+(j+1)+'</button>').join('')+'</'+'div>'
+      +(dd&&(dd.t||dd.ch)?'<small>'+esc(dd.t||'')+(dd.ch?' · <span class="ch">Chute si : '+esc(dd.ch)+'</span>':'')+'</small>':'')+'</'+'div>';}).join('')
+   +'<'+'div class="pk455-run">'+(C.chrono?'<b id="pk455-clk">'+pk455Fmt(pk455Elapsed())+'</b><button type="button" class="go" onclick="pk455Go()">'+(PK455P.run?'■ Stop':'▶ Départ')+'</button>':'')
+   +(C.essais?'<button type="button" class="ch" onclick="PK455P.ess++;pk455Stop(true);PK455P.acc=0;pk455PassFill()">Chute → on recommence (essai '+PK455P.ess+')</button>':'')+'</'+'div>'
+   +(C.forme==='circuit'&&C.chrono?'<p class="pk455-dim">Limite : '+(+C.limite||45)+' s'+(sec>0?(sec<=(+C.limite||45)?' · ✅ dans le temps':' · ⏳ hors temps'):'')+'</p>':'')
+   +'<'+'div class="pk455-res">Difficulté '+PK455P.deg.reduce((a,b)=>a+b,0)+' · essais '+PK455P.ess+(C.chrono?' · '+pk455Fmt(pk455Elapsed()):'')+' → <b>'+N.total+' pts</b> <small>(difficulté '+N.dif+' + barème '+N.cell+')</small></'+'div>'
+   +'<'+'div class="pk455-act"><button type="button" class="ok" onclick="pk455Rec()">💾 Enregistrer le passage</button></'+'div>'+pk455ResHtml(s,PK455P.k);}
+function pk455Rec(){pk455Stop(true);const s=getActiveSeance();const C=pk455Cfg(s,PK455P.k,true);const nm=((E('pk455-nm')||{}).value||'').trim();if(!nm){alert('Indique le nom de l\'élève.');return;}
+  const sec=Math.round(pk455Elapsed()/100)/10;const N=pk455Note(C,PK455P.deg,PK455P.ess,sec);s.pk455r=s.pk455r||[];s.pk455r.push({k:PK455P.k,nom:nm,deg:PK455P.deg.slice(),ess:PK455P.ess,sec:C.chrono?sec:null,note:N.total,ts:Date.now()});pk455SaveS();
+  Object.assign(PK455P,{deg:C.postes.map(()=>0),t0:0,acc:0,run:false,ess:1,nom:''});pk455PassFill();try{toast2('💾 Passage de '+nm+' : '+N.total+' pts');}catch(e){}}
+function pk455ResHtml(s,k){const R=(s.pk455r||[]).filter(r=>r.k===k);if(!R.length)return '';return '<'+'div class="pk455-rl"><b>Passages enregistrés</b>'+R.slice().reverse().map(r=>'<'+'div><span>'+esc(r.nom)+'</span><span>degrés '+r.deg.join('-')+' · '+r.ess+' essai'+(r.ess>1?'s':'')+(r.sec!=null?' · '+r.sec+' s':'')+'</span><b>'+r.note+'</b></'+'div>').join('')+'</'+'div>';}
+// combinaisons à points qui baissent (façon Park-code)
+function pk455Combos(h,C){const s=getActiveSeance();s.pk455c=s.pk455c||{};const Z=s.pk455c[PK455P.k]=s.pk455c[PK455P.k]||{val:{},pts:{}};
+  const v=i=>Z.val[i]!=null?Z.val[i]:(+C.v0||5);const sc=Object.keys(Z.pts).sort((a,b)=>Z.pts[b]-Z.pts[a]);
+  h.innerHTML='<label class="pk455-fl">Élève ou équipe qui valide<input id="pk455-nm" type="text" list="pk455-nms" value="'+esc(PK455P.nom)+'" placeholder="Nom"></label>'
+   +'<'+'div class="pk455-cb">'+C.postes.map((q,i)=>'<button type="button" onclick="pk455Val('+i+')"><b>'+v(i)+'</b><span>'+esc(pk455PosteLab(q))+'</span></button>').join('')+'</'+'div>'
+   +'<p class="pk455-dim">Touche une combinaison réussie sans chute : elle rapporte sa valeur, puis vaut 1 point de moins (minimum 1).</p>'
+   +(sc.length?'<'+'div class="pk455-rl"><b>Classement</b>'+sc.map(n=>'<'+'div><span>'+esc(n)+'</span><b>'+Z.pts[n]+'</b></'+'div>').join('')+'</'+'div>':'')
+   +'<'+'div class="pk455-act"><button type="button" class="del" onclick="if(confirm(\'Remettre les points à zéro ?\')){getActiveSeance().pk455c[\''+PK455P.k+'\']={val:{},pts:{}};pk455SaveS();pk455PassFill();}">Remettre à zéro</button></'+'div>';}
+function pk455Val(i){const s=getActiveSeance();const C=pk455Cfg(s,PK455P.k,true);const nm=((E('pk455-nm')||{}).value||'').trim();if(!nm){alert('Indique qui a réussi.');return;}PK455P.nom=nm;const Z=s.pk455c[PK455P.k];const v=Z.val[i]!=null?Z.val[i]:(+C.v0||5);
+  Z.pts[nm]=(Z.pts[nm]||0)+v;Z.val[i]=Math.max(1,v-1);pk455SaveS();pk455PassFill();try{toast2('✅ '+nm+' +'+v);}catch(e){}}
+// ── fiche atelier A4 ──
+function pk455Print(k){const s=getActiveSeance();const C=pk455Cfg(s,k,true);if(!C.postes.length){alert('Ajoute d\'abord des postes.');return;}let lab=k;try{lab=seanceStepDef(k).label;}catch(e){}
+  const COL=['#86efac','#fde047','#fdba74','#fca5a5'];const o=document.querySelector('.pk455-pv');if(o)o.remove();const pv=document.createElement('div');pv.className='pk455-pv';
+  pv.innerHTML='<'+'div class="pk455-pvb no-pr"><button type="button" onclick="window.print()">🖨 Imprimer</button><button type="button" onclick="document.body.classList.remove(\'pk455-pr\');this.closest(\'.pk455-pv\').remove()">✕ Fermer</button></'+'div>'
+   +'<'+'div class="pk455-a4"><'+'div class="hd"><span>CA3 · Gym-parkour</span><b>'+esc(lab)+' · fiche atelier</b><span>'+esc(s.date||'')+'</span></'+'div>'
+   +C.postes.map((q,i)=>{const e=q.e?pk455El(q.e):null;const D=e?(e.deg||[]):[];return '<'+'div class="po"><b class="n">'+(i+1)+'</b><'+'div class="tx"><b>'+esc(pk455PosteLab(q))+'</b>'
+     +(e?D.map((d,j)=>'<'+'div class="dg"><i style="background:'+COL[j]+'">'+(j+1)+'</i><span>'+esc(d.t||'……………………………')+(d.ch?'<em>Chute si : '+esc(d.ch)+'</em>':'')+'</span></'+'div>').join(''):'<'+'div class="dg"><span>Choisis un élément de la famille « '+esc(q.fam)+' », degré 1 à 4.</span></'+'div>')
+     +'</'+'div><'+'div class="qr" data-u="'+esc(e&&e.vid?pk455Yt(e):'')+'"></'+'div></'+'div>';}).join('')
+   +'<'+'div class="mp"><b>Mon passage</b><span>Nom : ____________________</span><span>Mes degrés : '+C.postes.map((_,i)=>(i+1)+'→☐').join('  ')+'</span>'+(C.essais?'<span>Essais : ☐1 ☐2 ☐3 ☐4</span>':'')+(C.chrono?'<span>Temps : ______ s</span>':'')+'<span>Note : ______</span></'+'div>'
+   +'<'+'div class="ft">Règles d\'or : jamais tourner avec le poids sur la nuque · chute = non validé · je me réceptionne en roulade de sécurité</'+'div></'+'div>';
+  document.body.appendChild(pv);document.body.classList.add('pk455-pr');
+  pv.querySelectorAll('.qr').forEach(q=>{const u=q.dataset.u;if(!u){q.textContent='';return;}try{new QRCode(q,{text:u,width:84,height:84,correctLevel:QRCode.CorrectLevel.M});}catch(e){q.textContent='vidéo';}});}
+(function(){const st=document.createElement('style');st.textContent=
+ 'html body .pk455-bar{margin:4px 0 8px;}html body .pk455-sw{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;padding:4px;border-radius:12px;background:#0f172a;border:1px solid #1e293b;}html body .pk455-sw button{min-height:40px;border:none;border-radius:9px;background:transparent;color:#94a3b8;font-weight:700;}html body .pk455-sw button.on{background:#7c3aed;color:#fff;}'
++'html body .pk455{display:flex;flex-direction:column;gap:8px;margin-bottom:10px;}html body .pk455-ch{display:flex;flex-wrap:wrap;gap:6px;align-items:center;}html body .pk455-ch button,html body .pk455-nd button{min-height:38px;border:1px solid #334155;border-radius:99px;background:#0f172a;color:#cbd5e1;font-weight:700;padding:0 12px;font-size:.82rem;}html body .pk455-ch button.on,html body .pk455-nd button.on{background:#1d4ed8;border-color:#1d4ed8;color:#fff;}'
++'html body .pk455-lim{font-size:.8rem;color:#cbd5e1;}html body .pk455-lim input{width:64px;min-height:36px;border-radius:8px;border:1px solid #334155;background:#020617;color:#e2e8f0;padding:0 6px;}'
++'html body .pk455-ps{display:flex;flex-direction:column;gap:6px;}html body .pk455-p{display:flex;align-items:center;gap:6px;padding:6px 8px;border:1px solid #1e293b;border-radius:10px;background:#0f172a;}html body .pk455-p .n,html body .pk455-pp .n{width:28px;height:28px;border-radius:99px;background:#7c3aed;color:#fff;display:flex;align-items:center;justify-content:center;flex:none;font-size:.85rem;}'
++'html body .pk455-p .t{flex:1;display:flex;flex-direction:column;font-weight:700;font-size:.9rem;min-width:0;}html body .pk455-p .t small{color:#94a3b8;font-weight:500;}html body .pk455-p button{min-width:36px;min-height:36px;border:1px solid #334155;border-radius:8px;background:transparent;color:#cbd5e1;}'
++'html body .pk455-act{display:flex;flex-wrap:wrap;gap:6px;}html body .pk455-act button{min-height:42px;border:1px solid #334155;border-radius:10px;background:#111c33;color:#e2e8f0;font-weight:800;padding:0 12px;}html body .pk455-act .ok{background:#0f766e;border-color:#0f766e;color:#fff;}html body .pk455-act .del{color:#fca5a5;}'
++'html body .pk455-gold{font-size:.75rem;color:#fecaca;background:#1c0b0b;border:1px solid #7f1d1d;border-radius:8px;padding:6px 8px;}html body .pk455-dim{font-size:.8rem;color:#94a3b8;margin:4px 0;}'
++'html body .pk455-box{background:#0f172a;border:1px solid #334155;border-radius:14px;padding:12px;width:min(640px,94vw);max-height:88vh;overflow:auto;display:flex;flex-direction:column;gap:8px;color:#e2e8f0;}'
++'html body .pk455-l{display:flex;flex-direction:column;gap:6px;}html body .pk455-i{display:flex;gap:6px;}html body .pk455-new{min-height:46px;border:1px dashed #60a5fa;border-radius:10px;background:transparent;color:#93c5fd;font-weight:800;}'
++'html body .pk455-fl{display:flex;flex-direction:column;gap:4px;font-size:.78rem;color:#94a3b8;flex:1;}html body .pk455-fl input,html body .pk455-fl select{min-height:42px;border-radius:9px;border:1px solid #334155;background:#020617;color:#e2e8f0;padding:0 10px;font-size:.95rem;}html body .pk455-2{display:flex;gap:8px;}'
++'html body .pk455-nd{display:flex;gap:6px;align-items:center;font-size:.85rem;font-weight:700;}html body .pk455-dg{display:flex;gap:8px;align-items:flex-start;margin:4px 0;}html body .pk455-dg > b{width:32px;height:32px;border-radius:8px;color:#0b1220;display:flex;align-items:center;justify-content:center;flex:none;}html body .pk455-dg > div{flex:1;display:flex;flex-direction:column;gap:4px;}'
++'html body .pk455-dg input{min-height:38px;border-radius:8px;border:1px solid #334155;background:#020617;color:#e2e8f0;padding:0 8px;}html body .pk455-dg input.c{border-color:#7f1d1d;color:#fecaca;}'
++'html body .pk455-pp{padding:8px;border:1px solid #1e293b;border-radius:10px;background:#0b1220;display:flex;flex-direction:column;gap:6px;}html body .pk455-pp .h{display:flex;gap:8px;align-items:center;font-weight:700;}html body .pk455-pp .h span{flex:1;}html body .pk455-pp .d{display:flex;gap:6px;}'
++'html body .pk455-pp .d button{flex:1;min-height:42px;border-radius:10px;border:1px solid #334155;background:#020617;color:#94a3b8;font-weight:800;font-size:1rem;}html body .pk455-pp .d button.on{border:2px solid var(--c);color:var(--c);background:#111c33;}html body .pk455-pp small{color:#cbd5e1;font-size:.78rem;}html body .pk455-pp .ch{color:#fca5a5;}'
++'html body .pk455-run{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}html body #pk455-clk{font-size:2rem;font-variant-numeric:tabular-nums;flex:1;}html body .pk455-run button{min-height:48px;border-radius:12px;font-weight:800;padding:0 14px;}html body .pk455-run .go{border:none;background:#dc2626;color:#fff;}html body .pk455-run .ch{border:2px solid #ef4444;background:#1c0b0b;color:#fecaca;}'
++'html body .pk455-res{padding:10px;border-radius:10px;background:#172554;border:1px solid #1d4ed8;}html body .pk455-rl{display:flex;flex-direction:column;gap:4px;font-size:.82rem;}html body .pk455-rl > div{display:flex;gap:8px;justify-content:space-between;border-top:1px solid #1e293b;padding-top:4px;}'
++'html body .pk455-cb{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;}html body .pk455-cb button{display:flex;flex-direction:column;align-items:flex-start;gap:4px;min-height:64px;border-radius:12px;border:1px solid #334155;background:#0b1220;color:#e2e8f0;padding:8px;text-align:left;}html body .pk455-cb b{background:#fde047;color:#0b1220;border-radius:99px;min-width:28px;text-align:center;}'
++'html body .pk455-pv{position:fixed;inset:0;z-index:100020;background:#e5e7eb;overflow:auto;padding:12px;}html body .pk455-pvb{display:flex;gap:8px;justify-content:flex-end;max-width:794px;margin:0 auto 8px;}html body .pk455-pvb button{min-height:42px;border-radius:10px;border:none;background:#111827;color:#fff;font-weight:700;padding:0 14px;}'
++'html body .pk455-a4{max-width:794px;margin:0 auto;background:#fff;color:#111;padding:28px 26px;font-family:Arial,sans-serif;display:flex;flex-direction:column;gap:10px;}html body .pk455-a4 .hd{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid #111;padding-bottom:6px;font-size:.8rem;}html body .pk455-a4 .hd b{font-size:1.2rem;}'
++'html body .pk455-a4 .po{display:grid;grid-template-columns:30px 1fr 92px;gap:10px;align-items:center;border:1px solid #d1d5db;border-radius:8px;padding:8px;break-inside:avoid;}html body .pk455-a4 .n{width:28px;height:28px;border-radius:99px;background:#6b21a8;color:#fff;display:flex;align-items:center;justify-content:center;}'
++'html body .pk455-a4 .dg{display:flex;gap:6px;align-items:flex-start;font-size:.82rem;margin-top:3px;}html body .pk455-a4 .dg i{font-style:normal;width:18px;height:18px;border-radius:4px;display:inline-flex;align-items:center;justify-content:center;font-weight:700;flex:none;}html body .pk455-a4 .dg em{display:block;color:#b91c1c;font-style:normal;font-size:.76rem;}'
++'html body .pk455-a4 .qr{width:88px;height:88px;display:flex;align-items:center;justify-content:center;}html body .pk455-a4 .mp{display:flex;flex-wrap:wrap;gap:4px 18px;border:1px solid #9ca3af;border-radius:8px;padding:8px;font-size:.8rem;break-inside:avoid;}html body .pk455-a4 .mp b{width:100%;}html body .pk455-a4 .ft{font-size:.72rem;color:#4b5563;}'
++'@media print{@page{size:A4;margin:10mm;}body.pk455-pr > *:not(.pk455-pv){display:none!important;}body.pk455-pr .pk455-pv{position:static;background:none;padding:0;overflow:visible;}body.pk455-pr .no-pr{display:none!important;}body.pk455-pr .pk455-a4{padding:0;max-width:none;}}';
+ document.head.appendChild(st);})();
 </script>
 </body>
 </html>
