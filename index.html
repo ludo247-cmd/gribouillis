@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v448</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v449</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v448</title>
+<title>Gribouillis EPS v449</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -31631,6 +31631,23 @@ try{const F=JSON.parse(localStorage.getItem(LIBSEED_KEY)||'{}');const a=libLoad(
   if(ch){libSave(a);localStorage.setItem(LIBSEED_KEY,JSON.stringify(F));}}catch(e){console.warn('lib448',e);}
 try{SRC443.push([/M\. Assadi/i,'https://pedagogie.snepfsu.fr/wp-content/uploads/2025/02/Apprentissage-specifique-en-gymnastiqu.pdf','Assadi (PDF SNEP)'],[/Soirée de l.EPS SNEP/i,'https://pedagogie.snepfsu.fr/2025/01/23/soiree-de-leps-n4-saison-5-quelle-gym-en-eps/','Soirée SNEP + vidéo'],[/Battle-GYM/i,'https://epsetsociete.fr/battle-gym-une-competition-par-equipe-ou-chacun-e-simplique/','EPS et Société · Battle-GYM']);}catch(e){}
 })();
+
+
+// ══════════════════════════════════════════════════════════════════════
+// v449 — GYM : la vue en blocs revient. Une fois « Vue complète »
+// touché, le bouton « 🧱 Vue en blocs » n'apparaissait plus : on restait
+// bloqué sur l'ancien écran. Le bouton est maintenant toujours là, et la
+// vue en blocs est remise par défaut une fois.
+// ══════════════════════════════════════════════════════════════════════
+try{if(!localStorage.getItem('grib_g449_reset')){localStorage.removeItem('grib_g442_v1');localStorage.setItem('grib_g449_reset','1');}}catch(e){}
+function g449Sw(){try{const host=E('seance-tab-content');if(!host)return;const s=getActiveSeance();const gp=!!(s&&c427IsGym(s)&&host.classList.contains('c427-prep'));
+  let b=host.querySelector('.g449-on');
+  if(!gp||host.classList.contains('g442')){if(b)b.remove();return;}
+  if(!b){b=document.createElement('button');b.type='button';b.className='g449-on';b.textContent='🧱 Passer à la vue en blocs';b.onclick=()=>{try{localStorage.removeItem('grib_g442_v1');}catch(e){}renderSeanceTab();};
+    const root=E('sb-root');if(root)root.parentNode.insertBefore(b,root);else host.prepend(b);}}catch(e){console.warn('g449',e);}}
+g442Apply=(function(f){return function(){const r=f.apply(this,arguments);g449Sw();return r;};})(g442Apply);
+renderSeanceTab=(function(f){return function(){const r=f.apply(this,arguments);g449Sw();return r;};})(renderSeanceTab);
+(function(){const st=document.createElement('style');st.textContent='html body .g449-on{display:block;width:100%;min-height:46px;margin:8px 0;border:1px dashed #a78bfa;border-radius:12px;background:#1e1b4b;color:#ddd6fe;font-weight:800;font-size:.95rem;}';document.head.appendChild(st);})();
 </script>
 </body>
 </html>
