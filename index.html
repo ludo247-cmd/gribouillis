@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v438</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v439</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v438</title>
+<title>Gribouillis EPS v439</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -31020,6 +31020,76 @@ renderSeanceTab=(function(f){return function(){const r=f.apply(this,arguments);t
 +'html body .rs438-dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;}html body .rs438-scroll{overflow-x:auto;}'
 +'html body .rs438-l{display:block;font-weight:700;margin:4px 0;}html body #rs438-nom{width:100%;min-height:44px;background:#0f172a;color:#e2e8f0;border:1px solid #334155;border-radius:8px;padding:0 8px;}';
  document.head.appendChild(st);})();
+
+
+
+// ══════════════════════════════════════════════════════════════════════
+// v439 — APPAREIL « 📱 TABLETTE ÉLÈVE » (réglage propre à l'appareil,
+// dans le panneau ☁️ Synchronisation)
+//  • elle REÇOIT tout (séances, équipes, réglages…) ;
+//  • elle N'ENVOIE que ce qui se fusionne sans rien écraser : matchs
+//    observés, moments vidéo, projets « Mon projet », et les apports des
+//    élèves dans la séance (bilan de fin de séance, choix d'exercice),
+//    rangés à part puis recopiés dans la séance sur ton appareil ;
+//  • « Tout renvoyer depuis cet appareil » est désactivé sur une tablette.
+// ══════════════════════════════════════════════════════════════════════
+const TAB439_ROLE='grib_device_role_v1',TAB439_CK='grib_tab_contrib_v1',TAB439_AP='grib_tab_contrib_applied_v1';
+const TAB439_FIELDS=['fin','finTeams','recap','eleveChoix'];
+function tab439On(){try{return _lsGet.call(localStorage,TAB439_ROLE)==='tablette';}catch(e){return false;}}
+try{if(GRIB_BACKUP_KEYS.indexOf(TAB439_CK)<0)GRIB_BACKUP_KEYS.push(TAB439_CK);}catch(e){}
+try{S417_MERGE[TAB439_CK]={id:x=>x&&x.id?String(x.id):'',sig:null,keep:0};}catch(e){}
+try{const _kn=syncKeyName;syncKeyName=function(k){return k===TAB439_CK?'Apports des élèves (tablettes)':k===PJ430_KEY?'Projets des élèves':_kn.apply(this,arguments);};}catch(e){}
+function tab439WL(k){return !!S417_MERGE[k];}
+function tab439Contrib(oldV,newV){let A=[],B=[];try{A=JSON.parse(oldV||'[]')||[];}catch(e){}try{B=JSON.parse(newV||'[]')||[];}catch(e){}if(!Array.isArray(B))return;
+  const byId={};(Array.isArray(A)?A:[]).forEach(s=>{if(s&&s.id)byId[s.id]=s;});const ch=[];
+  B.forEach(s=>{if(!s||!s.id)return;const o=byId[s.id]||{};const f={};let diff=false;TAB439_FIELDS.forEach(k=>{if(s[k]!=null){f[k]=s[k];if(JSON.stringify(s[k])!==JSON.stringify(o[k]))diff=true;}});if(diff)ch.push({sid:s.id,f});});
+  if(!ch.length)return;let L=[];try{L=JSON.parse(_lsGet.call(localStorage,TAB439_CK)||'[]')||[];}catch(e){}const dev=(SYNC&&SYNC.dev)||(typeof syncDev==='function'?syncDev():'tab');
+  ch.forEach(c=>{const id=c.sid+'|'+dev;const i=L.findIndex(x=>x&&x.id===id);const rec={id,sid:c.sid,dev,f:c.f,ts:Date.now()};if(i>=0)L[i]=rec;else L.push(rec);});
+  localStorage.setItem(TAB439_CK,JSON.stringify(L));}
+// sur une tablette : les autres données ne sont jamais marquées « à envoyer »
+Storage.prototype.setItem=(function(o){return function(k,v){const watch=this===window.localStorage&&tab439On()&&!(SYNC&&SYNC.applying)&&syncKeys().indexOf(k)>=0&&!tab439WL(k);
+  if(!watch)return o.apply(this,arguments);let m0=null,old=null;try{m0=syncMeta();if(k==='grib_seances_v1')old=_lsGet.call(this,k);}catch(e){}
+  const pd=m0?!!m0.dirty[k]:false,pm=m0?m0.mt[k]:undefined;const r=o.apply(this,arguments);
+  try{const m=syncMeta();if(m){if(!pd)delete m.dirty[k];if(pm===undefined)delete m.mt[k];else m.mt[k]=pm;syncMetaSave(m);}}catch(e){}
+  try{if(k==='grib_seances_v1')tab439Contrib(old,v);}catch(e){console.warn('tab439 contrib',e);}return r;};})(Storage.prototype.setItem);
+// envoi : tablette = seulement les données fusionnées
+syncPush=(function(f){return async function(){if(tab439On()){try{const m=syncMeta();if(m){let ch=false;Object.keys(m.dirty||{}).forEach(k=>{if(!tab439WL(k)){delete m.dirty[k];ch=true;}});if(ch)syncMetaSave(m);}}catch(e){}}
+  return f.apply(this,arguments);};})(syncPush);
+// réception (ton appareil) : recopier les apports des élèves dans les séances
+function tab439Apply(){if(tab439On())return 0;let L=[],AP={},S=null;try{L=JSON.parse(_lsGet.call(localStorage,TAB439_CK)||'[]')||[];AP=JSON.parse(_lsGet.call(localStorage,TAB439_AP)||'{}')||{};}catch(e){return 0;}
+  const todo=L.filter(c=>c&&c.id&&c.sid&&(+c.ts||0)>(+AP[c.id]||0));if(!todo.length)return 0;
+  try{S=JSON.parse(_lsGet.call(localStorage,'grib_seances_v1')||'[]');}catch(e){return 0;}if(!Array.isArray(S))return 0;let n=0;
+  const mergeFin=(dst,src)=>{dst=dst&&typeof dst==='object'?dst:{micro:{},macro:'',next:''};if(!dst.micro)dst.micro={};if(src&&typeof src==='object'){Object.assign(dst.micro,src.micro||{});['macro','next'].forEach(k=>{if(src[k])dst[k]=src[k];});if(src.recap&&String(dst.recap||'').indexOf(src.recap)<0)dst.recap=(dst.recap?dst.recap+'\n':'')+src.recap;}return dst;};
+  todo.forEach(c=>{const s=S.find(x=>x&&x.id===c.sid);if(s){const F=c.f||{};
+      if(F.fin)s.fin=mergeFin(s.fin,F.fin);
+      if(F.finTeams&&typeof F.finTeams==='object'){s.finTeams=s.finTeams||{};Object.keys(F.finTeams).forEach(t=>{s.finTeams[t]=mergeFin(s.finTeams[t],F.finTeams[t]);});}
+      if(F.recap&&String(s.recap||'').indexOf(F.recap)<0)s.recap=(s.recap?s.recap+'\n':'')+F.recap;
+      if(F.eleveChoix&&typeof F.eleveChoix==='object'){s.eleveChoix=s.eleveChoix||{};Object.keys(F.eleveChoix).forEach(k=>{s.eleveChoix[k]=Object.assign({},s.eleveChoix[k]||{},F.eleveChoix[k]);});}
+      n++;}
+    AP[c.id]=c.ts;});
+  try{if(n){localStorage.setItem('grib_seances_v1',JSON.stringify(S));try{if(typeof SEANCES!=='undefined'&&Array.isArray(SEANCES)){SEANCES.length=0;S.forEach(x=>SEANCES.push(x));}}catch(e){}}_lsSet.call(localStorage,TAB439_AP,JSON.stringify(AP));}catch(e){console.warn('tab439 apply',e);}
+  return n;}
+syncPull=(function(f){return async function(){const r=await f.apply(this,arguments);try{if(tab439Apply()){try{if(E('t-seance')&&E('t-seance').classList.contains('active'))renderSeanceTab();}catch(e){}}}catch(e){}return r;};})(syncPull);
+setTimeout(()=>{try{tab439Apply();}catch(e){}},2500);
+// interface : panneau de synchro
+function tab439Set(on){if(on){if(!confirm('Faire de cet appareil une 📱 TABLETTE ÉLÈVE ?\n\n• Elle recevra tout (séances, équipes, réglages).\n• Elle n\'enverra que les matchs observés, les projets et les bilans des élèves.\n• Tes modifications de séance faites ICI ne partiront pas : fais-les sur ton téléphone.\n\nLes données de cet appareil (hors matchs) seront remplacées par celles du cloud à la prochaine synchro.'))return;
+    _lsSet.call(localStorage,TAB439_ROLE,'tablette');try{const m=syncMeta();if(m){Object.keys(m.dirty||{}).forEach(k=>{if(!tab439WL(k))delete m.dirty[k];});syncKeys().forEach(k=>{if(!tab439WL(k))m.mt[k]=0;});syncMetaSave(m);}}catch(e){}}
+  else{if(!confirm('Repasser cet appareil en appareil ENSEIGNANT ?\nIl pourra de nouveau envoyer séances et réglages.'))return;try{localStorage.removeItem(TAB439_ROLE);}catch(e){}}
+  try{syncBadge(SYNC.state||'☁️');}catch(e){}const p=E('sync-pan');if(p)syncPanelFill(p);try{syncNow(true);}catch(e){}}
+syncPanelFill=(function(f){return function(p){f.apply(this,arguments);try{const on=tab439On();const b=p.querySelector('.sp-b');
+  const d=document.createElement('div');d.className='tab439-box';d.innerHTML='<b>Cet appareil :</b><'+'div class="tab439-seg"><button type="button" class="'+(on?'':'on')+'" onclick="'+(on?'tab439Set(false)':'')+'">👩‍🏫 Mon appareil</button><button type="button" class="'+(on?'on':'')+'" onclick="'+(on?'':'tab439Set(true)')+'">📱 Tablette élève</button></'+'div>'
+   +'<'+'div class="sp-dim">'+(on?'Reçoit tout · envoie seulement matchs, projets et bilans des élèves.':'Envoie et reçoit tout. Choisis « Tablette élève » sur les tablettes des clubs.')+'</'+'div>';
+  if(b)p.insertBefore(d,b);else p.appendChild(d);
+  if(on){const r1=p.querySelector('button[onclick="syncPanelRun(1)"]');if(r1){r1.disabled=true;r1.title='Désactivé sur une tablette élève';}}}catch(e){console.warn('tab439 ui',e);}};})(syncPanelFill);
+syncPanelRun=(function(f){return async function(a){if(a===1&&tab439On()){alert('Sur une tablette élève, on ne renvoie jamais tout vers le cloud.');return;}return f.apply(this,arguments);};})(syncPanelRun);
+syncBadge=(function(f){return function(t,tip){const r=f.apply(this,arguments);try{const b=E('sync-badge');if(b&&tab439On()&&b.textContent.indexOf('📱')!==0)b.textContent='📱 '+b.textContent;}catch(e){}return r;};})(syncBadge);
+(function(){const st=document.createElement('style');st.textContent='html body .tab439-box{margin:10px 0;padding:8px;border:1px solid #334155;border-radius:10px;}html body .tab439-seg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:6px 0;}'
++'html body .tab439-seg button{min-height:42px;border:1px solid #334155;border-radius:10px;background:#0f172a;color:#cbd5e1;font-weight:800;}html body .tab439-seg button.on{background:#0f766e;border-color:#0f766e;color:#fff;}';document.head.appendChild(st);})();
+// installation d'une tablette par code : case « tablette élève » cochée par défaut
+s417InstallShow=(function(f){return function(){const r=f.apply(this,arguments);try{const ov=E('s417-ov');const go=ov&&ov.querySelector('#s417-go');if(go&&!ov.querySelector('#tab439-ck')){
+  const l=document.createElement('label');l.style.cssText='display:flex;gap:8px;align-items:center;margin:6px 0;font-weight:700;';l.innerHTML='<input type="checkbox" id="tab439-ck" checked style="width:22px;height:22px;"> 📱 C\'est une tablette élève (elle n\'envoie que matchs, projets et bilans)';
+  go.parentNode.insertBefore(l,go);const h=go.onclick;go.onclick=function(){try{const raw=ov.querySelector('#s417-in').value.trim().replace(/\s+/g,'');let o=null;try{o=JSON.parse(decodeURIComponent(escape(atob(raw.replace(/^GRIB1-/,'')))));}catch(e){}
+    if(o&&o.t){if(ov.querySelector('#tab439-ck').checked)_lsSet.call(localStorage,TAB439_ROLE,'tablette');else localStorage.removeItem(TAB439_ROLE);}}catch(e){}return h.apply(this,arguments);};}}catch(e){console.warn('tab439 inst',e);}return r;};})(s417InstallShow);
 </script>
 </body>
 </html>
