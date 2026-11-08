@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v451</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v452</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v451</title>
+<title>Gribouillis EPS v452</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -31754,6 +31754,59 @@ document.addEventListener('click',e=>{try{const h=e.target.closest&&e.target.clo
 (function(){try{const F=JSON.parse(localStorage.getItem(LIBSEED_KEY)||'{}');if(F['acc451'])return;const M={'Roulade arriere':'Roulade arrière','Saut groupe ':'Saut groupé ','En araignee':'En araignée','En elephant':'En éléphant','Cuillere':'Cuillère','Equilibre ':'Équilibre ','Atr ':'ATR ','A 4 pattes':'À 4 pattes','Par dessus poutre':'Par-dessus la poutre','S accroupir':'S\'accroupir','Demi tour':'Demi-tour','Saut demi tour':'Saut demi-tour','Renversement arriere':'Renversement arrière','Le x ':'Le X '};
   const a=libLoad().slice();let ch=false;a.forEach(x=>{if(!x||!/^lib-gec-/.test(x.id))return;let t=x.titre;Object.keys(M).forEach(k=>{if(t.indexOf(k)===0||t.indexOf(' '+k)>=0||t.indexOf(k)>=0)t=t.split(k).join(M[k]);});if(t!==x.titre){x.titre=t;ch=true;}});
   F['acc451']=1;if(ch)libSave(a);localStorage.setItem(LIBSEED_KEY,JSON.stringify(F));}catch(e){console.warn('acc451',e);}})();
+
+
+
+// ══════════════════════════════════════════════════════════════════════
+// v452 — DÉROULÉ (vue en blocs)
+//  • plus de blocage : une situation se pose même sans objet choisi (elle
+//    se range dans son propre objet, sinon dans le premier du sport) ;
+//  • la bibliothèque propose D'ABORD les situations de l'objet du jour
+//    (« ⭐ Pour l'objet du jour »), puis toutes les autres ;
+//  • carte Présentation : « 🎯 Choisir l'objet » et « 🧱 Structure de la
+//    séance » (Vague + Ateliers + FPS, FPS + Ateliers…).
+// ══════════════════════════════════════════════════════════════════════
+function sb452Oes(s){return s?(s.customOeMode?[]:[s.oeId].concat(s.oeExtra||[]).filter(Boolean)):[];}
+sbLibAdd=(function(f){return function(id,quiet){const s=getActiveSeance();const it=s&&libLoad().find(x=>x.id===id);
+  if(s&&it){let ok=!!(it.cp&&getCpByPath(it.cp));
+    if(!ok){try{const r=sbPaletteRows(s);ok=!!((r.find(x=>x.f>=2)||r[0]||{}).cpPath||(s.oeId&&(seanceAllCpPaths(s,[s.oeId])[0])));}catch(e){}}
+    if(!ok){let p=null;try{if(it.oe)p=seanceAllCpPaths(s,[it.oe],true)[0]||null;}catch(e){}
+      try{if(!p)p=seanceAllCpPaths(s,null,true)[0]||null;}catch(e){}try{if(!p)p=remedDefaultCp(s);}catch(e){}
+      if(p){libInsert(id,p);const cp=getCpByPath(p);const ex=cp&&cp.exercices&&cp.exercices[cp.exercices.length-1];if(!ex)return null;const k=p+'#'+ex.id;if(quiet!=='quiet'){renderSeanceTab();sbExoModal(k,'');}return k;}}}
+  return f.apply(this,arguments);};})(sbLibAdd);
+// la bibliothèque : l'objet du jour d'abord
+pk451Fill=(function(f){return function(){f.apply(this,arguments);try{const ov=E('pk451');const s=getActiveSeance();const O=sb452Oes(s);if(!ov||!O.length)return;const l=ov.querySelector('.pk451-l');if(!l)return;
+  const L=libLoad();const rows=[...l.querySelectorAll(':scope > .pk451-i')];const top=[],rest=[];
+  rows.forEach(r=>{const m=/pk451Pick\('([^']+)'\)/.exec((r.querySelector('.pk451-add')||{}).getAttribute?r.querySelector('.pk451-add').getAttribute('onclick'):'');const x=m&&L.find(y=>y.id===m[1]);const d=r.nextElementSibling&&r.nextElementSibling.classList.contains('pk451-d')?r.nextElementSibling:null;
+    const on=x&&(O.indexOf(x.oe)>=0||(x.oeAlso||[]).some(o=>O.indexOf(o)>=0)||O.some(o=>String(x.cp||'').indexOf('|'+o)>=0)||(x.cpAlso||[]).some(c=>O.some(o=>String(c).indexOf('|'+o)>=0)));(on?top:rest).push([r,d]);});
+  if(!top.length)return;const h1=document.createElement('div');h1.className='pk452-h';h1.textContent='⭐ Pour l\'objet du jour ('+top.length+')';const h2=document.createElement('div');h2.className='pk452-h';h2.textContent='Autres situations';
+  const tail=[...l.children].filter(c=>c.tagName==='P');l.innerHTML='';l.appendChild(h1);top.forEach(p=>p.forEach(x=>x&&l.appendChild(x)));if(rest.length){l.appendChild(h2);rest.forEach(p=>p.forEach(x=>x&&l.appendChild(x)));}tail.forEach(t=>l.appendChild(t));}catch(e){console.warn('pk452',e);}};})(pk451Fill);
+// structure de la séance
+const SB452_T={V:['Vague (toute la classe)','🌊'],A:['Ateliers (petits groupes)','🔁'],F:['Passage / FPS','🏅']};
+const SB452_P=[['VAF','🌊 Vague + 🔁 Ateliers + 🏅 FPS'],['FA','🏅 FPS + 🔁 Ateliers'],['FAF','🏅 FPS + 🔁 Ateliers + 🏅 FPS'],['VA','🌊 Vague + 🔁 Ateliers'],['AF','🔁 Ateliers + 🏅 FPS'],['A','🔁 Ateliers seuls']];
+function sb452Struct(code){const s=getActiveSeance();if(!s)return;const cur=s.steps.filter(st=>seanceStepBase(st.key)==='remediation');const want=code.split('');
+  const lost=cur.slice(want.length).filter(st=>((s.stepExos||{})[st.key]||[]).length);
+  if(lost.length&&!confirm(lost.length+' bloc(s) déjà rempli(s) vont disparaître ('+lost.map(st=>seanceStepDef(st.key).label).join(', ')+').\nLes situations restent dans la bibliothèque. Continuer ?'))return;
+  let n=cur.reduce((m,st)=>Math.max(m,parseInt(String(st.key).split('-')[1],10)||0),0);
+  const neu=want.map((c,i)=>{const t=SB452_T[c];if(cur[i]){const o=cur[i];o.label=t[0];o.ico=t[1];return o;}n++;return {key:'remediation-'+n,status:'pending',label:t[0],ico:t[1]};});
+  cur.slice(want.length).forEach(st=>{if(s.stepExos)delete s.stepExos[st.key];});
+  const others=s.steps.filter(st=>seanceStepBase(st.key)!=='remediation');const fi=others.findIndex(st=>st.key==='fin'||seanceStepBase(st.key)==='bilan');
+  const at=fi<0?others.length:fi;s.steps=others.slice(0,at).concat(neu,others.slice(at));try{recomputeSeanceStatuses(s);}catch(e){}saveSeances();renderSeanceTab();try{toast2('🧱 Structure : '+(SB452_P.find(p=>p[0]===code)||[,''])[1]);}catch(e){}}
+function sb452Code(s){return s.steps.filter(st=>seanceStepBase(st.key)==='remediation').map(st=>/vague/i.test(st.label||'')?'V':/atelier/i.test(st.label||'')?'A':/passage|fps/i.test(st.label||'')?'F':'?').join('');}
+function sb452Pres(){try{const host=E('seance-tab-content');if(!host||!host.classList.contains('g442'))return;const st=host.querySelector('#sb-root .sb-step.g442-open');if(!st)return;const k=st.dataset.g442;
+  if(!k||seanceStepBase(k)!=='presentation'){return;}const body=st.querySelector('.sb-body');if(!body||body.querySelector('.sb452'))return;const s=getActiveSeance();const code=sb452Code(s);
+  const d=document.createElement('div');d.className='sb452';d.innerHTML='<button type="button" class="sb452-oe" onclick="event.stopPropagation();sb452Oe()">🎯 '+(sb452Oes(s).length?'Changer l\'objet du jour':'Choisir l\'objet du jour')+'</button>'
+   +'<b class="sb452-t">🧱 Structure de la séance</b><'+'div class="sb452-p">'+SB452_P.map(p=>'<button type="button" class="'+(p[0]===code?'on':'')+'" onclick="event.stopPropagation();sb452Struct(\''+p[0]+'\')">'+p[1]+'</button>').join('')+'</'+'div>'
+   +'<span class="sb452-dim">Tu peux aussi ajouter un bloc avec « ＋ Vague / Ateliers / Passage » en haut.</span>';body.insertBefore(d,body.firstChild);}catch(e){console.warn('sb452',e);}}
+g442Apply=(function(f){return function(){const r=f.apply(this,arguments);sb452Pres();return r;};})(g442Apply);
+renderSeanceTab=(function(f){return function(){const r=f.apply(this,arguments);sb452Pres();return r;};})(renderSeanceTab);
+// « Objet à choisir » sur la carte : un lien direct
+document.addEventListener('click',e=>{try{const t=e.target.closest&&e.target.closest('#seance-tab-content.g442 .sb-step.g442-open .sb-empty');if(!t)return;e.preventDefault();e.stopPropagation();sb452Oe();}catch(x){}},true);
+function sb452Oe(){G442.show='pres';g442Apply();const host=E('seance-tab-content');const el=host&&g442Sec(host,'pres');if(el){const d=el.tagName==='DETAILS'?el:el.querySelector('details');if(d)d.open=true;setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'start'}),60);}}
+(function(){const st=document.createElement('style');st.textContent='html body .pk452-h{font-size:.78rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:#fbbf24;margin:6px 0 2px;}'
++'html body .sb452{display:flex;flex-direction:column;gap:8px;margin:4px 0 10px;}html body .sb452-oe{min-height:46px;border:none;border-radius:10px;background:#7c3aed;color:#fff;font-weight:800;font-size:.95rem;}'
++'html body .sb452-t{color:#e2e8f0;font-size:.9rem;margin-top:4px;}html body .sb452-p{display:flex;flex-wrap:wrap;gap:6px;}html body .sb452-p button{min-height:40px;border:1px solid #334155;border-radius:99px;background:#0f172a;color:#cbd5e1;font-weight:700;padding:0 12px;font-size:.82rem;}html body .sb452-p button.on{background:#1d4ed8;border-color:#1d4ed8;color:#fff;}'
++'html body .sb452-dim{font-size:.75rem;color:#94a3b8;}html body #seance-tab-content.g442 .sb-step.g442-open .sb-empty{cursor:pointer;text-decoration:underline;color:#c4b5fd;}';document.head.appendChild(st);})();
 </script>
 </body>
 </html>
