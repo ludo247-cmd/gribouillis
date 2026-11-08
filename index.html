@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v453</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v454</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v453</title>
+<title>Gribouillis EPS v454</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -31901,6 +31901,31 @@ try{const _s=src443Scan;src443Scan=function(root){_s.apply(this,arguments);try{(
 // la bibliothèque des blocs : filtre « FPS »
 try{pk451Fill=(function(f){return function(){f.apply(this,arguments);try{const ov=E('pk451');const fb=ov&&ov.querySelector('.pk451-f');if(fb&&!fb.querySelector('[data-f453]')&&pk451List().some(x=>(x.tags||[]).indexOf('FPS')>=0)){const b=document.createElement('button');b.type='button';b.dataset.f453='1';b.textContent='FPS';if(PK451.f==='tag:FPS')b.className='on';b.onclick=()=>{PK451.f='tag:FPS';pk451Fill();};fb.appendChild(b);}}catch(e){}};})(pk451Fill);}catch(e){}
 (function(){const st=document.createElement('style');st.textContent='html body .j453{font-size:.88rem;line-height:1.5;}html body .j453 p{margin:8px 0 4px;}html body .j453-ul{margin:0 0 4px;padding-left:18px;}html body .j453-ul li{margin:3px 0;}';document.head.appendChild(st);})();
+
+
+
+// ══════════════════════════════════════════════════════════════════════
+// v454 — CODE COULEUR DISCRET PAR CHAMP D'APPRENTISSAGE
+// CA1 performance (orange) · CA2 milieu (vert) · CA3 prestation (violet)
+// · CA4 opposition (bleu) · CA5 entretien de soi (rose) : un liseré en
+// haut de la séance et des cartes de séquence, une pastille sur les
+// situations de la bibliothèque.
+// ══════════════════════════════════════════════════════════════════════
+const CA454={1:['CA1','#f97316'],2:['CA2','#22c55e'],3:['CA3','#a855f7'],4:['CA4','#3b82f6'],5:['CA5','#ec4899']};
+const CA454_RE=[[5,/muscu|course en dur|demi-fond|step|yoga|cross.?training|pilates|relaxation|aérobic|aerobic|fitness/i],[3,/gym|acro|danse|cirque|parkour|chorégr/i],[2,/orientation|escalade|kayak|canoë|vtt|voile|sauvetage|randonn/i],
+ [1,/athl|vitesse|haies|relais|saut|lancer|javelot|poids|disque|natation|combiné|pentabond/i],[4,/foot|hand|basket|volley|badminton|tennis|rugby|ultimate|dodgeball|lutte|judo|boxe|savate|escrime|kin.?ball|tchouk|base.?ball|hockey|futsal/i]];
+function ca454Of(txt){const t=String(txt||'');for(const r of CA454_RE)if(r[1].test(t))return r[0];return 0;}
+function ca454Paint(){try{
+  const host=E('seance-tab-content');if(host){const s=getActiveSeance();const c=s?ca454Of(s.sport||''):0;if(c){host.style.setProperty('--ca454',CA454[c][1]);host.classList.add('ca454-s');host.dataset.ca=CA454[c][0];}else{host.classList.remove('ca454-s');}}
+  document.querySelectorAll('.seq-card:not([data-ca454])').forEach(el=>{const c=ca454Of(el.textContent);el.dataset.ca454=c||'0';if(c){el.style.setProperty('--ca454',CA454[c][1]);el.classList.add('ca454-c');const b=el.querySelector('b');if(b&&!b.querySelector('.ca454-t'))b.insertAdjacentHTML('afterbegin','<span class="ca454-t" style="background:'+CA454[c][1]+'">'+CA454[c][0]+'</span> ');}});
+  let L=null;document.querySelectorAll('.lib-tile[data-id]:not([data-ca454])').forEach(el=>{if(!L)try{L=libLoad();}catch(e){L=[];}const x=L.find(y=>y&&y.id===el.dataset.id);const c=x?ca454Of(x.apsa||''):0;el.dataset.ca454=c||'0';
+    if(c){const th=el.querySelector('.th')||el;th.style.position=th.style.position||'relative';th.insertAdjacentHTML('beforeend','<span class="ca454-d" title="'+CA454[c][0]+'" style="background:'+CA454[c][1]+'">'+CA454[c][0]+'</span>');}});
+ }catch(e){console.warn('ca454',e);}}
+let CA454_T=0;try{new MutationObserver(()=>{clearTimeout(CA454_T);CA454_T=setTimeout(ca454Paint,120);}).observe(document.body,{childList:true,subtree:true});}catch(e){}
+setTimeout(ca454Paint,800);
+(function(){const st=document.createElement('style');st.textContent='html body #seance-tab-content.ca454-s{box-shadow:inset 0 4px 0 var(--ca454);}'
++'html body .seq-card.ca454-c{box-shadow:inset 0 3px 0 var(--ca454);}html body .ca454-t{display:inline-block;font-size:.66rem;font-weight:800;color:#0b1220;border-radius:5px;padding:1px 5px;vertical-align:middle;letter-spacing:.03em;}'
++'html body .ca454-d{position:absolute;top:4px;left:4px;font-size:.6rem;font-weight:800;color:#0b1220;border-radius:5px;padding:1px 5px;letter-spacing:.03em;}';document.head.appendChild(st);})();
 </script>
 </body>
 </html>
