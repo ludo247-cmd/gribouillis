@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v447</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v448</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v447</title>
+<title>Gribouillis EPS v448</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -31550,6 +31550,86 @@ try{const F=JSON.parse(localStorage.getItem(LIBSEED_KEY)||'{}');const a=libLoad(
 try{[[/Fiche Tabata/i,'1Z32B7xBuFrzq6Bb295wWPMUwtjmbbBv5','Fiche Tabata 3B'],[/CAP EPS 2019/i,'19Ejii9NDoxhiuAtAJ49ZoSQ5EDo34dCq','Ressource CAP gym'],[/Gymnastique cycle 4 — repères/i,'1DLYY4E55wmOG8wdS2M5i5ykhnwL9mmAF','Éduscol gym cycle 4'],
   [/Dolléans|Je pare donc je suis/i,'1xyt2bQVxGBh2jivvfDULX5cCr1iMrWxH','Dolléans · parade'],[/reussir-gym/i,'1Rn0u4nJF47x9cY--L2EarAsbnzyA80FI','Bloc « réussite »'],[/ae-gym/i,'1FOtVXgS652tz0x6r6gMfAbhLN_oOXf6B','Bloc « auto-évaluation »'],
   [/Parkour gym 6e/i,'https://docs.google.com/spreadsheets/d/1BOWMP_wI7PdlslOENNcQrxECMaSoNLD2jWi9qGril6E/edit','Tableur Parkour gym 6e']].forEach(r=>SRC443.push(r));}catch(e){}
+})();
+
+
+// ══════════════════════════════════════════════════════════════════════
+// v448 — BIBLIOTHÈQUE GYM : soirée de l'EPS du SNEP « Quelle gym en
+// EPS ? » (M. Assadi : des appuis manuels aux acrobaties ; M. Janicot :
+// ateliers validés + mouvements d'équipe inspirés de la TeamGym) et
+// « Battle-GYM » (I. Vanneau, EPS et Société, 2025). Situations
+// évolutives liées (étape ①, ②, ③…).
+// ══════════════════════════════════════════════════════════════════════
+(function(){
+const SA="M. Assadi, « Apprentissages spécifiques en gymnastique : des appuis manuels aux acrobaties », Soirée de l'EPS SNEP-FSU « Quelle gym en EPS ? » (2025)",SJ="M. Janicot, Soirée de l'EPS SNEP-FSU « Quelle gym en EPS ? » (2025)",SV="I. Vanneau, « Battle-GYM : une compétition par équipe où chacun·e s'implique », EPS et Société (2025)";
+const OEL={'gym-a':'OE A — Rentrer la tête','gym-b':'OE B — Les bras acrobatiques','gym-c':'OE C — Tourner tendu, enchaîner','gym-d':'OE D — Enchaîner : la réception prépare la suite'};
+const it=(id,titre,objectif,L,crit,roles,oe,tags)=>({id:'lib-sn448-'+id,kind:'remed',titre,objectif,desc:L.join('\n'),image:null,video:null,criteres:crit.map(c=>({label:c,cible:3,collectif:false,neg:false})),roles,apsa:'Gymnastique',oe:oe||'',oeLab:OEL[oe]||'',cp:oe?'gymnastique|'+oe:'gymnastique',oeAlso:[],cpAlso:[],tags});
+const A=[
+it('echauf','Échauffement « appuis manuels » : du simple au renversé','Préparer le placement du corps, les ceintures scapulaire et pelvienne avant tout travail sur les mains.',
+ ['Dispositif : sur tapis, en vague ou en ateliers.','But : enchaîner — enroulé/déroulé de la colonne à 4 pattes vers appui facial ou dorsal, chandelle, roulade + chandelle ; culbutos avant et arrière ; déplacements à 4 pattes avant/arrière puis bras et jambe opposés tendus, sauts de lapin, impulsions tête en bas ; brouette à deux (on tient les cuisses pour protéger le bas du dos) ; placement de dos depuis à genoux ; rebonds jambes tendues ; fentes et sauts pieds joints pour des réceptions sûres.',
+  'Critères : angles bras-tronc et jambes-tronc ouverts ; poids du corps au-dessus des mains.','Règles : trois incontournables — échauffement spécifique du placement, renforcement des ceintures, étirements des angles bras-tronc et jambes-tronc.','Source : '+SA+'.'],
+ ['Angles ouverts','Poids au-dessus des mains'],['Gymnaste'],'gym-b',['échauffement','appuis manuels','prérequis']),
+it('atr-1','ATR ① : au mur, support surélevé','Monter à l\'ATR face au mur, bras-tronc ouverts.',
+ ['Dispositif : mur ; mains à environ 50 cm du mur ; repère au sol ; support surélevé sous les mains au début.','But : départ en fente, bras en haut ; pousser sur la jambe avant pour monter la jambe arrière.','Critères : angle bras-tronc ouvert (le repère au sol aide) ; dos sans cambrure.','Pour complexifier : baisser peu à peu le support puis le retirer.','Source : '+SA+'.'],
+ ['Angle bras-tronc ouvert','Pas de cambrure'],['Gymnaste','Observateur'],'gym-b',['ATR','prérequis']),
+it('atr-2','ATR ② : tenir, transférer, sans le mur','Tenir l\'ATR quelques secondes et s\'en sortir en sécurité.',
+ ['Dispositif : mur puis espace libre ; un aide sur le côté.','But : tenir l\'ATR quelques secondes ; transférer le poids d\'un bras à l\'autre ; puis sans le mur avec un aide.','Critères : alignement mains-épaules-bassin ; bras tendus, épaules poussées.','Pour complexifier : sortie en roulade avant — départ fente bras en haut, épaules ouvertes, basculer sans cambrer ni casser au bassin, rentrer la tête, dos rond, arriver talons-fesses sur les pieds.','Source : '+SA+'.'],
+ ['Tenue 2-3 s alignée','Sortie roulade contrôlée'],['Gymnaste','Aide'],'gym-b',['ATR']),
+it('atr-esp','ATR aux espaliers : monter en 3 étapes','Atteindre la verticale renversée en marchant aux espaliers et apprendre la roulade de sécurité.',
+ ['Dispositif : espaliers + tapis.','But : ① monter les pieds aux espaliers jusqu\'à hauteur de hanches en reculant les mains, pousser pour partir en roulade ; ② reculer les mains jusqu\'à l\'alignement vertical, sans cambrer, épaules poussées, bras tendus ; ③ tenir 2 s puis rouler en avant.','Critères : pas de cambrure ; bras tendus ; roulade de sortie maîtrisée.','Source : '+SA+'.'],
+ ['Alignement vertical','Tenue 2 s','Roulade de sortie'],['Gymnaste','Aide'],'gym-b',['ATR','sécurité active']),
+it('dos','Placement de dos : pousser sur les mains depuis un support','Passer au-dessus des mains, bras tendus, épaules hautes.',
+ ['Dispositif : bloc ou banc ; caisson.','But : poussée simultanée des jambes depuis un support surélevé, bras tendus, épaules qui montent, mains-épaules-bassin alignés ; tenir quelques secondes (un aide limite le mouvement des épaules) ; se déplacer sur les mains autour d\'un caisson en gardant l\'alignement ; finir par une roulade avant ou une arrivée dos.','Pour complexifier : franchir un banc avec poussée simultanée des jambes, jambes fléchies puis tendues.','Source : '+SA+'.'],
+ ['Bras tendus, épaules hautes','Alignement mains-épaules-bassin'],['Gymnaste','Aide'],'gym-b',['placement de dos']),
+it('lune-1','Lune ① : situation basse','Rouler en avant après une impulsion simultanée des jambes.',
+ ['Dispositif : tapis ; course courte.','But : course, impulsion pieds joints, roulade avant bras fléchis.','Pour complexifier : bras tendus, poussée surélevée avant la pose des mains.','Source : '+SA+'.'],['Impulsion pieds joints','Roulade dans l\'axe'],['Gymnaste'],'gym-b',['lune','renversement']),
+it('lune-2','Lune ② : situation haute, arrivée dos','Atteindre l\'ATR après un saut et arriver dos en un seul bruit.',
+ ['Dispositif : mini-trampoline + bloc/module ; tapis épais.','But : quelques pas, saut, atteindre l\'ATR ; projeter les jambes vers l\'arrière, ouvrir les épaules, pousser sur les bras ; arrivée dos (épaules, fesses et pieds touchent en même temps).','Pour complexifier : module entre mini-trampoline et bloc ; tremplin ; plus d\'impulsion des bras pour une suspension puis un 2e envol et une arrivée debout.','Source : '+SA+'.'],['Passage par l\'ATR','Arrivée dos « un seul bruit »'],['Gymnaste','Pareur'],'gym-b',['lune','renversement']),
+it('roue-1','Roue ① : alternance des appuis « main-main-pied-pied »','Construire l\'ordre des appuis en poussant dans les épaules.',
+ ['Dispositif : bloc surélevé, en cercle.','But : se déplacer sur les mains et les pieds en alternant, appui sur le bloc, épaules qui poussent, jambes tendues.','Critères : ordre main-main-pied-pied ; jambes tendues.','Source : '+SA+'.'],['Ordre des appuis','Jambes tendues'],['Gymnaste'],'gym-b',['roue']),
+it('roue-2','Roue ② : sur plan incliné','Prendre de la vitesse en projetant la jambe libre au-dessus de soi.',
+ ['Dispositif : plan incliné.','But : fente, épaule tirée en arrière, jambe libre projetée au-dessus pour prendre de la vitesse ; 2e main dans l\'alignement de la 1re ; finir en repoussant des épaules.','Pour complexifier : arrivée pas chassé, quart de tour, deux pieds.','Source : '+SA+'.'],['Mains alignées','Repousser des épaules'],['Gymnaste','Pareur'],'gym-b',['roue']),
+it('roue-3','Roue ③ : depuis un tapis vers la rondade','Allonger la poussée des épaules jusqu\'à l\'arrivée pieds joints.',
+ ['Dispositif : tapis ou banc de départ.','But : les épaules poussent plus longtemps pour plus d\'impulsion et un retour debout plus facile ; puis arrivée dos (un seul bruit) ; puis arrivée pieds joints = rondade.','Source : '+SA+'.'],['Poussée longue des épaules','Arrivée pieds joints'],['Gymnaste','Pareur'],'gym-b',['roue','rondade']),
+it('salto-rec','Salto avant : la réception d\'abord (prérequis)','Savoir recevoir et rouler avant de tourner en l\'air.',
+ ['Dispositif : tapis, plan incliné, mini-trampoline (3 à 5 pas d\'élan, repère de pré-saut long) ; hauteur du support selon l\'impulsion : mini-trampo (poitrine/épaules), tremplin (taille), sol (hanche).',
+  'But : ① départ debout, impulsion simultanée, réception stable 2 pieds ; ② déséquilibre avant, reprise active 2 pieds puis course ; ③ déséquilibre plus fort, reprise 2 pieds puis roulade avant ; ④ fin de roulade avec départs variés, chercher le groupé puis réception active ou roulade ; ⑤ plan plus pentu pour la vitesse.',
+  'Règles : prérequis — roulade avant sur léger surélevé ; on valide chaque étape avant la suivante ; on enseigne la réception avant la rotation ; on lie le salto à une roulade dans le sens de rotation (légère sur-rotation plutôt que sous-rotation).',
+  'Pour complexifier : au mini-trampoline — mains au tapis, roulade bras projetés vers le haut ; pose des mains plus courte, arrivée assise ; ¾ de salto arrivée assise sans les mains ; arrivée fesses plus hautes que les pieds avec ouverture active. Salto complet d\'abord en arrivée surélevée avec 2 pareurs (un au ventre, un à la nuque), qui aident de moins en moins.','Source : '+SA+' (voir aussi le salto de M. Janicot).'],
+ ['Réception stable 2 pieds','Roulade dans le sens de rotation'],['Gymnaste','Pareur'],'gym-a',['salto','prérequis','réception']),
+it('ren-1','Renversement avant ① : au ralenti avec 2 pareurs','Utiliser les pareurs et vivre le renversement lentement avant la vitesse.',
+ ['Dispositif : 2 pareurs de chaque côté, un pied devant, un genou au sol, épaules qui se touchent.','But : ① ATR au ralenti, mains entre les pieds des pareurs, départ et arrivée en fente ; ② ATR puis renversement paré jusqu\'à debout.',
+  'Règles : chaque pareur tient l\'épaule (empêche les bras de plier) et le bas du dos ou la cuisse ; il pousse avec la jambe avant pour aider la rotation et redescend l\'élève doucement ; les pareurs agissent le plus tôt possible.','Critères : bras tendus, oreilles cachées ; regard sur les mains.','Source : '+SA+'.'],
+ ['Bras tendus','Regard sur les mains'],['Gymnaste','Pareur','Pareur'],'gym-b',['renversement avant','saut de mains','parade']),
+it('ren-2','Renversement avant ② : sur support, puis ATR rebond','Construire la poussée des bras et l\'arrivée dos.',
+ ['Dispositif : craie pour les mains ; banc ou bloc mousse incliné tenu par les pareurs.','But : ③ renversement complet au ralenti sur le support ; ④ ATR rebond — fente, impulsion jambe, poussée des bras, arrivée dos après le rebond.','Critères : rester aligné et gainé de l\'ATR aux pieds ; angles bras-tronc et jambes-tronc ouverts jusqu\'aux deux pieds.','Source : '+SA+'.'],
+ ['Aligné et gainé','Angles ouverts'],['Gymnaste','Pareur','Pareur'],'gym-b',['renversement avant','saut de mains']),
+it('ren-3','Renversement avant ③ : fente + jambe libre, puis sursaut','Passer par l\'ATR avec une impulsion des bras et arriver dos en un bruit.',
+ ['Dispositif : repères pour le pied de fente et les mains.','But : ⑤ fente avec projection simultanée de la jambe libre, passage ATR avec impulsion des bras, arrivée dos (un seul bruit) ; ⑥ course avec sursaut et fente.','Critères : épaules, fesses et pieds touchent ensemble ; continuer à pousser des bras après l\'arrivée.','Source : '+SA+'.'],
+ ['Arrivée « un seul bruit »','Poussée des bras continue'],['Gymnaste','Pareur'],'gym-b',['renversement avant','saut de mains']),
+it('ren-4','Renversement avant ④ : saut de mains','Réaliser le saut de mains, d\'abord sur un support dynamique puis sans matériel.',
+ ['Dispositif : tapis surélevé, tremplin ou trampoline/mini-trampoline ; 2-3 pas d\'élan ; pareurs à genou.','But : ⑦ saut de mains sur support surélevé ou dynamique ; ⑧ saut de mains complet sans matériel.','Critères : aligné et gainé ; regard sur les mains, bras tendus oreilles cachées ; angles ouverts jusqu\'aux deux pieds.','Source : '+SA+'.'],
+ ['Aligné et gainé','Réception debout'],['Gymnaste','Pareur'],'gym-b',['renversement avant','saut de mains']),
+it('barres','Barres : appui, balancés, sorties','Tenir l\'appui aligné et se balancer sur les bras.',
+ ['Dispositif : barres asymétriques ou barre basse ; barres parallèles ; élastique comme repère de balancé.','But : barre basse — monter par poussée des jambes, appui aligné, balancés avant/arrière, transfert du poids d\'un bras à l\'autre, sortie avant ; barres parallèles — transférer le poids d\'un bras à l\'autre puis petits pas en avant, jambes tendues et serrées ; barre haute — monter depuis la barre basse, appui ventral, rotation avant en glissant les cuisses le long de la barre.','Règles : si les bras faiblissent, lâcher et arriver sur les deux pieds.','Pour complexifier : arrivée arrière depuis un départ surélevé ; tour arrière à 360°.','Source : '+SA+'.'],
+ ['Appui aligné','Balancé contrôlé'],['Gymnaste','Pareur'],'gym-b',['barres','agrès']),
+it('janicot-team','Ateliers validés puis mouvements d\'équipe (inspiré TeamGym)','Valider chaque niveau aux ateliers, puis présenter un mouvement d\'ensemble au sol en équipe.',
+ ['Dispositif : classe de lycée ; ateliers acrobatiques (trampoline) ; espace sol pour les équipes.','But : les éléments de base (culbuto, ATR, roue) sont travaillés en échauffement collectif ; chacun valide un niveau avant de passer au plus difficile ; puis chaque équipe construit un mouvement d\'ensemble au sol.',
+  'Règles : les ateliers permettent l\'autonomie dans une grande classe.','À compléter : organisation détaillée, critères et évaluation de l\'équipe (ses documents de la soirée).','Source : '+SJ+'.'],
+ ['Niveau validé avant de passer au suivant','Mouvement d\'ensemble synchronisé'],['Gymnaste','Juge','Coéquipier'],'gym-d',['TeamGym','équipe','lycée','prérequis']),
+it('battle','Battle-GYM : défis par équipes où chacun rapporte des points','Gagner des défis contre un élève de même niveau pour rapporter des points à son équipe.',
+ ['Dispositif : sol ; 3 équipes hétérogènes faites par le prof, chacune avec son espace ; 4 familles de figures (rotations ; sauts ; maintiens 3 s et déplacements ; renversements sur les mains), chacune sur une fiche à 3 niveaux (facile, moyen, difficile), distribuée dès la 1re séance.',
+  'But : rencontre triangulaire — chaque équipe défie les deux autres et est jury à son tour. Chaque équipe classe ses gymnastes de 1 (le plus débutant) à n : le n°1 affronte le n°1 adverse, etc., sur les 4 familles ; chacun présente sa figure la plus difficile.',
+  'Règles : défi perdu = 1 point, défi gagné = 3 points. Jury en nombre impair, vote après concertation, peut justifier son vote. Parades autorisées et prises en compte.',
+  'Critères : virtuosité (simple mais propre), audace (prise de risque), originalité (inédit mais gymnique) ; difficulté, amplitude, tenue du corps, réception. Fautes construites au tableau : grosses (chute, gros déséquilibre, élément incomplet, trou de mémoire), moyennes (bras ou jambe fléchis, réception instable, manque d\'amplitude), petites (pointe de pied, geste parasite, petit rééquilibrage).',
+  'Pour simplifier : 4-5 premières séances — décoder les fiches, construire les critères, objectif minimal roue + renversement pour tous.','Pour complexifier : décompte façon Acrogym (figure plus difficile mais risquée ou plus maîtrisée).','Source : '+SV+'.'],
+ ['Défis gagnés','Figure sans grosse faute'],['Gymnaste','Coéquipier','Coach','Juré'],'',['défis','équipe','juge','compétition'])];
+const EVO=[['atr-1','atr-2'],['lune-1','lune-2'],['roue-1','roue-2','roue-3'],['ren-1','ren-2','ren-3','ren-4']].map(c=>c.map(x=>'lib-sn448-'+x));
+try{const F=JSON.parse(localStorage.getItem(LIBSEED_KEY)||'{}');const a=libLoad().slice();let ch=false;
+  A.forEach(x=>{if(F[x.id])return;if(!a.some(y=>y&&y.id===x.id))a.push(x);F[x.id]=1;ch=true;});
+  if(!F['evo448']){EVO.forEach(ids=>{const L=ids.map(i=>a.find(x=>x&&x.id===i)).filter(Boolean);if(L.length<2||L.some(x=>x.evo))return;L.forEach((x,i)=>{x.evo={g:L[0].id,n:i+1};});ch=true;});F['evo448']=1;}
+  if(ch){libSave(a);localStorage.setItem(LIBSEED_KEY,JSON.stringify(F));}}catch(e){console.warn('lib448',e);}
+try{SRC443.push([/M\. Assadi/i,'https://pedagogie.snepfsu.fr/wp-content/uploads/2025/02/Apprentissage-specifique-en-gymnastiqu.pdf','Assadi (PDF SNEP)'],[/Soirée de l.EPS SNEP/i,'https://pedagogie.snepfsu.fr/2025/01/23/soiree-de-leps-n4-saison-5-quelle-gym-en-eps/','Soirée SNEP + vidéo'],[/Battle-GYM/i,'https://epsetsociete.fr/battle-gym-une-competition-par-equipe-ou-chacun-e-simplique/','EPS et Société · Battle-GYM']);}catch(e){}
 })();
 </script>
 </body>
