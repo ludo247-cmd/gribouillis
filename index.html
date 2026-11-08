@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v441</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v442</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v441</title>
+<title>Gribouillis EPS v442</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -31168,6 +31168,61 @@ function g441Clean(){const host=E('seance-tab-content');const s=getActiveSeance(
   host.querySelectorAll('.sb-tile[data-drag="new:remediation"]').forEach(t=>{if(!/Atelier/.test(t.textContent))t.textContent='➕ Atelier';});}
 renderSeanceTab=(function(f){return function(){const r=f.apply(this,arguments);try{g441Clean();}catch(e){console.warn('g441',e);}return r;};})(renderSeanceTab);
 (function(){const st=document.createElement('style');st.textContent='html body #seance-tab-content .g441-x{display:none!important;}';document.head.appendChild(st);})();
+
+
+
+// ══════════════════════════════════════════════════════════════════════
+// v442 — GYM : « Préparer » en BLOCS (essai, d'après la maquette)
+//  • le déroulé en cartes compactes ; toucher un bloc l'ouvre (un seul à
+//    la fois) : Vague / Ateliers / Passage montrent leurs cases + la
+//    palette de situations ; Présentation → Objet & CP ; Échauffement →
+//    échauffement ; Bilan → bilan ;
+//  • les rubriques deviennent une rangée de boutons : on n'affiche que
+//    celle qu'on touche ;
+//  • en Préparer, toucher un bloc ne « lance » plus l'étape ;
+//  • « Vue complète » pour revenir à l'ancien écran (mémorisé).
+// ══════════════════════════════════════════════════════════════════════
+const G442={sel:'',show:''};
+function g442On(){const s=getActiveSeance();if(!s||!c427IsGym(s))return false;if(SEANCE_STATE&&SEANCE_STATE.mode==='eleve')return false;try{if(localStorage.getItem('grib_g442_v1')==='off')return false;}catch(e){}
+  const h=E('seance-tab-content');return !!(h&&h.classList.contains('c427-prep'));}
+const G442_RUB=[['pres','🎯 Objet & CP'],['groups','👥 Groupes'],['warm','🔥 Échauffement'],['exo','🏃 Situations retenues'],['trajet','🎛 Choix élèves'],['terrain','🗺 Matériel'],['gymf','🤸 Fiches gym'],['fin','🏁 Bilan']];
+function g442Sec(host,k){if(k==='gymf')return host.querySelector('.se-gym');const d=host.querySelector('details[data-k="'+k+'"]');return d?(d.closest('.remed-step.sblock')||d):null;}
+function g442Show(k){G442.show=(G442.show===k?'':k);g442Apply();const host=E('seance-tab-content');const el=host&&g442Sec(host,G442.show);if(el){const d=el.tagName==='DETAILS'?el:el.querySelector('details');if(d)d.open=true;setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'start'}),40);}}
+function g442Step(key){G442.sel=(G442.sel===key?'':key);const b=(typeof seanceStepBase==='function')?seanceStepBase(key):'';
+  if(G442.sel){if(b==='presentation')G442.show='pres';else if(b==='echauffement')G442.show='warm';else if(b==='bilan'||/bilan/i.test(key))G442.show='fin';else G442.show='';}
+  g442Apply();const host=E('seance-tab-content');if(G442.show){const el=host&&g442Sec(host,G442.show);if(el){const d=el.tagName==='DETAILS'?el:el.querySelector('details');if(d)d.open=true;}}}
+function g442Apply(){const host=E('seance-tab-content');if(!host)return;const on=g442On();host.classList.toggle('g442',on);
+  let row=host.querySelector('.g442-row');let sw=host.querySelector('.g442-sw');
+  if(!on){if(row)row.remove();if(sw&&!(c427IsGym(getActiveSeance()||{})&&host.classList.contains('c427-prep')))sw.remove();else if(sw)sw.textContent='🧱 Vue en blocs';return;}
+  const root=E('sb-root');if(!root)return;
+  // cartes
+  const keys=[];root.querySelectorAll('.sb-step').forEach(st=>{const h=st.querySelector('.sb-head');const m=/sbHeadClick\('([^']+)'\)/.exec((h&&h.getAttribute('onclick'))||'');const k=m?m[1]:'';st.dataset.g442=k;keys.push(k);st.classList.toggle('g442-open',!!k&&k===G442.sel);});
+  if(G442.sel&&keys.indexOf(G442.sel)<0)G442.sel='';
+  const selBase=G442.sel&&typeof seanceStepBase==='function'?seanceStepBase(G442.sel):'';const pal=root.querySelector('.sb-pal');if(pal)pal.classList.toggle('g442-x',!(selBase==='remediation'||selBase==='match'));
+  root.querySelectorAll('.sb-title *').forEach(x=>{if(!x.children.length&&/touchez le titre/i.test(x.textContent||''))x.classList.add('g442-x');});
+  const t=root.querySelector('.sb-title');if(t&&!t.querySelector('.g442-hint')){const sp=document.createElement('div');sp.className='g442-hint';sp.textContent='Touche un bloc pour l\'ouvrir';t.appendChild(sp);}
+  // rubriques → boutons
+  if(!row){row=document.createElement('div');row.className='g442-row';root.insertAdjacentElement('afterend',row);}
+  row.innerHTML=G442_RUB.filter(r=>g442Sec(host,r[0])).map(r=>'<button type="button" class="'+(G442.show===r[0]?'on':'')+'" onclick="g442Show(\''+r[0]+'\')">'+r[1]+'</button>').join('');
+  G442_RUB.forEach(r=>{const el=g442Sec(host,r[0]);if(el)el.classList.toggle('g442-show',G442.show===r[0]);});
+  if(!sw){sw=document.createElement('button');sw.type='button';sw.className='g442-sw';sw.onclick=()=>{try{localStorage.setItem('grib_g442_v1',g442On()?'off':'on');}catch(e){}renderSeanceTab();};row.insertAdjacentElement('afterend',sw);}
+  sw.textContent='☰ Vue complète';}
+// en Préparer (vue blocs), toucher la tête d'un bloc l'ouvre au lieu de lancer l'étape
+document.addEventListener('click',e=>{try{const h=e.target.closest&&e.target.closest('#seance-tab-content.g442 .sb-head');if(!h)return;if(e.target.closest('button,input,select,a'))return;
+  const st=h.closest('.sb-step');const k=st&&st.dataset.g442;if(!k)return;e.preventDefault();e.stopPropagation();g442Step(k);}catch(x){console.warn('g442 click',x);}},true);
+document.addEventListener('click',e=>{try{const st=e.target.closest&&e.target.closest('#seance-tab-content.g442 .sb-step:not(.g442-open)');if(!st||e.target.closest('button,input,select,a,.sb-head'))return;const k=st.dataset.g442;if(k){e.preventDefault();e.stopPropagation();g442Step(k);}}catch(x){}},true);
+renderSeanceTab=(function(f){return function(){const r=f.apply(this,arguments);try{g442Apply();}catch(e){console.warn('g442',e);}return r;};})(renderSeanceTab);
+try{c427Set=(function(f){return function(){const r=f.apply(this,arguments);try{g442Apply();}catch(e){}return r;};})(c427Set);}catch(e){}
+(function(){const st=document.createElement('style');st.textContent=
+ 'html body #seance-tab-content.g442 .chk-se,html body #seance-tab-content.g442 .g442-x{display:none!important;}'
++'html body #seance-tab-content.g442 .remed-step.sblock:not(.g442-show),html body #seance-tab-content.g442 .se-gym:not(.g442-show){display:none!important;}'
++'html body #seance-tab-content.g442 .sb-step:not(.g442-open) .sb-body > :not(.sb-dur){display:none!important;}'
++'html body #seance-tab-content.g442 .sb-step{cursor:pointer;}html body #seance-tab-content.g442 .sb-step.g442-open{outline:3px solid var(--oe,#3b82f6);outline-offset:1px;}'
++'html body #seance-tab-content.g442 .sb-step:not(.g442-open){min-height:0!important;}'
++'html body .g442-hint{font-size:.78rem;color:#94a3b8;font-weight:600;}'
++'html body .g442-row{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0;}html body .g442-row button{min-height:42px;border:1px solid #334155;border-radius:999px;background:#0f172a;color:#cbd5e1;font-weight:700;padding:0 12px;}html body .g442-row button.on{background:#1d4ed8;border-color:#1d4ed8;color:#fff;}'
++'html body .g442-sw{display:block;margin:4px 0 10px auto;border:none;background:transparent;color:#94a3b8;font-size:.8rem;text-decoration:underline;min-height:32px;}';
+ document.head.appendChild(st);})();
 </script>
 </body>
 </html>
