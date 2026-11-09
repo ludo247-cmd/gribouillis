@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v465</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v466</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v465</title>
+<title>Gribouillis EPS v466</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -33080,6 +33080,13 @@ function mdl465Card(){try{const host=E('lib-tab-content');if(!host)return;let sh
 renderLibTab=(function(f){return function(){const r=f.apply(this,arguments);setTimeout(mdl465Card,60);setTimeout(mdl465Card,450);return r;};})(renderLibTab);
 (function(){const st=document.createElement('style');st.textContent='html body .mdl465-m{display:flex;flex-direction:column;gap:6px;padding:10px;border-radius:12px;background:#0b1220;border:1px solid #1e293b;}html body .mdl465-m > span{font-size:.8rem;color:#cbd5e1;}html body .mdl465-m .bl{display:flex;flex-direction:column;gap:4px;}html body .mdl465-m .bl i{font-style:normal;font-size:.8rem;font-weight:700;padding:6px 8px;border-radius:8px;background:#111c33;display:flex;flex-direction:column;}html body .mdl465-m .bl i small{font-weight:500;color:#94a3b8;}'
 +'html body .mdl465-m .ok{min-height:42px;border-radius:10px;border:none;background:#0f766e;color:#fff;font-weight:800;}html body .mdl465-b{margin:6px 0;}html body .mdl465-b button{min-height:42px;border-radius:10px;border:1px dashed #60a5fa;background:transparent;color:#93c5fd;font-weight:800;padding:0 14px;width:100%;}';document.head.appendChild(st);})();
+
+
+// ══════════════════════════════════════════════════════════════════════
+// v466 — correctif : en MODE ÉLÈVE, le bouton prof « 🧱 Passer à la vue en
+// blocs » (gym) n'apparaît plus.
+// ══════════════════════════════════════════════════════════════════════
+g449Sw=(function(f){return function(){try{if(typeof SEANCE_STATE!=='undefined'&&SEANCE_STATE.mode==='eleve'){document.querySelectorAll('#seance-tab-content .g449-on').forEach(b=>b.remove());return;}}catch(e){}return f.apply(this,arguments);};})(g449Sw);
 </script>
 </body>
 </html>
