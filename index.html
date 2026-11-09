@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v462</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v463</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v462</title>
+<title>Gribouillis EPS v463</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -32862,6 +32862,68 @@ try{OT456.push(['🏅','Combiné à cibles','cmb462Open()'],['🏃','Relais en t
 +'html body .rel462-tr{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:8px;border:1px solid #1e293b;border-radius:10px;background:#0b1220;}html body .rel462-tr select{min-height:38px;border-radius:8px;border:1px solid #334155;background:#020617;color:#e2e8f0;}html body .rel462-c{width:100%;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:4px;font-size:.78rem;color:#cbd5e1;}'
 +'html body .doc462 .doc462-s{font-size:.8rem;margin:4px 0;}html body .doc462-t{width:100%;border-collapse:collapse;font-size:.74rem;margin:4px 0 8px;}html body .doc462 .doc462-t th,html body .doc462 .doc462-t td{border:1px solid #6b7280;padding:4px;color:#111;background:#fff;}html body .doc462 .doc462-t th{background:#f3f4f6;}html body .doc462-p2p{border-bottom:2px dashed #9ca3af;padding-bottom:10px;margin-bottom:10px;}'
 +'@media print{body.pk455-pr .doc462{page-break-after:always;}}';document.head.appendChild(st);})();
+
+
+
+// ══════════════════════════════════════════════════════════════════════
+// v463 — 📸 PHOTO FINISH (CA1), façon SprintTimer
+//  Le téléphone filme la ligne d'arrivée ; à chaque image on garde la
+//  seule colonne de pixels alignée sur la ligne : l'image se construit de
+//  gauche à droite = le temps. On touche le bord avant du torse → temps.
+//  Départ : au bouton, ou au son (clap, sifflet) avec correction de la
+//  distance (le son met ≈ 0,18 s pour faire 60 m). Rien n'est envoyé.
+// ══════════════════════════════════════════════════════════════════════
+const PF={st:null,v:null,lx:.5,t0:0,rec:false,cols:[],cv:null,cx:null,cw:4,H:320,max:12000,x:0,raf:0,aud:null,arm:false,dist:60,seuil:.35,res:[],dir:'lr',lastTick:-1};
+function pf463Open(){const o=E('pf463');if(o)o.remove();const ov=document.createElement('div');ov.id='pf463';ov.className='av456 pf463';
+  ov.innerHTML='<'+'div class="av456-h"><b>📸 Photo finish</b><button type="button" class="x" aria-label="Fermer" onclick="pf463Close()">✕</button></'+'div>'
+   +'<p class="pk455-dim">Pose le téléphone (trépied) dans l\'axe de la ligne d\'arrivée. Fais glisser le trait jaune sur la ligne.</p>'
+   +'<'+'div class="pf463-cam"><video playsinline muted></video><'+'div class="pf463-l"></'+'div><span class="pf463-t">—</span></'+'div>'
+   +'<'+'div class="pf463-ctl"></'+'div><'+'div class="pf463-res"></'+'div><datalist id="pf463-n">'+(typeof ca1462Roster==='function'?ca1462Roster():[]).map(n=>'<option value="'+esc(n)+'">').join('')+'</datalist>';
+  document.body.appendChild(ov);PF.v=ov.querySelector('video');pf463Line();pf463Cam();pf463Ctl();try{navigator.wakeLock&&navigator.wakeLock.request('screen').then(w=>PF.wl=w).catch(()=>{});}catch(e){}}
+async function pf463Cam(){try{PF.st=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',frameRate:{ideal:60},width:{ideal:1280}},audio:false});PF.v.srcObject=PF.st;await PF.v.play().catch(()=>{});pf463Tick();}
+  catch(e){const c=document.querySelector('#pf463 .pf463-cam');if(c)c.innerHTML='<p class="pk455-dim" style="padding:20px">Caméra inaccessible : autorise la caméra pour l\'application.</p>';}}
+function pf463Close(){pf463Stop(true);try{PF.st&&PF.st.getTracks().forEach(t=>t.stop());}catch(e){}pf463MicOff();try{PF.wl&&PF.wl.release();}catch(e){}cancelAnimationFrame(PF.raf);const o=E('pf463');if(o)o.remove();}
+function pf463Line(){const cam=document.querySelector('#pf463 .pf463-cam'),l=cam.querySelector('.pf463-l');const pos=()=>{l.style.left=(PF.lx*100)+'%';};pos();let drag=false;
+  cam.onpointerdown=e=>{drag=true;try{cam.setPointerCapture(e.pointerId);}catch(x){}mv(e);};const mv=e=>{if(!drag)return;const R=cam.getBoundingClientRect();PF.lx=Math.max(.01,Math.min(.99,(e.clientX-R.left)/R.width));pos();};cam.onpointermove=mv;cam.onpointerup=cam.onpointercancel=()=>{drag=false;};}
+function pf463El(){return PF.t0?(performance.now()-PF.t0)/1000:null;}
+function pf463Tick(){const t=document.querySelector('#pf463 .pf463-t');if(!t){return;}const s=pf463El();t.textContent=s==null?(PF.arm?'👂 en attente du signal…':'prêt'):s.toFixed(2).replace('.',',')+' s';PF.raf=requestAnimationFrame(pf463Tick);}
+function pf463Ctl(){const c=document.querySelector('#pf463 .pf463-ctl');if(!c)return;
+  c.innerHTML='<'+'div class="av456-d"><button type="button" class="go" onclick="pf463Go()">'+(PF.t0?'↺ Nouveau départ':'▶ Départ (bouton)')+'</button><button type="button" class="'+(PF.arm?'on':'')+'" onclick="pf463Arm()">👂 Départ au son</button>'
+   +'<label class="ct460-s">Distance <input type="number" min="0" max="400" value="'+PF.dist+'" style="width:70px" onchange="PF.dist=+this.value||0"> m</label><label class="ct460-s">Sensibilité <input type="range" min="5" max="90" value="'+Math.round((1-PF.seuil)*100)+'" oninput="PF.seuil=1-this.value/100"></label></'+'div>'
+   +'<'+'div class="av456-d"><button type="button" class="rec'+(PF.rec?' on':'')+'" onclick="'+(PF.rec?'pf463Stop()':'pf463Rec()')+'">'+(PF.rec?'■ Arrêter l\'image':'⏺ Arrivée : enregistrer l\'image')+'</button><button type="button" onclick="PF.dir=PF.dir===\'lr\'?\'rl\':\'lr\';pf463Ctl()">Sens : '+(PF.dir==='lr'?'gauche → droite':'droite → gauche')+'</button></'+'div>'
+   +'<p class="pk455-dim">Départ au son : le micro guette un clap ou un sifflet ; le temps est corrigé de '+(PF.dist?Math.round(PF.dist/340*100)/100:0).toString().replace('.',',')+' s pour '+PF.dist+' m. Lance l\'image juste avant l\'arrivée du premier.</p>';}
+function pf463Go(){PF.t0=performance.now();PF.arm=false;pf463MicOff();try{t457Beep(1320,.25);}catch(e){}pf463Ctl();}
+async function pf463Arm(){if(PF.arm){PF.arm=false;pf463MicOff();pf463Ctl();return;}try{const s=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}});const ac=new (window.AudioContext||window.webkitAudioContext)();const src=ac.createMediaStreamSource(s);const an=ac.createAnalyser();an.fftSize=512;src.connect(an);
+    PF.aud={s,ac,an,buf:new Float32Array(an.fftSize)};PF.arm=true;PF.t0=0;pf463Ctl();const chk=()=>{if(!PF.arm||!PF.aud)return;an.getFloatTimeDomainData(PF.aud.buf);let m=0;for(const x of PF.aud.buf){const a=Math.abs(x);if(a>m)m=a;}
+      if(m>PF.seuil){PF.t0=performance.now()-(PF.dist/340)*1000;PF.arm=false;pf463MicOff();try{t457Beep(1320,.2);}catch(e){}pf463Ctl();return;}requestAnimationFrame(chk);};chk();}
+  catch(e){alert('Micro inaccessible : autorise le micro, ou utilise le départ au bouton.');}}
+function pf463MicOff(){try{if(PF.aud){PF.aud.s.getTracks().forEach(t=>t.stop());PF.aud.ac.close();}}catch(e){}PF.aud=null;}
+function pf463Rec(){const v=PF.v;if(!v||!v.videoWidth){alert('La caméra n\'est pas prête.');return;}PF.H=Math.min(480,v.videoHeight||320);PF.cv=document.createElement('canvas');PF.cv.width=PF.max;PF.cv.height=PF.H+20;PF.cx=PF.cv.getContext('2d');PF.cx.fillStyle='#000';PF.cx.fillRect(0,0,PF.max,PF.H+20);
+  PF.cols=[];PF.x=0;PF.res=[];PF.rec=true;PF.lastTick=-1;PF.r0=performance.now();pf463Ctl();const step=(now)=>{if(!PF.rec)return;pf463Col(now||performance.now());if(v.requestVideoFrameCallback)v.requestVideoFrameCallback(step);else requestAnimationFrame(step);};
+  if(v.requestVideoFrameCallback)v.requestVideoFrameCallback(step);else requestAnimationFrame(step);}
+function pf463Col(now){const v=PF.v;if(PF.x+PF.cw>PF.max){pf463Stop();return;}const sx=Math.round(PF.lx*v.videoWidth);PF.cx.drawImage(v,sx,0,1,v.videoHeight,PF.x,0,PF.cw,PF.H);const ref=PF.t0||PF.r0;const t=(now-ref)/1000;PF.cols.push(now);
+  const tk=Math.floor(t*10);if(tk!==PF.lastTick){PF.cx.fillStyle=tk%10===0?'#fde047':'#94a3b8';PF.cx.fillRect(PF.x,PF.H,1,tk%10===0?20:tk%5===0?12:6);if(tk%10===0){PF.cx.font='bold 11px system-ui';PF.cx.fillText((tk/10).toFixed(0)+' s',PF.x+3,PF.H+17);}PF.lastTick=tk;}PF.x+=PF.cw;}
+function pf463Stop(silent){if(!PF.rec)return;PF.rec=false;if(silent)return;pf463Ctl();pf463Show();}
+function pf463TimeAt(px){const i=Math.floor(px/PF.cw);if(i<0||i>=PF.cols.length)return null;const fr=(px%PF.cw)/PF.cw;const a=PF.cols[i],b=PF.cols[Math.min(i+1,PF.cols.length-1)];const ref=PF.t0||PF.r0;return ((a+(b-a)*fr)-ref)/1000;}
+function pf463Show(){const r=document.querySelector('#pf463 .pf463-res');if(!r||!PF.cv)return;const w=PF.x;const out=document.createElement('canvas');out.width=w;out.height=PF.H+20;const ox=out.getContext('2d');
+  if(PF.dir==='rl'){ox.translate(w,0);ox.scale(-1,1);}ox.drawImage(PF.cv,0,0,w,PF.H+20,0,0,w,PF.H+20);PF.img=out;
+  r.innerHTML='<'+'div class="pf463-strip"><'+'div class="in"><canvas></canvas><'+'div class="cur" hidden></'+'div></'+'div></'+'div>'
+   +'<'+'div class="t457-add"><input id="pf463-nm" type="text" list="pf463-n" placeholder="Nom ou n° du coureur"><button type="button" onclick="pf463Keep()">＋ Garder ce temps</button></'+'div><'+'div class="pf463-lst"></'+'div>'
+   +'<'+'div class="pk455-act"><button type="button" onclick="pf463Copy()">📋 Copier les temps</button><button type="button" onclick="pf463Png()">💾 Enregistrer l\'image</button></'+'div>'+(PF.t0?'':'<p class="pk455-dim">⚠️ Pas de départ : les temps sont comptés depuis le début de l\'image.</p>');
+  const cv=r.querySelector('canvas');cv.width=w;cv.height=PF.H+20;cv.getContext('2d').drawImage(out,0,0);const cur=r.querySelector('.cur');
+  cv.onpointerdown=e=>{const R=cv.getBoundingClientRect();let px=(e.clientX-R.left)/R.width*w;if(PF.dir==='rl')px=w-px;const t=pf463TimeAt(px);if(t==null)return;PF.sel=t;cur.hidden=false;cur.style.left=((e.clientX-R.left)/R.width*100)+'%';cur.dataset.t=t.toFixed(2).replace('.',',')+' s';cur.textContent=cur.dataset.t;};pf463List();}
+function pf463Keep(){if(PF.sel==null){alert('Touche d\'abord le torse du coureur sur l\'image.');return;}const n=((E('pf463-nm')||{}).value||'').trim()||('Coureur '+(PF.res.length+1));PF.res.push({n,t:PF.sel});PF.res.sort((a,b)=>a.t-b.t);E('pf463-nm').value='';PF.sel=null;const c=document.querySelector('#pf463 .cur');if(c)c.hidden=true;pf463List();}
+function pf463List(){const l=document.querySelector('#pf463 .pf463-lst');if(!l)return;l.innerHTML=PF.res.map((x,i)=>'<'+'div><span>'+(i+1)+'. '+esc(x.n)+'</span><b>'+x.t.toFixed(2).replace('.',',')+' s</b><button type="button" class="m" aria-label="Retirer" onclick="PF.res.splice('+i+',1);pf463List()">✕</button></'+'div>').join('');}
+function pf463Copy(){const t=PF.res.map((x,i)=>(i+1)+'\t'+x.n+'\t'+x.t.toFixed(2).replace('.',',')).join('\n');try{navigator.clipboard.writeText(t).then(()=>toast2('📋 Copié'),()=>prompt('Copie :',t));}catch(e){prompt('Copie :',t);}}
+function pf463Png(){if(!PF.img)return;const a=document.createElement('a');a.download='photo-finish-'+new Date().toISOString().slice(0,16).replace(/[:T]/g,'-')+'.png';a.href=PF.img.toDataURL('image/png');document.body.appendChild(a);a.click();a.remove();}
+try{OT456.push(['📸','Photo finish','pf463Open()']);}catch(e){}
+ca1462Card=(function(f){return function(){const r=f.apply(this,arguments);try{const a=document.querySelector('.ca1462 .pk455-act');if(a&&!a.querySelector('.pf463b'))a.insertAdjacentHTML('beforeend','<button type="button" class="pf463b" onclick="pf463Open()">📸 Photo finish</button>');}catch(e){}return r;};})(ca1462Card);
+(function(){const st=document.createElement('style');st.textContent=
+ 'html body .pf463-cam{position:relative;background:#000;border-radius:10px;overflow:hidden;max-height:40vh;display:flex;justify-content:center;touch-action:none;}html body .pf463-cam video{max-width:100%;max-height:40vh;display:block;}html body .pf463-l{position:absolute;top:0;bottom:0;width:3px;margin-left:-1px;background:#facc15;box-shadow:0 0 0 1px #000;}'
++'html body .pf463-t{position:absolute;left:8px;top:8px;background:rgba(0,0,0,.7);color:#fde047;font-weight:900;font-size:1.3rem;padding:4px 10px;border-radius:8px;font-variant-numeric:tabular-nums;}html body .pf463 .go{background:#dc2626!important;border-color:#dc2626!important;color:#fff!important;}html body .pf463 .rec.on{background:#7f1d1d;border-color:#ef4444;}'
++'html body .pf463-strip{overflow-x:auto;border-radius:10px;background:#000;}html body .pf463-strip .in{position:relative;display:inline-block;}html body .pf463-strip canvas{display:block;height:min(46vh,'+(340)+'px);width:auto;touch-action:pan-x;cursor:crosshair;}'
++'html body .pf463-strip .cur{position:absolute;top:0;bottom:0;width:2px;background:#fde047;pointer-events:none;color:#fde047;font-weight:900;font-size:.85rem;padding-left:6px;white-space:nowrap;text-shadow:0 0 3px #000;}'
++'html body .pf463-lst{display:flex;flex-direction:column;gap:4px;}html body .pf463-lst > div{display:flex;gap:8px;align-items:center;padding:8px 10px;border-radius:9px;background:#0f172a;border:1px solid #1e293b;}html body .pf463-lst span{flex:1;}html body .pf463-lst .m{min-width:34px;min-height:34px;border-radius:8px;border:1px solid #334155;background:transparent;color:#cbd5e1;}';document.head.appendChild(st);})();
 </script>
 </body>
 </html>
