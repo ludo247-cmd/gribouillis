@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v466</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v467</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v466</title>
+<title>Gribouillis EPS v467</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -33087,6 +33087,206 @@ renderLibTab=(function(f){return function(){const r=f.apply(this,arguments);setT
 // blocs » (gym) n'apparaît plus.
 // ══════════════════════════════════════════════════════════════════════
 g449Sw=(function(f){return function(){try{if(typeof SEANCE_STATE!=='undefined'&&SEANCE_STATE.mode==='eleve'){document.querySelectorAll('#seance-tab-content .g449-on').forEach(b=>b.remove());return;}}catch(e){}return f.apply(this,arguments);};})(g449Sw);
+
+// ══════════════════════════════════════════════════════════════════════
+// v467 — carte championnat dans les blocs de la séance
+// Une carte = un bloc « match » qui reçoit plusieurs rencontres du tour du
+// jour (une par terrain). Les autres équipes : entraînement, arbitrage ou
+// rôles sociaux. Règles de comptage modifiables (bloc, séance, séquence),
+// par terrain. Remplace « Remplir les blocs avec le championnat ».
+// ══════════════════════════════════════════════════════════════════════
+const CHC={live:null,t0:0,tick:null};
+function chcQ(s){try{const q=trnSeqOf(s);const k=trnKind(q);return k?q:null;}catch(e){return null;}}
+function chcT(q){const k=trnKind(q);return k?trnObj(q,k):null;}
+function chcJi(q,s){const t=chcT(q);if(!t)return -1;return (t.jours||[]).findIndex(j=>j.date===s.date);}
+function chcList(q,J){if(!J)return [];return trnKind(q)==='rkt'?(J.mt||[]):(J.m||[]);}
+function chcNivLab(c,m){if(c.mix)return chpFormLab(c,(c.formes||[])[+m.niv]||[]);return String((c.niv||[])[+m.niv]||'');}
+function chcLab(q,m){const k=trnKind(q),t=chcT(q);
+  if(k==='rkt'){const nm=x=>Array.isArray(x)?x.join(' & '):String(x||'?');return {A:nm(m.a),B:nm(m.b),ca:'#93c5fd',cb:'#fca5a5',sub:String(m.lab||'')};}
+  const A=chpClub(t,m.a),B=chpClub(t,m.b);return {A:String(A.nom),B:String(B.nom),ca:A.col||'#93c5fd',cb:B.col||'#fca5a5',sub:chcNivLab(t,m)};}
+function chcScored(m){return m&&m.sa!==''&&m.sa!=null;}
+function chcCards(s){const C=s.chc||{};return (s.steps||[]).filter(st=>C[st.key]).map(st=>st.key);}
+// répartit les rencontres du tour du jour sur les cartes, dans l'ordre de la séance
+function chcDist(s){const q=chcQ(s);if(!q||!s.chc)return;const ji=chcJi(q,s);const t=chcT(q);const M=ji>=0?chcList(q,t.jours[ji]):[];
+  const keys=chcCards(s);Object.keys(s.chc).forEach(k=>{if(keys.indexOf(k)<0)delete s.chc[k];});const used={};
+  keys.forEach(k=>{const c=s.chc[k];c.ji=ji;c.mi=(c.mi||[]).filter(i=>M[i]&&chcScored(M[i]));c.mi.forEach(i=>used[i]=1);});
+  keys.forEach(k=>{const c=s.chc[k];const n=Math.max(1,+c.t||1);for(let i=0;i<M.length&&c.mi.length<n;i++){if(used[i])continue;if(c.niv>=0&&trnKind(q)!=='rkt'&&+M[i].niv!==+c.niv)continue;c.mi.push(i);used[i]=1;}});
+  s.chcLeft=M.map((m,i)=>i).filter(i=>!used[i]&&!chcScored(M[i])).length;}
+function chcEnsureDay(s){const q=chcQ(s);if(!q)return -1;let ji=chcJi(q,s);if(ji<0){try{trnNewDay(q.id);}catch(e){console.warn(e);}ji=chcJi(seqGet(q.id),s);if(ji>=0)s.chcNewDay={qid:q.id,date:s.date};}return ji;}
+function chcNextKey(s){return 'match-'+(s.steps.filter(st=>seanceStepBase(st.key)==='match').reduce((mx,st)=>Math.max(mx,parseInt(st.key.split('-')[1],10)||0),0)+1);}
+function chcPar(){try{const v=+localStorage.getItem('grib_chc_t');return v>0?v:2;}catch(e){return 2;}}
+function chcAdd(){const s=getActiveSeance();const q=s&&chcQ(s);if(!q){alert('Active d\'abord le championnat (ou le tournoi) dans la séquence de cette classe.');return;}
+  chcEnsureDay(s);const key=chcNextKey(s);const fin=s.steps.findIndex(st=>st.key==='fin');s.steps.splice(fin<0?s.steps.length:fin,0,{key:key,status:'pending',dur:12});
+  if(!s.chc||typeof s.chc!=='object')s.chc={};const prev=chcCards(s).filter(k=>k!==key).map(k=>s.chc[k]).pop();
+  s.chc[key]={t:prev?prev.t:chcPar(),niv:-1,aut:prev?prev.aut:'arb',sit:prev?prev.sit:'',mi:[]};
+  chcDist(s);recomputeSeanceStatuses(s);saveSeances();try{renderSeanceTab();}catch(e){}try{toast2('🏆 Carte championnat ajoutée');}catch(e){}}
+// les groupes qui ne jouent pas pendant la carte
+function chcOthers(s,q,key){const c=s.chc[key];const t=chcT(q);const ji=c.ji;const M=ji>=0?chcList(q,t.jours[ji]):[];const P=c.mi.map(i=>M[i]).filter(Boolean);
+  if(trnKind(q)==='rkt'){const busy={};P.forEach(m=>[].concat(m.a,m.b).forEach(n=>busy[n]=1));const all=[].concat(...(t.poules||[]).map(p=>p.m||[]));const abs=(t.jours[ji]&&t.jours[ji].abs)||[];
+    const free=all.filter(n=>!busy[n]&&abs.indexOf(n)<0);return {groups:[],nFree:free.length,arb:{}};}
+  const G=[];t.clubs.forEach(k=>(t.niv||[]).forEach((x,v)=>{if(!P.some(m=>+m.niv===v&&(m.a===k.id||m.b===k.id)))G.push({club:k.id,niv:v,nom:String(k.nom)+((t.niv||[]).length>1?' '+chcNivLab(t,{niv:v}):''),col:k.col});}));
+  const arb={};if(c.aut!=='sit'){const free=G.slice();P.forEach((m,ti)=>{let j=free.findIndex(g=>g.niv===+m.niv);if(j<0)j=0;if(free[j]){arb[ti]=free[j];if(c.aut==='arb')free.splice(j,1);}});}
+  return {groups:G,arb:arb};}
+function chcOthersTxt(s,q,key){const c=s.chc[key];const O=chcOthers(s,q,key);const sit=c.sit?'« '+c.sit+' »':'leur situation';
+  if(trnKind(q)==='rkt')return O.nFree?(c.aut==='roles'?O.nFree+' élèves : rôles sociaux (arbitre, marque, chrono, observateur, coach)':O.nFree+' élèves : '+(c.aut==='arb'?'arbitrent puis ':'')+sit):'';
+  const A=Object.values(O.arb);const an=A.map(g=>g.nom);const rest=O.groups.filter(g=>A.indexOf(g)<0);
+  if(c.aut==='roles')return O.groups.length?O.groups.map(g=>g.nom).join(', ')+' : rôles sociaux (arbitre, marque, chrono, observateur, coach)':'';
+  if(c.aut==='sit')return O.groups.length?O.groups.map(g=>g.nom).join(', ')+' : '+sit:'';
+  return [an.length?'🟨 '+an.join(', ')+' arbitre'+(an.length>1?'nt':''):'',rest.length?rest.map(g=>g.nom).join(', ')+' : '+sit:''].filter(Boolean).join(' · ');}
+// ── règles de comptage ──
+function chcRules(t,s,key,ti){return ((t&&t.rg)||[]).filter(r=>{if(r.tr>=0&&r.tr!==ti)return false;if(r.sc==='seq')return r.d<=s.date&&(!r.off||s.date<r.off);if(r.sc==='seance')return r.sid===s.id;return r.sid===s.id&&r.key===key;});}
+function chcPresets(sport){const sp=String(sport||'').toLowerCase();let L;
+  if(/volley/.test(sp))L=[['Point après 3 touches = 2 points',2],['Service direct gagnant = 0 point',null],['Attaque smashée gagnante = 2 points',2]];
+  else if(/bad|tennis|ping/.test(sp))L=[['Point gagné en fond de court = 2 points',2],['Smash gagnant = 2 points',2],['Un seul essai au service',null]];
+  else L=[['But après au moins 3 passes = 2 points',2],['But d\'un joueur qui n\'a pas encore marqué = 2 points',2],['Tir de loin = 2 points',2]];
+  return L;}
+// ── la carte dans le tableau de la séance ──
+function chcBody(s,st){const q=chcQ(s);const c=s.chc[st.key];const D='<'+'div',X='</'+'div>';if(!q)return D+' class="chc-c"><span class="sb-meta">Championnat désactivé dans la séquence</span>'+X;
+  const t=chcT(q);const M=c.ji>=0?chcList(q,t.jours[c.ji]):[];let h=D+' class="chc-c">';
+  if(!c.mi.length)h+='<span class="sb-meta">Plus de rencontre à jouer dans le tour du jour</span>';
+  c.mi.forEach((i,ti)=>{const m=M[i];if(!m)return;const L=chcLab(q,m);const nr=chcRules(t,s,st.key,ti).length;
+    h+=D+' class="chc-t"><b>T'+(ti+1)+'</b><span><i style="color:'+esc(String(L.ca))+'">'+esc(L.A)+'</i> – <i style="color:'+esc(String(L.cb))+'">'+esc(L.B)+'</i>'+(L.sub?' <small>'+esc(L.sub)+'</small>':'')+'</span>'+(chcScored(m)?'<em>'+esc(String(m.sa))+'–'+esc(String(m.sb))+'</em>':'')+(nr?'<small class="chc-rn" title="règles du moment">✎'+nr+'</small>':'')+X;});
+  const o=chcOthersTxt(s,q,st.key);if(o)h+=D+' class="chc-o">En parallèle : '+esc(o)+X;
+  h+=D+' class="chc-b"><button type="button" class="chc-play" onclick="event.stopPropagation();chcLive(\''+st.key+'\')">▶ Jouer</button><button type="button" onclick="event.stopPropagation();chcEdit(\''+st.key+'\')">⚙ Régler</button>'+X+X;
+  h+=D+' class="sb-dur"><button type="button" onclick="stepDur(\''+st.key+'\',-5)" aria-label="5 minutes de moins">−</button><span>'+stepDurOf(st)+' min</span><button type="button" onclick="stepDur(\''+st.key+'\',5)" aria-label="5 minutes de plus">+</button>'+X;
+  return h;}
+sbStepHtml=(function(o){return function(s,st){const h=o.apply(this,arguments);try{if(!s||!s.chc||!s.chc[st.key])return h;const i=h.indexOf('<'+'div class="sb-body">');if(i<0)return h;
+  let head=h.slice(0,i).replace('class="sb-step ','class="sb-step chc-step ').replace(/onclick="sbHeadClick\('([^']+)'\)"/,'onclick="chcEdit(\'$1\')"').replace(/<button type="button" title="Dupliquer[^>]*>⧉<\/button>/,'');
+  try{head=head.replace('<span>'+seanceStepDef('match').ico,'<span>🏆');}catch(e){}head=head.replace(/(<b>)[^<]*/,'$1Championnat ');return head+'<'+'div class="sb-body">'+chcBody(s,st)+'</'+'div></'+'div>';}catch(e){console.warn('chc',e);return h;}};})(sbStepHtml);
+// ── la boîte en haut de la séance (remplace « Remplir les blocs ») ──
+cfBoxHtml=function(s){const q=s&&chcQ(s);if(!q)return '';const n=chcCards(s).length;const D='<'+'div',X='</'+'div>';
+  const old=(s.steps||[]).filter(st=>seanceStepBase(st.key)==='match'&&!(s.chc&&s.chc[st.key])).length;
+  if(s.chc)chcDist(s);const left=s.chcLeft||0;
+  return D+' class="cf-box chc-box"><b>🏆 Championnat</b><span class="cc-dim">'+(n?n+' carte'+(n>1?'s':'')+' championnat'+(left?' · ⚠ '+left+' rencontre'+(left>1?'s':'')+' du tour du jour sans carte':' · toutes les rencontres du tour du jour sont placées'):'Ajoute des cartes championnat entre tes blocs : les rencontres du tour du jour s\'y répartissent toutes seules.')+'</span>'
+   +'<button type="button" class="btn-xs" style="background:#a16207;color:#fff;" onclick="chcAdd()">＋ Carte championnat</button>'
+   +(old>=2&&!s.chcBk?'<button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="chcConvert()">🔁 Remplacer mes '+old+' blocs match par des cartes</button>':'')
+   +(s.chcBk?'<button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="chcUndo()">↩ Annuler (revenir aux blocs d\'avant)</button>':'')+X;};
+function chcConvert(){const s=getActiveSeance();const q=s&&chcQ(s);if(!q)return;const old=s.steps.filter(st=>seanceStepBase(st.key)==='match'&&!(s.chc&&s.chc[st.key]));
+  if(old.some(st=>st.status==='done')&&!confirm('Certains blocs match sont déjà faits. Les remplacer quand même ?'))return;
+  const hadDay=chcJi(q,s)>=0;const ji=chcEnsureDay(s);const t=chcT(seqGet(q.id));const M=ji>=0?chcList(seqGet(q.id),t.jours[ji]):[];const n=chcPar();const nb=Math.max(1,Math.ceil(M.length/n));
+  if(!confirm('Remplacer les '+old.length+' blocs match par '+nb+' carte'+(nb>1?'s':'')+' championnat ('+M.length+' rencontres, '+n+' terrain'+(n>1?'s':'')+' en même temps) ?\n\nTu pourras annuler et retrouver tes blocs.')){if(!hadDay&&s.chcNewDay)chcDropDay(s);return;}
+  s.chcBk=JSON.parse(JSON.stringify({steps:s.steps,matchCfg:s.matchCfg||{},stepExos:s.stepExos||{},par:s.par||null,parGroups:s.parGroups||null,eleveChoix:s.eleveChoix||null,chpBloc:s.chpBloc||null,chc:s.chc||null,at:Date.now()}));
+  const keys=old.map(st=>st.key);const pos=s.steps.findIndex(st=>st.key===keys[0]);
+  keys.forEach(k=>{if(s.matchCfg)Object.keys(s.matchCfg).forEach(x=>{if(x===k||x.indexOf(k+'~')===0)delete s.matchCfg[x];});if(s.par)delete s.par[k];if(s.parGroups)Object.keys(s.parGroups).forEach(x=>{if(x===k||x.indexOf(k+'~')===0)delete s.parGroups[x];});if(s.eleveChoix)delete s.eleveChoix[k];if(s.chpBloc)Object.keys(s.chpBloc).forEach(x=>{if(x===k||x.indexOf(k+'~')===0)delete s.chpBloc[x];});});
+  s.steps=s.steps.filter(st=>keys.indexOf(st.key)<0);if(!s.chc||typeof s.chc!=='object')s.chc={};
+  const ins=[];let base=chcNextKey(s);let num=parseInt(base.split('-')[1],10);for(let i=0;i<nb;i++){const k='match-'+(num+i);ins.push({key:k,status:'pending',dur:12});s.chc[k]={t:n,niv:-1,aut:'arb',sit:'',mi:[]};}
+  s.steps.splice(Math.min(pos,s.steps.length),0,...ins);if(s.chpBloc&&!Object.keys(s.chpBloc).length)delete s.chpBloc;if(s.par&&!Object.keys(s.par).length)delete s.par;
+  chcDist(s);recomputeSeanceStatuses(s);saveSeances();try{renderSeanceTab();}catch(e){}try{toast2('🏆 '+nb+' carte'+(nb>1?'s':'')+' championnat');}catch(e){}}
+function chcDropDay(s){const N=s.chcNewDay;if(!N)return;try{const q=seqGet(N.qid);const k=trnKind(q);seqUpdate(N.qid,qq=>{const t=trnObj(qq,k);const j=(t.jours||[]).findIndex(x=>x.date===N.date);if(j>=0&&!chcList(qq,t.jours[j]).some(chcScored)&&j===t.jours.length-1)t.jours.splice(j,1);});}catch(e){}delete s.chcNewDay;}
+function chcUndo(){const s=getActiveSeance();if(!s||!s.chcBk)return;if(!confirm('Revenir aux blocs d\'avant les cartes championnat ? (les scores déjà notés restent dans le classement)'))return;const b=s.chcBk;
+  s.steps=b.steps;s.matchCfg=b.matchCfg;s.stepExos=b.stepExos;['par','parGroups','eleveChoix','chpBloc','chc'].forEach(k=>{if(b[k])s[k]=b[k];else delete s[k];});delete s.chcBk;chcDropDay(s);
+  recomputeSeanceStatuses(s);saveSeances();try{renderSeanceTab();}catch(e){}try{toast2('↩ Blocs d\'avant rétablis');}catch(e){}}
+// ── régler une carte ──
+function chcEdit(key){const s=getActiveSeance();if(!s||!s.chc||!s.chc[key])return;const q=chcQ(s);const c=s.chc[key];const t=q?chcT(q):null;const D='<'+'div',X='</'+'div>';
+  let ov=E('chc-ed');if(ov)ov.remove();ov=document.createElement('div');ov.id='chc-ed';ov.className='lib-pick-ov';ov.onclick=e=>{if(e.target===ov)ov.remove();};
+  const seg=(L,cur,fn)=>D+' class="chc-seg">'+L.map(x=>'<button type="button" class="'+(String(x[0])===String(cur)?'on':'')+'" onclick="'+fn+'('+JSON.stringify(x[0]).replace(/"/g,'&quot;')+')">'+esc(String(x[1]))+'</button>').join('')+X;
+  const sits=[];(s.steps||[]).forEach(st=>{if(seanceStepBase(st.key)==='remediation')seanceStepExos(s,st.key).forEach(r=>{const n=String((r.exo&&r.exo.titre)||'');if(n&&sits.indexOf(n)<0)sits.push(n);});});
+  let h=D+' class="lib-pick-box chc-ed">'+D+' style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><b style="flex:1;">🏆 Carte championnat</b><button type="button" class="btn-xs red" onclick="E(\'chc-ed\').remove()">✕</button>'+X;
+  h+=D+' class="remed-edit-label">Combien de rencontres en même temps (terrains) ?'+X+seg([1,2,3,4,5,6,8].map(n=>[n,n]),c.t,'chcSet(\''+key+'\',\'t\',');
+  if(t&&trnKind(q)!=='rkt'&&(t.niv||[]).length>1)h+=D+' class="remed-edit-label">Quelles rencontres ?'+X+seg([[-1,'Toutes']].concat((t.niv||[]).map((x,v)=>[v,chcNivLab(t,{niv:v})+' entre eux'])),c.niv,'chcSet(\''+key+'\',\'niv\',');
+  h+=D+' class="remed-edit-label">Les autres pendant ce temps'+X+seg([['arb','Arbitrent, puis situation'],['sit','Situation'],['roles','Rôles sociaux']],c.aut,'chcSet(\''+key+'\',\'aut\',');
+  if(c.aut!=='roles'){h+=D+' class="remed-edit-label">Leur situation'+X+'<input type="text" class="chc-in" value="'+esc(String(c.sit||''))+'" placeholder="ex. : attaquer la zone arrière" onchange="chcSet(\''+key+'\',\'sit\',this.value)">';
+    if(sits.length)h+=D+' class="chc-chips">'+sits.map(n=>'<button type="button" onclick="chcSet(\''+key+'\',\'sit\','+JSON.stringify(n).replace(/"/g,'&quot;')+')">'+esc(n)+'</button>').join('')+X;}
+  h+=D+' class="cc-dim" style="margin-top:8px;">Les rencontres se répartissent toutes seules sur les cartes, dans l\'ordre de la séance. Une rencontre déjà notée reste sur sa carte.'+X;
+  h+=D+' style="display:flex;gap:8px;margin-top:12px;"><button type="button" class="btn-xs" style="flex:1;background:#a16207;color:#fff;" onclick="E(\'chc-ed\').remove();chcLive(\''+key+'\')">▶ Jouer cette carte</button><button type="button" class="btn-xs red" onclick="E(\'chc-ed\').remove();removeSeanceStep(\''+key+'\')">Retirer la carte</button>'+X+X;
+  ov.innerHTML=h;document.body.appendChild(ov);}
+function chcSet(key,f,v){const s=getActiveSeance();if(!s||!s.chc||!s.chc[key])return;const c=s.chc[key];
+  c[f]=(f==='t'||f==='niv')?+v:v;if(f==='t')try{localStorage.setItem('grib_chc_t',String(+v));}catch(e){}
+  chcDist(s);saveSeances();try{renderSeanceTab();}catch(e){}if(E('chc-ed'))chcEdit(key);if(E('chc-ov'))chcLiveRender();}
+// ── jouer la carte (téléphone) ──
+function chcLive(key){const s=getActiveSeance();if(!s||!s.chc||!s.chc[key])return;chcEnsureDay(s);chcDist(s);saveSeances();
+  CHC.live=key;const st=s.steps.find(x=>x.key===key);CHC.t0=Date.now();CHC.dur=(st?stepDurOf(st):12)*60;
+  let ov=E('chc-ov');if(!ov){ov=document.createElement('div');ov.id='chc-ov';document.body.appendChild(ov);}chcLiveRender();
+  clearInterval(CHC.tick);CHC.tick=setInterval(()=>{const e=E('chc-clk');if(!e){clearInterval(CHC.tick);return;}e.textContent=chcClk();},1000);}
+function chcClk(){const r=Math.max(0,CHC.dur-Math.floor((Date.now()-CHC.t0)/1000));return String(Math.floor(r/60)).padStart(2,'0')+':'+String(r%60).padStart(2,'0');}
+function chcLiveClose(){const o=E('chc-ov');if(o)o.remove();clearInterval(CHC.tick);CHC.live=null;try{renderSeanceTab();}catch(e){}}
+function chcLiveRender(){const ov=E('chc-ov');const s=getActiveSeance();const key=CHC.live;if(!ov||!s||!s.chc||!s.chc[key])return;const q=chcQ(s);if(!q){ov.remove();return;}
+  const c=s.chc[key];const t=chcT(q);const M=c.ji>=0?chcList(q,t.jours[c.ji]):[];const D='<'+'div',X='</'+'div>';const st=s.steps.find(x=>x.key===key);
+  let h=D+' class="chc-top"><button type="button" class="chc-x" onclick="chcLiveClose()">‹</button>'+D+' style="flex:1;min-width:0;"><b>🏆 Championnat'+(chcCards(s).length>1?' · carte '+(chcCards(s).indexOf(key)+1)+'/'+chcCards(s).length:'')+'</b><small>'+esc(String(s.classe||''))+' · '+esc(String(s.sport||''))+'</small>'+X+'<span id="chc-clk">'+chcClk()+'</span>'+X;
+  h+=D+' class="chc-scroll">';
+  const all=chcRules(t,s,key,-99).filter(r=>r.tr<0);
+  h+=D+' class="chc-rule">'+D+' style="display:flex;align-items:center;gap:8px;"><span class="chc-lab">Règles du moment</span><span style="flex:1"></span><button type="button" onclick="chcRuleEd(-1)">✎ Pour tous</button>'+X+(all.length?all.map(r=>'<b>'+esc(String(r.lab))+'</b><small>'+chcScLab(r)+'</small>').join(''):'<small>Comptage normal : 1 point.</small>')+X;
+  if(!c.mi.length)h+=D+' class="chc-terr"><span class="cc-dim">Plus de rencontre à jouer pour cette carte.</span>'+X;
+  c.mi.forEach((i,ti)=>{const m=M[i];if(!m)return;const L=chcLab(q,m);const R=chcRules(t,s,key,ti);const own=R.filter(r=>r.tr===ti);
+    const sa=+m.sa||0,sb=+m.sb||0;
+    const side=(sd,nm,col,v,ov)=>{const dbl=R.find(r=>r.dbl>0&&ov-v>=r.dbl);const bt=R.filter(r=>r.v>1);
+      return D+' class="chc-side"><b style="color:'+esc(String(col))+'">'+esc(nm)+'</b><span class="chc-sc">'+v+'</span>'+(dbl?'<small class="chc-x2">×2</small>':'')
+       +D+' class="chc-bt"><button type="button" class="m" onclick="chcPt('+ti+',\''+sd+'\',-1)">↶</button><button type="button" class="p" onclick="chcPt('+ti+',\''+sd+'\',1)">+1</button>'+X
+       +(bt.length?D+' class="chc-bt">'+bt.map(r=>'<button type="button" class="p2" title="'+esc(String(r.lab))+'" onclick="chcPt('+ti+',\''+sd+'\','+(+r.v)+')">+'+(+r.v)+'</button>').join('')+X:'')+X;};
+    h+=D+' class="chc-terr">'+D+' class="chc-th"><span class="chc-lab">Terrain '+(ti+1)+'</span><small>'+esc(L.sub)+'</small><span style="flex:1"></span><button type="button" onclick="chcRuleEd('+ti+')">✎ Règle T'+(ti+1)+'</button>'+X
+      +(own.length?D+' class="chc-own">'+own.map(r=>esc(String(r.lab))).join(' · ')+X:'')
+      +D+' class="chc-vs">'+side('a',L.A,L.ca,sa,sb)+'<span class="chc-dash">–</span>'+side('b',L.B,L.cb,sb,sa)+X+X;});
+  const o=chcOthersTxt(s,q,key);if(o)h+=D+' class="chc-par">En parallèle : '+esc(o)+'<br><small>Dispensés : rôles sociaux (arbitre, marque, chrono, observateur, coach).</small>'+X;
+  h+=X+D+' class="chc-foot"><button type="button" class="chc-end" onclick="chcEnd()">Fin → classement</button>'+X;
+  ov.innerHTML=h;}
+function chcScLab(r){return r.sc==='bloc'?'ce bloc':r.sc==='seance'?'cette séance':'jusqu\'à nouvel ordre';}
+function chcPt(ti,sd,d){const s=getActiveSeance();const key=CHC.live;if(!s||!s.chc||!s.chc[key])return;const c=s.chc[key];const q=chcQ(s);if(!q)return;const i=c.mi[ti];const k=trnKind(q);
+  seqUpdate(q.id,qq=>{const t=trnObj(qq,k);const J=t.jours[c.ji];const m=chcList(qq,J)[i];if(!m)return;m.hs=Array.isArray(m.hs)?m.hs:[];const f=sd==='a'?'sa':'sb',g=sd==='a'?'sb':'sa';
+    if(d<0){let j=-1;for(let x=m.hs.length-1;x>=0;x--)if(m.hs[x][0]===sd){j=x;break;}if(j<0)return;const p=m.hs[j][1];m.hs.splice(j,1);m[f]=Math.max(0,(+m[f]||0)-p);if(m[f]===0&&!m.hs.length&&(+m[g]||0)===0){m.sa='';m.sb='';}return;}
+    const R=chcRules(t,s,key,ti);const dbl=R.find(r=>r.dbl>0&&(+m[g]||0)-(+m[f]||0)>=r.dbl);const p=d*(dbl?2:1);
+    if(m.sa===''||m.sa==null)m.sa=0;if(m.sb===''||m.sb==null)m.sb=0;m[f]=(+m[f]||0)+p;m.hs.push([sd,p]);m.rg=R.map(r=>String(r.lab));});
+  chcLiveRender();}
+function chcEnd(){const s=getActiveSeance();const key=CHC.live;if(s){const st=s.steps.find(x=>x.key===key);if(st&&st.status!=='done'){st.status='done';recomputeSeanceStatuses(s);saveSeances();}}
+  chcLiveClose();try{toast2('🏆 Scores enregistrés dans le classement');}catch(e){}}
+// ── changer la règle ──
+function chcRuleEd(ti){const s=getActiveSeance();const key=CHC.live;const q=s&&chcQ(s);if(!q)return;const t=chcT(q);const D='<'+'div',X='</'+'div>';
+  let ov=E('chc-rg');if(ov)ov.remove();ov=document.createElement('div');ov.id='chc-rg';ov.onclick=e=>{if(e.target===ov)ov.remove();};
+  const cur=((t.rg)||[]).filter(r=>r.tr===ti&&chcRules(t,s,key,ti<0?-99:ti).indexOf(r)>=0);
+  CHC.rd={ti:ti,sc:CHC.rd&&CHC.rd.sc||'seance'};
+  let h=D+' class="chc-rgb">'+D+' style="display:flex;align-items:center;gap:8px;"><b style="flex:1;">Changer la règle'+(ti>=0?' · terrain '+(ti+1):' · tous les terrains')+'</b><button type="button" class="chc-x" onclick="E(\'chc-rg\').remove()">✕</button>'+X;
+  if(cur.length)h+=D+' class="chc-lab">En ce moment'+X+cur.map(r=>D+' class="chc-cur"><span style="flex:1;">'+esc(String(r.lab))+' <small>'+chcScLab(r)+'</small></span><button type="button" onclick="chcRuleOff(\''+esc(r.id)+'\')">Retirer</button>'+X).join('');
+  h+=D+' class="chc-lab">Pour combien de temps ?'+X+D+' class="chc-seg" id="chc-scseg">'+[['bloc','Ce bloc'],['seance','Cette séance'],['seq','Jusqu\'à nouvel ordre']].map(x=>'<button type="button" class="'+(CHC.rd.sc===x[0]?'on':'')+'" onclick="CHC.rd.sc=\''+x[0]+'\';chcRuleEd('+ti+')">'+x[1]+'</button>').join('')+X;
+  h+=D+' class="chc-lab">Ajouter une règle'+X;
+  const P=chcPresets(s.sport).map(p=>({lab:p[0],v:p[1],dbl:0})).concat([{lab:'L\'équipe menée de 5 points : ses points comptent double',v:null,dbl:5}]);
+  P.forEach((p,i)=>{h+='<button type="button" class="chc-pre" onclick="chcRuleAdd('+i+')">'+esc(p.lab)+'</button>';});CHC.pre=P;
+  h+=D+' class="chc-own2"><input type="text" id="chc-rl" placeholder="Écrire ma règle (ex. : point en zone arrière)"><input type="number" id="chc-rv" placeholder="pts" min="0" max="10"><button type="button" onclick="chcRuleAdd(-1)">＋</button>'+X;
+  h+=D+' class="cc-dim" style="margin-top:6px;">Avec des points (2, 3…), la règle ajoute un bouton « +2 » sur le terrain. Sans points, elle reste affichée comme rappel. Chaque match garde les règles avec lesquelles il a été joué.'+X+X;
+  ov.innerHTML=h;document.body.appendChild(ov);}
+function chcRuleAdd(i){const s=getActiveSeance();const key=CHC.live;const q=s&&chcQ(s);if(!q)return;let r;
+  if(i<0){const l=(E('chc-rl')||{}).value||'';const v=(E('chc-rv')||{}).value;if(!l.trim())return;r={lab:l.trim(),v:v===''||v==null?null:+v,dbl:0};}else r=Object.assign({},CHC.pre[i]);
+  const k=trnKind(q);seqUpdate(q.id,qq=>{const t=trnObj(qq,k);if(!Array.isArray(t.rg))t.rg=[];t.rg.push({id:'r'+Date.now().toString(36),lab:r.lab,v:r.v,dbl:r.dbl||0,sc:CHC.rd.sc,sid:s.id,key:key,tr:CHC.rd.ti,d:s.date,off:''});});
+  const o=E('chc-rg');if(o)o.remove();chcLiveRender();try{toast2('✎ Règle appliquée');}catch(e){}}
+function chcRuleOff(id){const s=getActiveSeance();const q=s&&chcQ(s);if(!q)return;const k=trnKind(q);
+  seqUpdate(q.id,qq=>{const t=trnObj(qq,k);const L=t.rg||[];const j=L.findIndex(r=>r.id===id);if(j<0)return;const r=L[j];if(r.sc==='seq'&&r.d<s.date)r.off=s.date;else L.splice(j,1);});
+  const ti=CHC.rd?CHC.rd.ti:-1;chcLiveRender();chcRuleEd(ti);}
+(function(){const st=document.createElement('style');st.textContent=`
+.sb-step.chc-step{width:250px;--oe:#a16207;}
+.chc-c{display:flex;flex-direction:column;gap:4px;font-size:.74rem;}
+.chc-t{display:flex;align-items:center;gap:5px;background:rgba(161,98,7,.14);border-radius:6px;padding:3px 5px;}
+.chc-t>b{font-size:.68rem;color:#fcd34d;}.chc-t>span{flex:1;min-width:0;}.chc-t i{font-style:normal;font-weight:700;}.chc-t small{opacity:.7;}.chc-t em{font-style:normal;font-weight:800;}
+.chc-rn{color:#fcd34d;}.chc-o{font-size:.7rem;opacity:.85;}
+.chc-b{display:flex;gap:4px;margin-top:2px;}.chc-b button{flex:1;border:1px solid #475569;background:transparent;color:inherit;border-radius:6px;padding:4px;font-size:.72rem;cursor:pointer;}
+.chc-b .chc-play{background:#a16207;border-color:#a16207;color:#fff;font-weight:700;}
+.chc-seg{display:flex;flex-wrap:wrap;gap:5px;margin:4px 0 6px;}.chc-seg button{flex:1 1 auto;min-height:38px;padding:6px 10px;border-radius:9px;border:1px solid #475569;background:#111c33;color:#cbd5e1;font-weight:700;cursor:pointer;}
+.chc-seg button.on{background:#2563eb;border-color:#2563eb;color:#fff;}
+.chc-in{width:100%;box-sizing:border-box;padding:8px;border-radius:8px;}.chc-chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px;}.chc-chips button{font-size:.72rem;border-radius:99px;border:1px solid #475569;background:transparent;color:inherit;padding:3px 9px;cursor:pointer;}
+#chc-ov{position:fixed;inset:0;z-index:9000;background:#0b1220;color:#e2e8f0;display:flex;flex-direction:column;font-family:inherit;}
+.chc-top{display:flex;align-items:center;gap:10px;padding:12px 54px 12px 14px;border-bottom:1px solid #1e293b;}.chc-top b{display:block;font-size:1rem;}.chc-top small{color:#94a3b8;font-size:.75rem;}
+#chc-clk{font-size:1.5rem;font-weight:900;color:#fde047;font-variant-numeric:tabular-nums;}
+.chc-x{width:40px;height:40px;border-radius:10px;border:1px solid #334155;background:#111c33;color:#e2e8f0;font-size:1.2rem;cursor:pointer;}
+.chc-scroll{flex:1;overflow:auto;padding:10px 12px;display:flex;flex-direction:column;gap:10px;}
+.chc-rule{background:#1c1407;border:1px solid #a16207;border-radius:14px;padding:10px 12px;display:flex;flex-direction:column;gap:3px;color:#fef3c7;}
+.chc-rule small{color:#fde68a;font-size:.72rem;}
+.chc-lab{font-size:.68rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#93c5fd;}.chc-rule .chc-lab{color:#fcd34d;}
+.chc-rule button,.chc-th button{border:1px solid #a16207;background:transparent;color:#fcd34d;border-radius:8px;padding:5px 9px;font-weight:700;font-size:.75rem;cursor:pointer;}
+.chc-terr{background:#0f172a;border:1px solid #1e293b;border-radius:14px;padding:10px;display:flex;flex-direction:column;gap:6px;}
+.chc-th{display:flex;align-items:center;gap:8px;}.chc-th small{color:#94a3b8;}
+.chc-own{font-size:.75rem;color:#fde68a;}
+.chc-vs{display:flex;align-items:flex-start;}.chc-dash{color:#475569;font-weight:900;padding-top:34px;}
+.chc-side{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;position:relative;min-width:0;}.chc-side>b{font-size:.9rem;text-align:center;}
+.chc-sc{font-size:2.6rem;font-weight:900;font-variant-numeric:tabular-nums;line-height:1;}
+.chc-x2{position:absolute;top:22px;right:8px;background:#a16207;color:#fff;border-radius:6px;padding:1px 5px;font-weight:800;}
+.chc-bt{display:flex;gap:6px;}.chc-bt button{height:46px;min-width:46px;border-radius:10px;font-weight:900;font-size:1rem;cursor:pointer;}
+.chc-bt .m{border:1px solid #334155;background:#111c33;color:#e2e8f0;}.chc-bt .p{border:none;background:#16a34a;color:#fff;min-width:66px;}.chc-bt .p2{border:none;background:#a16207;color:#fff;min-width:56px;}
+.chc-par{font-size:.82rem;color:#cbd5e1;background:#0f172a;border-radius:12px;padding:10px;}.chc-par small{color:#94a3b8;}
+.chc-foot{padding:10px 12px 18px;border-top:1px solid #1e293b;background:#020617;}.chc-end{width:100%;height:52px;border-radius:14px;border:none;background:#2563eb;color:#fff;font-weight:900;font-size:1rem;cursor:pointer;}
+#chc-rg{position:fixed;inset:0;z-index:9100;background:rgba(2,6,23,.7);display:flex;align-items:flex-end;justify-content:center;}
+.chc-rgb{background:#0b1220;color:#e2e8f0;width:100%;max-width:520px;max-height:88vh;overflow:auto;border-radius:18px 18px 0 0;padding:14px;display:flex;flex-direction:column;gap:6px;border-top:1px solid #334155;}
+.chc-pre{text-align:left;padding:10px 12px;border-radius:10px;border:1px solid #334155;background:#0f172a;color:#e2e8f0;font-weight:600;cursor:pointer;}
+.chc-cur{display:flex;align-items:center;gap:8px;background:#1e3a8a;border-radius:10px;padding:8px 10px;}.chc-cur button{border:1px solid #93c5fd;background:transparent;color:#bfdbfe;border-radius:8px;padding:4px 8px;cursor:pointer;}
+.chc-own2{display:flex;gap:6px;margin-top:4px;}.chc-own2 input{min-width:0;padding:9px;border-radius:9px;border:1px solid #334155;background:#0f172a;color:#e2e8f0;}.chc-own2 input[type=text]{flex:1;}.chc-own2 input[type=number]{width:58px;}
+.chc-own2 button{width:46px;border-radius:9px;border:none;background:#16a34a;color:#fff;font-weight:900;font-size:1.1rem;cursor:pointer;}
+`;document.head.appendChild(st);})();
 </script>
 </body>
 </html>
