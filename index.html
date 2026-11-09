@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v458</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v459</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v458</title>
+<title>Gribouillis EPS v459</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -31954,7 +31954,8 @@ function pk455El(id){return pk455Bank().find(x=>x.id===id)||null;}
 function pk455Sec(v){const m=/^(?:(\d+):)?(\d+)$/.exec(String(v||'').trim());return m?(+(m[1]||0))*60+(+m[2]):0;}
 function pk455Yt(e){const u=String(e&&e.vid||'');const m=/(?:youtu\.be\/|v=|shorts\/|embed\/)([\w-]{6,})/.exec(u);if(!m)return u;const s=pk455Sec(e.t0);return 'https://www.youtube.com/watch?v='+m[1]+(s?'&t='+s+'s':'');}
 function pk455Cfg(s,k,make){if(!s)return null;s.pk455=s.pk455||{};if(!s.pk455[k]&&make)s.pk455[k]={on:false,forme:'degres',chrono:true,essais:true,limite:45,v0:5,postes:[],bar:{rows:['1 essai','2 essais','3+'],cols:['< 40 s','40-50 s','50-60 s','> 60 s'],lim:[40,50,60],tab:[[6,5,4,3],[5,4,3,2],[4,3,2,1]]},dif:2};return s.pk455[k]||null;}
-function pk455SaveS(){try{saveSeances();}catch(e){}}
+function pk455S(k){return (String(k||'').indexOf('P:')===0&&typeof pk459Item==='function')?pk459Item(k):getActiveSeance();}
+function pk455SaveS(){try{saveSeances();}catch(e){}try{if(typeof pk459Save==='function')pk459Save();}catch(e){}}
 function pk455PosteLab(p){if(p.fam)return '🎲 Au choix : '+p.fam;const e=pk455El(p.e);return e?e.nom:'(élément supprimé)';}
 function pk455PosteDeg(p){if(p.fam)return 4;const e=pk455El(p.e);return e?(e.deg||[]).length:3;}
 // ── panneau dans le bloc ouvert ──
@@ -31964,18 +31965,19 @@ function pk455Panel(){try{const host=E('seance-tab-content');if(!host||!host.cla
   bar.innerHTML='<'+'div class="pk455-sw"><button type="button" class="'+(C&&C.on?'':'on')+'" onclick="event.stopPropagation();pk455On(\''+k+'\',false)">Situations</button><button type="button" class="'+(C&&C.on?'on':'')+'" onclick="event.stopPropagation();pk455On(\''+k+'\',true)">🔀 Parcours</button></'+'div>';
   let p=body.querySelector('.pk455');if(!(C&&C.on)){if(p)p.remove();return;}if(!p){p=document.createElement('div');p.className='pk455';bar.insertAdjacentElement('afterend',p);}
   const F=[['degres','Parcours à degrés'],['circuit','Circuit chrono'],['combos','Combinaisons à points']];
-  p.innerHTML='<'+'div class="pk455-ch">'+F.map(f=>'<button type="button" class="'+(C.forme===f[0]?'on':'')+'" onclick="event.stopPropagation();pk455Set(\''+k+'\',\'forme\',\''+f[0]+'\')">'+f[1]+'</button>').join('')+'</'+'div>'
+  p.innerHTML=pk455Html(k,C);}catch(e){console.warn('pk455',e);}}
+function pk455Html(k,C){const F=[['degres','Parcours à degrés'],['circuit','Circuit chrono'],['combos','Combinaisons à points']];return '<'+'div class="pk455-ch">'+F.map(f=>'<button type="button" class="'+(C.forme===f[0]?'on':'')+'" onclick="event.stopPropagation();pk455Set(\''+k+'\',\'forme\',\''+f[0]+'\')">'+f[1]+'</button>').join('')+'</'+'div>'
    +'<'+'div class="pk455-ch">'+[['chrono','⏱ Chrono'],['essais','🔁 Essais comptés']].map(o=>'<button type="button" class="'+(C[o[0]]?'on':'')+'" onclick="event.stopPropagation();pk455Set(\''+k+'\',\''+o[0]+'\',!'+(!!C[o[0]])+')">'+o[1]+'</button>').join('')
    +(C.forme==='circuit'?'<label class="pk455-lim">limite <input type="number" min="10" max="600" value="'+(+C.limite||45)+'" onclick="event.stopPropagation()" onchange="pk455Set(\''+k+'\',\'limite\',+this.value)"> s</label>':'')
    +(C.forme==='combos'?'<label class="pk455-lim">valeur de départ <input type="number" min="1" max="20" value="'+(+C.v0||5)+'" onclick="event.stopPropagation()" onchange="pk455Set(\''+k+'\',\'v0\',+this.value)"></label>':'')+'</'+'div>'
    +'<'+'div class="pk455-ps">'+(C.postes.length?C.postes.map((q,i)=>{const e=q.e?pk455El(q.e):null;return '<'+'div class="pk455-p"><b class="n">'+(i+1)+'</b><span class="t">'+esc(pk455PosteLab(q))+(e&&e.img?' 📷':'')+(e&&e.vid?' 🎬':'')+'<small>'+pk455PosteDeg(q)+' degrés</small></span>'
       +'<button type="button" aria-label="Monter" onclick="event.stopPropagation();pk455Mv(\''+k+'\','+i+',-1)">↑</button><button type="button" aria-label="Descendre" onclick="event.stopPropagation();pk455Mv(\''+k+'\','+i+',1)">↓</button>'+(q.e?'<button type="button" aria-label="Modifier l\'élément" onclick="event.stopPropagation();pk455Edit(\''+q.e+'\')">✏️</button>':'')+'<button type="button" aria-label="Retirer" onclick="event.stopPropagation();pk455Del(\''+k+'\','+i+')">✕</button></'+'div>';}).join(''):'<p class="pk455-dim">Aucun poste. Ajoute des éléments depuis la banque.</p>')+'</'+'div>'
    +'<'+'div class="pk455-act"><button type="button" onclick="event.stopPropagation();pk455Pick(\''+k+'\')">＋ Poste</button><button type="button" onclick="event.stopPropagation();pk455Pass(\''+k+'\')">⏱ Passage</button><button type="button" onclick="event.stopPropagation();pk455Print(\''+k+'\')">🖨 Fiche atelier</button><button type="button" onclick="event.stopPropagation();pk455BarEd(\''+k+'\')">📊 Barème</button></'+'div>'
-   +'<'+'div class="pk455-gold">Règles d\'or : jamais tourner avec le poids sur la nuque · chute = non validé · réception en roulade de sécurité</'+'div>';}catch(e){console.warn('pk455',e);}}
-function pk455On(k,on){const s=getActiveSeance();const C=pk455Cfg(s,k,true);C.on=!!on;pk455SaveS();pk455Panel();}
-function pk455Set(k,f,v){const s=getActiveSeance();const C=pk455Cfg(s,k,true);C[f]=v;pk455SaveS();pk455Panel();}
-function pk455Mv(k,i,d){const C=pk455Cfg(getActiveSeance(),k,true);const j=i+d;if(j<0||j>=C.postes.length)return;const t=C.postes[i];C.postes[i]=C.postes[j];C.postes[j]=t;pk455SaveS();pk455Panel();}
-function pk455Del(k,i){const C=pk455Cfg(getActiveSeance(),k,true);C.postes.splice(i,1);pk455SaveS();pk455Panel();}
+   +'<'+'div class="pk455-gold">Règles d\'or : jamais tourner avec le poids sur la nuque · chute = non validé · réception en roulade de sécurité</'+'div>';}
+function pk455On(k,on){const s=pk455S(k);const C=pk455Cfg(s,k,true);C.on=!!on;pk455SaveS();pk455Panel();}
+function pk455Set(k,f,v){const s=pk455S(k);const C=pk455Cfg(s,k,true);C[f]=v;pk455SaveS();pk455Panel();}
+function pk455Mv(k,i,d){const C=pk455Cfg(pk455S(k),k,true);const j=i+d;if(j<0||j>=C.postes.length)return;const t=C.postes[i];C.postes[i]=C.postes[j];C.postes[j]=t;pk455SaveS();pk455Panel();}
+function pk455Del(k,i){const C=pk455Cfg(pk455S(k),k,true);C.postes.splice(i,1);pk455SaveS();pk455Panel();}
 g442Apply=(function(f){return function(){const r=f.apply(this,arguments);pk455Panel();return r;};})(g442Apply);
 renderSeanceTab=(function(f){return function(){const r=f.apply(this,arguments);pk455Panel();return r;};})(renderSeanceTab);
 // ── banque : choisir / créer / modifier ──
@@ -31989,7 +31991,7 @@ function pk455BankFill(){const ov=E('pk455-b');if(!ov)return;const B=pk455Bank()
   let h='';if(PK455UI.f&&PK455UI.k)h+='<'+'div class="pk455-i"><button type="button" class="pk451-add" onclick="pk455Add(\'\',\''+esc(PK455UI.f).replace(/'/g,"\\'")+'\')"><b>🎲 Au choix dans la famille « '+esc(PK455UI.f)+' »</b><small>L\'élève prend l\'élément qu\'il veut dans cette famille (degré 1 à 4).</small></button></'+'div>';
   h+=L.map(e=>'<'+'div class="pk455-i"><button type="button" class="pk451-add" onclick="'+(PK455UI.k?'pk455Add(\''+e.id+'\',\'\')':'pk455Edit(\''+e.id+'\')')+'"><b>'+esc(e.nom)+(e.img?' 📷':'')+(e.vid?' 🎬':'')+'</b><small>'+esc(e.fam)+' · '+(e.src==='parkour'?'parkour':'gym')+' · '+(e.deg||[]).length+' degrés'+((e.deg||[]).some(d=>d.t)?'':' · à compléter')+'</small></button><button type="button" class="pk451-see" aria-label="Modifier" onclick="pk455Edit(\''+e.id+'\')">✏️</button></'+'div>').join('');
   ov.querySelector('.pk455-l').innerHTML=h||'<p class="pk455-dim">Aucun élément.</p>';}
-function pk455Add(eid,fam){const C=pk455Cfg(getActiveSeance(),PK455UI.k,true);C.postes.push(eid?{e:eid}:{fam:fam});pk455SaveS();const ov=E('pk455-b');if(ov)ov.remove();pk455Panel();try{toast2('✅ Poste '+C.postes.length+' ajouté');}catch(e){}}
+function pk455Add(eid,fam){const C=pk455Cfg(pk455S(PK455UI.k),PK455UI.k,true);C.postes.push(eid?{e:eid}:{fam:fam});pk455SaveS();const ov=E('pk455-b');if(ov)ov.remove();pk455Panel();try{toast2('✅ Poste '+C.postes.length+' ajouté');}catch(e){}}
 function pk455Edit(id){const B=pk455Bank();let e=id?B.find(x=>x.id===id):null;const isNew=!e;if(!e)e={id:'pk'+Date.now().toString(36),nom:'',fam:PK455UI.f||PK455_FAM[0],src:'gym',deg:[{t:'',ch:''},{t:'',ch:''},{t:'',ch:''}],img:'',vid:'',t0:'',t1:''};
   const fams=[...new Set(PK455_FAM.concat(B.map(x=>x.fam)))];const D=e.deg||[];
   pk455Ov('pk455-e','<'+'div class="eq428-h"><b>'+(isNew?'Nouvel élément':'Modifier l\'élément')+'</b><button type="button" class="eq428-x" aria-label="Fermer" onclick="E(\'pk455-e\').remove()">✕</button></'+'div>'
@@ -32011,21 +32013,21 @@ function pk455Ok(id,isNew){pk455DegRead();const nom=E('pk455-nom').value.trim();
   pk455Save(B);E('pk455-e').remove();pk455BankFill();pk455Panel();try{toast2('✅ Élément enregistré');}catch(x){}}
 function pk455Rm(id){if(!confirm('Supprimer cet élément de la banque ?'))return;pk455Save(pk455Bank().filter(x=>x.id!==id));E('pk455-e').remove();pk455BankFill();pk455Panel();}
 // ── barème double entrée essais × temps ──
-function pk455BarEd(k){const C=pk455Cfg(getActiveSeance(),k,true);const b=C.bar;
+function pk455BarEd(k){const C=pk455Cfg(pk455S(k),k,true);const b=C.bar;
   pk455Ov('pk455-r','<'+'div class="eq428-h"><b>📊 Barème du parcours</b><button type="button" class="eq428-x" aria-label="Fermer" onclick="E(\'pk455-r\').remove()">✕</button></'+'div>'
    +'<p class="pk455-dim">Points « essais × temps » : la case au croisement. Seuils de temps en secondes (séparés par des virgules).</p>'
    +'<label class="pk455-fl">Seuils de temps (s)<input id="pk455-lim" type="text" value="'+esc(b.lim.join(', '))+'"></label>'
    +'<table class="chp-t pk455-t"><thead><tr><th>essais \\ temps</th>'+b.cols.map(c=>'<th>'+esc(c)+'</th>').join('')+'</tr></thead><tbody>'+b.rows.map((r,ri)=>'<tr><td class="l">'+esc(r)+'</td>'+b.cols.map((_,ci)=>'<td><input type="number" step="0.5" value="'+(+b.tab[ri][ci]||0)+'" data-r="'+ri+'" data-c="'+ci+'"></td>').join('')+'</tr>').join('')+'</tbody></table>'
    +'<label class="pk455-fl">Points de difficulté par degré choisi<input id="pk455-dif" type="number" step="0.25" value="'+(+C.dif||0)+'"></label><p class="pk455-dim">Note = difficulté (somme des degrés × ce coefficient, ) + case du tableau. Sans chrono, on prend la 1re colonne.</p>'
    +'<'+'div class="pk455-act"><button type="button" class="ok" onclick="pk455BarOk(\''+k+'\')">Enregistrer</button></'+'div>');}
-function pk455BarOk(k){const C=pk455Cfg(getActiveSeance(),k,true);const b=C.bar;const lim=E('pk455-lim').value.split(/[;,]/).map(x=>+String(x).replace(',','.')).filter(x=>x>0).sort((a,b)=>a-b);
+function pk455BarOk(k){const C=pk455Cfg(pk455S(k),k,true);const b=C.bar;const lim=E('pk455-lim').value.split(/[;,]/).map(x=>+String(x).replace(',','.')).filter(x=>x>0).sort((a,b)=>a-b);
   if(lim.length){b.lim=lim;b.cols=['< '+lim[0]+' s'].concat(lim.slice(1).map((v,i)=>lim[i]+'-'+v+' s'),['> '+lim[lim.length-1]+' s']);b.tab=b.rows.map((_,ri)=>b.cols.map((_,ci)=>(b.tab[ri]&&b.tab[ri][ci]!=null)?b.tab[ri][ci]:0));}
   document.querySelectorAll('#pk455-r .pk455-t input').forEach(i=>{const r=+i.dataset.r,c=+i.dataset.c;if(b.tab[r]&&c<b.tab[r].length)b.tab[r][c]=+i.value||0;});C.dif=+E('pk455-dif').value||0;pk455SaveS();E('pk455-r').remove();try{toast2('📊 Barème enregistré');}catch(e){}}
 function pk455Note(C,deg,ess,sec){const b=C.bar;const r=Math.min(b.rows.length-1,Math.max(0,(ess||1)-1));let c=0;if(C.chrono&&sec>0){c=b.lim.findIndex(l=>sec<l);if(c<0)c=b.lim.length;}c=Math.min(c,b.cols.length-1);
   const dif=deg.reduce((a,d)=>a+(+d||0),0)*(+C.dif||0);return {dif,cell:+b.tab[r][c]||0,r,c,total:Math.round((dif+(+b.tab[r][c]||0))*100)/100};}
 // ── passage (juge) ──
 const PK455P={k:'',deg:[],t0:0,acc:0,run:false,ess:1,tm:0,nom:''};
-function pk455Pass(k){const s=getActiveSeance();const C=pk455Cfg(s,k,true);if(!C.postes.length){alert('Ajoute d\'abord des postes.');return;}
+function pk455Pass(k){const s=pk455S(k);const C=pk455Cfg(s,k,true);if(!C.postes.length){alert('Ajoute d\'abord des postes.');return;}
   Object.assign(PK455P,{k,deg:C.postes.map(()=>0),t0:0,acc:0,run:false,ess:1,nom:''});const names=[];try{(COMPO.roster||[]).forEach(r=>{if(r&&r.name)names.push(r.name);});}catch(e){}
   pk455Ov('pk455-p','<'+'div class="eq428-h"><b>⏱ Passage</b><button type="button" class="eq428-x" aria-label="Fermer" onclick="pk455Stop(true);E(\'pk455-p\').remove()">✕</button></'+'div><'+'div id="pk455-pb"></'+'div><datalist id="pk455-nms">'+names.map(n=>'<option value="'+esc(n)+'">').join('')+'</datalist>');pk455PassFill();}
 function pk455Elapsed(){return PK455P.acc+(PK455P.run?(Date.now()-PK455P.t0):0);}
@@ -32033,7 +32035,7 @@ function pk455Fmt(ms){const s=ms/1000;return Math.floor(s/60)+':'+String(Math.fl
 function pk455Tick(){const el=E('pk455-clk');if(el)el.textContent=pk455Fmt(pk455Elapsed());if(PK455P.run)PK455P.tm=requestAnimationFrame(pk455Tick);}
 function pk455Go(){if(PK455P.run){pk455Stop();}else{PK455P.t0=Date.now();PK455P.run=true;pk455Tick();}pk455PassFill();}
 function pk455Stop(silent){if(PK455P.run){PK455P.acc+=Date.now()-PK455P.t0;PK455P.run=false;cancelAnimationFrame(PK455P.tm);}if(!silent)pk455PassFill();}
-function pk455PassFill(){const h=E('pk455-pb');if(!h)return;const s=getActiveSeance();const C=pk455Cfg(s,PK455P.k,true);const nm=(E('pk455-nm')||{}).value;if(nm!=null)PK455P.nom=nm;
+function pk455PassFill(){const h=E('pk455-pb');if(!h)return;const s=pk455S(PK455P.k);const C=pk455Cfg(s,PK455P.k,true);const nm=(E('pk455-nm')||{}).value;if(nm!=null)PK455P.nom=nm;
   const COL=['#86efac','#fde047','#fdba74','#fca5a5'];const sec=pk455Elapsed()/1000;const N=pk455Note(C,PK455P.deg,PK455P.ess,sec);
   if(C.forme==='combos'){pk455Combos(h,C);return;}
   h.innerHTML='<label class="pk455-fl">Élève<input id="pk455-nm" type="text" list="pk455-nms" value="'+esc(PK455P.nom)+'" placeholder="Nom de l\'élève"></label>'
@@ -32046,22 +32048,22 @@ function pk455PassFill(){const h=E('pk455-pb');if(!h)return;const s=getActiveSea
    +(C.forme==='circuit'&&C.chrono?'<p class="pk455-dim">Limite : '+(+C.limite||45)+' s'+(sec>0?(sec<=(+C.limite||45)?' · ✅ dans le temps':' · ⏳ hors temps'):'')+'</p>':'')
    +'<'+'div class="pk455-res">Difficulté '+PK455P.deg.reduce((a,b)=>a+b,0)+' · essais '+PK455P.ess+(C.chrono?' · '+pk455Fmt(pk455Elapsed()):'')+' → <b>'+N.total+' pts</b> <small>(difficulté '+N.dif+' + barème '+N.cell+')</small></'+'div>'
    +'<'+'div class="pk455-act"><button type="button" class="ok" onclick="pk455Rec()">💾 Enregistrer le passage</button></'+'div>'+pk455ResHtml(s,PK455P.k);}
-function pk455Rec(){pk455Stop(true);const s=getActiveSeance();const C=pk455Cfg(s,PK455P.k,true);const nm=((E('pk455-nm')||{}).value||'').trim();if(!nm){alert('Indique le nom de l\'élève.');return;}
+function pk455Rec(){pk455Stop(true);const s=pk455S(PK455P.k);const C=pk455Cfg(s,PK455P.k,true);const nm=((E('pk455-nm')||{}).value||'').trim();if(!nm){alert('Indique le nom de l\'élève.');return;}
   const sec=Math.round(pk455Elapsed()/100)/10;const N=pk455Note(C,PK455P.deg,PK455P.ess,sec);s.pk455r=s.pk455r||[];s.pk455r.push({k:PK455P.k,nom:nm,deg:PK455P.deg.slice(),ess:PK455P.ess,sec:C.chrono?sec:null,note:N.total,ts:Date.now()});pk455SaveS();
   Object.assign(PK455P,{deg:C.postes.map(()=>0),t0:0,acc:0,run:false,ess:1,nom:''});pk455PassFill();try{toast2('💾 Passage de '+nm+' : '+N.total+' pts');}catch(e){}}
 function pk455ResHtml(s,k){const R=(s.pk455r||[]).filter(r=>r.k===k);if(!R.length)return '';return '<'+'div class="pk455-rl"><b>Passages enregistrés</b>'+R.slice().reverse().map(r=>'<'+'div><span>'+esc(r.nom)+'</span><span>degrés '+r.deg.join('-')+' · '+r.ess+' essai'+(r.ess>1?'s':'')+(r.sec!=null?' · '+r.sec+' s':'')+'</span><b>'+r.note+'</b></'+'div>').join('')+'</'+'div>';}
 // combinaisons à points qui baissent (façon Park-code)
-function pk455Combos(h,C){const s=getActiveSeance();s.pk455c=s.pk455c||{};const Z=s.pk455c[PK455P.k]=s.pk455c[PK455P.k]||{val:{},pts:{}};
+function pk455Combos(h,C){const s=pk455S(PK455P.k);s.pk455c=s.pk455c||{};const Z=s.pk455c[PK455P.k]=s.pk455c[PK455P.k]||{val:{},pts:{}};
   const v=i=>Z.val[i]!=null?Z.val[i]:(+C.v0||5);const sc=Object.keys(Z.pts).sort((a,b)=>Z.pts[b]-Z.pts[a]);
   h.innerHTML='<label class="pk455-fl">Élève ou équipe qui valide<input id="pk455-nm" type="text" list="pk455-nms" value="'+esc(PK455P.nom)+'" placeholder="Nom"></label>'
    +'<'+'div class="pk455-cb">'+C.postes.map((q,i)=>'<button type="button" onclick="pk455Val('+i+')"><b>'+v(i)+'</b><span>'+esc(pk455PosteLab(q))+'</span></button>').join('')+'</'+'div>'
    +'<p class="pk455-dim">Touche une combinaison réussie sans chute : elle rapporte sa valeur, puis vaut 1 point de moins (minimum 1).</p>'
    +(sc.length?'<'+'div class="pk455-rl"><b>Classement</b>'+sc.map(n=>'<'+'div><span>'+esc(n)+'</span><b>'+Z.pts[n]+'</b></'+'div>').join('')+'</'+'div>':'')
-   +'<'+'div class="pk455-act"><button type="button" class="del" onclick="if(confirm(\'Remettre les points à zéro ?\')){getActiveSeance().pk455c[\''+PK455P.k+'\']={val:{},pts:{}};pk455SaveS();pk455PassFill();}">Remettre à zéro</button></'+'div>';}
-function pk455Val(i){const s=getActiveSeance();const C=pk455Cfg(s,PK455P.k,true);const nm=((E('pk455-nm')||{}).value||'').trim();if(!nm){alert('Indique qui a réussi.');return;}PK455P.nom=nm;const Z=s.pk455c[PK455P.k];const v=Z.val[i]!=null?Z.val[i]:(+C.v0||5);
+   +'<'+'div class="pk455-act"><button type="button" class="del" onclick="if(confirm(\'Remettre les points à zéro ?\')){pk455S(PK455P.k).pk455c[\''+PK455P.k+'\']={val:{},pts:{}};pk455SaveS();pk455PassFill();}">Remettre à zéro</button></'+'div>';}
+function pk455Val(i){const s=pk455S(PK455P.k);const C=pk455Cfg(s,PK455P.k,true);const nm=((E('pk455-nm')||{}).value||'').trim();if(!nm){alert('Indique qui a réussi.');return;}PK455P.nom=nm;const Z=s.pk455c[PK455P.k];const v=Z.val[i]!=null?Z.val[i]:(+C.v0||5);
   Z.pts[nm]=(Z.pts[nm]||0)+v;Z.val[i]=Math.max(1,v-1);pk455SaveS();pk455PassFill();try{toast2('✅ '+nm+' +'+v);}catch(e){}}
 // ── fiche atelier A4 ──
-function pk455Print(k){const s=getActiveSeance();const C=pk455Cfg(s,k,true);if(!C.postes.length){alert('Ajoute d\'abord des postes.');return;}let lab=k;try{lab=seanceStepDef(k).label;}catch(e){}
+function pk455Print(k){const s=pk455S(k);const C=pk455Cfg(s,k,true);if(!C.postes.length){alert('Ajoute d\'abord des postes.');return;}let lab=k;try{lab=(s._pkl&&s.nom)||seanceStepDef(k).label;}catch(e){}
   const COL=['#86efac','#fde047','#fdba74','#fca5a5'];const o=document.querySelector('.pk455-pv');if(o)o.remove();const pv=document.createElement('div');pv.className='pk455-pv';
   pv.innerHTML='<'+'div class="pk455-pvb no-pr"><button type="button" onclick="window.print()">🖨 Imprimer</button><button type="button" onclick="document.body.classList.remove(\'pk455-pr\');this.closest(\'.pk455-pv\').remove()">✕ Fermer</button></'+'div>'
    +'<'+'div class="pk455-a4"><'+'div class="hd"><span>CA3 · Gym-parkour</span><b>'+esc(lab)+' · fiche atelier</b><span>'+esc(s.date||'')+'</span></'+'div>'
@@ -32304,6 +32306,57 @@ function c5457Copy(){const L=t457Get(CA5457_KEY,[]);const t=['Élève\tDate\tSé
 // cliquables ; seul « ＋ FPS » reste caché.
 // ══════════════════════════════════════════════════════════════════════
 (function(){const st=document.createElement('style');st.textContent='html body .lx2-ro .lx2-d[data-k$="|f"] .lx-chips button:not(.lx-add){display:inline-flex;}';document.head.appendChild(st);})();
+
+
+
+// ══════════════════════════════════════════════════════════════════════
+// v459 — LES PARCOURS DANS LA BIBLIOTHÈQUE PRATIQUE
+//  Biblio → 🧰 Pratique (toutes APSA ou gym) : carte « 🔀 Parcours gym ·
+//  parkour » → créer, ouvrir, passage, fiche A4, banque d'éléments, sans
+//  passer par une séance. Dans un bloc de séance en mode parcours :
+//  « 📥 Depuis la bibliothèque » et « 📤 Ranger dans la bibliothèque ».
+// ══════════════════════════════════════════════════════════════════════
+const PKL_KEY='grib_pk_parc_v1';try{if(GRIB_BACKUP_KEYS.indexOf(PKL_KEY)<0)GRIB_BACKUP_KEYS.push(PKL_KEY);}catch(e){}
+try{const _kn2=syncKeyName;syncKeyName=function(k){return k===PKL_KEY?'Parcours (bibliothèque)':_kn2.apply(this,arguments);};}catch(e){}
+let PKL=null;
+function pk459L(){if(!PKL){try{PKL=JSON.parse(localStorage.getItem(PKL_KEY)||'[]');}catch(e){PKL=[];}if(!Array.isArray(PKL))PKL=[];}return PKL;}
+function pk459Item(k){return pk459L().find(x=>x&&x.id===k)||null;}
+function pk459Save(){if(!PKL)return;try{localStorage.setItem(PKL_KEY,JSON.stringify(PKL));}catch(e){alert('Enregistrement impossible : place insuffisante.');}}
+const PK459_F={degres:'Parcours à degrés',circuit:'Circuit chrono',combos:'Combinaisons à points'};
+function pk459Clone(C){const c=JSON.parse(JSON.stringify(C||{}));c.on=true;return c;}
+function pk459New(from){const id='P:'+Date.now().toString(36);const it={id,_pkl:1,nom:'Nouveau parcours',sport:'gymnastique',ts:Date.now()};pk459L().push(it);if(from){it.pk455={};it.pk455[id]=pk459Clone(from);}else{pk455Cfg(it,id,true).on=true;}pk459Save();return it;}
+function pk459Open(id){const it=pk459Item(id);if(!it)return;const o=E('pk459-o');if(o)o.remove();const ov=document.createElement('div');ov.id='pk459-o';ov.className='eq428-ovl pk455-ov';ov.onclick=e=>{if(e.target===ov){ov.remove();pk459Card();}};
+  ov.innerHTML='<'+'div class="pk455-box"><'+'div class="eq428-h"><b>🔀 Parcours</b><button type="button" class="eq428-x" aria-label="Fermer" onclick="E(\'pk459-o\').remove();pk459Card()">✕</button></'+'div>'
+   +'<label class="pk455-fl">Nom du parcours<input type="text" value="'+esc(it.nom||'')+'" onchange="pk459Nom(\''+id+'\',this.value)"></label><'+'div class="pk459-body" data-k="'+esc(id)+'"></'+'div>'
+   +'<'+'div class="pk455-act"><button type="button" onclick="pk459Dup(\''+id+'\')">⧉ Dupliquer</button><button type="button" class="del" onclick="pk459Del(\''+id+'\')">🗑 Supprimer</button></'+'div></'+'div>';
+  document.body.appendChild(ov);pk459Refresh();}
+function pk459Nom(id,v){const it=pk459Item(id);if(!it)return;it.nom=String(v||'').trim()||'Parcours';pk459Save();}
+function pk459Dup(id){const it=pk459Item(id);if(!it)return;const n=pk459New(pk455Cfg(it,id,true));n.nom=(it.nom||'Parcours')+' (copie)';pk459Save();pk459Open(n.id);try{toast2('⧉ Copie créée');}catch(e){}}
+function pk459Del(id){if(!confirm('Supprimer ce parcours de la bibliothèque ?'))return;PKL=pk459L().filter(x=>x.id!==id);pk459Save();const o=E('pk459-o');if(o)o.remove();pk459Card();}
+function pk459Refresh(){const b=document.querySelector('#pk459-o .pk459-body');if(b){const k=b.dataset.k;const it=pk459Item(k);if(it)b.innerHTML=pk455Html(k,pk455Cfg(it,k,true));}}
+pk455Panel=(function(f){return function(){const r=f.apply(this,arguments);try{pk459Refresh();}catch(e){}return r;};})(pk455Panel);
+// boutons bibliothèque dans le bloc de séance
+pk455Html=(function(f){return function(k,C){let h=f.apply(this,arguments);if(String(k).indexOf('P:')===0)return h;
+  return h+'<'+'div class="pk455-act pk459-io"><button type="button" onclick="event.stopPropagation();pk459Imp(\''+k+'\')">📥 Depuis la bibliothèque</button><button type="button" onclick="event.stopPropagation();pk459Exp(\''+k+'\')">📤 Ranger dans la bibliothèque</button></'+'div>';};})(pk455Html);
+function pk459Exp(k){const C=pk455Cfg(getActiveSeance(),k,true);if(!C.postes.length){alert('Ajoute d\'abord des postes.');return;}const n=prompt('Nom du parcours dans la bibliothèque :','Parcours '+C.postes.length+' postes');if(n==null)return;const it=pk459New(C);it.nom=n.trim()||'Parcours';pk459Save();try{toast2('📤 Rangé dans Biblio → Pratique');}catch(e){}}
+function pk459Imp(k){PKL=null;const L=pk459L();if(!L.length){alert('Aucun parcours dans la bibliothèque pour l\'instant (Biblio → 🧰 Pratique → Parcours).');return;}const o=E('pk459-i');if(o)o.remove();const ov=document.createElement('div');ov.id='pk459-i';ov.className='eq428-ovl pk455-ov';ov.onclick=e=>{if(e.target===ov)ov.remove();};
+  ov.innerHTML='<'+'div class="pk455-box"><'+'div class="eq428-h"><b>📥 Choisir un parcours</b><button type="button" class="eq428-x" aria-label="Fermer" onclick="E(\'pk459-i\').remove()">✕</button></'+'div><'+'div class="pk455-l">'
+   +L.map(it=>{const C=pk455Cfg(it,it.id,true);return '<'+'div class="pk455-i"><button type="button" class="pk451-add" onclick="pk459Use(\''+k+'\',\''+it.id+'\')"><b>'+esc(it.nom||'Parcours')+'</b><small>'+C.postes.length+' postes · '+(PK459_F[C.forme]||'')+'</small></button></'+'div>';}).join('')+'</'+'div></'+'div>';document.body.appendChild(ov);}
+function pk459Use(k,id){const it=pk459Item(id);if(!it)return;const s=getActiveSeance();const C=pk455Cfg(s,k,true);if(C.postes.length&&!confirm('Remplacer les postes de ce bloc par ce parcours ?'))return;s.pk455[k]=pk459Clone(pk455Cfg(it,id,true));pk455SaveS();const o=E('pk459-i');if(o)o.remove();pk455Panel();try{toast2('📥 Parcours « '+(it.nom||'')+' » ajouté au bloc');}catch(e){}}
+// carte dans la bibliothèque pratique
+function pk459Card(){try{const host=E('lib-tab-content');if(!host)return;let c=host.querySelector('.pk459-card');
+  let sh='';try{sh=libsShelf();}catch(e){}const anc=host.querySelector('.libs-rbar')||host.querySelector('.libs-bar');const show=!!anc&&typeof LIBX!=='undefined'&&LIBX.shelf==='pra'&&/gym|parkour|acro/i.test(sh);if(!show){if(c)c.remove();return;}
+  if(!E('pk459-o'))PKL=null;const L=pk459L().slice().sort((a,b)=>(b.ts||0)-(a.ts||0));
+  if(!c){c=document.createElement('div');c.className='pk459-card';anc.insertAdjacentElement('afterend',c);}
+  c.innerHTML='<'+'div class="pk459-tt">🔀 Parcours gym · parkour <small>('+L.length+')</small></'+'div>'
+   +'<'+'div class="pk455-act"><button type="button" class="ok" onclick="pk459Open(pk459New().id)">＋ Nouveau parcours</button><button type="button" onclick="pk455Pick(\'\')">📚 Banque d\'éléments</button></'+'div>'
+   +(L.length?'<'+'div class="pk459-l">'+L.map(it=>{const C=pk455Cfg(it,it.id,true);const r=(it.pk455r||[]).length;return '<'+'div class="pk459-i"><button type="button" class="t" onclick="pk459Open(\''+it.id+'\')"><b>'+esc(it.nom||'Parcours')+'</b><small>'+C.postes.length+' postes · '+(PK459_F[C.forme]||'')+(r?' · '+r+' passage'+(r>1?'s':''):'')+'</small></button>'
+      +'<button type="button" aria-label="Passage" onclick="pk455Pass(\''+it.id+'\')">⏱</button><button type="button" aria-label="Fiche atelier" onclick="pk455Print(\''+it.id+'\')">🖨</button></'+'div>';}).join('')+'</'+'div>':'<p class="pk455-dim">Crée un parcours ici, puis ajoute-le à une séance (bloc ouvert → 🔀 Parcours → 📥 Depuis la bibliothèque).</p>');
+ }catch(e){console.warn('pk459',e);}}
+renderLibTab=(function(f){return function(){const r=f.apply(this,arguments);pk459Card();setTimeout(pk459Card,40);setTimeout(pk459Card,400);return r;};})(renderLibTab);
+(function(){const st=document.createElement('style');st.textContent='html body .pk459-card{display:flex;flex-direction:column;gap:8px;border:1px solid #7c3aed;border-radius:12px;padding:10px;margin:8px 0;background:#140f2a;}html body .pk459-tt{font-weight:800;color:#c4b5fd;}html body .pk459-tt small{color:var(--dim2);font-weight:500;}html body .pk459-l{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:6px;}'
++'html body .pk459-i{display:flex;gap:6px;}html body .pk459-i button{min-width:44px;min-height:44px;border-radius:10px;border:1px solid #334155;background:#0f172a;color:#e2e8f0;font-weight:700;}html body .pk459-i .t{flex:1;display:flex;flex-direction:column;align-items:flex-start;text-align:left;padding:6px 10px;}html body .pk459-i .t small{color:#94a3b8;font-weight:500;}'
++'html body .pk459-io{border-top:1px dashed #334155;padding-top:8px;}html body .pk459-body{display:flex;flex-direction:column;gap:8px;}';document.head.appendChild(st);})();
 </script>
 </body>
 </html>
