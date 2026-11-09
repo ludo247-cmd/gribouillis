@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v459</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v460</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v459</title>
+<title>Gribouillis EPS v460</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -32357,6 +32357,176 @@ renderLibTab=(function(f){return function(){const r=f.apply(this,arguments);pk45
 (function(){const st=document.createElement('style');st.textContent='html body .pk459-card{display:flex;flex-direction:column;gap:8px;border:1px solid #7c3aed;border-radius:12px;padding:10px;margin:8px 0;background:#140f2a;}html body .pk459-tt{font-weight:800;color:#c4b5fd;}html body .pk459-tt small{color:var(--dim2);font-weight:500;}html body .pk459-l{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:6px;}'
 +'html body .pk459-i{display:flex;gap:6px;}html body .pk459-i button{min-width:44px;min-height:44px;border-radius:10px;border:1px solid #334155;background:#0f172a;color:#e2e8f0;font-weight:700;}html body .pk459-i .t{flex:1;display:flex;flex-direction:column;align-items:flex-start;text-align:left;padding:6px 10px;}html body .pk459-i .t small{color:#94a3b8;font-weight:500;}'
 +'html body .pk459-io{border-top:1px dashed #334155;padding-top:8px;}html body .pk459-body{display:flex;flex-direction:column;gap:8px;}';document.head.appendChild(st);})();
+
+
+
+// ══════════════════════════════════════════════════════════════════════
+// v460 — STUDIO EN 4 ONGLETS + BANQUE DE MÉDIAS + DÉTOURAGE + PDF
+//  • Studio : 🖼 Médias · 🎞 Animations (l'existant, inchangé) · ✂️ Montage
+//    · 📄 Documents ;
+//  • Médias : images (détourées, fond transparent) et vidéos (liens avec
+//    début/fin), étiquettes par APSA, recherche ; servent partout ;
+//  • Détourage : ✨ auto (on touche ce qu'on garde, IA sur l'appareil,
+//    chargée une seule fois), 🪄 baguette (efface une zone de même
+//    couleur), gomme, pinceau « restaurer », annuler ;
+//  • 📄 Découper dans un PDF : le PDF reste sur l'appareil, on encadre la
+//    figure, puis on la détoure ;
+//  • Banque d'éléments des parcours : « 🖼 Mes médias » et aperçu sur la
+//    fiche A4.
+// ══════════════════════════════════════════════════════════════════════
+const MED460_KEY='grib_media_v1';try{if(GRIB_BACKUP_KEYS.indexOf(MED460_KEY)<0)GRIB_BACKUP_KEYS.push(MED460_KEY);}catch(e){}
+try{const _kn3=syncKeyName;syncKeyName=function(k){return k===MED460_KEY?'Médias (Studio)':_kn3.apply(this,arguments);};}catch(e){}
+const MED460_TAGS=['gymnastique','natation','danse','athlétisme','acrosport','parkour','sports co','autre'];
+function med460L(){try{const L=JSON.parse(localStorage.getItem(MED460_KEY)||'[]');return Array.isArray(L)?L:[];}catch(e){return [];}}
+function med460S(L){try{localStorage.setItem(MED460_KEY,JSON.stringify(L));return true;}catch(e){alert('Place insuffisante pour enregistrer ce média. Supprime des médias inutiles ou fais du ménage (Réglages → Stockage).');return false;}}
+function med460Get(id){return med460L().find(x=>x.id===id)||null;}
+function med460Src(ref){ref=String(ref||'');if(ref.indexOf('media:')===0){const m=med460Get(ref.slice(6));return m?(m.kind==='vid'?m.url:m.src):'';}return ref;}
+function med460YtId(u){const m=/(?:youtu\.be\/|v=|shorts\/|embed\/)([\w-]{6,})/.exec(String(u||''));return m?m[1]:'';}
+function med460Sec(v){const m=/^(?:(\d+):)?(\d+)$/.exec(String(v||'').trim());return m?(+(m[1]||0))*60+(+m[2]):0;}
+function med460VidUrl(m){const id=med460YtId(m.url);if(!id)return m.url;const s=med460Sec(m.t0),e=med460Sec(m.t1);return 'https://www.youtube.com/watch?v='+id+(s?'&t='+s+'s':'');}
+function med460Thumb(m){if(m.kind==='img')return m.src;const id=med460YtId(m.url);return id?'https://img.youtube.com/vi/'+id+'/mqdefault.jpg':'';}
+function med460Add(it){const L=med460L();it.id=it.id||('m'+Date.now().toString(36)+Math.random().toString(36).slice(2,5));it.ts=Date.now();L.unshift(it);return med460S(L)?it:null;}
+// ── onglets du Studio ──
+const ST460={tab:'anim',f:'',tag:'',q:''};
+const DOC460=[];// p462+ : générateurs de documents {ico,t,s,fn}
+function st460Bar(){const p=E('t-studio');if(!p||E('st460-tabs'))return;const b=document.createElement('div');b.id='st460-tabs';b.className='st460-tabs';
+  b.innerHTML=[['media','🖼 Médias'],['anim','🎞 Animations'],['mont','✂️ Montage'],['docs','📄 Documents']].map(t=>'<button type="button" data-t="'+t[0]+'" onclick="st460Go(\''+t[0]+'\')">'+t[1]+'</button>').join('');
+  p.insertBefore(b,p.firstChild);const pane=document.createElement('div');pane.id='st460-pane';pane.className='st460-pane';pane.hidden=true;p.appendChild(pane);st460Go(ST460.tab,true);}
+function st460Go(t,silent){ST460.tab=t;try{localStorage.setItem('grib_st460_tab',t);}catch(e){}const p=E('t-studio');if(!p)return;p.querySelectorAll('#st460-tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));
+  const fr=E('studio-frame'),lb=E('studio-linkbar'),pane=E('st460-pane');const anim=t==='anim';if(fr)fr.style.display=anim?'':'none';if(lb)lb.style.display=anim?'':'none';pane.hidden=anim;
+  if(anim){try{loadStudio();}catch(e){}return;}if(t==='media')med460Render();else if(t==='mont')st460Mont();else st460Docs();}
+function st460Mont(){const pane=E('st460-pane');pane.innerHTML='<'+'div class="st460-in"><h3>✂️ Montage et analyse</h3><p class="pk455-dim">Pour l\'instant : ralenti, image par image, angles, comparaison et différé dans l\'analyse vidéo. Les vidéos de ta banque s\'ouvrent à leur passage (début-fin).</p>'
+  +'<'+'div class="pk455-act"><button type="button" class="ok" onclick="av456Open()">🎬 Ouvrir l\'analyse vidéo</button><button type="button" onclick="st460Go(\'media\');ST460.f=\'vid\';med460Render()">📼 Mes vidéos</button></'+'div></'+'div>';}
+function st460Docs(){const pane=E('st460-pane');pane.innerHTML='<'+'div class="st460-in"><h3>📄 Documents à imprimer</h3>'+(DOC460.length?'<'+'div class="st460-docs">'+DOC460.map((d,i)=>'<button type="button" onclick="DOC460['+i+'].fn()"><span class="i">'+d.ico+'</span><b>'+esc(d.t)+'</b><small>'+esc(d.s)+'</small></button>').join('')+'</'+'div>':'')
+  +'<p class="pk455-dim">Les fiches de parcours (gym) s\'impriment depuis Biblio → Pratique → Parcours. Les noms d\'élèves n\'apparaissent que sur la feuille imprimée.</p></'+'div>';}
+// ── banque de médias ──
+function med460Render(){const pane=E('st460-pane');if(!pane||ST460.tab!=='media')return;const L=med460L();const n=t=>String(t||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');const q=n(ST460.q);
+  const V=L.filter(m=>(!ST460.f||m.kind===ST460.f)&&(!ST460.tag||(m.tags||[]).indexOf(ST460.tag)>=0)&&(!q||n(m.t+' '+(m.tags||[]).join(' ')).indexOf(q)>=0));
+  let size=0;try{size=(localStorage.getItem(MED460_KEY)||'').length;}catch(e){}
+  pane.innerHTML='<'+'div class="st460-in"><'+'div class="pk455-act"><label class="b">📷 Importer une image<input type="file" accept="image/*" hidden onchange="med460File(this)"></label><button type="button" onclick="pdf460Open()">📄 Découper dans un PDF</button><button type="button" onclick="med460Vid()">🎬 Ajouter une vidéo</button></'+'div>'
+   +'<p class="pk455-dim">Astuce : une capture d\'écran se colle ici avec Ctrl+V, puis tu la détoures.</p>'
+   +'<input type="search" class="pk451-q" placeholder="Chercher un média" value="'+esc(ST460.q)+'" oninput="ST460.q=this.value;clearTimeout(ST460.tm);ST460.tm=setTimeout(med460Render,250)">'
+   +'<'+'div class="pk451-f">'+[['','Tout'],['img','Images'],['vid','Vidéos']].map(f=>'<button type="button" class="'+(ST460.f===f[0]?'on':'')+'" onclick="ST460.f=\''+f[0]+'\';med460Render()">'+f[1]+' '+L.filter(m=>!f[0]||m.kind===f[0]).length+'</button>').join('')
+   +MED460_TAGS.filter(t=>L.some(m=>(m.tags||[]).indexOf(t)>=0)).map(t=>'<button type="button" class="'+(ST460.tag===t?'on':'')+'" onclick="ST460.tag=ST460.tag===\''+t+'\'?\'\':\''+t+'\';med460Render()">'+esc(t)+'</button>').join('')+'</'+'div>'
+   +(V.length?'<'+'div class="med460-g">'+V.map(m=>{const th=med460Thumb(m);return '<'+'div class="med460-i"><button type="button" class="th'+(m.kind==='img'?' ck':'')+'" onclick="med460Open(\''+m.id+'\')">'+(th?'<img src="'+esc(th)+'" alt="" loading="lazy">':'<span>🎬</span>')+'<i>'+(m.kind==='img'?'IMAGE':'VIDÉO'+(m.t0?' '+esc(m.t0)+(m.t1?'-'+esc(m.t1):''):''))+'</i></button><b>'+esc(m.t||'Sans titre')+'</b><small>'+esc((m.tags||[]).join(' · '))+'</small></'+'div>';}).join('')+'</'+'div>':'<p class="pk455-dim">Aucun média pour l\'instant.</p>')
+   +'<p class="pk455-dim">Stockage des médias : '+Math.round(size/1024)+' Ko. Les images sont réduites (480 px) pour ne pas remplir l\'appareil ; les vidéos restent des liens.</p></'+'div>';}
+document.addEventListener('paste',e=>{try{const p=E('st460-pane');if(!p||p.hidden||ST460.tab!=='media'||E('ct460'))return;const it=[...(e.clipboardData||{}).items||[]].find(i=>i.type&&i.type.indexOf('image/')===0);if(!it)return;e.preventDefault();const f=it.getAsFile();med460Read(f);}catch(x){}});
+function med460File(inp){const f=inp.files&&inp.files[0];inp.value='';if(f)med460Read(f);}
+function med460Read(f){const r=new FileReader();r.onload=()=>ct460Open(r.result,{t:(f.name||'').replace(/\.[a-z0-9]+$/i,'')});r.readAsDataURL(f);}
+function med460Open(id){const m=med460Get(id);if(!m)return;const o=E('med460-o');if(o)o.remove();const ov=document.createElement('div');ov.id='med460-o';ov.className='eq428-ovl pk455-ov';ov.onclick=e=>{if(e.target===ov)ov.remove();};
+  ov.innerHTML='<'+'div class="pk455-box"><'+'div class="eq428-h"><b>'+(m.kind==='img'?'🖼 Image':'🎬 Vidéo')+'</b><button type="button" class="eq428-x" aria-label="Fermer" onclick="E(\'med460-o\').remove()">✕</button></'+'div>'
+   +(m.kind==='img'?'<'+'div class="med460-big ck"><img src="'+esc(m.src)+'" alt=""></'+'div>':'<a class="med460-lk" href="'+esc(med460VidUrl(m))+'" target="_blank" rel="noopener">▶ Ouvrir la vidéo'+(m.t0?' à '+esc(m.t0):'')+'</a>')
+   +'<label class="pk455-fl">Titre<input id="med460-t" type="text" value="'+esc(m.t||'')+'"></label>'
+   +(m.kind==='vid'?'<label class="pk455-fl">Lien<input id="med460-u" type="url" value="'+esc(m.url||'')+'"></label><'+'div class="pk455-2"><label class="pk455-fl">Début (m:ss)<input id="med460-a" type="text" value="'+esc(m.t0||'')+'"></label><label class="pk455-fl">Fin (m:ss)<input id="med460-b" type="text" value="'+esc(m.t1||'')+'"></label></'+'div>':'')
+   +'<'+'div class="pk455-fl">Étiquettes<'+'div class="pk451-f med460-tg">'+MED460_TAGS.map(t=>'<button type="button" class="'+((m.tags||[]).indexOf(t)>=0?'on':'')+'" onclick="this.classList.toggle(\'on\')">'+esc(t)+'</button>').join('')+'</'+'div></'+'div>'
+   +'<'+'div class="pk455-act">'+(m.kind==='img'?'<button type="button" onclick="E(\'med460-o\').remove();ct460Open(med460Get(\''+m.id+'\').src,{id:\''+m.id+'\'})">✂️ Retoucher</button>':'')+'<button type="button" class="del" onclick="med460Del(\''+m.id+'\')">🗑 Supprimer</button><button type="button" class="ok" onclick="med460Ok(\''+m.id+'\')">Enregistrer</button></'+'div></'+'div>';document.body.appendChild(ov);}
+function med460Tags(){return [...document.querySelectorAll('.med460-tg button.on')].map(b=>b.textContent);}
+function med460Ok(id){const L=med460L();const m=L.find(x=>x.id===id);if(!m)return;m.t=E('med460-t').value.trim();m.tags=med460Tags();if(m.kind==='vid'){m.url=E('med460-u').value.trim();m.t0=E('med460-a').value.trim();m.t1=E('med460-b').value.trim();}med460S(L);E('med460-o').remove();med460Render();}
+function med460Del(id){if(!confirm('Supprimer ce média ? Les éléments qui l\'utilisent n\'auront plus d\'image.'))return;med460S(med460L().filter(x=>x.id!==id));const o=E('med460-o');if(o)o.remove();med460Render();}
+function med460Vid(cb){const o=E('med460-o');if(o)o.remove();const ov=document.createElement('div');ov.id='med460-o';ov.className='eq428-ovl pk455-ov';ov.onclick=e=>{if(e.target===ov)ov.remove();};MED460_CB=cb||null;
+  ov.innerHTML='<'+'div class="pk455-box"><'+'div class="eq428-h"><b>🎬 Ajouter une vidéo</b><button type="button" class="eq428-x" aria-label="Fermer" onclick="E(\'med460-o\').remove()">✕</button></'+'div>'
+   +'<label class="pk455-fl">Titre<input id="med460-t" type="text" placeholder="ex. Canon en trio"></label><label class="pk455-fl">Lien (YouTube, Drive, site…)<input id="med460-u" type="url" placeholder="https://…"></label>'
+   +'<'+'div class="pk455-2"><label class="pk455-fl">Début (m:ss)<input id="med460-a" type="text" placeholder="0:12"></label><label class="pk455-fl">Fin (m:ss)<input id="med460-b" type="text" placeholder="0:20"></label></'+'div>'
+   +'<'+'div class="pk455-fl">Étiquettes<'+'div class="pk451-f med460-tg">'+MED460_TAGS.map(t=>'<button type="button" onclick="this.classList.toggle(\'on\')">'+esc(t)+'</button>').join('')+'</'+'div></'+'div>'
+   +'<'+'div class="pk455-act"><button type="button" class="ok" onclick="med460VidOk()">Ajouter</button></'+'div></'+'div>';document.body.appendChild(ov);}
+let MED460_CB=null;
+function med460VidOk(){const u=E('med460-u').value.trim();if(!/^https?:\/\//.test(u)){alert('Colle un lien qui commence par https://');return;}const it=med460Add({kind:'vid',t:E('med460-t').value.trim()||'Vidéo',url:u,t0:E('med460-a').value.trim(),t1:E('med460-b').value.trim(),tags:med460Tags()});E('med460-o').remove();if(it&&MED460_CB){const cb=MED460_CB;MED460_CB=null;cb(it);}med460Render();try{toast2('🎬 Vidéo ajoutée');}catch(e){}}
+// sélecteur réutilisable : med460Pick('img'|'vid'|'', cb(item))
+function med460Pick(kind,cb){const L=med460L().filter(m=>!kind||m.kind===kind);const o=E('med460-p');if(o)o.remove();const ov=document.createElement('div');ov.id='med460-p';ov.className='eq428-ovl pk455-ov';ov.onclick=e=>{if(e.target===ov)ov.remove();};
+  MED460_PCB=cb;ov.innerHTML='<'+'div class="pk455-box"><'+'div class="eq428-h"><b>🖼 Mes médias</b><button type="button" class="eq428-x" aria-label="Fermer" onclick="E(\'med460-p\').remove()">✕</button></'+'div>'
+   +'<'+'div class="pk455-act">'+(kind!=='vid'?'<label class="b">📷 Nouvelle image<input type="file" accept="image/*" hidden onchange="E(\'med460-p\').remove();med460PickNew(this)"></label><button type="button" onclick="E(\'med460-p\').remove();pdf460Open(MED460_PCB)">📄 Depuis un PDF</button>':'')+(kind!=='img'?'<button type="button" onclick="E(\'med460-p\').remove();med460Vid(MED460_PCB)">🎬 Nouvelle vidéo</button>':'')+'</'+'div>'
+   +(L.length?'<'+'div class="med460-g">'+L.map(m=>{const th=med460Thumb(m);return '<'+'div class="med460-i"><button type="button" class="th'+(m.kind==='img'?' ck':'')+'" onclick="E(\'med460-p\').remove();MED460_PCB(med460Get(\''+m.id+'\'))">'+(th?'<img src="'+esc(th)+'" alt="" loading="lazy">':'<span>🎬</span>')+'</button><b>'+esc(m.t||'')+'</b></'+'div>';}).join('')+'</'+'div>':'<p class="pk455-dim">Ta banque est vide : ajoute un premier média.</p>')+'</'+'div>';document.body.appendChild(ov);}
+let MED460_PCB=null;
+function med460PickNew(inp){const f=inp.files&&inp.files[0];if(!f)return;const r=new FileReader();r.onload=()=>ct460Open(r.result,{t:(f.name||'').replace(/\.[a-z0-9]+$/i,''),cb:MED460_PCB});r.readAsDataURL(f);}
+// ── éditeur de détourage ──
+const CT4={};const CT_MP='https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14';const CT_MODEL='https://storage.googleapis.com/mediapipe-models/interactive_segmenter/magic_touch/float32/1/magic_touch.tflite';
+function ct460Open(src,opt){opt=opt||{};const img=new Image();img.onload=()=>{const MX=1024;let w=img.naturalWidth,h=img.naturalHeight;const k=Math.min(1,MX/Math.max(w,h));w=Math.max(1,Math.round(w*k));h=Math.max(1,Math.round(h*k));
+    const c0=document.createElement('canvas');c0.width=w;c0.height=h;const x0=c0.getContext('2d');x0.drawImage(img,0,0,w,h);
+    Object.assign(CT4,{w,h,c0,orig:x0.getImageData(0,0,w,h),mask:new Uint8Array(w*h),undo:[],tool:'wand',tol:32,r:18,ghost:true,opt,auto:0});
+    const od=CT4.orig.data;for(let i=0;i<w*h;i++)CT4.mask[i]=od[i*4+3]>8?255:0;ct460Ui();};
+  img.onerror=()=>alert('Image illisible.');img.src=src;}
+function ct460Ui(){const o=E('ct460');if(o)o.remove();const ov=document.createElement('div');ov.id='ct460';ov.className='av456 ct460';
+  ov.innerHTML='<'+'div class="av456-h"><b>✂️ Détourer</b><button type="button" class="x" aria-label="Fermer" onclick="E(\'ct460\').remove()">✕</button></'+'div>'
+   +'<'+'div class="av456-d ct460-t">'+[['auto','✨ Auto (touche ce que tu gardes)'],['wand','🪄 Baguette (efface le fond)'],['erase','🧽 Gomme'],['keep','🖌 Restaurer']].map(t=>'<button type="button" data-t="'+t[0]+'" onclick="CT4.tool=\''+t[0]+'\';ct460Tb()">'+t[1]+'</button>').join('')+'</'+'div>'
+   +'<'+'div class="av456-d"><label class="ct460-s">Tolérance <input type="range" min="4" max="120" value="'+CT4.tol+'" oninput="CT4.tol=+this.value"></label><label class="ct460-s">Taille <input type="range" min="4" max="80" value="'+CT4.r+'" oninput="CT4.r=+this.value"></label>'
+   +'<button type="button" onclick="ct460Undo()">↶ Annuler</button><button type="button" onclick="ct460Inv()">⇄ Inverser</button><button type="button" onclick="CT4.ghost=!CT4.ghost;ct460Draw()">👁 Fond effacé</button></'+'div>'
+   +'<'+'div class="ct460-st"><canvas id="ct460-c"></canvas></'+'div><p class="pk455-dim ct460-h"></p>'
+   +'<'+'div class="pk455-act"><label class="pk455-fl" style="flex:2">Titre<input id="ct460-n" type="text" value="'+esc(CT4.opt.t||(CT4.opt.id?(med460Get(CT4.opt.id)||{}).t||'':''))+'" placeholder="ex. Nageur en surplace"></label><button type="button" class="ok" onclick="ct460Save()">💾 Garder l\'image</button></'+'div>';
+  document.body.appendChild(ov);const cv=E('ct460-c');cv.width=CT4.w;cv.height=CT4.h;ct460Ptr(cv);ct460Tb();ct460Draw();}
+function ct460Tb(){document.querySelectorAll('#ct460 .ct460-t button').forEach(b=>b.classList.toggle('on',b.dataset.t===CT4.tool));const h=document.querySelector('#ct460 .ct460-h');
+  if(h)h.textContent={auto:'Touche le nageur (ou l\'objet) : l\'IA garde sa silhouette. Touche encore pour ajouter une partie. La 1re fois, l\'IA se télécharge (connexion nécessaire).',wand:'Touche le fond : toute la zone de même couleur s\'efface. Règle la tolérance si ça déborde.',erase:'Passe le doigt sur ce qui doit disparaître.',keep:'Passe le doigt pour faire revenir une partie effacée par erreur.'}[CT4.tool];}
+function ct460Push(){CT4.undo.push(CT4.mask.slice());if(CT4.undo.length>12)CT4.undo.shift();}
+function ct460Undo(){const m=CT4.undo.pop();if(m){CT4.mask=m;ct460Draw();}}
+function ct460Inv(){ct460Push();for(let i=0;i<CT4.mask.length;i++)CT4.mask[i]=255-CT4.mask[i];ct460Draw();}
+function ct460Draw(){const cv=E('ct460-c');if(!cv)return;const x=cv.getContext('2d');const out=x.createImageData(CT4.w,CT4.h);const d=out.data,s=CT4.orig.data,m=CT4.mask,g=CT4.ghost?45:0;
+  for(let i=0,j=0;i<m.length;i++,j+=4){d[j]=s[j];d[j+1]=s[j+1];d[j+2]=s[j+2];d[j+3]=m[i]?s[j+3]:Math.min(g,s[j+3]);}x.putImageData(out,0,0);}
+function ct460Pt(cv,e){const R=cv.getBoundingClientRect();return [Math.floor((e.clientX-R.left)/R.width*CT4.w),Math.floor((e.clientY-R.top)/R.height*CT4.h),CT4.w/R.width];}
+function ct460Ptr(cv){let drag=false,raf=0;
+  cv.onpointerdown=e=>{e.preventDefault();const p=ct460Pt(cv,e);if(p[0]<0||p[1]<0||p[0]>=CT4.w||p[1]>=CT4.h)return;
+    if(CT4.tool==='wand'){ct460Push();ct460Wand(p[0],p[1]);ct460Draw();return;}if(CT4.tool==='auto'){ct460Auto(p[0],p[1]);return;}
+    ct460Push();drag=true;try{cv.setPointerCapture(e.pointerId);}catch(x){}ct460Brush(p);ct460Draw();};
+  cv.onpointermove=e=>{if(!drag)return;ct460Brush(ct460Pt(cv,e));if(!raf)raf=requestAnimationFrame(()=>{raf=0;ct460Draw();});};
+  cv.onpointerup=cv.onpointercancel=()=>{drag=false;};}
+function ct460Brush(p){const r=Math.max(2,Math.round(CT4.r*p[2])),v=CT4.tool==='keep'?255:0;const x0=Math.max(0,p[0]-r),x1=Math.min(CT4.w-1,p[0]+r),y0=Math.max(0,p[1]-r),y1=Math.min(CT4.h-1,p[1]+r);
+  for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){const dx=x-p[0],dy=y-p[1];if(dx*dx+dy*dy<=r*r)CT4.mask[y*CT4.w+x]=v;}}
+function ct460Wand(sx,sy){const W=CT4.w,H=CT4.h,s=CT4.orig.data,T=CT4.tol,i0=(sy*W+sx)*4,r0=s[i0],g0=s[i0+1],b0=s[i0+2];const seen=new Uint8Array(W*H),st=[sy*W+sx];seen[sy*W+sx]=1;
+  while(st.length){const p=st.pop();CT4.mask[p]=0;const x=p%W,y=(p-x)/W;const nb=[x>0?p-1:-1,x<W-1?p+1:-1,y>0?p-W:-1,y<H-1?p+W:-1];
+    for(const q of nb){if(q<0||seen[q])continue;seen[q]=1;const j=q*4;if(Math.max(Math.abs(s[j]-r0),Math.abs(s[j+1]-g0),Math.abs(s[j+2]-b0))<=T)st.push(q);}}}
+async function ct460Auto(x,y){if(!CT4.seg){const h=document.querySelector('#ct460 .ct460-h');if(h)h.textContent='⏳ Chargement de l\'IA de détourage (une seule fois, quelques secondes)…';
+    try{const v=await import(CT_MP+'/vision_bundle.mjs');const fs=await v.FilesetResolver.forVisionTasks(CT_MP+'/wasm');CT4.seg=await v.InteractiveSegmenter.createFromOptions(fs,{baseOptions:{modelAssetPath:CT_MODEL},outputCategoryMask:true,outputConfidenceMasks:false});}
+    catch(e){console.warn('ct460',e);if(h)h.textContent='';alert('Le détourage automatique a besoin d\'internet la première fois. Utilise la baguette et la gomme en attendant.');return;}ct460Tb();}
+  try{const res=CT4.seg.segment(CT4.c0,{keypoint:{x:(x+.5)/CT4.w,y:(y+.5)/CT4.h}});const mk=res.categoryMask;const a=mk.getAsUint8Array(),mw=mk.width,mh=mk.height;
+    const tap=a[Math.min(mh-1,Math.floor(y/CT4.h*mh))*mw+Math.min(mw-1,Math.floor(x/CT4.w*mw))];ct460Push();if(!CT4.auto)CT4.mask.fill(0);CT4.auto++;
+    for(let yy=0;yy<CT4.h;yy++){const my=Math.min(mh-1,Math.floor(yy/CT4.h*mh));for(let xx=0;xx<CT4.w;xx++){if(a[my*mw+Math.min(mw-1,Math.floor(xx/CT4.w*mw))]===tap)CT4.mask[yy*CT4.w+xx]=255;}}
+    try{mk.close();}catch(e){}try{res.close();}catch(e){}ct460Draw();}catch(e){console.warn('ct460 seg',e);alert('Détourage automatique impossible sur cette image. Utilise la baguette et la gomme.');}}
+function ct460Save(){let x0=CT4.w,y0=CT4.h,x1=-1,y1=-1;for(let y=0;y<CT4.h;y++)for(let x=0;x<CT4.w;x++)if(CT4.mask[y*CT4.w+x]){if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y;}
+  if(x1<0){alert('Tout est effacé : restaure une partie de l\'image.');return;}const bw=x1-x0+1,bh=y1-y0+1;const t=document.createElement('canvas');t.width=CT4.w;t.height=CT4.h;const tx=t.getContext('2d');const im=tx.createImageData(CT4.w,CT4.h);
+  const s=CT4.orig.data;for(let i=0,j=0;i<CT4.mask.length;i++,j+=4){im.data[j]=s[j];im.data[j+1]=s[j+1];im.data[j+2]=s[j+2];im.data[j+3]=CT4.mask[i]?s[j+3]:0;}tx.putImageData(im,0,0);
+  const k=Math.min(1,480/Math.max(bw,bh));const o=document.createElement('canvas');o.width=Math.max(1,Math.round(bw*k));o.height=Math.max(1,Math.round(bh*k));o.getContext('2d').drawImage(t,x0,y0,bw,bh,0,0,o.width,o.height);
+  let src=o.toDataURL('image/webp',.85);if(src.indexOf('data:image/webp')!==0)src=o.toDataURL('image/png');
+  const nom=(E('ct460-n').value||'').trim()||'Image';let it;
+  if(CT4.opt.id){const L=med460L();it=L.find(m=>m.id===CT4.opt.id);if(it){it.src=src;it.t=nom;if(!med460S(L))return;}}
+  if(!it){const tg=[];try{const s2=getActiveSeance();const sp=s2&&s2.sport;if(sp&&MED460_TAGS.indexOf(sp)>=0)tg.push(sp);}catch(e){}it=med460Add({kind:'img',t:nom,src,tags:tg});if(!it)return;}
+  E('ct460').remove();try{toast2('🖼 Image gardée dans tes médias');}catch(e){}const cb=CT4.opt.cb;if(cb)cb(it);med460Render();}
+// ── découper dans un PDF ──
+const PDF460={doc:null,p:1,sel:null,cb:null};const PDF460_LIB='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/';
+function pdf460Lib(){return new Promise((ok,ko)=>{if(window.pdfjsLib)return ok(window.pdfjsLib);const s=document.createElement('script');s.src=PDF460_LIB+'pdf.min.js';s.onload=()=>{try{window.pdfjsLib.GlobalWorkerOptions.workerSrc=PDF460_LIB+'pdf.worker.min.js';ok(window.pdfjsLib);}catch(e){ko(e);}};s.onerror=ko;document.head.appendChild(s);});}
+function pdf460Open(cb){PDF460.cb=typeof cb==='function'?cb:null;PDF460.sel=null;const o=E('pdf460');if(o)o.remove();const ov=document.createElement('div');ov.id='pdf460';ov.className='av456 ct460';
+  ov.innerHTML='<'+'div class="av456-h"><b>📄 Découper dans un PDF</b><button type="button" class="x" aria-label="Fermer" onclick="E(\'pdf460\').remove()">✕</button></'+'div>'
+   +'<'+'div class="av456-d"><label class="b">📂 Ouvrir un PDF<input type="file" accept="application/pdf" hidden onchange="pdf460File(this)"></label><button type="button" aria-label="Page précédente" onclick="pdf460Go(-1)">‹</button><span class="pdf460-n">—</span><button type="button" aria-label="Page suivante" onclick="pdf460Go(1)">›</button>'
+   +'<button type="button" onclick="pdf460Cut(true)">Page entière</button><button type="button" class="ok" onclick="pdf460Cut(false)">✂️ Découper la sélection</button></'+'div>'
+   +'<p class="pk455-dim">Le PDF reste sur ton appareil. Fais glisser pour encadrer la figure, puis « Découper ».</p><'+'div class="ct460-st pdf460-st"><canvas id="pdf460-c"></canvas><'+'div class="pdf460-r" hidden></'+'div></'+'div>';
+  document.body.appendChild(ov);pdf460Ptr();}
+async function pdf460File(inp){const f=inp.files&&inp.files[0];if(!f)return;let lib;try{lib=await pdf460Lib();}catch(e){alert('Le lecteur de PDF a besoin d\'internet la première fois.');return;}
+  try{const buf=await f.arrayBuffer();PDF460.doc=await lib.getDocument({data:buf}).promise;PDF460.p=1;pdf460Page();}catch(e){console.warn(e);alert('PDF illisible.');}}
+function pdf460Go(d){if(!PDF460.doc)return;const n=PDF460.p+d;if(n<1||n>PDF460.doc.numPages)return;PDF460.p=n;pdf460Page();}
+async function pdf460Page(){const pg=await PDF460.doc.getPage(PDF460.p);const vp=pg.getViewport({scale:2});const cv=E('pdf460-c');if(!cv)return;cv.width=Math.round(vp.width);cv.height=Math.round(vp.height);
+  await pg.render({canvasContext:cv.getContext('2d'),viewport:vp}).promise;const n=document.querySelector('#pdf460 .pdf460-n');if(n)n.textContent='page '+PDF460.p+' / '+PDF460.doc.numPages;PDF460.sel=null;const r=document.querySelector('#pdf460 .pdf460-r');if(r)r.hidden=true;}
+function pdf460Ptr(){const cv=E('pdf460-c'),box=document.querySelector('#pdf460 .pdf460-r');let a=null;const pt=e=>{const R=cv.getBoundingClientRect();return [(e.clientX-R.left)/R.width,(e.clientY-R.top)/R.height];};
+  const show=()=>{const s=PDF460.sel;if(!s){box.hidden=true;return;}const R=cv.getBoundingClientRect(),P=cv.parentElement.getBoundingClientRect();box.hidden=false;box.style.left=(R.left-P.left+cv.parentElement.scrollLeft+Math.min(s[0],s[2])*R.width)+'px';box.style.top=(R.top-P.top+cv.parentElement.scrollTop+Math.min(s[1],s[3])*R.height)+'px';box.style.width=Math.abs(s[2]-s[0])*R.width+'px';box.style.height=Math.abs(s[3]-s[1])*R.height+'px';};
+  cv.onpointerdown=e=>{if(!PDF460.doc)return;e.preventDefault();a=pt(e);PDF460.sel=[a[0],a[1],a[0],a[1]];try{cv.setPointerCapture(e.pointerId);}catch(x){}show();};
+  cv.onpointermove=e=>{if(!a)return;const p=pt(e);PDF460.sel=[a[0],a[1],Math.max(0,Math.min(1,p[0])),Math.max(0,Math.min(1,p[1]))];show();};
+  cv.onpointerup=()=>{a=null;};}
+function pdf460Cut(all){const cv=E('pdf460-c');if(!PDF460.doc||!cv||!cv.width){alert('Ouvre d\'abord un PDF.');return;}let s=all?[0,0,1,1]:PDF460.sel;if(!s||Math.abs(s[2]-s[0])<.02||Math.abs(s[3]-s[1])<.02){alert('Encadre d\'abord la figure en faisant glisser.');return;}
+  const x=Math.round(Math.min(s[0],s[2])*cv.width),y=Math.round(Math.min(s[1],s[3])*cv.height),w=Math.round(Math.abs(s[2]-s[0])*cv.width),h=Math.round(Math.abs(s[3]-s[1])*cv.height);
+  const o=document.createElement('canvas');o.width=w;o.height=h;o.getContext('2d').drawImage(cv,x,y,w,h,0,0,w,h);const src=o.toDataURL('image/png');E('pdf460').remove();ct460Open(src,{t:'PDF p.'+PDF460.p,cb:PDF460.cb});}
+// ── banque d'éléments des parcours : médias ──
+pk455Edit=(function(f){return function(id){const r=f.apply(this,arguments);try{const inp=E('pk455-img');if(inp&&!E('pk460-mb')){const lab=inp.closest('label');lab.insertAdjacentHTML('afterend','<'+'div class="pk455-act" id="pk460-mb"><button type="button" onclick="med460Pick(\'img\',it=>{E(\'pk455-img\').value=\'media:\'+it.id;pk460Prev();})">🖼 Mes médias</button><button type="button" onclick="med460Pick(\'vid\',it=>{E(\'pk455-vid\').value=it.url;E(\'pk455-t0\').value=it.t0||\'\';E(\'pk455-t1\').value=it.t1||\'\';})">🎬 Mes vidéos</button><span class="pk460-pv"></span></'+'div>');inp.addEventListener('input',pk460Prev);pk460Prev();}}catch(e){console.warn('pk460',e);}return r;};})(pk455Edit);
+function pk460Prev(){const s=document.querySelector('#pk460-mb .pk460-pv');const v=(E('pk455-img')||{}).value;if(s)s.innerHTML=v?'<img src="'+esc(med460Src(v))+'" alt="" class="ck">':'';}
+pk455Print=(function(f){return function(k){const r=f.apply(this,arguments);try{const s=pk455S(k);const C=pk455Cfg(s,k,true);document.querySelectorAll('.pk455-a4 .po').forEach((po,i)=>{const q=C.postes[i];const e=q&&q.e?pk455El(q.e):null;const src=e&&e.img?med460Src(e.img):'';if(src){const tx=po.querySelector('.tx');if(tx)tx.insertAdjacentHTML('beforebegin','<img class="pk460-im" src="'+esc(src)+'" alt="">');po.classList.add('im');}});}catch(e){console.warn('pk460p',e);}return r;};})(pk455Print);
+setTimeout(()=>{try{ST460.tab=localStorage.getItem('grib_st460_tab')||'anim';}catch(e){}st460Bar();},300);
+(function(){const st=document.createElement('style');st.textContent=
+ 'html body .st460-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;padding:6px;background:#0f172a;border-bottom:1px solid #1e293b;flex:none;}html body .st460-tabs button{min-height:40px;border:none;border-radius:9px;background:transparent;color:#94a3b8;font-weight:800;font-size:.85rem;}html body .st460-tabs button.on{background:#7c3aed;color:#fff;}'
++'html body .st460-pane{flex:1;min-height:0;overflow:auto;}html body .st460-in{padding:12px;display:flex;flex-direction:column;gap:10px;max-width:1100px;margin:0 auto;}html body .st460-in h3{margin:4px 0;}html body .st460-in .b,html body .pk455-box .b{min-height:42px;border-radius:10px;border:1px solid #334155;background:#111c33;color:#e2e8f0;font-weight:800;padding:0 12px;display:inline-flex;align-items:center;cursor:pointer;}'
++'html body .st460-docs{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px;}html body .st460-docs button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:12px;border-radius:12px;border:1px solid #334155;background:#0f172a;color:#e2e8f0;text-align:left;min-height:70px;}html body .st460-docs .i{font-size:1.4rem;}html body .st460-docs small{color:#94a3b8;}'
++'html body .med460-g{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;}html body .med460-i{display:flex;flex-direction:column;gap:2px;min-width:0;}html body .med460-i .th{position:relative;height:110px;border-radius:10px;border:1px solid #334155;background:#0f172a;padding:0;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:2rem;}'
++'html body .med460-i .th img{max-width:100%;max-height:100%;object-fit:contain;}html body .med460-i .th i{position:absolute;left:4px;bottom:4px;font-style:normal;font-size:.6rem;font-weight:800;background:rgba(0,0,0,.65);color:#fff;border-radius:4px;padding:1px 4px;}html body .med460-i b{font-size:.8rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}html body .med460-i small{font-size:.68rem;color:#94a3b8;}'
++'html body .ck{background-color:#e2e8f0!important;background-image:linear-gradient(45deg,#cbd5e1 25%,transparent 25%,transparent 75%,#cbd5e1 75%),linear-gradient(45deg,#cbd5e1 25%,transparent 25%,transparent 75%,#cbd5e1 75%)!important;background-size:16px 16px!important;background-position:0 0,8px 8px!important;}'
++'html body .med460-big{border-radius:10px;display:flex;justify-content:center;padding:6px;}html body .med460-big img{max-width:100%;max-height:50vh;}html body .med460-lk{display:block;padding:12px;border-radius:10px;background:#172554;color:#bfdbfe;font-weight:800;text-decoration:none;}'
++'html body .ct460{z-index:100030;}html body #pdf460{z-index:100031;}html body #med460-p,html body #med460-o{z-index:100025;}html body .ct460-st{flex:1;min-height:200px;overflow:auto;border-radius:10px;background-color:#e2e8f0;background-image:linear-gradient(45deg,#cbd5e1 25%,transparent 25%,transparent 75%,#cbd5e1 75%),linear-gradient(45deg,#cbd5e1 25%,transparent 25%,transparent 75%,#cbd5e1 75%);background-size:16px 16px;background-position:0 0,8px 8px;display:flex;align-items:flex-start;justify-content:center;position:relative;}'
++'html body #ct460-c{max-width:100%;max-height:62vh;touch-action:none;cursor:crosshair;}html body .pdf460-st{background:#475569;justify-content:flex-start;}html body #pdf460-c{width:100%;height:auto;touch-action:none;cursor:crosshair;background:#fff;}html body .pdf460-r{position:absolute;border:3px dashed #f97316;background:rgba(249,115,22,.12);pointer-events:none;}'
++'html body .ct460-s{display:inline-flex;align-items:center;gap:6px;font-size:.8rem;color:#cbd5e1;}html body .ct460-s input{width:110px;}html body .pdf460-n{font-size:.85rem;color:#cbd5e1;font-weight:700;}html body .av456-d .ok,html body .av456-d .ok:hover{background:#0f766e;border-color:#0f766e;color:#fff;}'
++'html body .pk460-pv img{height:44px;border-radius:6px;}html body .pk455-a4 .po.im{grid-template-columns:30px 70px 1fr 92px;}html body .pk460-im{width:70px;height:70px;object-fit:contain;}';document.head.appendChild(st);})();
 </script>
 </body>
 </html>
