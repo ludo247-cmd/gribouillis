@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v475</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v476</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v475</title>
+<title>Gribouillis EPS v476</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -33664,7 +33664,7 @@ aspTagSelHtml=function(){let T=[];try{const s=getActiveSeance();const D=aspExoDa
   }catch(e){try{T=libAllTags();}catch(e2){}return '<select aria-label="Tag" onchange="ASP_UI.tag=this.value;aspPalRefresh()"><option value="">🏷 tous les tags</option>'+T.map(t=>'<option>'+esc(t)+'</option>').join('')+'</select>';}};
 // 3) boutons « + exercice » et « + groupes » dans chaque atelier
 aspAtHtml=(function(f){return function(s,b,a,i){let h=f.apply(this,arguments);if(!b||b.kind!=='bloc')return h;
-  try{const bi=esc(b.id),ai=esc(a.id);const bt='<div class="asp-addrow"><button type="button" onclick="aspPkOpen(\''+bi+'\',\''+ai+'\',\'exo\')">＋ Exercice</button><button type="button" onclick="aspPkOpen(\''+bi+'\',\''+ai+'\',\'grp\')">＋ Groupes</button></div>';
+  try{const bi=esc(b.id),ai=esc(a.id);if(aspIsSeq(a))return h;const noEx=!(a.exos||[]).length;const bt='<div class="asp-addrow">'+(noEx?'<button type="button" onclick="aspPkOpen(\''+bi+'\',\''+ai+'\',\'exo\')">＋ Exercice</button>':'')+'<button type="button" onclick="aspPkOpen(\''+bi+'\',\''+ai+'\',\'grp\')">＋ Groupes</button></div>';
     const k=h.lastIndexOf('</div>');return k<0?h:h.slice(0,k)+bt+h.slice(k);}catch(e){return h;}};})(aspAtHtml);
 window.ASP_PK=null;
 function aspPkOpen(bid,aid,tab,next,k){window.ASP_PK={b:bid,a:aid,tab:tab,q:'',sel:null,next:!!next,k:(k==null?null:+k)};aspPkRender();}
@@ -33696,6 +33696,10 @@ document.head.appendChild(st);})();
 document.addEventListener('click',function(e){try{const n=e.target.closest&&e.target.closest('.asp-next[data-drop^="asn:"]');if(!n)return;const q=n.dataset.drop.split(':');e.preventDefault();e.stopPropagation();aspPkOpen(q[1],q[2],'exo',true);}catch(x){}},true);
 function aspSegBtns(){try{document.querySelectorAll('.asp-seg[data-drop^="ase:"]').forEach(sg=>{if(sg.querySelector('.asp-sgb'))return;const q=sg.dataset.drop.split(':');const b=document.createElement('button');b.type='button';b.className='asp-sgb';b.textContent='＋ Groupes';b.setAttribute('onclick',"aspPkOpen('"+q[1]+"','"+q[2]+"','grp',false,"+q[3]+")");const g=sg.querySelector('.asp-seg-g');if(g)g.after(b);else sg.appendChild(b);});}catch(e){}}
 renderSeanceTab=(function(f){return function(){const r=f.apply(this,arguments);aspSegBtns();setTimeout(aspSegBtns,0);return r;};})(renderSeanceTab);
+
+// v476 — boutons d'atelier sans redite (pleine largeur) ; situations limitées au sport choisi
+(function(){const st=document.createElement('style');st.textContent='html body .asp-addrow{display:flex;gap:6px;width:100%;}html body .asp-addrow button{flex:1 1 0;min-width:0;}html body .asp-seg .asp-sgb{display:block;width:100%;box-sizing:border-box;}';document.head.appendChild(st);})();
+aspExoData=(function(f){return function(s){const D=f.apply(this,arguments);try{if(!SB_UI.allSport){const k=String(CFG.sport2||CFG.apsa||'').toLowerCase();if(k)D.libs=D.libs.filter(x=>{const a=String(x.apsa||'').toLowerCase();return !a||a.indexOf(k)>=0||k.indexOf(a)>=0;});}}catch(e){}return D;};})(aspExoData);
 </script>
 </body>
 </html>
