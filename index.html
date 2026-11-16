@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v483</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v484</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v483</title>
+<title>Gribouillis EPS v484</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -33933,6 +33933,12 @@ async function dfExport(){try{await dfLoadX();}catch(e){alert(e.message);return;
  const wp=wb.addWorksheet('Récap prof');wp.columns=[{width:5},{width:26},{width:14},{width:42},{width:16}];wp.addRow(['#','Bloc','Type','Paramètres','Organisation']).font={bold:true};
  f.blocks.forEach((b,i)=>{wp.addRow([i+1,b.titre||'',{course:'Course',sit:'Situation',recup:'Récupération',dilemme:'Dilemme',bilan:'Bilan'}[b.type],dfDesc(b)+(b.outils&&b.outils.length?' · outils : '+b.outils.join(', '):''),b.par?'En parallèle':'À la suite']);});
  const buf=await wb.xlsx.writeBuffer();const blob=new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=stripAccents('Fiche_'+(f.titre||'DF')+(f.classe?'_'+f.classe:'')).replace(/[^\w.-]+/g,'_')+'.xlsx';document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1500);}
+// v484 — élève : toutes les vidéos d'une situation (fiche, phases, média) sont affichées, avant l'animation
+aspEleveExHtml=(function(f){return function(s,e){let h=f.apply(this,arguments);try{const inf=aspExInfo(e);if(!inf||!inf.src||inf.kind==='warm'||inf.kind==='fps')return h;const x=inf.src;const U=[];
+  const add=u=>{u=String(u||'').trim();if(u&&U.indexOf(u)<0)U.push(u);};add(x.video);if(x.media)add(x.media.video);(x.phases||[]).forEach(p=>{add(p&&p.video);if(p&&p.media)add(p.media.video);});
+  const miss=U.filter(u=>h.indexOf(esc(u))<0&&h.indexOf(u)<0);if(!miss.length)return h;
+  const vh=miss.map(u=>'<video src="'+esc(u)+'" controls playsinline preload="metadata"></video>').join('');
+  const k=h.indexOf('<div class="anim-inline"');if(k>=0)h=h.slice(0,k)+vh+h.slice(k);else{const j=h.lastIndexOf('</'+'div>');h=j>0?h.slice(0,j)+vh+h.slice(j):h+vh;}}catch(err){console.warn('v484',err);}return h;};})(aspEleveExHtml);
 </script>
 </body>
 </html>
