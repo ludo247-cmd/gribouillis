@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v478</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v479</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v478</title>
+<title>Gribouillis EPS v479</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -33773,6 +33773,31 @@ function aspMedOpen(el){const box=el.closest('.ael-medbox');if(!box)return;const
   try{const v=inn.querySelector('video');if(v)v.play&&v.play().catch(()=>{});}catch(e){}}
 function aspVidAnimAll(){try{document.querySelectorAll('.ael-ex').forEach(ex=>{if(ex.dataset.va||ex.closest('.aop-ov'))return;const vid=ex.querySelector('video,iframe');const an=[...ex.querySelectorAll('.anim-inline')].filter(x=>!x.closest('.ael-vig')&&!x.closest('template'));if(!vid||!an.length)return;ex.dataset.va=1;aspVidAnimSetup(ex,vid,an,ex);});}catch(e){}}
 renderSeanceTab=(function(f){return function(){const r=f.apply(this,arguments);aspVidAnimAll();setTimeout(aspVidAnimAll,0);setTimeout(aspVidAnimAll,200);return r;};})(renderSeanceTab);
+
+// v479 — Annuler / Rétablir (barre du haut, tous les écrans) : séances + bibliothèque
+const UND={st:[],rd:[],cur:{},busy:false,sz:0};
+function undKeys(){return {seances:'grib_seances_v1',lib:(typeof LIB_KEY!=='undefined'?LIB_KEY:'grib_lib_v1')};}
+function undRead(k){try{return localStorage.getItem(undKeys()[k])||'';}catch(e){return '';}}
+function undRecord(k){if(UND.busy)return;const now=undRead(k),prev=UND.cur[k];UND.cur[k]=now;if(prev==null||prev===now)return;
+  const t=Date.now(),top=UND.st[UND.st.length-1];
+  if(top&&top.k===k&&t-top.t<1200){top.after=now;top.t=t;}else{UND.st.push({k:k,before:prev,after:now,t:t});}
+  UND.rd=[];let tot=0;UND.st.forEach(e=>tot+=e.before.length+e.after.length);while(UND.st.length>1&&(UND.st.length>30||tot>60e6)){const d=UND.st.shift();tot-=d.before.length+d.after.length;}undUi();}
+function undApply(e,val){UND.busy=true;try{const K=undKeys()[e.k];localStorage.setItem(K,val);UND.cur[e.k]=val;
+    if(e.k==='seances'){loadSeances();try{if(!getActiveSeance()){SEANCE_STATE.activeId=null;}}catch(x){}}else{try{LIB_MEMO=null;}catch(x){}}
+    try{renderSeanceTab();}catch(x){}try{libRefresh();}catch(x){}try{if(typeof renderClassesTab==='function')renderClassesTab();}catch(x){}
+  }catch(x){console.warn('undo',x);}UND.busy=false;undUi();}
+function undoAct(){const e=UND.st.pop();if(!e)return;UND.rd.push(e);undApply(e,e.before);}
+function redoAct(){const e=UND.rd.pop();if(!e)return;UND.st.push(e);undApply(e,e.after);}
+function undUi(){const u=document.getElementById('und-b'),r=document.getElementById('red-b');if(u){u.disabled=!UND.st.length;u.title='Annuler la dernière action ('+UND.st.length+')  — Ctrl+Z';}if(r){r.disabled=!UND.rd.length;r.title='Rétablir ('+UND.rd.length+')  — Ctrl+Y';}}
+function undInject(){const cb=document.getElementById('class-bar');if(!cb||document.getElementById('und-wrap')||!cb.children.length)return;
+  const w=document.createElement('span');w.id='und-wrap';w.innerHTML='<button type="button" id="und-b" onclick="undoAct()">↶ Annuler</button><button type="button" id="red-b" onclick="redoAct()">↷ Rétablir</button>';
+  const at=cb.children[2]||null;cb.insertBefore(w,at);undUi();}
+(function(){const st=document.createElement('style');st.textContent='#und-wrap{display:inline-flex;gap:6px;flex:0 0 auto;margin:0 8px;}#und-wrap button{height:34px;padding:0 12px;border-radius:9px;border:1px solid #475569;background:#1e293b;color:#e2e8f0;font-weight:700;font-size:.85rem;cursor:pointer;white-space:nowrap;}#und-wrap button:disabled{opacity:.35;cursor:default;}#und-wrap button:not(:disabled):active{background:#7c3aed;}@media(max-width:700px){#und-wrap button{padding:0 9px;font-size:.8rem;}}';document.head.appendChild(st);
+  try{UND.cur.seances=undRead('seances');UND.cur.lib=undRead('lib');}catch(e){}
+  const mo=new MutationObserver(()=>undInject());const cb=document.getElementById('class-bar');if(cb)mo.observe(cb,{childList:true});undInject();setInterval(undInject,1500);
+  document.addEventListener('keydown',e=>{if(!(e.ctrlKey||e.metaKey))return;const t=e.target;if(t&&(/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)||t.isContentEditable))return;const k=e.key.toLowerCase();if(k==='z'&&!e.shiftKey){e.preventDefault();undoAct();}else if(k==='y'||(k==='z'&&e.shiftKey)){e.preventDefault();redoAct();}});})();
+saveSeances=(function(f){return function(){const r=f.apply(this,arguments);try{undRecord('seances');}catch(e){}return r;};})(saveSeances);
+libSave=(function(f){return function(){const r=f.apply(this,arguments);try{undRecord('lib');}catch(e){}return r;};})(libSave);
 </script>
 </body>
 </html>
