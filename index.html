@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v473</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v474</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v473</title>
+<title>Gribouillis EPS v474</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -33616,6 +33616,73 @@ function aspMedOpen(el){const box=el.closest('.ael-medbox');if(!box)return;const
 +'html body .asp-seqrow{overflow-x:visible;}'
 +'html body .asp-seqrow>.asp-seg{width:min(280px,76vw);min-width:220px;}';
 document.head.appendChild(st);})();
+// v474 — défilement conservé, largeur des blocs, filtres/tags par sport, boutons « + exercice / + groupes »
+(function(){const st=document.createElement('style');st.textContent=
+ 'html body .asp-grid>.asp-b:not(:has(.asp-seqrow)){width:380px;max-width:92vw;}'
++'html body .asp-seqrow{overflow-x:auto;}'
++'html body .asp-addrow{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 2px;}html body .asp-addrow button{border:1px dashed #7c3aed;background:#1e1b4b;color:#ddd6fe;border-radius:8px;padding:6px 10px;font-size:.78rem;cursor:pointer;}'
++'#asp-pk{position:fixed;inset:0;z-index:100000;background:rgba(2,6,23,.78);display:flex;align-items:flex-end;justify-content:center;}#asp-pk .bx{background:#0f172a;border:1px solid #334155;border-radius:14px 14px 0 0;width:min(900px,100%);max-height:86vh;overflow:auto;padding:12px;color:#e2e8f0;}'
++'#asp-pk .hd{display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap;}#asp-pk .hd b{flex:1;}#asp-pk button{cursor:pointer;}#asp-pk .tb button{border:1px solid #475569;background:#1e293b;color:#e2e8f0;border-radius:8px;padding:6px 10px;}#asp-pk .tb button.on{background:#7c3aed;border-color:#7c3aed;}'
++'#asp-pk .gl label{display:flex;align-items:center;gap:8px;padding:8px;border-bottom:1px solid #1e293b;}#asp-pk .ok{background:#15803d;color:#fff;border:0;border-radius:8px;padding:9px 16px;font-weight:700;}'
++'#asp-pk .sb-pal-list{display:flex;flex-wrap:wrap;gap:8px;max-height:none;}'
++'.tg-mgr{border:1px solid #334155;border-radius:10px;padding:8px;margin:6px 0;max-height:260px;overflow:auto;}.tg-mgr div{display:flex;gap:6px;align-items:center;margin:3px 0;}.tg-mgr input[type=text]{flex:1;min-width:0;}';
+document.head.appendChild(st);})();
+// 1) la ligne de blocs garde sa position
+renderSeanceTab=(function(f){return function(){let x=0,g=document.querySelector('.asp-grid');if(g)x=g.scrollLeft;const r=f.apply(this,arguments);
+  try{const set=()=>{const g2=document.querySelector('.asp-grid');if(g2&&x)g2.scrollLeft=x;};set();setTimeout(set,0);setTimeout(set,120);}catch(e){}
+  try{if(window.ASP_PK)aspPkRender();}catch(e){}return r;};})(renderSeanceTab);
+// 2) tags : masquables / renommables, limités au sport choisi
+const TAGHID_KEY='grib_tag_hidden';
+function tagHidGet(){try{return JSON.parse(localStorage.getItem(TAGHID_KEY)||'[]')||[];}catch(e){return [];}}
+function tagHidSet(a){try{localStorage.setItem(TAGHID_KEY,JSON.stringify(a));}catch(e){}}
+function tagHidTog(t){const a=tagHidGet(),i=a.indexOf(t);if(i>=0)a.splice(i,1);else a.push(t);tagHidSet(a);libRefresh();}
+function tagRen(o,n){n=String(n||'').trim();if(!n||n===o)return;const a=libLoad();a.forEach(x=>{if(x.tags&&x.tags.indexOf(o)>=0)x.tags=x.tags.map(t=>t===o?n:t).filter((t,i,b)=>b.indexOf(t)===i);});libSave(a);const h=tagHidGet();if(h.indexOf(o)>=0){h[h.indexOf(o)]=n;tagHidSet(h);}if(LIB_UI.tag===o)LIB_UI.tag=n;libRefresh();}
+function tagDel(o){if(!confirm('Supprimer le tag « '+o+' » de toutes les fiches ?'))return;const a=libLoad();a.forEach(x=>{if(x.tags)x.tags=x.tags.filter(t=>t!==o);});libSave(a);if(LIB_UI.tag===o)LIB_UI.tag='';libRefresh();}
+function libCurApsa(all){const k=String(CFG.sport2||CFG.apsa||CFG.sport||'').toLowerCase();if(!k)return '';const L=all.map(x=>x.apsa).filter((x,i,a)=>x&&a.indexOf(x)===i);return L.find(a=>a.toLowerCase()===k)||L.find(a=>{const l=a.toLowerCase();return l.indexOf(k)>=0||k.indexOf(l)>=0;})||'';}
+renderLibTab=(function(f){return function(){
+  try{const all=libLoad();const k=String(CFG.sport2||CFG.apsa||CFG.sport||'');if(LIB_UI._sp!==k){LIB_UI._sp=k;const a=libCurApsa(all);if(a){LIB_UI.apsa=a;LIB_UI.oe='';LIB_UI.cp='';LIB_UI.tag='';LIB_UI.wt='';}}}catch(e){}
+  const r=f.apply(this,arguments);
+  try{const host=E('lib-tab-content');if(!host)return r;const all=libLoad();const sc=all.filter(x=>!LIB_UI.apsa||x.apsa===LIB_UI.apsa);
+    const okOe={},okCp={};sc.forEach(x=>{if(x.oe)okOe[x.oe]=1;(x.oeAlso||[]).forEach(o=>okOe[o]=1);if(x.cp)okCp[x.cp]=1;});
+    host.querySelectorAll('select').forEach(sl=>{const oc=sl.getAttribute('onchange')||'';const m=/libSet\('(oe|cp)'/.exec(oc);if(!m)return;const ok=m[1]==='oe'?okOe:okCp;[...sl.options].forEach(o=>{if(o.value&&!ok[o.value]&&!o.selected)o.remove();});});
+    const first=[...host.querySelectorAll('.remed-chip')].find(c=>/Tous tags/.test(c.textContent));const row=first&&first.parentElement;
+    if(row){const cnt={};sc.forEach(x=>(x.tags||[]).forEach(t=>{cnt[t]=(cnt[t]||0)+1;}));const hid=tagHidGet();
+      let T=Object.keys(cnt).filter(t=>hid.indexOf(t)<0&&!/^#?\s*Source\s*:/i.test(t)).sort((a,b)=>cnt[b]-cnt[a]||a.localeCompare(b));const N=T.length;if(LIB_UI.tag&&T.indexOf(LIB_UI.tag)<0)T.unshift(LIB_UI.tag);
+      const shown=LIB_UI.tagAll?T:T.slice(0,14);const ch=(t)=>'<div class="remed-chip'+(LIB_UI.tag===t?' selected':'')+'" style="flex:0 1 auto;padding:5px 10px;font-size:.72rem;" data-t="'+esc(t)+'" onclick="libSet(\'tag\',this.dataset.t)">#'+esc(t)+(cnt[t]?' <small>'+cnt[t]+'</small>':'')+'</div>';
+      let h='<div class="remed-chip'+(!LIB_UI.tag?' selected':'')+'" style="flex:0 1 auto;padding:5px 10px;font-size:.72rem;" onclick="libSet(\'tag\',\'\')">🏷 Tous tags</div>'+shown.map(ch).join('')
+        +(N>14?'<div class="remed-chip" style="flex:0 1 auto;padding:5px 10px;font-size:.72rem;" onclick="LIB_UI.tagAll=!LIB_UI.tagAll;libRefresh()">'+(LIB_UI.tagAll?'▲ Réduire':'▼ Voir les '+N+' tags')+'</div>':'')
+        +'<div class="remed-chip" style="flex:0 1 auto;padding:5px 10px;font-size:.72rem;" onclick="LIB_UI.tagMgr=!LIB_UI.tagMgr;libRefresh()">✎ Gérer les tags</div>';
+      if(LIB_UI.tagMgr){const AL={};all.forEach(x=>(x.tags||[]).forEach(t=>{AL[t]=(AL[t]||0)+1;}));
+        h+='<div class="tg-mgr" style="flex:1 0 100%;">'+Object.keys(AL).sort((a,b)=>AL[b]-AL[a]||a.localeCompare(b)).map(t=>'<div><input type="checkbox" title="Afficher ce tag" '+(hid.indexOf(t)<0?'checked':'')+' data-t="'+esc(t)+'" onchange="tagHidTog(this.dataset.t)"><input type="text" value="'+esc(t)+'" data-t="'+esc(t)+'" onchange="tagRen(this.dataset.t,this.value)"><small>'+AL[t]+'</small><button type="button" data-t="'+esc(t)+'" onclick="tagDel(this.dataset.t)" title="Supprimer">✕</button></div>').join('')+'<small class="cc-dim">Case décochée = tag masqué dans les filtres (les fiches le gardent). Modifier le nom le change partout.</small></div>';}
+      row.innerHTML=h;}
+  }catch(e){console.warn('v474 lib',e);}
+  return r;};})(renderLibTab);
+aspTagSelHtml=function(){let T=[];try{const s=getActiveSeance();const D=aspExoData(s);const t0=ASP_UI.tag;ASP_UI.tag='';let X;try{X=aspExoFiltered(s,D);}finally{ASP_UI.tag=t0;}
+  const c={};X.R.forEach(r=>((r.exo&&r.exo.tags)||[]).forEach(t=>{c[t]=(c[t]||0)+1;}));X.L.forEach(x=>(x.tags||[]).forEach(t=>{c[t]=(c[t]||0)+1;}));const hid=tagHidGet();
+  T=Object.keys(c).filter(t=>t!=='échauffement'&&hid.indexOf(t)<0&&!/^#?\s*Source\s*:/i.test(t)).sort((a,b)=>c[b]-c[a]||a.localeCompare(b));
+  if(ASP_UI.tag&&T.indexOf(ASP_UI.tag)<0)T.unshift(ASP_UI.tag);return '<select aria-label="Tag" onchange="ASP_UI.tag=this.value;aspPalRefresh()"><option value="">🏷 tous les tags ('+T.length+')</option>'+T.map(t=>'<option value="'+esc(t)+'"'+(ASP_UI.tag===t?' selected':'')+'>🏷 '+esc(t)+' ('+c[t]+')</option>').join('')+'</select>';
+  }catch(e){try{T=libAllTags();}catch(e2){}return '<select aria-label="Tag" onchange="ASP_UI.tag=this.value;aspPalRefresh()"><option value="">🏷 tous les tags</option>'+T.map(t=>'<option>'+esc(t)+'</option>').join('')+'</select>';}};
+// 3) boutons « + exercice » et « + groupes » dans chaque atelier
+aspAtHtml=(function(f){return function(s,b,a,i){let h=f.apply(this,arguments);if(!b||b.kind!=='bloc')return h;
+  try{const bi=esc(b.id),ai=esc(a.id);const bt='<div class="asp-addrow"><button type="button" onclick="aspPkOpen(\''+bi+'\',\''+ai+'\',\'exo\')">＋ Exercice</button><button type="button" onclick="aspPkOpen(\''+bi+'\',\''+ai+'\',\'grp\')">＋ Groupes</button></div>';
+    const k=h.lastIndexOf('</div>');return k<0?h:h.slice(0,k)+bt+h.slice(k);}catch(e){return h;}};})(aspAtHtml);
+window.ASP_PK=null;
+function aspPkOpen(bid,aid,tab){window.ASP_PK={b:bid,a:aid,tab:tab,q:'',sel:null};aspPkRender();}
+function aspPkClose(){window.ASP_PK=null;const o=document.getElementById('asp-pk');if(o)o.remove();}
+function aspPkRender(){const P=window.ASP_PK;if(!P)return;const s=aspS();if(!s)return aspPkClose();const a=aspAt(s,P.b,P.a);if(!a)return aspPkClose();
+  let o=document.getElementById('asp-pk');if(!o){o=document.createElement('div');o.id='asp-pk';document.body.appendChild(o);o.addEventListener('click',e=>{if(e.target===o)aspPkClose();});}
+  const tabs=[['exo','🏃 Situations'],['fps','⚽ FPS'],['warm','🔥 Échauffements'],['grp','👥 Groupes']];
+  if(!P.sel)P.sel=(a.groups||[]).slice();
+  let body='';
+  if(P.tab==='grp'){const CH=aspChips(s);body='<div class="gl">'+CH.map(g=>'<label><input type="checkbox" data-g="'+esc(g.id)+'" '+(P.sel.indexOf(g.id)>=0?'checked':'')+' onchange="aspPkTog(this)"><span class="asp-g" style="--gc:'+esc(g.color||'#475569')+'">'+esc(String(g.label))+'</span><small>'+(g.members||[]).length+'</small></label>').join('')+'</div><div style="text-align:right;margin-top:8px;"><button type="button" class="ok" onclick="aspPkOkG()">✓ Valider les groupes</button></div>';}
+  else{const t0=ASP_UI.tab;ASP_UI.tab=P.tab;let h='';try{h=aspPalHtml(s);}finally{ASP_UI.tab=t0;}const d=document.createElement('div');d.innerHTML=h;
+    const sf=d.querySelector('.sb-filt');const lst=d.querySelector('.sb-pal-list');
+    body=(sf?'<div class="sb-filt">'+sf.innerHTML.replace(/aspPalRefresh\(\)/g,'aspPkRender()')+'</div>':'')+(lst?lst.outerHTML.replace('id="asp-list"','id="asp-list-m"'):'<span class="cc-dim">Rien à afficher.</span>')+'<p class="cc-dim" style="font-size:.72rem;">Touche une situation pour l\'ajouter à cet atelier.</p>';}
+  o.innerHTML='<div class="bx"><div class="hd"><b>Ajouter à l\'atelier</b><button type="button" onclick="aspPkClose()" style="background:#7f1d1d;color:#fff;border:0;border-radius:8px;padding:6px 12px;">✕ Fermer</button></div><div class="tb hd">'+tabs.map(x=>'<button type="button" class="'+(P.tab===x[0]?'on':'')+'" onclick="ASP_PK.tab=\''+x[0]+'\';aspPkRender()">'+x[1]+'</button>').join('')+'</div>'+body+'</div>';
+  const l=o.querySelector('.sb-pal-list');if(l&&!l.dataset.pk){l.dataset.pk=1;l.addEventListener('click',e=>{if(e.target.closest('button,select,input,a'))return;const it=e.target.closest('[data-drag]');if(!it)return;const p=it.getAttribute('data-drag');const P2=window.ASP_PK;if(!P2)return;aspDrop(p,'asa:'+P2.b+':'+P2.a);aspPkClose();});}
+  const sr=o.querySelector('input[type=search]');if(sr)sr.setAttribute('oninput',"ASP_UI.q=this.value;aspPkRender()");}
+function aspPkTog(el){const P=window.ASP_PK;if(!P)return;const g=el.dataset.g,i=P.sel.indexOf(g);if(el.checked&&i<0)P.sel.push(g);if(!el.checked&&i>=0)P.sel.splice(i,1);}
+function aspPkOkG(){const P=window.ASP_PK;const s=aspS();if(!P||!s)return;const a=aspAt(s,P.b,P.a);if(!a)return;const all=aspChips(s).map(g=>g.id);const keep=(a.groups||[]).filter(g=>all.indexOf(g)<0);a.groups=keep.concat(P.sel.filter(g=>all.indexOf(g)>=0));aspPkClose();aspSave();}
 </script>
 </body>
 </html>
