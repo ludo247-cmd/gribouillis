@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v479</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v480</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v479</title>
+<title>Gribouillis EPS v480</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -33798,6 +33798,32 @@ function undInject(){const cb=document.getElementById('class-bar');if(!cb||docum
   document.addEventListener('keydown',e=>{if(!(e.ctrlKey||e.metaKey))return;const t=e.target;if(t&&(/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)||t.isContentEditable))return;const k=e.key.toLowerCase();if(k==='z'&&!e.shiftKey){e.preventDefault();undoAct();}else if(k==='y'||(k==='z'&&e.shiftKey)){e.preventDefault();redoAct();}});})();
 saveSeances=(function(f){return function(){const r=f.apply(this,arguments);try{undRecord('seances');}catch(e){}return r;};})(saveSeances);
 libSave=(function(f){return function(){const r=f.apply(this,arguments);try{undRecord('lib');}catch(e){}return r;};})(libSave);
+
+// v480 — mode élève : en-tête sur une ligne, vidéo avant animation partout, 👑 du capitaine, actualisation des présents
+(function(){const st=document.createElement('style');st.textContent=
+ '#seance-tab-content .ael-head{position:relative;flex-wrap:nowrap!important;gap:5px!important;}#seance-tab-content .ael-head>b{flex:0 0 auto;font-size:.85rem;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}'
++'#seance-tab-content .ael-head button,#seance-tab-content .ael-head .rs438-eb{flex:1 1 0;min-width:0;margin:0!important;min-height:34px;padding:4px 6px!important;font-size:.76rem!important;border-radius:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:auto!important;}'
++'#seance-tab-content .ael-gbox{position:absolute;left:0;right:0;top:100%;z-index:60;background:#0f172a;border:1px solid #334155;border-radius:10px;padding:8px;display:flex;gap:6px;flex-wrap:wrap;}#seance-tab-content .ael-gbox[hidden]{display:none;}';
+document.head.appendChild(st);})();
+function elCompact(){try{const hd=document.querySelector('#seance-tab-content .ael-head');if(!hd||hd.dataset.cp)return;hd.dataset.cp=1;
+  const chips=[...hd.querySelectorAll('.asp-g')];const pm=hd.querySelector('button[onclick*="aspMe(null)"]');const rs=document.querySelector('#seance-tab-content .rs438-eb');
+  const box=document.createElement('div');box.className='ael-gbox';box.hidden=true;chips.forEach(c=>box.appendChild(c));
+  const gb=document.createElement('button');gb.type='button';gb.className='btn-xs';gb.style.cssText='background:#334155;color:#fff;border:0;';gb.textContent='👥 Groupes';gb.onclick=()=>{box.hidden=!box.hidden;};
+  if(rs){rs.textContent='📚 Ressources';hd.appendChild(rs);}hd.appendChild(gb);if(pm){pm.textContent=/Changer/.test(pm.textContent)?'↔ Groupe':'↩ Pas moi';hd.appendChild(pm);}hd.appendChild(box);}catch(e){}}
+function elVidFirst(){try{document.querySelectorAll('#seance-tab-content .ael-step').forEach(st=>{if(st.dataset.va)return;
+  const vid=[...st.querySelectorAll('video,iframe')].find(v=>!v.closest('.ael-vig')&&!v.closest('template')&&!v.closest('.anim-inline'));
+  const an=[...st.querySelectorAll('.anim-inline')].filter(x=>!x.closest('.ael-vig')&&!x.closest('template'));
+  if(!vid||!an.length)return;st.dataset.va=1;
+  const anchor=an[0];const vw=vid.closest('.fit-vid')||vid;try{anchor.parentNode.insertBefore(vw,anchor);}catch(e){}
+  aspVidAnimSetup(st,vid,an,anchor.parentNode);const b=anchor.parentNode.querySelector('.va-btn');const w=anchor.parentNode.querySelector('.aop-anim');
+  if(b&&w&&vw.nextSibling!==b){vw.after(b);b.after(w);}});}catch(e){}}
+function elCrown(){try{document.querySelectorAll('#seance-tab-content .ael-step').forEach(st=>{if(st.dataset.cr)return;
+  const t=st.textContent||'';const m=/(?:Capitaine|Responsable|Chef)[^:\n]{0,30}:\s*([^\n·]+?)(?:\s{2,}|$|·)/i.exec(t);if(!m)return;const nm=m[1].trim();if(!nm)return;st.dataset.cr=1;
+  const w=document.createTreeWalker(st,NodeFilter.SHOW_TEXT);let n,done=0;while((n=w.nextNode())&&!done){const v=n.nodeValue;if(!/avec /.test(v)&&!/,/.test(v))continue;const re=new RegExp('(^|[\\s,—-])'+nm.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'(?=[\\s,.]|$)');if(re.test(v)&&!n.parentElement.closest('.asp-roles')&&!/Capitaine|Responsable/i.test(v)){n.nodeValue=v.replace(re,'$1👑 '+nm);done=1;}}});}catch(e){}}
+setInterval(()=>{elCompact();elVidFirst();elCrown();},700);
+function grpLiveAll(){try{let ch=false;(SEANCES||[]).forEach(s=>{try{if(grpLiveSync(s))ch=true;}catch(e){}});if(ch)saveSeances();try{renderSeanceTab();}catch(e){}}catch(e){}}
+clsApply=(function(f){return function(){const r=f.apply(this,arguments);setTimeout(grpLiveAll,50);return r;};})(clsApply);
+saveCompoRoster=(function(f){return function(){const r=f.apply(this,arguments);setTimeout(grpLiveAll,80);return r;};})(saveCompoRoster);
 </script>
 </body>
 </html>
