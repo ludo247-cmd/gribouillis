@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v480</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v481</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v480</title>
+<title>Gribouillis EPS v481</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -33824,6 +33824,113 @@ setInterval(()=>{elCompact();elVidFirst();elCrown();},700);
 function grpLiveAll(){try{let ch=false;(SEANCES||[]).forEach(s=>{try{if(grpLiveSync(s))ch=true;}catch(e){}});if(ch)saveSeances();try{renderSeanceTab();}catch(e){}}catch(e){}}
 clsApply=(function(f){return function(){const r=f.apply(this,arguments);setTimeout(grpLiveAll,50);return r;};})(clsApply);
 saveCompoRoster=(function(f){return function(){const r=f.apply(this,arguments);setTimeout(grpLiveAll,80);return r;};})(saveCompoRoster);
+// v481 — générateur de fiche demi-fond (bouton « 🏃 Fiche DF » dans la barre du haut) → export Excel (s'ouvre dans Google Sheets)
+const DF_KEY='grib_df_v1';
+const DF_TOOLS=[['cible','🎯 Vitesse cible (km/h)'],['plots','🔶 Contrat de plots'],['fcav','❤️ FC avant'],['fcap','❤️ FC après'],['ressenti','😮‍💨 Ressenti'],['resp','🫁 Respiration'],['sr','🚧 Sorties de route (nombre)'],['pile','🧱 Cases à empiler'],['suivi','📊 Suivi par répétition'],['reussite','✅ Réussi / raté'],['com','✍️ Commentaire']];
+let DF=null,DFUI={open:false,id:null};
+function dfLoad(){if(DF)return DF;try{DF=JSON.parse(localStorage.getItem(DF_KEY)||'null');}catch(e){}if(!DF||!Array.isArray(DF.list)||!DF.list.length)DF={list:[dfNew()],cur:null};if(!DF.cur||!DF.list.some(f=>f.id===DF.cur))DF.cur=DF.list[0].id;return DF;}
+function dfSave(){try{localStorage.setItem(DF_KEY,JSON.stringify(DF));}catch(e){}}
+function dfUid(){return 'df'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
+function dfNew(){return {id:dfUid(),titre:'Séance de demi-fond',theme:'',classe:'',date:'',plotM:25,blocks:[]};}
+function dfCur(){const d=dfLoad();return d.list.find(f=>f.id===d.cur)||d.list[0];}
+function dfBlk(type){const b={id:dfUid(),type:type,titre:'',par:false,outils:[],crit:'',n:6};
+  if(type==='course'){Object.assign(b,{titre:'Allure verte',mode:'continu',nbRep:1,tc:360,tr:0,recup:'marche',im:'vma',iv:-3,outils:['cible','fcav','fcap','ressenti','sr']});}
+  if(type==='sit'){Object.assign(b,{titre:'Situation',consigne:'',outils:['com']});}
+  if(type==='recup'){Object.assign(b,{titre:'Récupération',tr:180,recup:'marche'});}
+  if(type==='dilemme'){Object.assign(b,{titre:'Le dilemme du coureur',dist:250,nbC:4,coop:10,rangs:'12,8,6,4',consigne:'125 m groupés en peloton + 125 m au choix (Coopération ou Attaque).'});}
+  if(type==='bilan'){Object.assign(b,{titre:'Bilan de la séance',lignes:'Niveau de fatigue générale : 1 / 2 / 3 / 4 / 5\nQualité du coaching du partenaire : Excellent / Satisfaisant / Fragile\nObjectif pour la séance prochaine : Stabiliser allure verte / Stabiliser allure rouge / Renforcer 30-30'});}
+  return b;}
+function dfFmt(s){s=+s||0;const m=Math.floor(s/60),r=s%60;return (m?m+"'":'')+(r?r+"''":(m?'':'0'));}
+function dfIm(b){if(b.im==='pct')return (b.iv||0)+' % VMA';if(b.im==='vma')return 'VMA '+((b.iv||0)>=0?'+':'−')+' '+Math.abs(b.iv||0)+' km/h';return 'allure libre';}
+function dfSpeed(b,vma){return b.im==='pct'?vma*(b.iv||0)/100:(b.im==='vma'?vma+(+b.iv||0):null);}
+function dfDesc(b){if(b.type==='course')return (b.mode==='continu'?dfFmt(b.tc)+' continu':(b.nbRep||1)+' × '+dfFmt(b.tc)+' / '+dfFmt(b.tr)+' '+b.recup)+' · '+dfIm(b);if(b.type==='recup')return dfFmt(b.tr)+' '+b.recup;return '';}
+function dfSet(id,k,v,num){const f=dfCur();const b=f.blocks.find(x=>x.id===id);if(!b)return;b[k]=num?(+v||0):v;dfSave();if(k==='mode'||k==='im'||k==='type')dfRender();}
+function dfFSet(k,v){const f=dfCur();f[k]=(k==='plotM')?(+v||25):v;dfSave();}
+function dfTool(id,k,on){const f=dfCur();const b=f.blocks.find(x=>x.id===id);if(!b)return;b.outils=(b.outils||[]).filter(x=>x!==k);if(on)b.outils.push(k);dfSave();}
+function dfAdd(t){const f=dfCur();f.blocks.push(dfBlk(t));dfSave();dfRender();}
+function dfDel(id){const f=dfCur();f.blocks=f.blocks.filter(b=>b.id!==id);dfSave();dfRender();}
+function dfMove(id,d){const f=dfCur();const i=f.blocks.findIndex(b=>b.id===id),j=i+d;if(i<0||j<0||j>=f.blocks.length)return;const t=f.blocks[i];f.blocks[i]=f.blocks[j];f.blocks[j]=t;dfSave();dfRender();}
+function dfPar(id){const f=dfCur();const b=f.blocks.find(x=>x.id===id);if(b){b.par=!b.par;dfSave();dfRender();}}
+function dfDup(id){const f=dfCur();const i=f.blocks.findIndex(b=>b.id===id);if(i<0)return;const c=JSON.parse(JSON.stringify(f.blocks[i]));c.id=dfUid();f.blocks.splice(i+1,0,c);dfSave();dfRender();}
+function dfNewF(dup){const d=dfLoad();const f=dup?JSON.parse(JSON.stringify(dfCur())):dfNew();f.id=dfUid();if(dup){f.titre+=' (copie)';f.blocks.forEach(b=>b.id=dfUid());}d.list.push(f);d.cur=f.id;dfSave();dfRender();}
+function dfDelF(){const d=dfLoad();if(d.list.length<2){alert('Garde au moins une fiche.');return;}if(!confirm('Supprimer cette fiche ?'))return;d.list=d.list.filter(f=>f.id!==d.cur);d.cur=d.list[0].id;dfSave();dfRender();}
+function dfPick(id){dfLoad().cur=id;dfSave();dfRender();}
+function dfOpen(){DFUI.open=true;dfRender();}
+function dfClose(){DFUI.open=false;const o=document.getElementById('df-ov');if(o)o.remove();}
+function dfInp(id,k,v,w,num,ph){return '<input '+(num?'type="number" step="any" ':'type="text" ')+'value="'+esc(String(v==null?'':v))+'" placeholder="'+esc(ph||'')+'" style="width:'+(w||'100%')+'" onchange="dfSet(\''+id+'\',\''+k+'\',this.value,'+(num?1:0)+')">';}
+function dfSel(id,k,v,opts){return '<select onchange="dfSet(\''+id+'\',\''+k+'\',this.value,0)">'+opts.map(o=>'<option value="'+o[0]+'"'+(o[0]===v?' selected':'')+'>'+o[1]+'</option>').join('')+'</select>';}
+function dfBlockHtml(b,i){const L={course:'🏃 Course',sit:'🧭 Situation',recup:'⏱ Récupération',dilemme:'⚔️ Dilemme du coureur',bilan:'📝 Bilan écrit'}[b.type];const id=b.id;let h='<div class="dfb"><div class="dfh"><b>'+(i+1)+' · '+L+'</b><span class="dfs"></span>'
+ +'<button type="button" onclick="dfPar(\''+id+'\')" title="Travail parallèle / consécutif" class="'+(b.par?'on':'')+'">'+(b.par?'∥ en parallèle du précédent':'→ à la suite')+'</button><button type="button" onclick="dfMove(\''+id+'\',-1)">▲</button><button type="button" onclick="dfMove(\''+id+'\',1)">▼</button><button type="button" onclick="dfDup(\''+id+'\')">⧉</button><button type="button" onclick="dfDel(\''+id+'\')" class="x">✕</button></div><div class="dfg">';
+ h+='<label>Titre'+dfInp(id,'titre',b.titre)+'</label>';
+ if(b.type==='course'){h+='<label>Type'+dfSel(id,'mode',b.mode,[['continu','Continu'],['inter','Intermittent']])+'</label><label>Temps de course (s)'+dfInp(id,'tc',b.tc,'90px',1)+'</label>';
+  if(b.mode==='inter')h+='<label>Répétitions'+dfInp(id,'nbRep',b.nbRep,'70px',1)+'</label><label>Récup (s)'+dfInp(id,'tr',b.tr,'90px',1)+'</label><label>Récup en'+dfSel(id,'recup',b.recup,[['marche','marche'],['trot','trot'],['arrêt','arrêt']])+'</label>';
+  h+='<label>Intensité'+dfSel(id,'im',b.im,[['pct','% de VMA'],['vma','VMA ± km/h'],['libre','Libre']])+'</label>'+(b.im!=='libre'?'<label>Valeur'+dfInp(id,'iv',b.iv,'80px',1)+'</label>':'')+'<label>Critère de réussite'+dfInp(id,'crit',b.crit,'100%',0,'ex. ≤ 2 sorties de route')+'</label>';}
+ if(b.type==='sit')h+='<label style="flex:1 1 100%">Consigne'+dfInp(id,'consigne',b.consigne)+'</label>';
+ if(b.type==='recup')h+='<label>Durée (s)'+dfInp(id,'tr',b.tr,'90px',1)+'</label><label>En'+dfSel(id,'recup',b.recup,[['marche','marche'],['trot','trot'],['arrêt','arrêt']])+'</label>';
+ if(b.type==='dilemme')h+='<label style="flex:1 1 100%">Consigne'+dfInp(id,'consigne',b.consigne)+'</label><label>Distance (m)'+dfInp(id,'dist',b.dist,'80px',1)+'</label><label>Coureurs'+dfInp(id,'nbC',b.nbC,'60px',1)+'</label><label>Pts coopération'+dfInp(id,'coop',b.coop,'70px',1)+'</label><label>Pts par rang'+dfInp(id,'rangs',b.rangs,'110px')+'</label>';
+ if(b.type==='bilan')h+='<label style="flex:1 1 100%">Une ligne par question · choix séparés par « / »<textarea rows="4" style="width:100%" onchange="dfSet(\''+id+'\',\'lignes\',this.value,0)">'+esc(b.lignes||'')+'</textarea></label>';
+ h+='</div>';
+ if(b.type==='course'||b.type==='sit'){h+='<div class="dft">'+DF_TOOLS.map(t=>'<label><input type="checkbox" '+((b.outils||[]).indexOf(t[0])>=0?'checked':'')+' onchange="dfTool(\''+id+'\',\''+t[0]+'\',this.checked)"> '+t[1]+'</label>').join('')+'</div>';
+  if((b.outils||[]).some(x=>x==='pile'||x==='suivi'))h+='<div class="dfg"><label>Nombre de cases (pile / suivi)'+dfInp(id,'n',b.n,'70px',1)+'</label></div>';}
+ return h+'</div>';}
+function dfRender(){if(!DFUI.open)return;const d=dfLoad(),f=dfCur();let o=document.getElementById('df-ov');if(!o){o=document.createElement('div');o.id='df-ov';document.body.appendChild(o);}
+ o.innerHTML='<div class="dfbox"><div class="dftop"><b>🏃 Fiche de séance demi-fond</b><span class="dfs"></span><button type="button" class="xl" onclick="dfExport()">⬇ Extraire en Excel (→ Google Sheets)</button><button type="button" onclick="dfClose()" class="x">✕ Fermer</button></div>'
+ +'<div class="dfg dfhd"><label>Fiche<select onchange="dfPick(this.value)">'+d.list.map(x=>'<option value="'+x.id+'"'+(x.id===f.id?' selected':'')+'>'+esc(x.titre||'Fiche')+'</option>').join('')+'</select></label><button type="button" onclick="dfNewF(0)">＋ Nouvelle</button><button type="button" onclick="dfNewF(1)">⧉ Dupliquer</button><button type="button" onclick="dfDelF()" class="x">🗑</button></div>'
+ +'<div class="dfg"><label style="flex:1 1 60%">Titre<input type="text" value="'+esc(f.titre)+'" onchange="dfFSet(\'titre\',this.value)"></label><label style="flex:1 1 100%">Thème / objectif de la séance<input type="text" value="'+esc(f.theme||'')+'" onchange="dfFSet(\'theme\',this.value)"></label><label>Classe<input type="text" value="'+esc(f.classe||'')+'" style="width:90px" onchange="dfFSet(\'classe\',this.value)"></label><label>Date<input type="text" value="'+esc(f.date||'')+'" style="width:110px" placeholder="jj/mm/aaaa" onchange="dfFSet(\'date\',this.value)"></label><label>Taille d\'un plot (m)<input type="number" value="'+f.plotM+'" style="width:70px" onchange="dfFSet(\'plotM\',this.value)"></label></div>'
+ +f.blocks.map(dfBlockHtml).join('')
+ +'<div class="dfadd"><b>Ajouter :</b><button type="button" onclick="dfAdd(\'course\')">＋ Course</button><button type="button" onclick="dfAdd(\'sit\')">＋ Situation</button><button type="button" onclick="dfAdd(\'recup\')">＋ Récupération</button><button type="button" onclick="dfAdd(\'dilemme\')">＋ Dilemme du coureur</button><button type="button" onclick="dfAdd(\'bilan\')">＋ Bilan écrit</button></div>'
+ +'<div class="cc-dim" style="font-size:.74rem;margin:6px 0;">Le fichier Excel contient la fiche élève, une feuille « Allures » (vitesse, distance et plots pour chaque VMA) et un récap prof. Dépose-le dans Google Drive : il s\'ouvre en Google Sheets.</div></div>';}
+(function(){const st=document.createElement('style');st.textContent='#df-ov{position:fixed;inset:0;z-index:100002;background:rgba(2,6,23,.85);overflow:auto;padding:10px;}.dfbox{max-width:980px;margin:0 auto;background:#0f172a;border:1px solid #334155;border-radius:14px;padding:12px;color:#e2e8f0;}.dftop,.dfh,.dfadd{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.dfs{flex:1}.dfbox button{border:1px solid #475569;background:#1e293b;color:#e2e8f0;border-radius:8px;padding:7px 10px;cursor:pointer;font-size:.8rem}.dfbox button.on{background:#7c3aed}.dfbox button.x{background:#7f1d1d}.dfbox button.xl{background:#15803d;font-weight:700}.dfg{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0;align-items:flex-end}.dfg label{display:flex;flex-direction:column;font-size:.72rem;color:#94a3b8;gap:2px}.dfbox input[type=text],.dfbox input[type=number],.dfbox select,.dfbox textarea{background:#0b1220;color:#e2e8f0;border:1px solid #475569;border-radius:7px;padding:6px;font-size:.85rem}.dfb{border:1px solid #334155;border-radius:10px;padding:8px;margin:8px 0;background:#111c33}.dft{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:.8rem}.dft label{display:flex;gap:4px;align-items:center}.dfadd{margin-top:10px}';document.head.appendChild(st);
+ const mk=()=>{const cb=document.getElementById('class-bar');if(!cb||document.getElementById('df-btn')||!cb.children.length)return;const b=document.createElement('button');b.type='button';b.id='df-btn';b.textContent='🏃 Fiche DF';b.setAttribute('onclick','dfOpen()');b.style.cssText='height:34px;padding:0 12px;border-radius:9px;border:1px solid #475569;background:#1e293b;color:#e2e8f0;font-weight:700;font-size:.85rem;cursor:pointer;white-space:nowrap;margin:0 8px;flex:0 0 auto;';const w=document.getElementById('und-wrap');if(w&&w.parentNode===cb)w.after(b);else cb.insertBefore(b,cb.children[2]||null);};setInterval(mk,1500);mk();})();
+async function dfLoadX(){if(window.ExcelJS)return;await new Promise((ok,ko)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js';s.onload=ok;s.onerror=()=>ko(new Error('ExcelJS non chargé (connexion ?)'));document.head.appendChild(s);});}
+async function dfExport(){try{await dfLoadX();}catch(e){alert(e.message);return;}
+ const f=dfCur();const wb=new ExcelJS.Workbook();const ws=wb.addWorksheet('Fiche élève',{pageSetup:{paperSize:9,orientation:'portrait',fitToPage:true,fitToWidth:1,fitToHeight:0,margins:{left:.4,right:.4,top:.4,bottom:.4,header:.2,footer:.2}}});
+ ws.columns=[{width:24}].concat(Array.from({length:11},()=>({width:9.5})));let r=1;
+ const BD={top:{style:'thin'},left:{style:'thin'},bottom:{style:'thin'},right:{style:'thin'}};
+ const band=(t,col)=>{ws.mergeCells(r,1,r,12);const c=ws.getCell(r,1);c.value=t;c.font={bold:true,color:{argb:'FFFFFFFF'},size:12};c.fill={type:'pattern',pattern:'solid',fgColor:{argb:col||'FF1E3A8A'}};c.alignment={vertical:'middle',wrapText:true};ws.getRow(r).height=22;r++;};
+ const line=(t,opt)=>{ws.mergeCells(r,1,r,12);const c=ws.getCell(r,1);c.value=t;c.alignment={wrapText:true,vertical:'middle'};if(opt&&opt.b)c.font={bold:true};if(opt&&opt.i)c.font={italic:true,color:{argb:'FF475569'}};ws.getRow(r).height=(opt&&opt.h)||20;r++;};
+ const lab=(l,after)=>{ws.getCell(r,1).value=l;ws.getCell(r,1).font={bold:true};ws.mergeCells(r,2,r,12);ws.getCell(r,2).value=after||'';ws.getCell(r,2).border=BD;ws.getRow(r).height=22;r++;};
+ const opts=(l,arr)=>{ws.getCell(r,1).value=l;ws.getCell(r,1).font={bold:true};ws.mergeCells(r,2,r,12);ws.getCell(r,2).value=arr.map(a=>'☐ '+a).join('    ');ws.getCell(r,2).alignment={wrapText:true};ws.getRow(r).height=22;r++;};
+ const stack=(l,n)=>{ws.getCell(r,1).value=l;ws.getCell(r,1).font={bold:true};ws.getCell(r,1).alignment={wrapText:true,vertical:'top'};ws.mergeCells(r,1,r+n-1,1);for(let i=n;i>=1;i--){ws.getCell(r,2).value=i;ws.getCell(r,2).alignment={horizontal:'center'};ws.getCell(r,2).border=BD;ws.mergeCells(r,3,r,4);ws.getCell(r,3).border=BD;ws.getCell(r,4).border=BD;ws.getRow(r).height=17;r++;}};
+ const suivi=(l,rep,n)=>{ws.getCell(r,1).value=l;ws.getCell(r,1).font={bold:true};ws.getCell(r,1).alignment={wrapText:true,vertical:'top'};ws.mergeCells(r,1,r+n,1);ws.getCell(r,2).value='';for(let k=1;k<=rep;k++){const c=ws.getCell(r,2+k);c.value='Rép '+k;c.font={bold:true,size:9};c.alignment={horizontal:'center'};c.border=BD;}r++;for(let i=n;i>=1;i--){ws.getCell(r,2).value=i;ws.getCell(r,2).alignment={horizontal:'center'};ws.getCell(r,2).border=BD;for(let k=1;k<=rep;k++)ws.getCell(r,2+k).border=BD;ws.getRow(r).height=17;r++;}};
+ ws.mergeCells(r,1,r,12);ws.getCell(r,1).value=f.titre;ws.getCell(r,1).font={bold:true,size:15};r++;
+ line('Coureur(euse) : ______________________    Coach / observateur : ______________________    Classe : '+(f.classe||'______')+'    Date : '+(f.date||'___/___/____'),{b:1,h:24});
+ if(f.theme)line('Objectif : '+f.theme,{i:1});
+ line('Ma VMA estimée : ______ km/h   (vitesse de la semaine dernière − 1 km/h)',{b:1});
+ let n=0;
+ f.blocks.forEach(b=>{r++;const par=b.par?'  ∥ en même temps que le bloc précédent':'';
+  if(b.type==='course'||b.type==='sit'){n++;band('EXERCICE '+n+' : '+(b.titre||'').toUpperCase()+(b.type==='course'?'  ('+dfDesc(b)+')':'')+par,b.type==='course'?'FF166534':'FF1E3A8A');
+    if(b.type==='sit'&&b.consigne)line(b.consigne,{i:1});
+    const O=b.outils||[];
+    if(O.indexOf('cible')>=0){lab('Ma vitesse cible'+(b.type==='course'&&b.im!=='libre'?' ('+dfIm(b)+')':''),'_____ km/h');}
+    if(O.indexOf('plots')>=0)lab('Mon contrat de plots','_____ plots en '+dfFmt(b.tc||30));
+    if(O.indexOf('fcav')>=0)lab('FC avant la course','_____ bpm');
+    if(O.indexOf('fcap')>=0)lab('FC juste après','_____ bpm');
+    if(O.indexOf('ressenti')>=0)opts('Ressenti',['Facile','Supportable','Difficile','Très difficile']);
+    if(O.indexOf('resp')>=0)opts('Respiration',['Imperceptible','Accélérée','Bruyante','Très bruyante']);
+    if(O.indexOf('sr')>=0)lab('Sorties de route','_____');
+    if(O.indexOf('pile')>=0)stack(b.type==='course'?'Je coche une case à chaque fois':'Cases',Math.max(1,Math.min(30,b.n||6)));
+    if(O.indexOf('suivi')>=0)suivi('Suivi des répétitions',Math.max(1,Math.min(10,b.mode==='inter'?b.nbRep||6:b.nbRep||4)),Math.max(1,Math.min(20,b.n||6)));
+    if(O.indexOf('reussite')>=0)opts('Réussite'+(b.crit?' ('+b.crit+')':''),['RÉUSSI','RATÉ']);
+    if(O.indexOf('com')>=0)lab('Commentaire','');
+    if(b.type==='course'&&b.mode==='inter'&&b.tr)line('Récupération entre les répétitions : '+dfFmt(b.tr)+' '+b.recup,{i:1});
+  }else if(b.type==='recup'){band('⏱ '+(b.titre||'Récupération').toUpperCase()+' : '+dfFmt(b.tr)+' '+b.recup+par,'FF475569');}
+  else if(b.type==='dilemme'){n++;band('SITUATION DE COURSE : '+(b.titre||'').toUpperCase()+' ('+b.dist+' m en pelotons de '+b.nbC+')'+par,'FF9A3412');
+    if(b.consigne)line('• Consigne : '+b.consigne);line('• Coopération : si les '+b.nbC+' arrivent ensemble → '+b.coop+' points chacun.');line('• Attaque : si le groupe éclate → points par rang : '+String(b.rangs||'').split(',').map((p,i)=>(i+1)+(i?'e':'er')+' = '+p.trim()).join(' | '));
+    const H=['Coureur','Choix manche 1','','Rang','Pts','Choix manche 2','','Rang','Pts','Total'];const row=r;ws.getCell(r,1).value='Membres du peloton';ws.getCell(r,1).font={bold:true};[['Choix M1',2,3],['Rang',4,4],['Pts',5,5],['Choix M2',6,7],['Rang',8,8],['Pts',9,9],['Total',10,11]].forEach(x=>{ws.mergeCells(r,x[1],r,x[2]);const c=ws.getCell(r,x[1]);c.value=x[0];c.font={bold:true,size:9};c.alignment={horizontal:'center'};});r++;
+    for(let k=1;k<=(b.nbC||4);k++){ws.getCell(r,1).value='Coureur '+k+' : ____________';ws.getCell(r,1).border=BD;ws.mergeCells(r,2,r,3);ws.getCell(r,2).value='☐ Coop ☐ Attaque';ws.getCell(r,2).alignment={horizontal:'center'};ws.mergeCells(r,6,r,7);ws.getCell(r,6).value='☐ Coop ☐ Attaque';ws.getCell(r,6).alignment={horizontal:'center'};ws.mergeCells(r,10,r,11);[2,3,4,5,6,7,8,9,10,11].forEach(c=>ws.getCell(r,c).border=BD);ws.getRow(r).height=22;r++;}}
+  else if(b.type==='bilan'){band((b.titre||'Bilan').toUpperCase()+par,'FF581C87');String(b.lignes||'').split('\n').filter(x=>x.trim()).forEach(l=>{const p=l.split(':');if(p.length>1){opts(p[0].trim(),p.slice(1).join(':').split('/').map(x=>x.trim()).filter(Boolean));}else lab(l.trim(),'');});}
+ });
+ // Feuille Allures
+ const wa=wb.addWorksheet('Allures');wa.columns=[{width:10},{width:14},{width:18},{width:16},{width:14},{width:14}];let ar=1;
+ f.blocks.filter(b=>b.type==='course'&&b.im!=='libre').forEach(b=>{wa.mergeCells(ar,1,ar,6);const c=wa.getCell(ar,1);c.value=(b.titre||'Course')+' — '+dfDesc(b);c.font={bold:true,color:{argb:'FFFFFFFF'}};c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FF166534'}};ar++;
+  ['VMA (km/h)','Vitesse cible','Distance / course (m)','Plots / course','Plots / 30"','Plots / 1\''].forEach((t,i)=>{const h=wa.getCell(ar,i+1);h.value=t;h.font={bold:true};h.border=BD;h.alignment={wrapText:true};});ar++;
+  for(let v=8;v<=20;v++){const sp=dfSpeed(b,v);const d=sp*1000/3600*(b.tc||0);const pm=f.plotM||25;const rd=x=>Math.round(x*2)/2;[v,Math.round(sp*10)/10,Math.round(d),rd(d/pm),rd(sp*1000/3600*30/pm),rd(sp*1000/3600*60/pm)].forEach((x,i)=>{const c=wa.getCell(ar,i+1);c.value=x;c.border=BD;});ar++;}ar++;});
+ if(ar===1)wa.getCell(1,1).value='Aucune course avec intensité chiffrée.';
+ // Récap prof
+ const wp=wb.addWorksheet('Récap prof');wp.columns=[{width:5},{width:26},{width:14},{width:42},{width:16}];wp.addRow(['#','Bloc','Type','Paramètres','Organisation']).font={bold:true};
+ f.blocks.forEach((b,i)=>{wp.addRow([i+1,b.titre||'',{course:'Course',sit:'Situation',recup:'Récupération',dilemme:'Dilemme',bilan:'Bilan'}[b.type],dfDesc(b)+(b.outils&&b.outils.length?' · outils : '+b.outils.join(', '):''),b.par?'En parallèle':'À la suite']);});
+ const buf=await wb.xlsx.writeBuffer();const blob=new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=stripAccents('Fiche_'+(f.titre||'DF')+(f.classe?'_'+f.classe:'')).replace(/[^\w.-]+/g,'_')+'.xlsx';document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1500);}
 </script>
 </body>
 </html>
