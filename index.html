@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v476</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v477</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v476</title>
+<title>Gribouillis EPS v477</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -33700,6 +33700,27 @@ renderSeanceTab=(function(f){return function(){const r=f.apply(this,arguments);a
 // v476 — boutons d'atelier sans redite (pleine largeur) ; situations limitées au sport choisi
 (function(){const st=document.createElement('style');st.textContent='html body .asp-addrow{display:flex;gap:6px;width:100%;}html body .asp-addrow button{flex:1 1 0;min-width:0;}html body .asp-seg .asp-sgb{display:block;width:100%;box-sizing:border-box;}';document.head.appendChild(st);})();
 aspExoData=(function(f){return function(s){const D=f.apply(this,arguments);try{if(!SB_UI.allSport){const k=String(CFG.sport2||CFG.apsa||'').toLowerCase();if(k)D.libs=D.libs.filter(x=>{const a=String(x.apsa||'').toLowerCase();return !a||a.indexOf(k)>=0||k.indexOf(a)>=0;});}}catch(e){}return D;};})(aspExoData);
+
+// v477 — boutons « ensuite » étroits ; rôles par situation + ajout d'un rôle
+(function(){const st=document.createElement('style');st.textContent=
+ 'html body .asp-seqrow>.asp-next,html body .asp-exrow .asp-next.solo{flex:0 0 34px!important;width:34px;min-width:34px!important;max-width:34px;padding:0!important;font-size:.85rem!important;line-height:1.1;text-align:center;white-space:normal;word-break:break-all;}'
++'html body .asp-seqrow>.asp-next{min-height:90px;}'
++'html body .asp-seg .asp-xrb{display:block;width:100%;box-sizing:border-box;border:1px solid #b45309;background:#1c1405;color:#fde68a;border-radius:7px;padding:3px 8px;font-size:.7rem;cursor:pointer;margin-top:3px;}'
++'#asp-xr{position:fixed;inset:0;z-index:100001;background:rgba(2,6,23,.78);display:flex;align-items:center;justify-content:center;padding:12px;}#asp-xr .bx{background:#0f172a;border:1px solid #334155;border-radius:14px;width:min(420px,100%);padding:14px;color:#e2e8f0;}#asp-xr li{display:flex;gap:8px;align-items:center;margin:4px 0;}#asp-xr button{cursor:pointer;}';
+document.head.appendChild(st);})();
+aspAtRoleLabels=(function(f){return function(a){const out=f.apply(this,arguments)||[];try{(a.exos||[]).forEach(e=>(e.xroles||[]).forEach(l=>{if(!out.some(x=>stripAccents(x).toLowerCase()===stripAccents(l).toLowerCase()))out.push(l);}));}catch(e){}return out;};})(aspAtRoleLabels);
+function aspXRoleAdd(bid,aid,k){const s=aspS();if(!s)return;const a=aspAt(s,bid,aid);const e=a&&a.exos&&a.exos[k];if(!e)return;
+  askTextDlg('Nom du nouveau rôle (ex. Chronométreur, Marqueur…)','',v=>{v=String(v||'').trim();if(!v)return;e.xroles=e.xroles||[];if(e.xroles.indexOf(v)<0)e.xroles.push(v);const o=document.getElementById('asp-xr');if(o)o.remove();const p=document.querySelector('.asp-rpop');if(p)p.remove();aspSave();});}
+function aspXRoleDel(bid,aid,k,i){const s=aspS();if(!s)return;const a=aspAt(s,bid,aid);const e=a&&a.exos&&a.exos[k];if(!e||!e.xroles)return;e.xroles.splice(i,1);const o=document.getElementById('asp-xr');if(o)o.remove();aspSave();aspXRolePop(bid,aid,k);}
+function aspXRolePop(bid,aid,k){const s=aspS();if(!s)return;const a=aspAt(s,bid,aid);const e=a&&a.exos&&a.exos[k];if(!e)return;const old=document.getElementById('asp-xr');if(old)old.remove();
+  let base=[];try{base=aspAtRoleLabels0(Object.assign(Object.create(a),{exos:[e],seq:false}));}catch(x){}
+  const o=document.createElement('div');o.id='asp-xr';o.onclick=ev=>{if(ev.target===o)o.remove();};
+  const inf=aspExInfo(e);
+  o.innerHTML='<div class="bx"><b>🎭 Rôles · '+esc(String((inf&&inf.titre)||'situation'))+'</b><ul style="padding-left:16px;">'+base.map(l=>'<li>'+aspRoleIco(l)+' '+esc(l)+'</li>').join('')+(e.xroles||[]).map((l,i)=>'<li>'+aspRoleIco(l)+' '+esc(l)+' <button type="button" onclick="aspXRoleDel(\''+esc(bid)+'\',\''+esc(aid)+'\','+k+','+i+')" title="Retirer">✕</button></li>').join('')+'</ul>'
+   +'<div style="display:flex;gap:8px;justify-content:space-between;margin-top:8px;"><button type="button" class="btn-xs" style="background:#15803d;color:#fff;padding:8px 12px;" onclick="aspXRoleAdd(\''+esc(bid)+'\',\''+esc(aid)+'\','+k+')">＋ Ajouter un rôle</button><button type="button" class="btn-xs" style="background:#334155;color:#fff;padding:8px 12px;" onclick="document.getElementById(\'asp-xr\').remove()">Fermer</button></div><div class="cc-dim" style="font-size:.72rem;margin-top:6px;">Les noms sont attribués automatiquement (bouton 🎭 Rôles de l\'atelier).</div></div>';
+  document.body.appendChild(o);}
+aspRolesPop=(function(f){return function(bid,aid){const r=f.apply(this,arguments);try{const p=document.querySelector('.asp-rpop > div');if(p&&!p.querySelector('.asp-xradd')){const b=document.createElement('button');b.type='button';b.className='btn-xs asp-xradd';b.style.cssText='background:#15803d;color:#fff;padding:8px 12px;margin-top:6px;';b.textContent='＋ Ajouter un rôle';b.setAttribute('onclick',"aspXRoleAdd('"+bid+"','"+aid+"',0)");p.appendChild(b);}}catch(e){}return r;};})(aspRolesPop);
+aspSegBtns=(function(f){return function(){f.apply(this,arguments);try{document.querySelectorAll('.asp-seg[data-drop^="ase:"]').forEach(sg=>{if(sg.querySelector('.asp-xrb'))return;const q=sg.dataset.drop.split(':');const b=document.createElement('button');b.type='button';b.className='asp-xrb';b.textContent='🎭 Rôles ＋';b.setAttribute('onclick',"aspXRolePop('"+q[1]+"','"+q[2]+"',"+q[3]+")");sg.appendChild(b);});}catch(e){}};})(aspSegBtns);
 </script>
 </body>
 </html>
