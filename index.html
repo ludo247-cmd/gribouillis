@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v474</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v475</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v474</title>
+<title>Gribouillis EPS v475</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -33667,22 +33667,35 @@ aspAtHtml=(function(f){return function(s,b,a,i){let h=f.apply(this,arguments);if
   try{const bi=esc(b.id),ai=esc(a.id);const bt='<div class="asp-addrow"><button type="button" onclick="aspPkOpen(\''+bi+'\',\''+ai+'\',\'exo\')">＋ Exercice</button><button type="button" onclick="aspPkOpen(\''+bi+'\',\''+ai+'\',\'grp\')">＋ Groupes</button></div>';
     const k=h.lastIndexOf('</div>');return k<0?h:h.slice(0,k)+bt+h.slice(k);}catch(e){return h;}};})(aspAtHtml);
 window.ASP_PK=null;
-function aspPkOpen(bid,aid,tab){window.ASP_PK={b:bid,a:aid,tab:tab,q:'',sel:null};aspPkRender();}
+function aspPkOpen(bid,aid,tab,next,k){window.ASP_PK={b:bid,a:aid,tab:tab,q:'',sel:null,next:!!next,k:(k==null?null:+k)};aspPkRender();}
 function aspPkClose(){window.ASP_PK=null;const o=document.getElementById('asp-pk');if(o)o.remove();}
 function aspPkRender(){const P=window.ASP_PK;if(!P)return;const s=aspS();if(!s)return aspPkClose();const a=aspAt(s,P.b,P.a);if(!a)return aspPkClose();
   let o=document.getElementById('asp-pk');if(!o){o=document.createElement('div');o.id='asp-pk';document.body.appendChild(o);o.addEventListener('click',e=>{if(e.target===o)aspPkClose();});}
-  const tabs=[['exo','🏃 Situations'],['fps','⚽ FPS'],['warm','🔥 Échauffements'],['grp','👥 Groupes']];
-  if(!P.sel)P.sel=(a.groups||[]).slice();
+  const tabs=P.k!=null?[['grp','👥 Groupes de cette partie']]:(P.next?[['exo','🏃 Situations'],['fps','⚽ FPS'],['warm','🔥 Échauffements']]:[['exo','🏃 Situations'],['fps','⚽ FPS'],['warm','🔥 Échauffements'],['grp','👥 Groupes']]);
+  if(!P.sel)P.sel=(P.k!=null?((a.exos[P.k]||{}).groups||[]):(a.groups||[])).slice();
   let body='';
   if(P.tab==='grp'){const CH=aspChips(s);body='<div class="gl">'+CH.map(g=>'<label><input type="checkbox" data-g="'+esc(g.id)+'" '+(P.sel.indexOf(g.id)>=0?'checked':'')+' onchange="aspPkTog(this)"><span class="asp-g" style="--gc:'+esc(g.color||'#475569')+'">'+esc(String(g.label))+'</span><small>'+(g.members||[]).length+'</small></label>').join('')+'</div><div style="text-align:right;margin-top:8px;"><button type="button" class="ok" onclick="aspPkOkG()">✓ Valider les groupes</button></div>';}
   else{const t0=ASP_UI.tab;ASP_UI.tab=P.tab;let h='';try{h=aspPalHtml(s);}finally{ASP_UI.tab=t0;}const d=document.createElement('div');d.innerHTML=h;
     const sf=d.querySelector('.sb-filt');const lst=d.querySelector('.sb-pal-list');
     body=(sf?'<div class="sb-filt">'+sf.innerHTML.replace(/aspPalRefresh\(\)/g,'aspPkRender()')+'</div>':'')+(lst?lst.outerHTML.replace('id="asp-list"','id="asp-list-m"'):'<span class="cc-dim">Rien à afficher.</span>')+'<p class="cc-dim" style="font-size:.72rem;">Touche une situation pour l\'ajouter à cet atelier.</p>';}
-  o.innerHTML='<div class="bx"><div class="hd"><b>Ajouter à l\'atelier</b><button type="button" onclick="aspPkClose()" style="background:#7f1d1d;color:#fff;border:0;border-radius:8px;padding:6px 12px;">✕ Fermer</button></div><div class="tb hd">'+tabs.map(x=>'<button type="button" class="'+(P.tab===x[0]?'on':'')+'" onclick="ASP_PK.tab=\''+x[0]+'\';aspPkRender()">'+x[1]+'</button>').join('')+'</div>'+body+'</div>';
-  const l=o.querySelector('.sb-pal-list');if(l&&!l.dataset.pk){l.dataset.pk=1;l.addEventListener('click',e=>{if(e.target.closest('button,select,input,a'))return;const it=e.target.closest('[data-drag]');if(!it)return;const p=it.getAttribute('data-drag');const P2=window.ASP_PK;if(!P2)return;aspDrop(p,'asa:'+P2.b+':'+P2.a);aspPkClose();});}
+  o.innerHTML='<div class="bx"><div class="hd"><b>'+(P.k!=null?'Équipes de la partie '+(P.k+1):(P.next?'Ajouter à la suite (travail consécutif)':'Ajouter à l\'atelier'))+'</b><button type="button" onclick="aspPkClose()" style="background:#7f1d1d;color:#fff;border:0;border-radius:8px;padding:6px 12px;">✕ Fermer</button></div><div class="tb hd">'+tabs.map(x=>'<button type="button" class="'+(P.tab===x[0]?'on':'')+'" onclick="ASP_PK.tab=\''+x[0]+'\';aspPkRender()">'+x[1]+'</button>').join('')+'</div>'+body+'</div>';
+  const l=o.querySelector('.sb-pal-list');if(l&&!l.dataset.pk){l.dataset.pk=1;l.addEventListener('click',e=>{if(e.target.closest('button,select,input,a'))return;const it=e.target.closest('[data-drag]');if(!it)return;const p=it.getAttribute('data-drag');const P2=window.ASP_PK;if(!P2)return;if(P2.next)aspSeqDrop(p,'asn:'+P2.b+':'+P2.a);else aspDrop(p,'asa:'+P2.b+':'+P2.a);aspPkClose();});}
   const sr=o.querySelector('input[type=search]');if(sr)sr.setAttribute('oninput',"ASP_UI.q=this.value;aspPkRender()");}
 function aspPkTog(el){const P=window.ASP_PK;if(!P)return;const g=el.dataset.g,i=P.sel.indexOf(g);if(el.checked&&i<0)P.sel.push(g);if(!el.checked&&i>=0)P.sel.splice(i,1);}
-function aspPkOkG(){const P=window.ASP_PK;const s=aspS();if(!P||!s)return;const a=aspAt(s,P.b,P.a);if(!a)return;const all=aspChips(s).map(g=>g.id);const keep=(a.groups||[]).filter(g=>all.indexOf(g)<0);a.groups=keep.concat(P.sel.filter(g=>all.indexOf(g)>=0));aspPkClose();aspSave();}
+function aspPkOkG(){const P=window.ASP_PK;const s=aspS();if(!P||!s)return;const a=aspAt(s,P.b,P.a);if(!a)return;
+  if(P.k!=null){const e=a.exos[P.k];if(e){e.groups=P.sel.slice();(a.exos||[]).forEach((x,j)=>{if(j!==P.k&&x.groups)x.groups=x.groups.filter(g=>P.sel.indexOf(g)<0);});a.groups=(a.groups||[]).filter(g=>P.sel.indexOf(g)<0||/^pop-/.test(g));}aspPkClose();aspSave();return;}const all=aspChips(s).map(g=>g.id);const keep=(a.groups||[]).filter(g=>all.indexOf(g)<0);a.groups=keep.concat(P.sel.filter(g=>all.indexOf(g)>=0));aspPkClose();aspSave();}
+
+// v475 — flèche « ensuite » cliquable, bouton groupes par partie, vignettes dans la fenêtre d'ajout, largeur fixe des blocs simples
+(function(){const st=document.createElement('style');st.textContent=
+ '#asp-pk .sb-pal-list{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;}#asp-pk .sb-pal-list>*{width:auto!important;min-width:0!important;max-width:none!important;}#asp-pk .sb-pal-list .sb-th{height:84px!important;}#asp-pk .sb-pal-list .sb-vig{width:auto!important;}'
++'html body .asp-grid>.asp-b:not(:has(.asp-seqrow)){flex:0 0 min(380px,92vw);width:min(380px,92vw);box-sizing:border-box;}'
++'html body .asp-seqrow>.asp-next{min-width:120px;min-height:130px;font-size:.95rem;cursor:pointer;background:rgba(124,58,237,.12);}'
++'html body .asp-exrow .asp-next.solo{flex:0 0 70px;min-width:70px;min-height:56px;opacity:.95;font-size:.85rem;cursor:pointer;background:rgba(124,58,237,.12);}'
++'html body .asp-seg .asp-sgb{border:1px dashed #7c3aed;background:#1e1b4b;color:#ddd6fe;border-radius:7px;padding:3px 8px;font-size:.7rem;cursor:pointer;margin-top:3px;}';
+document.head.appendChild(st);})();
+document.addEventListener('click',function(e){try{const n=e.target.closest&&e.target.closest('.asp-next[data-drop^="asn:"]');if(!n)return;const q=n.dataset.drop.split(':');e.preventDefault();e.stopPropagation();aspPkOpen(q[1],q[2],'exo',true);}catch(x){}},true);
+function aspSegBtns(){try{document.querySelectorAll('.asp-seg[data-drop^="ase:"]').forEach(sg=>{if(sg.querySelector('.asp-sgb'))return;const q=sg.dataset.drop.split(':');const b=document.createElement('button');b.type='button';b.className='asp-sgb';b.textContent='＋ Groupes';b.setAttribute('onclick',"aspPkOpen('"+q[1]+"','"+q[2]+"','grp',false,"+q[3]+")");const g=sg.querySelector('.asp-seg-g');if(g)g.after(b);else sg.appendChild(b);});}catch(e){}}
+renderSeanceTab=(function(f){return function(){const r=f.apply(this,arguments);aspSegBtns();setTimeout(aspSegBtns,0);return r;};})(renderSeanceTab);
 </script>
 </body>
 </html>
