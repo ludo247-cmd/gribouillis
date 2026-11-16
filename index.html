@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v482</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v483</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v482</title>
+<title>Gribouillis EPS v483</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -33811,10 +33811,10 @@ function elCompact(){try{const hd=document.querySelector('#seance-tab-content .a
   const gb=document.createElement('button');gb.type='button';gb.className='btn-xs';gb.style.cssText='background:#334155;color:#fff;border:0;';gb.textContent='👥 Groupes';gb.onclick=()=>{box.hidden=!box.hidden;};
   if(rs){rs.textContent='📚 Ressources';hd.appendChild(rs);}hd.appendChild(gb);if(pm){pm.textContent=/Changer/.test(pm.textContent)?'↔ Groupe':'↩ Pas moi';hd.appendChild(pm);}hd.appendChild(box);}catch(e){}}
 function elVidFirst(){try{document.querySelectorAll('#seance-tab-content .ael-step').forEach(st=>{if(st.dataset.va)return;
-  const vid=[...st.querySelectorAll('video,iframe')].find(v=>!v.closest('.ael-vig')&&!v.closest('template')&&!v.closest('.anim-inline'));
+  const vid=[...st.querySelectorAll('video,iframe,.cpv-btn,.fit-vid,button[onclick*="Lightbox"],button[onclick*="openVideo"],a[href*="youtu"],a[href*="bilibili"],a[href*=".mp4"],.vid-wrap,.video-wrap')].find(v=>!v.closest('.ael-vig')&&!v.closest('template')&&!v.closest('.anim-inline')&&!v.closest('.aop-ov'));
   const an=[...st.querySelectorAll('.anim-inline')].filter(x=>!x.closest('.ael-vig')&&!x.closest('template'));
   if(!vid||!an.length)return;st.dataset.va=1;
-  const anchor=an[0];const vw=vid.closest('.fit-vid')||vid;try{anchor.parentNode.insertBefore(vw,anchor);}catch(e){}
+  const anchor=an[0];const vw=vid;try{anchor.parentNode.insertBefore(vw,anchor);}catch(e){}
   aspVidAnimSetup(st,vid,an,anchor.parentNode);const b=anchor.parentNode.querySelector('.va-btn');const w=anchor.parentNode.querySelector('.aop-anim');
   if(b&&w&&vw.nextSibling!==b){vw.after(b);b.after(w);}});}catch(e){}}
 function elCrown(){try{document.querySelectorAll('#seance-tab-content .ael-step').forEach(st=>{if(st.dataset.cr)return;
