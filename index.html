@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v486</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v487</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v486</title>
+<title>Gribouillis EPS v487</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -33962,6 +33962,42 @@ function dr486Apply(){try{const root=document.getElementById('sb-root');if(root)
       let b=hd.querySelector('.dr486-b');if(!b){b=document.createElement('button');b.type='button';b.className='dr486-b';b.style.cssText='border:0;background:#334155;color:#fff;border-radius:8px;padding:4px 10px;font-weight:800;margin-left:6px;';b.onclick=dr486Tog;hd.appendChild(b);}b.textContent=col?'▸ Réglages':'▾ Réglages';}}
   document.querySelectorAll('#seance-tab-content button').forEach(x=>{if(/^\s*(🧭\s*)?Pense-bête\s*$|^\s*(👥\s*)?Équipes\s*$/.test(x.textContent||'')&&!x.closest('.asp-pal,.asp-grid,.v486-keep'))x.style.display='none';});}catch(e){console.warn('v486c',e);}}
 renderSeanceTab=(function(f){return function(){const r=f.apply(this,arguments);setTimeout(dr486Apply,120);setTimeout(dr486Apply,500);return r;};})(renderSeanceTab);
+
+// ── v487 — éditeur de situation : médias en 3 gros boutons-icônes (photo / animation / vidéo) + boîtes de dialogue ──
+(function(){
+const css=document.createElement('style');css.textContent='.mb487{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:8px 0;}.mb487 .b{width:54px;height:54px;border-radius:14px;border:0;color:#fff;font-size:1.5rem;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;}.mb487 .b.on::after{content:"";position:absolute;right:5px;top:5px;width:10px;height:10px;border-radius:50%;background:#22c55e;border:2px solid #0f172a;}.mb487 .th{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:.78rem;color:var(--muted,#94a3b8);}.mb487 .th img,.mb487 .th video{height:54px;border-radius:8px;}.dg487{position:fixed;inset:0;z-index:100000;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;padding:12px;}.dg487>div{background:var(--card,#16212e);border:1px solid var(--border,#334);border-radius:14px;padding:14px;width:100%;max-width:420px;max-height:88vh;overflow:auto;display:flex;flex-direction:column;gap:8px;}.dg487 .r{display:flex;gap:10px;align-items:center;background:#1e293b;color:#fff;border:0;border-radius:12px;padding:12px 14px;font-size:1rem;font-weight:700;cursor:pointer;text-align:left;}.dg487 .r span{font-size:1.4rem;}.dg487 input[type=text]{width:100%;padding:12px;border-radius:10px;border:1px solid #475569;background:#0f172a;color:#fff;font-size:1rem;}.dg487 video{max-width:100%;max-height:200px;border-radius:8px;}';document.head.appendChild(css);
+let lp=null;
+function dlg(html){const o=document.createElement('div');o.className='dg487';o.innerHTML='<div>'+html+'<button type="button" class="r" style="background:#334155;justify-content:center;" data-x>Fermer</button></div>';o.addEventListener('click',e=>{if(e.target===o||e.target.hasAttribute('data-x'))o.remove();});document.body.appendChild(o);return o;}
+window.mb487Close=function(){document.querySelectorAll('.dg487').forEach(x=>x.remove());};
+function row(ic,t,fn,bg){const b=document.createElement('button');b.type='button';b.className='r';if(bg)b.style.background=bg;b.innerHTML='<span>'+ic+'</span>'+t;b.onclick=fn;return b;}
+function ensureId(cb){const L=LIBC;if(!L)return;if(L.editId){libcSave();return cb(L.editId);}const t=L.f.titre;libcSave();const it=libLoad().filter(x=>x.titre===t).pop();if(it)cb(it.id);else alert('Donne un nom à la situation puis réessaie.');}
+window.mb487Photo=function(){const i=document.querySelector('#libc-ov .mb487-src input[type=file]');if(i)i.click();};
+window.mb487Paste=function(){const b=[...document.querySelectorAll('#libc-ov .mb487-src button')].find(x=>/Coller/.test(x.textContent||''));if(b)b.click();};
+window.mb487Anim=function(){const f=LIBC.f,a=f.anim;const o=dlg('<b>🎞 Animation</b>'+(a?'<div style="font-size:.85rem;color:#a78bfa;">'+esc(String(a.name||'Animation'))+'</div>':'<div style="font-size:.85rem;color:#94a3b8;">Aucune animation</div>')+'<div id="ab487" style="display:flex;flex-direction:column;gap:8px;"></div>');const h=o.querySelector('#ab487');
+  if(a){h.appendChild(row('▶','Voir',()=>{try{animPlay(__animReg[animReg(a)]);}catch(e){}}));h.appendChild(row('✏️','Modifier dans le Studio',()=>{o.remove();ensureId(id=>{try{animEditFor('lib',id,0,animReg(a));}catch(e){alert('Impossible d\'ouvrir le Studio.');}});},'#6d28d9'));}
+  h.appendChild(row('➕','Créer une nouvelle',()=>{o.remove();ensureId(id=>animCreateFor({kind:'lib',key:id,titre:f.titre||''}));},'#5b21b6'));
+  h.appendChild(row('📚','Choisir dans ma bibliothèque',()=>{o.remove();animPick(function(J){if(LIBC){LIBC.f.anim=J?{name:animName(J),json:J}:null;libcRender();}});}));
+  if(a)h.appendChild(row('✕','Retirer',()=>{o.remove();f.anim=null;libcRender();},'#991b1b'));};
+window.mb487Vid=function(){const f=LIBC.f;const o=dlg('<b>🎬 Vidéo</b>'+(f.video?'<video src="'+esc(f.video)+'" controls playsinline></video>':'<div style="font-size:.85rem;color:#94a3b8;">Aucune vidéo</div>')+'<div id="vb487" style="display:flex;flex-direction:column;gap:8px;"></div>');const h=o.querySelector('#vb487');
+  const up=document.createElement('label');up.className='r';up.style.background='#15803d';up.innerHTML='<span>📤</span>Importer depuis l\'ordinateur / téléphone<input type="file" accept="video/*" hidden>';up.querySelector('input').onchange=function(){const fl=this.files&&this.files[0];if(!fl)return;o.remove();toast2('Envoi vers GitHub…');ghUploadFiles([fl],d=>{if(d&&d[0]&&LIBC){LIBC.f.video=d[0].url;libcRender();}});};h.appendChild(up);
+  h.appendChild(row('📂','Ma bibliothèque de vidéos',()=>{o.remove();libcVideoGh();},'#1e3a8a'));
+  const lk=document.createElement('div');lk.innerHTML='<div style="font-size:.8rem;color:#94a3b8;margin:2px 0 4px;">🔗 Ou coller un lien (YouTube, mp4…)</div><input type="text" placeholder="https://…" value="'+esc(f.video||'')+'"><button type="button" class="r" style="margin-top:6px;background:#0f766e;justify-content:center;">OK</button>';
+  lk.querySelector('button').onclick=()=>{const v=lk.querySelector('input').value.trim();o.remove();if(LIBC){LIBC.f.video=v;libcRender();}};h.appendChild(lk);
+  if(f.video)h.appendChild(row('✕','Retirer la vidéo',()=>{o.remove();f.video='';libcRender();},'#991b1b'));};
+function post(){try{const box=document.querySelector('#libc-ov .lib-pick-box');if(!box||!LIBC||box.querySelector('.mb487'))return;
+  const lab=[...box.querySelectorAll('label.remed-edit-label')].find(l=>/Photo \/ schéma/i.test(l.textContent||''));if(!lab)return;
+  let end=lab;const hide=[lab];let n=lab.nextElementSibling;while(n){hide.push(n);if(n.querySelector&&n.querySelector('[onclick*="libcVideoGh"]')){end=n;break;}n=n.nextElementSibling;}
+  if(!(end.querySelector&&end.querySelector('[onclick*="libcVideoGh"]')))return;
+  const f=LIBC.f;const bar=document.createElement('div');bar.className='mb487';
+  const mk=(ic,t,bg,fn,on)=>{const b=document.createElement('button');b.type='button';b.className='b'+(on?' on':'');b.style.background=bg;b.textContent=ic;b.title=t;b.setAttribute('aria-label',t);b.onclick=fn;
+    b.addEventListener('touchstart',()=>{lp=setTimeout(()=>{try{toast2(t);}catch(e){}},450);},{passive:true});['touchend','touchmove','touchcancel'].forEach(ev=>b.addEventListener(ev,()=>clearTimeout(lp),{passive:true}));return b;};
+  bar.appendChild(mk('📷','Photo / schéma : choisir un fichier','#0f766e',mb487Photo,!!f.image));bar.appendChild(mk('📋','Coller une image copiée','#334155',mb487Paste));
+  bar.appendChild(mk('🎞','Animation du Studio : voir, modifier, créer, choisir','#6d28d9',mb487Anim,!!f.anim));bar.appendChild(mk('🎬','Vidéo : importer, bibliothèque, lien','#1e3a8a',mb487Vid,!!f.video));
+  const th=document.createElement('div');th.className='th';th.innerHTML=(f.image?'<img src="'+f.image+'" alt=""><button type="button" class="btn-xs red" onclick="LIBC.f.image=null;libcRender()">✕</button>':'')+(f.anim?'<span>🎞 '+esc(String(f.anim.name||''))+'</span>':'')+(f.video?'<span>🎬 '+esc(String(f.video).split('/').pop().slice(0,28))+'</span>':'');
+  hide.forEach(x=>{x.style.display='none';x.classList.add('mb487-src');});lab.before(bar);bar.after(th);
+}catch(e){console.warn('v487',e);}}
+libcRender=(function(f){return function(){const r=f.apply(this,arguments);setTimeout(post,30);setTimeout(post,200);return r;};})(libcRender);
+})();
 </script>
 </body>
 </html>
