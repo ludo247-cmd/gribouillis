@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v485</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v486</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v485</title>
+<title>Gribouillis EPS v486</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -33939,6 +33939,29 @@ aspEleveExHtml=(function(f){return function(s,e){let h=f.apply(this,arguments);t
   const miss=U.filter(u=>h.indexOf(esc(u))<0&&h.indexOf(u)<0);if(!miss.length)return h;
   const vh=miss.map(u=>'<video src="'+esc(u)+'" controls playsinline preload="metadata"></video>').join('');
   const t=h.indexOf('<template>');if(t>=0)h=h.slice(0,t+10)+vh+h.slice(t+10);else{const k=h.indexOf('<div class="anim-inline"');if(k>=0)h=h.slice(0,k)+vh+h.slice(k);else{const j=h.lastIndexOf('</'+'div>');h=j>0?h.slice(0,j)+vh+h.slice(j):h+vh;}}}catch(err){console.warn('v484',err);}return h;};})(aspEleveExHtml);
+
+// ── v486 — élève : la vidéo passe TOUJOURS avant l'animation (grande vignette) ──
+aspBigOpen=function(el){try{const st=el.closest('.ael-step');const tp=st&&st.querySelector('.ael-medbox template');if(!tp)return;const d=document.createElement('div');d.appendChild(tp.content.cloneNode(true));
+  const an=d.querySelector('.anim-inline[data-r]');const v=d.querySelector('video');
+  const play=()=>{if(!an)return false;const j=(window.__animReg||{})[an.dataset.r];if(!j)return false;try{animPlay(j);return true;}catch(e){return false;}};
+  if(v){aspMedBig('<video src="'+esc(v.getAttribute('src')||'')+'" controls autoplay playsinline></video>'+(an?'<button type="button" class="va-btn v486-nc" style="position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:100001;background:#7c3aed;color:#fff;border:0;border-radius:999px;padding:12px 20px;font-weight:800;font-size:1rem;">❓ Pas compris ? Regarder l\'animation</button>':''));
+    const nc=document.querySelector('.aop-ov.big .v486-nc');if(nc)nc.onclick=function(ev){ev.stopPropagation();const o=document.querySelector('.aop-ov.big');if(o)o.remove();play();};return;}
+  if(play())return;
+  const im=d.querySelector('img');if(im){aspMedBig('<img src="'+(im.getAttribute('src')||'')+'" alt="">');}}catch(err){console.warn('v486',err);}};
+aspElPagedHtml=(function(f){return function(s){let h=f.apply(this,arguments);try{if(h.indexOf('ael-big')<0)return h;const t=document.createElement('template');t.innerHTML=h;let ch=false;
+  t.content.querySelectorAll('.ael-step').forEach(st=>{const big=st.querySelector('.ael-big');const tp=st.querySelector('.ael-medbox template');if(!big||!tp)return;const v=tp.content.querySelector('video');if(!v)return;
+    const src=v.getAttribute('src')||'';const th=big.querySelector('.th');if(th&&src){delete big.dataset.r;big.removeAttribute('data-r');th.innerHTML='<video src="'+src+'#t=0.5" preload="metadata" muted playsinline></video>';}
+    const pl=big.querySelector('.pl');if(pl)pl.textContent='▶';ch=true;});
+  return ch?t.innerHTML:h;}catch(err){console.warn('v486b',err);return h;}};})(aspElPagedHtml);
+
+// ── v486 — onglet Séance allégé : déroulé repliable, Pense-bête / Équipes masqués ──
+function dr486Get(){try{return localStorage.getItem('grib_dr486')!=='open';}catch(e){return true;}}
+function dr486Tog(){try{localStorage.setItem('grib_dr486',dr486Get()?'open':'closed');}catch(e){}dr486Apply();}
+function dr486Apply(){try{const root=document.getElementById('sb-root');if(root){const col=dr486Get();const hd=root.querySelector('.asp-head');const pal=root.querySelector('.asp-pal,.sb-pal');
+    if(hd&&pal){let hit=false;[...root.children].forEach(c=>{if(c===hd){hit=true;return;}if(c===pal||c.contains(pal)||c.classList.contains('asp-grid'))hit=false;if(hit&&!c.classList.contains('v486-keep'))c.style.display=col?'none':'';});
+      let b=hd.querySelector('.dr486-b');if(!b){b=document.createElement('button');b.type='button';b.className='dr486-b';b.style.cssText='border:0;background:#334155;color:#fff;border-radius:8px;padding:4px 10px;font-weight:800;margin-left:6px;';b.onclick=dr486Tog;hd.appendChild(b);}b.textContent=col?'▸ Réglages':'▾ Réglages';}}
+  document.querySelectorAll('#seance-tab-content button').forEach(x=>{if(/^\s*(🧭\s*)?Pense-bête\s*$|^\s*(👥\s*)?Équipes\s*$/.test(x.textContent||'')&&!x.closest('.asp-pal,.asp-grid,.v486-keep'))x.style.display='none';});}catch(e){console.warn('v486c',e);}}
+renderSeanceTab=(function(f){return function(){const r=f.apply(this,arguments);setTimeout(dr486Apply,120);setTimeout(dr486Apply,500);return r;};})(renderSeanceTab);
 </script>
 </body>
 </html>
