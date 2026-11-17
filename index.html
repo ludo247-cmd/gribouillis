@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v489</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v490</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v489</title>
+<title>Gribouillis EPS v490</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -34010,6 +34010,14 @@ animField=function(a,callJs){const r=a?animReg(a):-1;const st='width:48px;height
    +(a?'<button type="button" title="Voir l\'animation « '+esc(String(a.name||'Animation'))+' »" aria-label="Voir" style="'+st+'background:#7c3aed;" onclick="animPlay(__animReg['+r+'])">▶</button>':'')
    +'<button type="button" title="'+(a?'Changer l\'animation':'Lier une animation')+'" aria-label="Animation" style="'+st+'background:#5b21b6;" onclick="animPick(function(J){'+callJs+'})">🎞</button>'
    +(a?'<button type="button" title="Retirer l\'animation" aria-label="Retirer" style="'+st+'background:#991b1b;" onclick="(function(J){'+callJs+'})(null)">✕</button><span style="font-size:.78rem;color:var(--muted,#94a3b8);">'+esc(String(a.name||''))+'</span>':'')+'</div>'+(prev?'<div style="max-width:320px;">'+prev+'</div>':'');};
+
+// ── v490 — boutons média (photo / vidéo / animation / GitHub / coller) en icônes seules, partout ──
+(function(){const st=document.createElement('style');st.textContent='.ic490{min-width:48px;min-height:48px;padding:0 10px!important;display:inline-flex!important;align-items:center;justify-content:center;font-size:1.35rem!important;border-radius:12px!important;gap:0!important;}';document.head.appendChild(st);
+const RX=/^\s*(🎬|📷|📁|🎞️?|📂|📋|📤|📥|📹|＋\s*🎞)\s*(.*)$/;let pend=false;
+function run(){pend=false;try{document.querySelectorAll('button.btn-xs,label.btn-xs').forEach(b=>{if(b.dataset.ic490||b.closest('.mb487,.mb487-src,.dg487,.ael-step,#asp-pk'))return;
+  const tn=[...b.childNodes].find(n=>n.nodeType===3&&n.textContent.trim());if(!tn)return;const m=RX.exec(tn.textContent);if(!m)return;const full=(tn.textContent.trim()+' '+(b.title||'')).trim();
+  if(m[2].trim().length>60)return;b.dataset.ic490='1';if(!b.title)b.title=tn.textContent.trim();b.setAttribute('aria-label',b.title);tn.textContent=m[1].replace('️','');b.classList.add('ic490');});}catch(e){}}
+try{new MutationObserver(()=>{if(!pend){pend=true;requestAnimationFrame(run);}}).observe(document.body,{childList:true,subtree:true});}catch(e){}setTimeout(run,800);})();
 </script>
 </body>
 </html>
