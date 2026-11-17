@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v487</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v489</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v487</title>
+<title>Gribouillis EPS v489</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -33993,11 +33993,23 @@ function post(){try{const box=document.querySelector('#libc-ov .lib-pick-box');i
     b.addEventListener('touchstart',()=>{lp=setTimeout(()=>{try{toast2(t);}catch(e){}},450);},{passive:true});['touchend','touchmove','touchcancel'].forEach(ev=>b.addEventListener(ev,()=>clearTimeout(lp),{passive:true}));return b;};
   bar.appendChild(mk('📷','Photo / schéma : choisir un fichier','#0f766e',mb487Photo,!!f.image));bar.appendChild(mk('📋','Coller une image copiée','#334155',mb487Paste));
   bar.appendChild(mk('🎞','Animation du Studio : voir, modifier, créer, choisir','#6d28d9',mb487Anim,!!f.anim));bar.appendChild(mk('🎬','Vidéo : importer, bibliothèque, lien','#1e3a8a',mb487Vid,!!f.video));
-  const th=document.createElement('div');th.className='th';th.innerHTML=(f.image?'<img src="'+f.image+'" alt=""><button type="button" class="btn-xs red" onclick="LIBC.f.image=null;libcRender()">✕</button>':'')+(f.anim?'<span>🎞 '+esc(String(f.anim.name||''))+'</span>':'')+(f.video?'<span>🎬 '+esc(String(f.video).split('/').pop().slice(0,28))+'</span>':'');
+  const th=document.createElement('div');th.className='th';th.style.cssText='flex-direction:column;align-items:stretch;width:100%;';let ph='';
+  if(f.video){const v=String(f.video);const yt=/youtu\.?be|bilibili/i.test(v);ph+='<div>'+(yt?'<a href="'+esc(v)+'" target="_blank" style="color:#93c5fd;">🎬 '+esc(v.slice(0,50))+'</a>':'<video src="'+esc(v)+'" controls playsinline preload="metadata" style="height:auto;max-height:190px;max-width:100%;width:auto;"></video>')+'</div>';}
+  if(f.anim){let ah='';try{ah=animEleveHtml(f.anim);}catch(e){}ph+='<div>'+(ah||('<button type="button" class="btn-xs" style="background:#7c3aed;color:#fff;" onclick="animPlay(__animReg[animReg(LIBC.f.anim)])">▶ '+esc(String(f.anim.name||'Animation'))+'</button>'))+'<div style="font-size:.74rem;">🎞 '+esc(String(f.anim.name||''))+'</div></div>';}
+  if(f.image)ph+='<div style="display:flex;gap:8px;align-items:center;"><img src="'+f.image+'" alt="" style="height:auto;max-height:110px;max-width:60%;"><button type="button" class="btn-xs red" onclick="LIBC.f.image=null;libcRender()">✕ photo</button></div>';
+  th.innerHTML=ph;
   hide.forEach(x=>{x.style.display='none';x.classList.add('mb487-src');});lab.before(bar);bar.after(th);
 }catch(e){console.warn('v487',e);}}
 libcRender=(function(f){return function(){const r=f.apply(this,arguments);setTimeout(post,30);setTimeout(post,200);return r;};})(libcRender);
 })();
+
+// ── v488 — champ animation générique (échauffements, étapes…) : boutons-icônes compacts + aperçu ──
+animField=function(a,callJs){const r=a?animReg(a):-1;const st='width:48px;height:48px;border-radius:12px;border:0;color:#fff;font-size:1.35rem;cursor:pointer;';
+  let prev='';try{if(a)prev=animEleveHtml(a);}catch(e){}
+  return '<div style="margin:6px 0;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">'
+   +(a?'<button type="button" title="Voir l\'animation « '+esc(String(a.name||'Animation'))+' »" aria-label="Voir" style="'+st+'background:#7c3aed;" onclick="animPlay(__animReg['+r+'])">▶</button>':'')
+   +'<button type="button" title="'+(a?'Changer l\'animation':'Lier une animation')+'" aria-label="Animation" style="'+st+'background:#5b21b6;" onclick="animPick(function(J){'+callJs+'})">🎞</button>'
+   +(a?'<button type="button" title="Retirer l\'animation" aria-label="Retirer" style="'+st+'background:#991b1b;" onclick="(function(J){'+callJs+'})(null)">✕</button><span style="font-size:.78rem;color:var(--muted,#94a3b8);">'+esc(String(a.name||''))+'</span>':'')+'</div>'+(prev?'<div style="max-width:320px;">'+prev+'</div>':'');};
 </script>
 </body>
 </html>
