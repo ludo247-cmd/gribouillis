@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v490</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v491</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v490</title>
+<title>Gribouillis EPS v491</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -34018,6 +34018,11 @@ function run(){pend=false;try{document.querySelectorAll('button.btn-xs,label.btn
   const tn=[...b.childNodes].find(n=>n.nodeType===3&&n.textContent.trim());if(!tn)return;const m=RX.exec(tn.textContent);if(!m)return;const full=(tn.textContent.trim()+' '+(b.title||'')).trim();
   if(m[2].trim().length>60)return;b.dataset.ic490='1';if(!b.title)b.title=tn.textContent.trim();b.setAttribute('aria-label',b.title);tn.textContent=m[1].replace('️','');b.classList.add('ic490');});}catch(e){}}
 try{new MutationObserver(()=>{if(!pend){pend=true;requestAnimationFrame(run);}}).observe(document.body,{childList:true,subtree:true});}catch(e){}setTimeout(run,800);})();
+
+// ── v491 — écran élève : la hauteur suit la fenêtre (plus de grosse barre vide sous « Étape suivante ») ──
+(function(){let last=0;function chk(){try{const c=document.querySelector('.seance-eleve.ael-paged');if(!c)return;const top=c.getBoundingClientRect().top;const want=Math.max(320,Math.floor((window.visualViewport?window.visualViewport.height:window.innerHeight)-top-6));
+  if(Math.abs((parseFloat(c.style.height)||0)-want)>4&&Math.abs(last-want)>0){last=want;c.style.height=want+'px';aspElFitSoon();}else last=want;}catch(e){}}
+setInterval(chk,500);window.addEventListener('resize',()=>setTimeout(chk,80));try{window.visualViewport&&window.visualViewport.addEventListener('resize',()=>setTimeout(chk,80));}catch(e){}})();
 </script>
 </body>
 </html>
