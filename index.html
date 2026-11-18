@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v492</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v493</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v492</title>
+<title>Gribouillis EPS v493</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -34023,6 +34023,23 @@ try{new MutationObserver(()=>{if(!pend){pend=true;requestAnimationFrame(run);}})
 (function(){let last=0;function chk(){try{const c=document.querySelector('.seance-eleve.ael-paged');if(!c)return;const top=c.getBoundingClientRect().top;const want=Math.max(320,Math.floor((window.visualViewport?window.visualViewport.height:window.innerHeight)-top-6));
   if(Math.abs((parseFloat(c.style.height)||0)-want)>4&&Math.abs(last-want)>0){last=want;c.style.height=want+'px';aspElFitSoon();}else last=want;}catch(e){}}
 setInterval(chk,500);window.addEventListener('resize',()=>setTimeout(chk,80));try{window.visualViewport&&window.visualViewport.addEventListener('resize',()=>setTimeout(chk,80));}catch(e){}})();
+
+// ── v493 — grille de séquence : objets repliables (résumé des points par séance) + « tout replier » ──
+(function(){const KEY='grib_seqcol493';const sty=document.createElement('style');sty.textContent='.seq-ph.c493 td{cursor:pointer;user-select:none;}.seq-ph.c493 td::before{content:"▾ ";}.seq-ph.c493.col td::before{content:"▸ ";}.seq-sum td{padding:3px 4px;text-align:center;font-size:.8rem;color:var(--dim2,#94a3b8);}.seq-sum td.l{text-align:left;font-size:.72rem;}.seq-tgl{margin:4px 0;}';document.head.appendChild(sty);
+function ld(){try{return JSON.parse(localStorage.getItem(KEY)||'{}');}catch(e){return {};}}function sv(o){try{localStorage.setItem(KEY,JSON.stringify(o));}catch(e){}}
+function apply(tb){const st=ld();const tb2=tb||document.querySelector('table.seq-grid tbody');if(!tb2)return;const qid=(tb2.closest('table').dataset.q493)||'';
+  const rows=[...tb2.children];tb2.querySelectorAll('.seq-sum').forEach(x=>x.remove());let cur=null,grp=[];const groups=[];
+  rows.forEach(r=>{if(r.classList.contains('seq-sum'))return;if(r.classList.contains('seq-ph')){cur={h:r,rows:[]};groups.push(cur);}else if(cur&&r.querySelector('.seq-cell'))cur.rows.push(r);else cur=null;});
+  groups.forEach(g=>{const key=qid+'|'+(g.h.textContent||'').trim().slice(0,60);g.h.classList.add('c493');const col=!!st[key];g.h.classList.toggle('col',col);g.rows.forEach(r=>r.style.display=col?'none':'');
+    if(col&&g.rows.length){const n=g.rows[0].querySelectorAll('.seq-cell').length;let t='<tr class="seq-sum"><td class="l">'+g.rows.length+' principes</td>';for(let k=0;k<n;k++){let m=0;g.rows.forEach(r=>{const b=r.querySelectorAll('.seq-cell')[k];if(b){const v=+(/f(\d)/.exec(b.className)||[0,0])[1];if(v>m)m=v;}});t+='<td>'+['','●','●●','●●●'][m]+'</td>';}t+='<td></td></tr>';g.h.insertAdjacentHTML('afterend',t);}
+    if(!g.h.dataset.b493){g.h.dataset.b493=1;g.h.onclick=()=>{const o=ld();o[key]=!o[key];sv(o);apply(g.h.closest('tbody'));};}});}
+window.seqCol493=function(all){const tb=document.querySelector('table.seq-grid tbody');if(!tb)return;const qid=document.querySelector('table.seq-grid').dataset.q493||'';const o=ld();tb.querySelectorAll('.seq-ph.c493').forEach(h=>{o[qid+'|'+(h.textContent||'').trim().slice(0,60)]=all;});sv(o);apply(tb);};
+function post(){try{const t=document.querySelector('table.seq-grid');if(!t||t.dataset.d493)return;t.dataset.d493=1;let q='';try{q=(typeof SEQ_UI!=='undefined'&&SEQ_UI.cur)||'';}catch(e){}if(!q){const b=t.querySelector('.seq-cell');const m=b&&/seqCycle\('([^']+)'/.exec(b.getAttribute('onclick')||'');q=m?m[1]:'';}t.dataset.q493=q;
+  const w=t.closest('.seq-grid-wrap');if(w&&!w.previousElementSibling.classList.contains('seq-tgl')){w.insertAdjacentHTML('beforebegin','<div class="seq-tgl"><button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="seqCol493(true)">▸ Tout replier</button> <button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="seqCol493(false)">▾ Tout déplier</button> <span style="color:var(--dim2);font-size:.75rem;">ou touche le nom d\'un objet</span></div>');}
+  apply(t.querySelector('tbody'));}catch(e){console.warn('v493',e);}}
+window.__post493=post;renderSeqTab=(function(f){return function(){const r=f.apply(this,arguments);setTimeout(post,30);return r;};})(renderSeqTab);
+// recoloriage immédiat après un clic sur une case (le résumé suit)
+document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('.seq-cell'))setTimeout(()=>{const t=document.querySelector('table.seq-grid');if(t)apply(t.querySelector('tbody'));},60);},true);})();
 </script>
 </body>
 </html>
