@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v500</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v501</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v500</title>
+<title>Gribouillis EPS v501</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -23587,10 +23587,19 @@ async function syncPull(idx){const m=syncMeta();if(!m)return 0;idx=idx||await sy
 async function syncPush(){const m=syncMeta();if(!m)return 0;const c=ghCfg();const keys=Object.keys(m.dirty).filter(k=>syncKeys().indexOf(k)>=0);if(!keys.length)return 0;
   const idx=(await syncIndex())||{v:1,mt:{}};let n=0;
   for(const k of keys){const rt=+idx.mt[k]||0,lt=+m.mt[k]||0;if(rt>lt)continue; // une version plus récente existe ailleurs : elle sera récupérée
-    const v=_lsGet.call(localStorage,k);if(v==null)continue;await ghPut(c.brepo,syncPath(k),new TextEncoder().encode(v),'sync '+k);idx.mt[k]=lt;delete m.dirty[k];n++;}
+    const v=_lsGet.call(localStorage,k);if(v==null)continue;
+    if(rt>0&&!SYNC.force){try{const rv=await syncRaw(syncPath(k));if(rv!=null&&rv.length>2000&&v.length<rv.length*0.85&&!/^\s*[\[{]\s*[\]}]\s*$/.test(rv)){SYNC.blocked=SYNC.blocked||{};SYNC.blocked[k]={loc:v.length,rem:rv.length};continue;}}catch(e){}}
+    await ghPut(c.brepo,syncPath(k),new TextEncoder().encode(v),'sync '+k);idx.mt[k]=lt;delete m.dirty[k];n++;}
+  if(SYNC.blocked&&Object.keys(SYNC.blocked).length)syncBlockedBanner();
   if(n){for(let t=0;t<3;t++){try{const cur=(await syncIndex())||{v:1,mt:{}};Object.keys(idx.mt).forEach(k=>{if((+idx.mt[k]||0)>(+cur.mt[k]||0))cur.mt[k]=idx.mt[k];});cur.at=Date.now();cur.device=SYNC.dev;
       await ghPut(c.brepo,'sync/index.json',new TextEncoder().encode(JSON.stringify(cur)),'sync index');break;}catch(e){if(t===2)throw e;await new Promise(r=>setTimeout(r,800));}}}
   syncMetaSave(m);return n;}
+
+function syncBlockedBanner(){try{if(E('sync-blk'))return;const K=Object.keys(SYNC.blocked||{});if(!K.length)return;const nm=k=>(typeof SYNC2_NAMES!=='undefined'&&SYNC2_NAMES[k])||k;
+  const b=document.createElement('div');b.id='sync-blk';b.style.cssText='position:fixed;left:8px;right:8px;top:8px;z-index:100001;background:#7f1d1d;color:#fff;border:2px solid #fecaca;border-radius:12px;padding:12px;font-size:.88rem;';
+  b.innerHTML='<b>⚠️ Envoi bloqué pour protéger tes données</b><div style="margin:6px 0;">Cet appareil contient <b>beaucoup moins</b> de données que le cloud pour : '+K.map(k=>esc(nm(k))).join(', ')+'. Il est probablement en retard ou vide : rien n\'a été écrasé.</div><button type="button" data-a="pull" style="padding:10px;border:0;border-radius:9px;background:#15803d;color:#fff;font-weight:800;margin-right:6px;">⬇️ Récupérer le cloud (recommandé)</button><button type="button" data-a="x" style="padding:10px;border:0;border-radius:9px;background:#334155;color:#fff;">Ignorer</button>';
+  b.querySelector('[data-a=pull]').onclick=async()=>{b.remove();const m=syncMeta()||{mt:{},dirty:{}};K.forEach(k=>{delete m.dirty[k];m.mt[k]=0;});syncMetaSave(m);SYNC.blocked={};const n=await syncPull();location.reload();};
+  b.querySelector('[data-a=x]').onclick=()=>{b.remove();};document.body.appendChild(b);}catch(e){}}
 function syncBanner(){if(E('sync-ban'))return;const b=document.createElement('div');b.id='sync-ban';b.innerHTML='🔄 Des données plus récentes sont arrivées d\'un autre appareil.<button type="button">Recharger maintenant</button><span style="cursor:pointer;opacity:.7;" title="Plus tard">✕</span>';
   b.querySelector('button').onclick=()=>location.reload();b.querySelector('span').onclick=()=>b.remove();document.body.appendChild(b);}
 async function syncNow(manual){if(!syncOn()||SYNC.busy)return;SYNC.busy=true;try{syncBadge('☁️ synchro…','');
@@ -23606,12 +23615,12 @@ async function syncFirst(){const c=ghCfg();const idx=await syncIndex();const now
   const when=idx.at?new Date(+idx.at).toLocaleString('fr-FR'):'?';
   await new Promise(res=>{const o=document.createElement('div');o.id='sync-first';o.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:99999;display:flex;align-items:center;justify-content:center;padding:14px;';
     o.innerHTML='<div style="background:#0f172a;border:2px solid #3b82f6;border-radius:14px;padding:16px;max-width:440px;color:#e2e8f0;font-size:.88rem;"><b style="font-size:1rem;">🔄 Synchronisation entre tes appareils</b><p>Le cloud contient des données envoyées le <b>'+esc(when)+'</b>. Lesquelles veux-tu garder sur cet appareil ?</p>'
-      +'<button type="button" data-a="cloud" style="display:block;width:100%;margin:6px 0;padding:10px;border:none;border-radius:9px;background:#15803d;color:#fff;font-weight:800;">⬇️ Les données du cloud (recommandé)</button>'
-      +'<button type="button" data-a="local" style="display:block;width:100%;margin:6px 0;padding:10px;border:none;border-radius:9px;background:#334155;color:#fff;font-weight:800;">📱 Celles de cet appareil (elles remplaceront le cloud)</button>'
+      +'<button type="button" data-a="cloud" style="display:block;width:100%;margin:6px 0;padding:10px;border:none;border-radius:9px;background:#15803d;color:#fff;font-weight:800;">⬇️ Récupérer les données du cloud (recommandé)</button>'
+      +'<button type="button" data-a="local" style="display:block;width:100%;margin:6px 0;padding:10px;border:none;border-radius:9px;background:#334155;color:#fff;font-weight:800;">📱 Garder celles de cet appareil (remplace le cloud — dangereux)</button>'
       +'<button type="button" data-a="later" style="display:block;width:100%;margin:6px 0;padding:8px;border:none;border-radius:9px;background:transparent;color:#94a3b8;">Plus tard</button></div>';
     o.querySelectorAll('button').forEach(b=>b.onclick=async()=>{const a=b.dataset.a;o.remove();
       if(a==='cloud'){syncMetaSave({mt:{},dirty:{}});const n=await syncPull(idx);if(n){location.reload();return;}await syncNow(false);}
-      else if(a==='local'){initLocal();await syncNow(false);}
+      else if(a==='local'){if(!confirm('⚠️ ATTENTION : toutes les données du CLOUD seront REMPLACÉES par celles de cet appareil. Si cet appareil est neuf ou vide, tu vas tout perdre. Continuer ?')){res();return;}SYNC.force=false;initLocal();await syncNow(false);}
       res();});document.body.appendChild(o);});}
 function syncToggle(on){const c=ghCfg();c.sync=!!on;try{localStorage.setItem(GH_KEY,JSON.stringify(c));}catch(e){}if(on)syncStart();else syncBadge('','');}
 async function syncStart(){if(!syncOn())return;SYNC.dev=syncDev();const cb=E('gh-sync');if(cb)cb.checked=true;
