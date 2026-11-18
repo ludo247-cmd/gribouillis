@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v498</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v499</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v498</title>
+<title>Gribouillis EPS v499</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -1860,7 +1860,7 @@ body:has(> #s-match:not(.hidden)) #eleve-return-bar{display:none!important;}
         <p style="font-size:.74rem;color:var(--dim2);margin:-4px 0 8px;">Vidéos et sauvegarde complète vers GitHub (à régler une fois par appareil).</p>
         <div class="form-row"><div><label>Pseudo GitHub :</label><input type="text" id="gh-owner" onchange="ghSaveForm()" placeholder="ludo247-cmd"></div><div><label>Dépôt des vidéos (public, Pages activé) :</label><input type="text" id="gh-repo" onchange="ghSaveForm()" placeholder="sons-eps"></div></div>
         <div class="form-row" style="margin-top:6px;"><div><label>Dossier des vidéos :</label><input type="text" id="gh-folder" onchange="ghSaveForm()" placeholder="videos"></div><div><label>Dépôt de sauvegarde (privé) :</label><input type="text" id="gh-brepo" onchange="ghSaveForm()" placeholder="gribouillis-sauvegardes"></div></div>
-        <div style="margin-top:6px;"><label>Jeton d'accès GitHub (reste sur cet appareil, jamais exporté) :</label><input type="password" id="gh-token" onchange="ghSaveForm()" placeholder="github_pat_…" style="width:100%;"></div>
+        <div style="margin-top:6px;"><label>Jeton d'accès GitHub (reste sur cet appareil, jamais exporté) :</label><input type="password" id="gh-token" onchange="ghSaveForm()" placeholder="github_pat_…" style="width:100%;"><button type="button" class="btn-xs" style="margin-top:6px;background:#0f766e;color:#fff;" onclick="ghQr()">📲 QR pour copier ce jeton sur un iPad (sans copier-coller)</button></div>
         <label style="display:flex;gap:6px;align-items:center;margin-top:6px;font-size:.76rem;"><input type="checkbox" id="gh-auto" onchange="ghSaveForm()"> Sauvegarde cloud automatique en fin de match / de séance</label>
         <label style="display:flex;gap:6px;align-items:center;margin-top:6px;font-size:.78rem;font-weight:700;"><input type="checkbox" id="gh-sync" onchange="syncToggle(this.checked)"> 🔄 Synchronisation automatique entre mes appareils (toujours la dernière version)</label>
         <div id="sync-status" style="font-size:.72rem;color:var(--dim);margin-top:2px;"></div>
@@ -34060,6 +34060,18 @@ renderSeanceBuilder=(function(f){return function(s){const h=f.apply(this,argumen
 trnLaunch=(function(f){return function(qid,ji,mi){try{const q=seqGet(qid);const k=q&&trnKind(q);if(k==='chp'){const t=trnObj(q,k);const J=t.jours[ji];const m=J.m[mi];const sd=trnSides(q,k,t,J,m);
   PRM.override={};[chpClub(t,m.a).nom,chpClub(t,m.b).nom].forEach((n,i)=>{PRM.override[cleanVal(n)]=(sd[i]||[]).slice();});
   setTimeout(()=>{PRM.override=null;},4000);}}catch(e){console.warn('v498',e);}return f.apply(this,arguments);};})(trnLaunch);
+
+// ── v499 — transfert du jeton GitHub vers un autre appareil par QR code (le jeton reste dans le « # » du lien : jamais envoyé à un serveur) ──
+(function(){
+try{const m=/^#gh=([A-Za-z0-9+/=_-]+)$/.exec(location.hash||'');if(m){const j=JSON.parse(decodeURIComponent(escape(atob(m[1].replace(/-/g,'+').replace(/_/g,'/')))));if(j&&/^(github_pat_|ghp_)/.test(j.token||'')){const c=ghCfg();Object.assign(c,j);localStorage.setItem(GH_KEY,JSON.stringify(c));history.replaceState(null,'',location.pathname+location.search);setTimeout(()=>{try{alert('✅ Jeton GitHub enregistré sur cet appareil.');ghLoadForm();}catch(e){}},600);}}}catch(e){console.warn('gh import',e);}
+function loadQr(cb){if(window.qrcode)return cb();const sc=document.createElement('script');sc.src='https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js';sc.onload=cb;sc.onerror=()=>alert('QR indisponible (connexion ?).');document.head.appendChild(sc);}
+window.ghQr=function(){ghSaveForm();const c=ghCfg();if(!c.token){alert('Renseigne d\'abord le jeton sur cet appareil.');return;}
+  const j={token:c.token,owner:c.owner,repo:c.repo,folder:c.folder,brepo:c.brepo};const b=btoa(unescape(encodeURIComponent(JSON.stringify(j)))).replace(/\+/g,'-').replace(/\//g,'_');
+  const url=location.origin+location.pathname+'#gh='+b;
+  loadQr(()=>{const q=qrcode(0,'L');q.addData(url);q.make();const o=document.createElement('div');o.style.cssText='position:fixed;inset:0;z-index:100000;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;padding:14px;';
+    o.innerHTML='<div style="background:#fff;color:#111;border-radius:14px;padding:16px;max-width:380px;text-align:center;"><b>Scanne ce QR avec l\'iPad</b><div style="margin:10px auto;width:min(300px,80vw);">'+q.createSvgTag({cellSize:4,margin:2,scalable:true})+'</div><div style="font-size:.8rem;">Ouvre l\'appareil photo de l\'iPad, vise le QR, touche le lien : le jeton est enregistré. À faire sur chaque iPad. Ne montre ce QR à personne.</div><button type="button" style="margin-top:10px;padding:10px 18px;border:0;border-radius:10px;background:#334155;color:#fff;font-weight:800;" onclick="this.closest(\'div[style*=fixed]\').remove()">Fermer</button></div>';
+    o.addEventListener('click',e=>{if(e.target===o)o.remove();});document.body.appendChild(o);});};
+})();
 </script>
 </body>
 </html>
