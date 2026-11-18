@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v494</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v495</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v494</title>
+<title>Gribouillis EPS v495</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -25726,11 +25726,12 @@ function chsHtml(q,o){const cal=chsOf(o);const G=o.fam.groups||[];const st=chsSt
       else if(!past){const Q=chsQueue(q,o,s.date,used).slice(0,cal.perS);if(Q.length){const late=Q.reduce((a,b)=>a+b.filter(m=>st[m.id]).length,0);txt='<i>prévu</i> : blocs '+(Q[0][0].bi+1)+(Q.length>1?' à '+(Q[Q.length-1][0].bi+1):'')+(late?' (dont '+late+' repris)':'');Q.forEach(b=>b.forEach(m=>used[m.id]=1));}else txt='<i>plus de match prévu</i>';
         btn=cal.ok?'<button type="button" class="btn-xs green" onclick="chsFill(\''+esc(s.id)+'\')">⚡ Remplir</button>':'';}
       else txt='<i>pas de match</i>';
-    rows+='<tr class="'+(s.date===t?'today':(past?'past':''))+'"><td><b>'+esc(seanceDateFr(s.date))+'</b>'+(s.date===t?' <small>aujourd\'hui</small>':'')+'</td><td>'+txt+'</td><td>'+btn+'</td></tr>';});
+    const pairs=M.length?'<div class="chs-pm" style="margin-top:4px;font-size:.8rem;display:flex;flex-wrap:wrap;gap:4px 12px;">'+M.map(m=>{try{const L=chsLab(o,m);return '<span><span class="pln-t" style="--gc:'+esc(L.A.col)+'">'+esc(L.A.nom)+'</span> – <span class="pln-t" style="--gc:'+esc(L.B.col)+'">'+esc(L.B.nom)+'</span> <small>'+esc(L.lv)+'</small></span>';}catch(e){return '';}}).join('')+'</div>':'';
+    rows+='<tr class="'+(s.date===t?'today':(past?'past':''))+'"><td><b>'+esc(seanceDateFr(s.date))+'</b>'+(s.date===t?' <small>aujourd\'hui</small>':'')+'</td><td>'+txt+pairs+'</td><td>'+btn+'</td></tr>';});
   h+='<'+'div class="chs-sub">Séances</'+'div>'+(SE.length?'<'+'div class="pln-tab"><table class="chs-se">'+rows+'</table></'+'div>':'<'+'div class="cc-dim">Pas encore de séance dans cette séquence.</'+'div>');
   // tableau des blocs
   const pl={};Object.keys(st).forEach(k=>{const r=st[k];const d=r.sc?r.date:(r.dates.length?r.dates[r.dates.length-1].date:null);if(d)pl[k]=d;});
-  h+='<'+'details class="chs-prog"><summary>Tous les blocs ('+cal.prog.length+')</summary><'+'div class="pln-tab"><table><tr><th>Bloc</th>'+cal.terrains.map(tt=>'<th>'+esc(tt.nom)+'<small>'+esc(tt.fmt)+'</small></th>').join('')+'</tr>';
+  h+='<'+'details class="chs-prog" open><summary>Tous les blocs ('+cal.prog.length+')</summary><'+'div class="pln-tab"><table><tr><th>Bloc</th>'+cal.terrains.map(tt=>'<th>'+esc(tt.nom)+'<small>'+esc(tt.fmt)+'</small></th>').join('')+'</tr>';
   cal.prog.forEach((b,bi)=>{const done=b.every(m=>st[m.id]&&st[m.id].sc);h+='<tr class="'+(done?'past':'')+'"><td><b>'+(bi+1)+'</b>'+(done?' ✅':'')+'</td>';cal.terrains.forEach((tt,ti)=>{const m=b.find(x=>x.ter===ti);h+='<td>'+(m?chsMatchTxt(o,cal,m,st)+(pl[m.id]&&!(st[m.id]&&st[m.id].sc)?'<small>📅 '+esc(seanceDateFr(pl[m.id]))+'</small>':''):'<span class="cc-dim">—</span>')+'</td>';});h+='</tr>';});
   return h+'</table></'+'div></'+'details></'+'details>';}
 // ── ④ suivi ──
