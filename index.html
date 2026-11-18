@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v491</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v492</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v491</title>
+<title>Gribouillis EPS v492</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -18631,7 +18631,7 @@ function seqNomen(id,as){const q=seqGet(id);if(!q)return;const refs=listReferent
 function seqAddCol(id){seqUpdate(id,q=>{seqEnsureCols(q);const last=q.cols[q.nb-1];const s=last&&last.seanceId?(SEANCES||[]).find(x=>x.id===last.seanceId):null;const f={};
   seqRows(q).forEach(r=>{f[r.key]=s?Math.max(...r.paths.map(p=>cpFocusOf(s,p))):(+((last&&last.focus||{})[r.key])||0);});
   q.nb=Math.min(20,q.nb+1);q.cols.length=Math.min(q.cols.length,q.nb-1);q.cols.push({focus:f,seanceId:''});});renderSeqTab();}
-function seqToggleOe(id,oid){seqUpdate(id,q=>{const i=(q.oeIds||[]).indexOf(oid);if(i>=0)q.oeIds.splice(i,1);else{const sd=seqSd(q);if(!sd.custom&&(q.oeIds||[]).length>=2)q.oeIds.shift();q.oeIds.push(oid);}});renderSeqTab();}
+function seqToggleOe(id,oid){seqUpdate(id,q=>{const i=(q.oeIds||[]).indexOf(oid);if(i>=0)q.oeIds.splice(i,1);else{const sd=seqSd(q);q.oeIds.push(oid);}});renderSeqTab();}
 function seqCycle(id,k,key){const q=seqGet(id);if(!q)return;const row=seqRows(q).find(r=>r.key===key);if(!row)return;const v=(seqCellVal(q,k,row)+1)%4;
   seqUpdate(id,q2=>{const c=q2.cols[k];if(!c.focus)c.focus={};c.focus[key]=v;});
   const s=seqSeance(q,k);if(s){if(!s.cpFocus)s.cpFocus={};row.paths.forEach(p=>s.cpFocus[p]=v);try{syncTrajet(s);}catch(e){}saveSeances();}
@@ -18684,7 +18684,7 @@ function renderSeqTab(){
   h+=(()=>{try{return seqGsRowHtml(q);}catch(e){return '';}})();
   h+=(()=>{try{return isAS?pjEdAllHtml():'';}catch(e){console.warn('pjEd',e);return '';}})();
   if(!sd)h+=seqNoRefHtml(q);
-  else{h+='<div class="row"><span>'+(isAS?'Phases travaillées (chaque phase a son orientation et ses principes) :':'Objet(s) d\'enseignement (1 ou 2) :')+'</span></div><div class="remed-chip-row">'+(sd.oe||[]).map(o=>'<div class="remed-chip'+((q.oeIds||[]).indexOf(o.id)>=0?' selected':'')+'" data-oe="1" style="flex:0 1 auto;padding:6px 10px;font-size:.74rem;--oe:'+OE_COLORS[(sd.oe||[]).indexOf(o)%OE_COLORS.length]+';" onclick="seqToggleOe(\''+qi+'\',\''+esc(o.id)+'\')">'+(isAS&&refPhaseLabel(sd,o.phase)?'<b style="display:block;">'+esc(refPhaseLabel(sd,o.phase))+'</b>':'')+esc(o.short||o.label)+'</div>').join('')+'</div>';
+  else{h+='<div class="row"><span>'+(isAS?'Phases travaillées (chaque phase a son orientation et ses principes) :':'Objet(s) d\'enseignement (autant que nécessaire) :')+'</span></div><div class="remed-chip-row">'+(sd.oe||[]).map(o=>'<div class="remed-chip'+((q.oeIds||[]).indexOf(o.id)>=0?' selected':'')+'" data-oe="1" style="flex:0 1 auto;padding:6px 10px;font-size:.74rem;--oe:'+OE_COLORS[(sd.oe||[]).indexOf(o)%OE_COLORS.length]+';" onclick="seqToggleOe(\''+qi+'\',\''+esc(o.id)+'\')">'+(isAS&&refPhaseLabel(sd,o.phase)?'<b style="display:block;">'+esc(refPhaseLabel(sd,o.phase))+'</b>':'')+esc(o.short||o.label)+'</div>').join('')+'</div>';
     const rows=seqRows(q);
     if(!rows.length)h+='<div class="cc-dim">'+(isAS?'Choisissez au moins une phase (avec des principes renseignés) pour voir ses principes d\'action.':'Choisissez au moins un objet pour voir ses contenus prioritaires.')+'</div>';
     else{const sym=['','●','●●','●●●'];const grp=isAS||(q.oeIds||[]).length>1;let lastOe='';
