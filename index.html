@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v495</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v496</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v495</title>
+<title>Gribouillis EPS v496</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -25648,7 +25648,7 @@ function chsBuild(o,c){const G=(o.fam.groups||[]).map(g=>g.id);const k=G.length;
   const pairs=[];for(let i=0;i<k;i++)for(let j=i+1;j<k;j++)pairs.push([G[i],G[j]]);if(!pairs.length)return [];
   const nS=Math.max(1,plnSeances(orgQ()||{id:''}).length||6);const need=nS*c.perS+c.perS;
   const rnd=orgRng((c.seed||1)*7919+k*31+nt);const tc={},rc={};const key=(g,l)=>g+':'+l;const out=[];let r=0,pend=[];let guard=0;
-  while(out.length<need&&guard++<500){if(!pend.length){const P=pairs.map((p,i)=>pairs[(i+r)%pairs.length]);LV.forEach(l=>P.forEach(p=>{const sw=(r%2)?[p[1],p[0]]:p;pend.push({a:sw[0],b:sw[1],niv:l});}));if(rnd()<.5)pend.reverse();r++;}
+  while(out.length<need&&guard++<500){if(!pend.length){const P=pairs.map((p,i)=>pairs[(i+r)%pairs.length]);const LVo=LV.length>1?LV.slice().sort((x,y)=>{const e=i=>/esp|d[ée]butant|faible/i.test(String(o.levels[i]||''))?0:1;return e(x)-e(y)||y-x;}):LV;let grp=P.map(p=>{const sw=(r%2)?[p[1],p[0]]:p;return LVo.map(l=>({a:sw[0],b:sw[1],niv:l}));});if(rnd()<.5)grp.reverse();grp.forEach(g=>g.forEach(m=>pend.push(m)));r++;}
     const bloc=[];const busy={};for(let i=0;i<pend.length&&bloc.length<nt;){const m=pend[i];const ka=key(m.a,m.niv),kb=key(m.b,m.niv);const clash=m.niv<0?(busy[m.a]||busy[m.b]||Object.keys(busy).some(x=>x.indexOf(m.a+':')===0||x.indexOf(m.b+':')===0)):(busy[ka]||busy[kb]||busy[m.a]||busy[m.b]);
       if(clash){i++;continue;}if(m.niv<0){busy[m.a]=busy[m.b]=1;}else{busy[ka]=busy[kb]=1;}bloc.push(m);pend.splice(i,1);}
     if(!bloc.length){pend=[];continue;}
@@ -26148,14 +26148,14 @@ function chsSig(s){const t=JSON.stringify({a:(s.steps||[]).map(x=>[x.key,x.dur||
 function chsStarted(s){return (s.steps||[]).some(x=>x.status==='done');}
 function chsHasScores(q,s){const c=q.champ;const J=c&&Array.isArray(c.jours)?c.jours.find(j=>j.date===s.date):null;return !!(J&&(J.m||[]).some(m=>m.sa!==''&&m.sa!=null));}
 function chsAutoRun(qid,why){if(CHSA.busy)return 0;const q=seqGet(qid);if(!q||!q.org)return 0;const o=orgOf(q);const cal=chsOf(o);if(!cal.ok||!cal.prog.length)return 0;
-  const t=edtToday();const SE=plnSeances(q).filter(s=>s.date>=t&&!s.chsNoAuto&&!chsStarted(s)&&!chsHasScores(q,s));
+  const t=edtToday();const pids=new Set();cal.prog.forEach(bl=>bl.forEach(m=>pids.add(m.id)));const stale=s=>{const J=q.champ&&Array.isArray(q.champ.jours)?q.champ.jours.find(j=>j.date===s.date):null;const M=J?(J.m||[]).filter(m=>m.pid):[];return M.length>0&&M.some(m=>!pids.has(m.pid));};const SE=plnSeances(q).filter(s=>s.date>=t&&!s.chsNoAuto&&!chsHasScores(q,s)&&(!chsStarted(s)||stale(s)));
   const filled=s=>s.chpBloc&&Object.keys(s.chpBloc).length;
-  const elig=SE.filter(s=>!filled(s)||(s.chsAuto&&s.chsSig===chsSig(s)));if(!elig.length)return 0;
+  const elig=SE.filter(s=>!filled(s)||(s.chsAuto&&s.chsSig===chsSig(s))||stale(s));if(!elig.length)return 0;
   // faut-il refaire ? (séance vide, ou des matchs en retard passent avant)
   // prolonger la file si elle ne suffit plus pour toutes les séances de la séquence
   try{const left=chsQueue(q,o,'').length;const want=(SE.length+1)*cal.perS;if(left<want){const add=chsBuild(o,cal);if(add.length){seqUpdate(q.id,qq=>{const oo=orgOf(qq);const cc=chsOf(oo);cc.prog=cc.prog.concat(add);oo.cal=cc;qq.org=oo;});}}}catch(e){console.warn('chs extend',e);}
   const q1=seqGet(qid);const o1=orgOf(q1);const avail=chsQueue(q1,o1,'').length>0;
-  let need=avail&&elig.some(s=>!filled(s));
+  let need=avail&&elig.some(s=>!filled(s)||stale(s));
   if(!need&&elig.some(s=>filled(s))){const first=elig.find(s=>filled(s));const Q=chsQueue(q1,o1,first.date);const st=chsStatus(q);const mine=new Set(((q.champ.jours.find(j=>j.date===first.date)||{}).m||[]).map(m=>m.pid));const fi=Math.min.apply(null,chsOf(o1).prog.map((b,bi)=>b.some(m=>mine.has(m.id))?bi:1e9));need=Q.some(b=>b[0].bi<fi);}
   if(!need)return 0;
   CHSA.busy=true;const al=window.alert,cf=window.confirm,ts=window.toast2;let n=0;
