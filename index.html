@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v493</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Gribouillis EPS v494</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0b0c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Gribouillis"><meta name="application-name" content="Gribouillis EPS"></head><body>
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Gribouillis EPS v493</title>
+<title>Gribouillis EPS v494</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -34040,6 +34040,20 @@ function post(){try{const t=document.querySelector('table.seq-grid');if(!t||t.da
 window.__post493=post;renderSeqTab=(function(f){return function(){const r=f.apply(this,arguments);setTimeout(post,30);return r;};})(renderSeqTab);
 // recoloriage immédiat après un clic sur une case (le résumé suit)
 document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('.seq-cell'))setTimeout(()=>{const t=document.querySelector('table.seq-grid');if(t)apply(t.querySelector('tbody'));},60);},true);})();
+
+// ── v494 — le déroulé « blocs + ateliers » (foot/AS) devient disponible pour TOUTES les séances (hand, etc.) ──
+(function(){
+const oInit=aspInit;
+aspInit=function(s){if(aspIsAS(s))return oInit.apply(this,arguments);
+  const A=()=>({id:aspNid('a'),groups:[],exos:[]});const w=()=>{const a=A();a.exos.push({k:'warm'});return a;};
+  s.asp={blocks:[{id:aspNid(),kind:'objectif',dur:5,ats:[]},{id:aspNid(),kind:'bloc',dur:15,ats:[w()]},{id:aspNid(),kind:'bloc',dur:20,ats:[A()]},{id:aspNid(),kind:'bloc',dur:20,ats:[A()]},{id:aspNid(),kind:'bloc',dur:20,ats:[A()]},{id:aspNid(),kind:'bilan',dur:10,ats:[]}]};
+  if(!s.start)s.start='16:30';};
+window.aspBack=function(){const s=getActiveSeance();if(!s||!s.asp)return;if(!confirm('Revenir à l\'ancien déroulé (Match / Remédiation) ? Le déroulé en blocs + ateliers sera supprimé ; l\'ancien est conservé tel quel.'))return;s.asp=null;saveSeances();renderSeanceTab();};
+renderSeanceBuilder=(function(f){return function(s){const h=f.apply(this,arguments);
+  try{if(!s)return h;if(s.asp){return '<div class="cc-dim" style="margin:0 0 6px;"><button type="button" class="btn-xs" style="background:#334155;color:#fff;" onclick="aspBack()">↩ Ancien déroulé (Match / Remédiation)</button></div>'+h;}
+    if(h.indexOf('aspEnable()')<0)return '<div class="cc-dim" style="margin:0 0 6px;"><button type="button" class="btn-xs green" onclick="aspEnable()">🆕 Passer au déroulé simplifié (blocs + ateliers)</button></div>'+h;}catch(e){}
+  return h;};})(renderSeanceBuilder);
+})();
 </script>
 </body>
 </html>
